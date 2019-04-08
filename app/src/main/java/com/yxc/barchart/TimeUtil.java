@@ -19,6 +19,8 @@ import java.util.List;
 public class TimeUtil {
 
     public static final long TIME_DAY = 24 * 60 * 60;
+
+    public static final long TIME_HOUR = 1 * 60 * 60;
     //一位小数
     public static final int ONE_LENGTH_DECIMAL = 1;
 
@@ -392,6 +394,14 @@ public class TimeUtil {
         return date.getYear() == compareDate.getYear() && date.getMonthOfYear() == compareDate.getMonthOfYear() && date.getDayOfMonth() == compareDate.getDayOfMonth();
     }
 
+    //是否是上一天
+    public static boolean isLastDay(long timestamp){
+        long timestampPlusOneHour = timestamp + TIME_HOUR;
+        LocalDate localDate1 = timestampToLocalDate(timestamp);
+        LocalDate localDate2 = timestampToLocalDate(timestampPlusOneHour);
+        return localDate1.getDayOfWeek() != localDate2.getDayOfWeek();
+    }
+
     //是否是上一周
     public static boolean isLastWeek(LocalDate localDate, LocalDate lastLocalDate) {
         LocalDate currentLocalDate = lastLocalDate.plusWeeks(1);
@@ -428,5 +438,13 @@ public class TimeUtil {
                 return "周八";
                 default:return "";
         }
+    }
+
+    public static String getHourOfTheDay(long timestamp) {
+        LocalDate localDate = timestampToLocalDate(timestamp);
+        long zeroHour = changZeroOfTheDay(localDate);
+        long distance = timestamp - zeroHour;
+        int time = (int) (distance/TIME_HOUR);
+        return time + "时";
     }
 }
