@@ -19,7 +19,6 @@ import org.joda.time.LocalDate;
 
 import java.util.List;
 
-
 /**
  * @author yxc
  * @date 2019/4/6
@@ -51,10 +50,16 @@ public class BarChartItemDecoration extends RecyclerView.ItemDecoration {
     private boolean enableCharValueDisplay = true;
     private boolean enableYAxisZero = true;
     private boolean enableYAxisGridLine = true;
+    private boolean enableRightYAxisLabel = true;
+    private boolean enableLeftYAxisLabel = true;
+    private boolean enableBarBorder = true;
+
+    private int mBarBorderColor;
+    private float mBarBorderWidth;
 
     public static final int HORIZONTAL_LIST = LinearLayoutManager.HORIZONTAL;
     public static final int VERTICAL_LIST = LinearLayoutManager.VERTICAL;
-    private float mBarBorderWidth;
+
 
     public BarChartItemDecoration(Context context, int orientation, YAxis yAxis, XAxis xAxis) {
         this.mContext = context;
@@ -62,6 +67,7 @@ public class BarChartItemDecoration extends RecyclerView.ItemDecoration {
         this.mYAxis = yAxis;
         this.mXAxis = xAxis;
         mBarChartColor = ColorUtil.getResourcesColor(mContext, R.color.pink);
+        mBarBorderColor = ColorUtil.getResourcesColor(mContext, R.color.black_80_transparent);
         mBarBorderWidth = DisplayUtil.dip2px(0.5f);
         setOrientation(orientation);
         initPaint();
@@ -123,15 +129,17 @@ public class BarChartItemDecoration extends RecyclerView.ItemDecoration {
 
 
     private void drawBarBorder(@NonNull Canvas canvas, @NonNull RecyclerView parent) {
-        RectF rectF = new RectF();
-        int start = parent.getPaddingLeft();
-        int top = parent.getPaddingTop();
-        int end = parent.getRight() - parent.getPaddingRight();
-        int bottom = parent.getHeight() - parent.getPaddingBottom() - contentPaddingBottom;//底部有0的刻度是不是不用画，就画折线了。
+        if (enableBarBorder) {
+            RectF rectF = new RectF();
+            int start = parent.getPaddingLeft();
+            int top = parent.getPaddingTop();
+            int end = parent.getRight() - parent.getPaddingRight();
+            int bottom = parent.getHeight() - parent.getPaddingBottom() - contentPaddingBottom;//底部有0的刻度是不是不用画，就画折线了。
 
-        rectF.set(start, top, end, bottom);
-        mBarBorderPaint.setStrokeWidth(mBarBorderWidth);
-        canvas.drawRect(rectF, mBarBorderPaint);
+            rectF.set(start, top, end, bottom);
+            mBarBorderPaint.setStrokeWidth(mBarBorderWidth);
+            canvas.drawRect(rectF, mBarBorderPaint);
+        }
     }
 
     //绘制柱状图
@@ -154,7 +162,7 @@ public class BarChartItemDecoration extends RecyclerView.ItemDecoration {
             ChartRectF rectF = new ChartRectF();
             int width = child.getWidth();
             int barChartWidth = width * 2 / 3;//柱子的宽度
-            int start = child.getLeft() + barChartWidth/4;
+            int start = child.getLeft() + barChartWidth / 4;
             int end = start + barChartWidth;
             Log.d("BarChart", "i =" + i + " start: " + start + " end:" + end);
             int height = (int) (barEntry.value / mYAxis.maxLabel * realYAxisLabelHeight);
@@ -254,9 +262,8 @@ public class BarChartItemDecoration extends RecyclerView.ItemDecoration {
         mBarBorderPaint.setAntiAlias(true);
         mBarBorderPaint.setStyle(Paint.Style.STROKE);
         mBarBorderPaint.setStrokeWidth(mBarBorderWidth);
-        mBarBorderPaint.setColor(Color.BLACK);
+        mBarBorderPaint.setColor(mBarBorderColor);
     }
-
 
     //绘制 Y轴刻度线
     private void drawGridLine(Canvas canvas, RecyclerView parent, YAxis yAxis) {
@@ -292,60 +299,64 @@ public class BarChartItemDecoration extends RecyclerView.ItemDecoration {
 
     //绘制左边的刻度
     private void drawLeftYAxisLabel(Canvas canvas, RecyclerView parent, YAxis yAxis) {
-        int right = parent.getWidth();
-        int top = parent.getPaddingTop();
-        int bottom = parent.getHeight() - parent.getPaddingBottom();
-        int distance = bottom - contentPaddingBottom - (top + maxYAxisPaddingTop);
-        int max = yAxis.maxLabel;
-        int lineNums = yAxis.labelSize;
-        int lineDistance = distance / lineNums;
-        int label = max;
-        mTextPaint.setTextSize(yAxis.labelTxtSize);
+        if (enableLeftYAxisLabel){
+            int right = parent.getWidth();
+            int top = parent.getPaddingTop();
+            int bottom = parent.getHeight() - parent.getPaddingBottom();
+            int distance = bottom - contentPaddingBottom - (top + maxYAxisPaddingTop);
+            int max = yAxis.maxLabel;
+            int lineNums = yAxis.labelSize;
+            int lineDistance = distance / lineNums;
+            int label = max;
+            mTextPaint.setTextSize(yAxis.labelTxtSize);
 
-        String maxStr = Integer.toString(max);
+            String maxStr = Integer.toString(max);
 
-        float textWidth = mTextPaint.measureText(maxStr) + DisplayUtil.dip2px(2);
-        parent.setPadding((int) textWidth, parent.getPaddingTop(), parent.getPaddingRight(), parent.getPaddingBottom());
-        int labelDistance = max / lineNums;
-        int gridLine = top + maxYAxisPaddingTop;
+            float textWidth = mTextPaint.measureText(maxStr) + DisplayUtil.dip2px(2);
+            parent.setPadding((int) textWidth, parent.getPaddingTop(), parent.getPaddingRight(), parent.getPaddingBottom());
+            int labelDistance = max / lineNums;
+            int gridLine = top + maxYAxisPaddingTop;
 
-        for (int i = 0; i <= lineNums; i++) {
-            if (i > 0) {
-                gridLine = gridLine + lineDistance;
-                label = label - labelDistance;
+            for (int i = 0; i <= lineNums; i++) {
+                if (i > 0) {
+                    gridLine = gridLine + lineDistance;
+                    label = label - labelDistance;
+                }
+                String labelStr = Integer.toString(label);
+                canvas.drawText(labelStr, textWidth - mTextPaint.measureText(labelStr) - DisplayUtil.dip2px(2),
+                        gridLine + DisplayUtil.dip2px(3), mTextPaint);
             }
-            String labelStr = Integer.toString(label);
-            canvas.drawText(labelStr, textWidth - mTextPaint.measureText(labelStr) - DisplayUtil.dip2px(2),
-                    gridLine + DisplayUtil.dip2px(3), mTextPaint);
         }
     }
 
     //绘制右边的刻度
     private void drawRightYAxisLabel(Canvas canvas, RecyclerView parent, YAxis yAxis) {
-        int right = parent.getWidth();
-        int top = parent.getPaddingTop();
-        int bottom = parent.getHeight() - parent.getPaddingBottom();
-        int distance = bottom - contentPaddingBottom - (top + maxYAxisPaddingTop);
-        int max = yAxis.maxLabel;
-        int lineNums = yAxis.labelSize;
-        int lineDistance = distance / lineNums;
-        int label = max;
-        mTextPaint.setTextSize(yAxis.labelTxtSize);
-        String maxStr = Integer.toString(max);
-        float textWidth = mTextPaint.measureText(maxStr) + DisplayUtil.dip2px(3);
-        parent.setPadding(parent.getPaddingLeft(), parent.getPaddingTop(), (int) textWidth, parent.getPaddingBottom());
+        if (enableRightYAxisLabel){
+            int right = parent.getWidth();
+            int top = parent.getPaddingTop();
+            int bottom = parent.getHeight() - parent.getPaddingBottom();
+            int distance = bottom - contentPaddingBottom - (top + maxYAxisPaddingTop);
+            int max = yAxis.maxLabel;
+            int lineNums = yAxis.labelSize;
+            int lineDistance = distance / lineNums;
+            int label = max;
+            mTextPaint.setTextSize(yAxis.labelTxtSize);
+            String maxStr = Integer.toString(max);
+            float textWidth = mTextPaint.measureText(maxStr) + DisplayUtil.dip2px(3);
+            parent.setPadding(parent.getPaddingLeft(), parent.getPaddingTop(), (int) textWidth, parent.getPaddingBottom());
 
-        int labelDistance = max / lineNums;
-        int gridLine = top + maxYAxisPaddingTop;
+            int labelDistance = max / lineNums;
+            int gridLine = top + maxYAxisPaddingTop;
 
-        for (int i = 0; i <= lineNums; i++) {
-            if (i > 0) {
-                gridLine = gridLine + lineDistance;
-                label = label - labelDistance;
+            for (int i = 0; i <= lineNums; i++) {
+                if (i > 0) {
+                    gridLine = gridLine + lineDistance;
+                    label = label - labelDistance;
+                }
+                String labelStr = Integer.toString(label);
+                canvas.drawText(labelStr, right - parent.getPaddingRight() + DisplayUtil.dip2px(2),
+                        gridLine + DisplayUtil.dip2px(3), mTextPaint);
             }
-            String labelStr = Integer.toString(label);
-            canvas.drawText(labelStr, right - parent.getPaddingRight() + DisplayUtil.dip2px(2),
-                    gridLine + DisplayUtil.dip2px(3), mTextPaint);
         }
     }
 
@@ -435,11 +446,9 @@ public class BarChartItemDecoration extends RecyclerView.ItemDecoration {
         outRect.set(0, 0, 0, 0);
     }
 
-
     public void setEnableCharValueDisplay(boolean enableCharValueDisplay) {
         this.enableCharValueDisplay = enableCharValueDisplay;
     }
-
 
     public void setEnableYAxisZero(boolean enableYAxisZero) {
         this.enableYAxisZero = enableYAxisZero;
@@ -449,4 +458,23 @@ public class BarChartItemDecoration extends RecyclerView.ItemDecoration {
     public void setEnableYAxisGridLine(boolean enableYAxisGridLine) {
         this.enableYAxisGridLine = enableYAxisGridLine;
     }
+
+
+    public void setEnableRightYAxisLabel(boolean enableRightYAxisLabel) {
+        this.enableRightYAxisLabel = enableRightYAxisLabel;
+    }
+
+    public void setEnableLeftYAxisLabel(boolean enableLeftYAxisLabel) {
+        this.enableLeftYAxisLabel = enableLeftYAxisLabel;
+    }
+
+    public void setEnableBarBorder(boolean enableBarBorder) {
+        this.enableBarBorder = enableBarBorder;
+    }
+
+    public void setBarBorderWidth(float mBarBorderWidth) {
+        this.mBarBorderWidth = mBarBorderWidth;
+        enableBarBorder = true;
+    }
+
 }

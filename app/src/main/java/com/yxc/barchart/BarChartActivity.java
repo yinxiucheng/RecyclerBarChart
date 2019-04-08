@@ -44,6 +44,10 @@ public class BarChartActivity extends AppCompatActivity {
 //        mItemDecoration.setEnableCharValueDisplay(false);
 //        mItemDecoration.setEnableYAxisGridLine(false);
 //        mItemDecoration.setEnableYAxisZero(false);
+//        mItemDecoration.setBarBorderWidth(10);
+//        mItemDecoration.setEnableBarBorder(false);
+        mItemDecoration.setEnableLeftYAxisLabel(false);
+//        mItemDecoration.setEnableRightYAxisLabel(false);
         recyclerView.addItemDecoration(mItemDecoration);
         mBarChartAdapter = new BarChartAdapter(this, mEntries, recyclerView, mXAxis);
         recyclerView.setAdapter(mBarChartAdapter);
