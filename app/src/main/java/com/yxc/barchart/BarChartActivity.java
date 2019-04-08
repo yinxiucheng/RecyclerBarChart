@@ -36,12 +36,12 @@ public class BarChartActivity extends AppCompatActivity {
         RecyclerView.LayoutManager layoutManager = new LinearLayoutManager(this);
         ((LinearLayoutManager) layoutManager).setOrientation(LinearLayoutManager.HORIZONTAL);
 
-        displayNumber = 33;
+        displayNumber = 8;
         mYAxis = new YAxis();
         mXAxis = new XAxis(this, displayNumber);
 
         mItemDecoration = new BarChartItemDecoration(this, BarChartItemDecoration.HORIZONTAL_LIST, mYAxis, mXAxis);
-        mItemDecoration.setEnableCharValueDisplay(false);
+//        mItemDecoration.setEnableCharValueDisplay(false);
 //        mItemDecoration.setEnableYAxisGridLine(false);
 //        mItemDecoration.setEnableYAxisZero(false);
         recyclerView.addItemDecoration(mItemDecoration);

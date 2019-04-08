@@ -122,7 +122,7 @@ public class BarChartItemDecoration extends RecyclerView.ItemDecoration {
     }
 
 
-    private void drawBarBorder(@NonNull Canvas canvas, @NonNull RecyclerView parent){
+    private void drawBarBorder(@NonNull Canvas canvas, @NonNull RecyclerView parent) {
         RectF rectF = new RectF();
         int start = parent.getPaddingLeft();
         int top = parent.getPaddingTop();
@@ -153,36 +153,55 @@ public class BarChartItemDecoration extends RecyclerView.ItemDecoration {
             int valueInt = (int) barEntry.value;
             ChartRectF rectF = new ChartRectF();
             int width = child.getWidth();
-            int start = child.getLeft() + width / 6;
-            int end = start + width * 2 / 3;
+            int barChartWidth = width * 2 / 3;//柱子的宽度
+            int start = child.getLeft() + barChartWidth/4;
+            int end = start + barChartWidth;
+            Log.d("BarChart", "i =" + i + " start: " + start + " end:" + end);
             int height = (int) (barEntry.value / mYAxis.maxLabel * realYAxisLabelHeight);
             int top = bottom - height;
 
             mTextPaint.setTextSize(DisplayUtil.sp2px(mContext, 10));
             String valueStr = Integer.toString(valueInt);
 
-            float txtDistance = width - mTextPaint.measureText(valueStr);
-            float txtX = child.getLeft();
+            float txtX = getTxtX(child, width, valueStr);
             float txtY = top - DisplayUtil.dip2px(3);
-            if (txtDistance > 0) {
-                txtX = txtX + txtDistance / 2;
-            }
             int txtStart = 0;
             int txtEnd = valueStr.length();
 
-            if (end < parentRight) {
+            if (end <= parentLeft) {//continue 会闪，原因是end == parentLeft 没有过滤掉，显示出来柱状图了。
+                continue;
+            } else if (start < parentLeft && end > parentLeft) {//左边部分滑入的时候，处理柱状图、文字的显示
+                start = parentLeft;
+                rectF.set(start, top, end, bottom);
+                canvas.drawRect(rectF, mBarChartPaint);
+                int displaySize = valueStr.length() * (end - parentLeft) / barChartWidth;//比如要显示  "123456"的末两位，需要从 length - displaySize的位置开始显示。
+                txtStart = valueStr.length() - displaySize;
+                txtX = Math.max(txtX, parentLeft);
+                displayCharValue(enableCharValueDisplay, canvas, valueStr, txtStart, txtEnd, txtX, txtY);
+            } else if (end < parentRight) {
                 rectF.set(start, top, end, bottom);
                 canvas.drawRect(rectF, mBarChartPaint);
                 displayCharValue(enableCharValueDisplay, canvas, valueStr, txtStart, txtEnd, txtX, txtY);
-            } else if (start < parentRight) {//部分滑出的时候，处理柱状图，文字的显示
+            } else if (start < parentRight) {//右边部分滑出的时候，处理柱状图，文字的显示
                 int distance = (parentRight - start);
-                int rightInner = start + distance;
-                rectF.set(start, top, rightInner, bottom);
+                end = start + distance;
+                rectF.set(start, top, end, bottom);
                 canvas.drawRect(rectF, mBarChartPaint);
-                txtEnd = valueStr.length() * (rightInner - child.getLeft()) / width;
+                txtX = getTxtX(child, width, valueStr);
+                txtEnd = valueStr.length() * (end - start) / barChartWidth;
                 displayCharValue(enableCharValueDisplay, canvas, valueStr, txtStart, txtEnd, txtX, txtY);
             }
         }
+    }
+
+    //获取文字显示的起始 X 坐标。
+    private float getTxtX(View child, int width, String valueStr) {
+        float txtDistance = width - mTextPaint.measureText(valueStr);
+        float txtX = child.getLeft();
+        if (txtDistance > 0) {
+            txtX = txtX + txtDistance / 2;
+        }
+        return txtX;
     }
 
     //控制char上的value是否显示
@@ -191,7 +210,6 @@ public class BarChartItemDecoration extends RecyclerView.ItemDecoration {
             canvas.drawText(valueStr, start, end, x, y, mTextPaint);
         }
     }
-
 
 
     private void initPaint() {
@@ -260,12 +278,12 @@ public class BarChartItemDecoration extends RecyclerView.ItemDecoration {
             path.lineTo(right, gridLine);
 
             boolean enable = false;
-            if (i == lineNums && enableYAxisZero){
+            if (i == lineNums && enableYAxisZero) {
                 enable = true;
-            }else {
+            } else {
                 enable = enableYAxisGridLine;//允许画 Y轴刻度
             }
-            if (enable){
+            if (enable) {
                 canvas.drawPath(path, mLinePaint);
             }
         }
@@ -297,7 +315,7 @@ public class BarChartItemDecoration extends RecyclerView.ItemDecoration {
                 label = label - labelDistance;
             }
             String labelStr = Integer.toString(label);
-            canvas.drawText(labelStr, textWidth - mTextPaint.measureText(labelStr),
+            canvas.drawText(labelStr, textWidth - mTextPaint.measureText(labelStr) - DisplayUtil.dip2px(2),
                     gridLine + DisplayUtil.dip2px(3), mTextPaint);
         }
     }
@@ -333,12 +351,12 @@ public class BarChartItemDecoration extends RecyclerView.ItemDecoration {
 
     //绘制网格 纵轴线
     private void drawVerticalLine(Canvas canvas, RecyclerView parent, XAxis xAxis) {
-        int top = parent.getPaddingTop();
-        int bottom = parent.getHeight() - parent.getPaddingBottom();
-        int left = parent.getPaddingLeft();
+        int parentTop = parent.getPaddingTop();
+        int parentBottom = parent.getHeight() - parent.getPaddingBottom();
+        int parentLeft = parent.getPaddingLeft();
         final int childCount = parent.getChildCount();
         mTextPaint.setTextSize(xAxis.txtSize);
-        int right = parent.getWidth() - parent.getPaddingRight();
+        int parentRight = parent.getWidth() - parent.getPaddingRight();
 
         for (int i = 0; i < childCount; i++) {
             final View child = parent.getChildAt(i);
@@ -347,8 +365,8 @@ public class BarChartItemDecoration extends RecyclerView.ItemDecoration {
             final RecyclerView.LayoutParams params =
                     (RecyclerView.LayoutParams) child.getLayoutParams();
             final int x = child.getRight();
-            if (x > right) {//超出的时候就不要画了
-                return;
+            if (x > parentRight || x < parentLeft) {//超出的时候就不要画了
+                continue;
             }
             BarEntry barEntry = mEntries.get(adapterPosition);
             LocalDate localDate = barEntry.localDate;
@@ -357,18 +375,18 @@ public class BarChartItemDecoration extends RecyclerView.ItemDecoration {
             if (type == BarEntry.TYPE_FIRST || type == BarEntry.TYPE_SPECIAL) {
                 if (type == BarEntry.TYPE_SPECIAL) {
                     canvas.drawText(dateStr, x - DisplayUtil.dip2px(3) - mTextPaint.measureText(dateStr),
-                            bottom - DisplayUtil.dip2px(1), mTextPaint);
+                            parentBottom - DisplayUtil.dip2px(1), mTextPaint);
                 }
                 boolean isNextSecondType = isNextEntrySecondType(adapterPosition);
                 mLinePaint.setColor(xAxis.barEntryTypeFirstColor);
 
                 Path path = new Path();
                 if (isNextSecondType) {
-                    path.moveTo(x, bottom - contentPaddingBottom);
+                    path.moveTo(x, parentBottom - contentPaddingBottom);
                 } else {
-                    path.moveTo(x, bottom);
+                    path.moveTo(x, parentBottom);
                 }
-                path.lineTo(x, top);
+                path.lineTo(x, parentTop);
                 canvas.drawPath(path, mLinePaint);
             } else if (type == BarEntry.TYPE_SECOND) {
                 //拿到child 的布局信息
@@ -376,18 +394,18 @@ public class BarChartItemDecoration extends RecyclerView.ItemDecoration {
                 mDashPaint.setPathEffect(pathEffect);
                 mDashPaint.setColor(xAxis.barEntryTypeSecondColor);
                 Path path = new Path();
-                path.moveTo(x, bottom - DisplayUtil.dip2px(1));
-                path.lineTo(x, top);
+                path.moveTo(x, parentBottom - DisplayUtil.dip2px(1));
+                path.lineTo(x, parentTop);
                 canvas.drawPath(path, mDashPaint);
-                canvas.drawText(dateStr, x - DisplayUtil.dip2px(3) - mTextPaint.measureText(dateStr), bottom - DisplayUtil.dip2px(1), mTextPaint);
+                canvas.drawText(dateStr, x - DisplayUtil.dip2px(3) - mTextPaint.measureText(dateStr), parentBottom - DisplayUtil.dip2px(1), mTextPaint);
             } else if (type == BarEntry.TYPE_THIRD) {
                 //拿到child 的布局信息
                 PathEffect pathEffect = new DashPathEffect(new float[]{5, 5, 5, 5}, 1);
                 mDashPaint.setPathEffect(pathEffect);
                 mDashPaint.setColor(xAxis.barEntryTypeThirdColor);
                 Path path = new Path();
-                path.moveTo(x, bottom - contentPaddingBottom);
-                path.lineTo(x, top);
+                path.moveTo(x, parentBottom - contentPaddingBottom);
+                path.lineTo(x, parentTop);
                 canvas.drawPath(path, mDashPaint);
             }
         }
