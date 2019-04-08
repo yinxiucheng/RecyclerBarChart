@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/fl_chart"
+    android:layout_width="wrap_content"
+    android:layout_height="300dp">
+
+    <!--<TextView-->
+        <!--android:id="@+id/barchartitem"-->
+        <!--android:layout_width="wrap_content"-->
+        <!--android:layout_height="wrap_content"-->
+        <!--android:layout_alignParentBottom="true"-->
+        <!--android:layout_centerHorizontal="true"-->
+        <!--android:layout_marginBottom="18dp"/>-->
+
+    <!--<TextView-->
+        <!--android:id="@+id/bar_value"-->
+        <!--android:layout_width="wrap_content"-->
+        <!--android:layout_height="wrap_content"-->
+        <!--android:layout_above="@id/barchartitem"-->
+        <!--android:layout_centerHorizontal="true"-->
+        <!--tools:text=""/>-->
+
+
+    <!--<com.xiaomi.wearable.widget.weightchart.CellChart-->
+        <!--android:id="@+id/cell_chart"-->
+        <!--android:layout_width="match_parent"-->
+        <!--android:layout_height="match_parent"-->
+        <!--app:cell_bg_color="#140EC1D7"-->
+        <!--app:cell_focus_circle_radius="8dp"-->
+        <!--app:cell_focus_line_color="#0EC1D7"-->
+        <!--app:cell_focus_line_width="0.5dp"-->
+        <!--app:cell_stroke_color="#0EC1D7"-->
+        <!--app:cell_stroke_line_width="2dp"-->
+        <!--tools:cell_current_value="70"-->
+        <!--tools:cell_last_value="40"-->
+        <!--tools:cell_next_value="200" />-->
+
+</RelativeLayout>

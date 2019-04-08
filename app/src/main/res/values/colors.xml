@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <color name="colorPrimary">#3F51B5</color>
+    <color name="colorPrimaryDark">#303F9F</color>
+    <color name="colorAccent">#FF4081</color>
+
+
+    <!-- common black -->
+    <color name="black">#000000</color>
+    <color name="black_80_transparent">#CD000000</color>
+    <color name="black_70_transparent">#B3000000</color>
+    <color name="black_60_transparent">#A0000000</color>
+    <color name="black_50_transparent">#80000000</color>
+    <color name="black_40_transparent">#66000000</color>
+    <color name="black_30_transparent">#60000000</color>
+    <color name="black_20_transparent">#30000000</color>
+    <color name="black_15_transparent">#27000000</color>
+    <color name="black_10_transparent">#1A000000</color>
+    <color name="black_07_transparent">#10000000</color>
+    <color name="black_03_transparent">#08000000</color>
+    <color name="black_00_transparent">#00000000</color>
+
+    <color name="pink">#FFF76E6E</color>
+
+</resources>
