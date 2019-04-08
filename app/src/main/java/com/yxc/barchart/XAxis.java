@@ -22,7 +22,7 @@ public class XAxis {
         this.mContext = context;
         this.displayNumbers = displayNumbers;
         txtColor = Color.BLACK;
-        txtSize = DisplayUtil.dip2px(14);
+        txtSize = DisplayUtil.dip2px(12);
 
         barEntryTypeFirstColor = ColorUtil.getResourcesColor(mContext, R.color.black);
         barEntryTypeSecondColor = ColorUtil.getResourcesColor(mContext, R.color.black_80_transparent);

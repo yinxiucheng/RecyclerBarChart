@@ -12,6 +12,7 @@ import android.graphics.RectF;
 import android.support.annotation.NonNull;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.text.TextUtils;
 import android.util.Log;
 import android.view.View;
 
@@ -60,7 +61,6 @@ public class BarChartItemDecoration extends RecyclerView.ItemDecoration {
     public static final int HORIZONTAL_LIST = LinearLayoutManager.HORIZONTAL;
     public static final int VERTICAL_LIST = LinearLayoutManager.VERTICAL;
 
-
     public BarChartItemDecoration(Context context, int orientation, YAxis yAxis, XAxis xAxis) {
         this.mContext = context;
         this.mOrientation = orientation;
@@ -90,18 +90,19 @@ public class BarChartItemDecoration extends RecyclerView.ItemDecoration {
     }
 
     @Override
-    public void onDrawOver(Canvas c, RecyclerView parent, RecyclerView.State state) {
-        super.onDraw(c, parent, state);
+    public void onDrawOver(Canvas canvas, RecyclerView parent, RecyclerView.State state) {
+        super.onDraw(canvas, parent, state);
         mAdapter = (BarChartAdapter) parent.getAdapter();
         mEntries = mAdapter.getEntries();
         if (mOrientation == HORIZONTAL_LIST) {
             //横向 list 画竖线
-            drawLeftYAxisLabel(c, parent, mYAxis);//画左边的刻度，会设定RecyclerView的 leftPadding
-            drawRightYAxisLabel(c, parent, mYAxis);//画右边的刻度，会设定RecyclerView的 rightPadding
-            drawVerticalLine(c, parent, mXAxis);
-            drawGridLine(c, parent, mYAxis);
-            drawBarChart(c, parent, state);
-            drawBarBorder(c, parent);
+            drawLeftYAxisLabel(canvas, parent, mYAxis);//画左边y坐标的刻度，会设定RecyclerView的 leftPadding
+            drawRightYAxisLabel(canvas, parent, mYAxis);//画右边y坐标的刻度，会设定RecyclerView的 rightPadding
+            drawVerticalLine(canvas, parent, mXAxis);//画竖的网格线
+            drawHorizontalLine(canvas, parent, mYAxis);//画横的网格线
+            drawXAxis(canvas, parent, mXAxis);//画x轴坐标的刻度
+            drawBarChart(canvas, parent, state);
+            drawBarBorder(canvas, parent);
         } else if (mOrientation == VERTICAL_LIST) {
             //竖向list 画横线
 //            drawHorizontalLine(c, parent, mXAxis);
@@ -117,7 +118,7 @@ public class BarChartItemDecoration extends RecyclerView.ItemDecoration {
 //        if (mOrientation == HORIZONTAL_LIST) {
 //            //横向 list 画竖线
 //            drawVerticalLine(c, parent, mXAxis);
-//            drawGridLine(c, parent, mYAxis);
+//            drawHorizontalLine(c, parent, mYAxis);
 //            drawRightYAxisLabel(c, parent, mYAxis);
 //            drawBarChart(c, parent, state);
 //            drawBarBorder(c, parent);
@@ -127,6 +128,50 @@ public class BarChartItemDecoration extends RecyclerView.ItemDecoration {
 //        }
     }
 
+    private void initPaint() {
+        mLinePaint = new Paint();
+        mLinePaint.reset();
+        mLinePaint.setAntiAlias(true);
+        mLinePaint.setStyle(Paint.Style.STROKE);
+        mLinePaint.setStrokeWidth(1);
+        mLinePaint.setColor(Color.GRAY);
+    }
+
+    private void initDathPaint() {
+        mDashPaint = new Paint();
+        mDashPaint.reset();
+        mDashPaint.setAntiAlias(true);
+        mDashPaint.setStyle(Paint.Style.STROKE);
+        mDashPaint.setStrokeWidth(1);
+        mDashPaint.setColor(Color.GRAY);
+    }
+
+    private void initTextPaint() {
+        mTextPaint = new Paint();
+        mTextPaint.reset();
+        mTextPaint.setAntiAlias(true);
+        mTextPaint.setStyle(Paint.Style.FILL);
+        mTextPaint.setStrokeWidth(1);
+        mTextPaint.setColor(Color.GRAY);
+        mTextPaint.setTextSize(mXAxis.txtSize);
+    }
+
+    private void initBarChartPaint() {
+        mBarChartPaint = new Paint();
+        mBarChartPaint.reset();
+        mBarChartPaint.setAntiAlias(true);
+        mBarChartPaint.setStyle(Paint.Style.FILL);
+        mBarChartPaint.setColor(mBarChartColor);
+    }
+
+    private void initBarBorderPaint() {
+        mBarBorderPaint = new Paint();
+        mBarBorderPaint.reset();
+        mBarBorderPaint.setAntiAlias(true);
+        mBarBorderPaint.setStyle(Paint.Style.STROKE);
+        mBarBorderPaint.setStrokeWidth(mBarBorderWidth);
+        mBarBorderPaint.setColor(mBarBorderColor);
+    }
 
     private void drawBarBorder(@NonNull Canvas canvas, @NonNull RecyclerView parent) {
         if (enableBarBorder) {
@@ -219,54 +264,8 @@ public class BarChartItemDecoration extends RecyclerView.ItemDecoration {
         }
     }
 
-
-    private void initPaint() {
-        mLinePaint = new Paint();
-        mLinePaint.reset();
-        mLinePaint.setAntiAlias(true);
-        mLinePaint.setStyle(Paint.Style.STROKE);
-        mLinePaint.setStrokeWidth(1);
-        mLinePaint.setColor(Color.GRAY);
-    }
-
-    private void initDathPaint() {
-        mDashPaint = new Paint();
-        mDashPaint.reset();
-        mDashPaint.setAntiAlias(true);
-        mDashPaint.setStyle(Paint.Style.STROKE);
-        mDashPaint.setStrokeWidth(1);
-        mDashPaint.setColor(Color.GRAY);
-    }
-
-    private void initTextPaint() {
-        mTextPaint = new Paint();
-        mTextPaint.reset();
-        mTextPaint.setAntiAlias(true);
-        mTextPaint.setStyle(Paint.Style.FILL);
-        mTextPaint.setStrokeWidth(1);
-        mTextPaint.setColor(Color.GRAY);
-        mTextPaint.setTextSize(mXAxis.txtSize);
-    }
-
-    private void initBarChartPaint() {
-        mBarChartPaint = new Paint();
-        mBarChartPaint.reset();
-        mBarChartPaint.setAntiAlias(true);
-        mBarChartPaint.setStyle(Paint.Style.FILL);
-        mBarChartPaint.setColor(mBarChartColor);
-    }
-
-    private void initBarBorderPaint() {
-        mBarBorderPaint = new Paint();
-        mBarBorderPaint.reset();
-        mBarBorderPaint.setAntiAlias(true);
-        mBarBorderPaint.setStyle(Paint.Style.STROKE);
-        mBarBorderPaint.setStrokeWidth(mBarBorderWidth);
-        mBarBorderPaint.setColor(mBarBorderColor);
-    }
-
-    //绘制 Y轴刻度线
-    private void drawGridLine(Canvas canvas, RecyclerView parent, YAxis yAxis) {
+    //绘制 Y轴刻度线 横的网格线
+    private void drawHorizontalLine(Canvas canvas, RecyclerView parent, YAxis yAxis) {
         int left = parent.getPaddingLeft();
         int right = parent.getWidth() - parent.getPaddingRight();
         mLinePaint.setColor(ColorUtil.getResourcesColor(mContext, R.color.black_20_transparent));
@@ -296,11 +295,9 @@ public class BarChartItemDecoration extends RecyclerView.ItemDecoration {
         }
     }
 
-
     //绘制左边的刻度
     private void drawLeftYAxisLabel(Canvas canvas, RecyclerView parent, YAxis yAxis) {
-        if (enableLeftYAxisLabel){
-            int right = parent.getWidth();
+        if (enableLeftYAxisLabel) {
             int top = parent.getPaddingTop();
             int bottom = parent.getHeight() - parent.getPaddingBottom();
             int distance = bottom - contentPaddingBottom - (top + maxYAxisPaddingTop);
@@ -331,7 +328,7 @@ public class BarChartItemDecoration extends RecyclerView.ItemDecoration {
 
     //绘制右边的刻度
     private void drawRightYAxisLabel(Canvas canvas, RecyclerView parent, YAxis yAxis) {
-        if (enableRightYAxisLabel){
+        if (enableRightYAxisLabel) {
             int right = parent.getWidth();
             int top = parent.getPaddingTop();
             int bottom = parent.getHeight() - parent.getPaddingBottom();
@@ -368,27 +365,17 @@ public class BarChartItemDecoration extends RecyclerView.ItemDecoration {
         final int childCount = parent.getChildCount();
         mTextPaint.setTextSize(xAxis.txtSize);
         int parentRight = parent.getWidth() - parent.getPaddingRight();
-
         for (int i = 0; i < childCount; i++) {
             final View child = parent.getChildAt(i);
             int adapterPosition = parent.getChildAdapterPosition(child);
             int type = parent.getAdapter().getItemViewType(adapterPosition);
-            final RecyclerView.LayoutParams params =
-                    (RecyclerView.LayoutParams) child.getLayoutParams();
             final int x = child.getRight();
             if (x > parentRight || x < parentLeft) {//超出的时候就不要画了
                 continue;
             }
-            BarEntry barEntry = mEntries.get(adapterPosition);
-            LocalDate localDate = barEntry.localDate;
-            String dateStr = localDate.getDayOfMonth() + "日";
 
             if (type == BarEntry.TYPE_FIRST || type == BarEntry.TYPE_SPECIAL) {
-                if (type == BarEntry.TYPE_SPECIAL) {
-                    canvas.drawText(dateStr, x - DisplayUtil.dip2px(3) - mTextPaint.measureText(dateStr),
-                            parentBottom - DisplayUtil.dip2px(1), mTextPaint);
-                }
-                boolean isNextSecondType = isNextEntrySecondType(adapterPosition);
+                boolean isNextSecondType = isNearEntrySecondType(child.getWidth(), adapterPosition);
                 mLinePaint.setColor(xAxis.barEntryTypeFirstColor);
 
                 Path path = new Path();
@@ -408,7 +395,6 @@ public class BarChartItemDecoration extends RecyclerView.ItemDecoration {
                 path.moveTo(x, parentBottom - DisplayUtil.dip2px(1));
                 path.lineTo(x, parentTop);
                 canvas.drawPath(path, mDashPaint);
-                canvas.drawText(dateStr, x - DisplayUtil.dip2px(3) - mTextPaint.measureText(dateStr), parentBottom - DisplayUtil.dip2px(1), mTextPaint);
             } else if (type == BarEntry.TYPE_THIRD) {
                 //拿到child 的布局信息
                 PathEffect pathEffect = new DashPathEffect(new float[]{5, 5, 5, 5}, 1);
@@ -422,21 +408,62 @@ public class BarChartItemDecoration extends RecyclerView.ItemDecoration {
         }
     }
 
-    //画月线的时候，下一组、下下组需要写日期。
-    private boolean isNextEntrySecondType(int adapterPosition) {
-        BarEntry barEntryNext;
+    //绘制X坐标
+    private void drawXAxis(Canvas canvas, RecyclerView parent, XAxis xAxis) {
+        int parentBottom = parent.getHeight() - parent.getPaddingBottom();
+        int parentLeft = parent.getPaddingLeft();
+        final int childCount = parent.getChildCount();
+        mTextPaint.setTextSize(xAxis.txtSize);
+        int parentRight = parent.getWidth() - parent.getPaddingRight();
+        for (int i = 0; i < childCount; i++) {
+            final View child = parent.getChildAt(i);
+            int adapterPosition = parent.getChildAdapterPosition(child);
+            int type = parent.getAdapter().getItemViewType(adapterPosition);
+            final int x = child.getRight();
+            if (x > parentRight || x < parentLeft) {//超出的时候就不要画了
+                continue;
+            }
+            if (type == BarEntry.TYPE_SECOND || type == BarEntry.TYPE_SPECIAL || type == BarEntry.TYPE_FIRST) {
+                BarEntry barEntry = mEntries.get(adapterPosition);
+                String dateStr = barEntry.xAxisLabel;
+                if (!TextUtils.isEmpty(dateStr)) {
+
+                    int childWidth = child.getWidth();
+                    float txtWidth = mTextPaint.measureText(dateStr);
+                    float txtX = 0;
+                    float txtY = parentBottom - DisplayUtil.dip2px(1);
+                    if (childWidth > txtWidth) {//柱状图的宽度比较大的时候，文字居中
+                        float distance = childWidth - txtWidth;
+                        txtX = child.getLeft() + distance/2;
+                    } else {
+                        txtX = x - DisplayUtil.dip2px(3) - mTextPaint.measureText(dateStr);
+                    }
+                    canvas.drawText(dateStr, txtX, txtY, mTextPaint);
+                }
+            }
+        }
+    }
+
+    //画月线的时候，当邻近的靠左的存在需要写 X轴坐标的BarEntry，返回true, 柱体宽度大于文本宽度时除外。
+    private boolean isNearEntrySecondType(int barWidth, int adapterPosition) {
+        BarEntry barEntryNext = null;
         boolean isNextSecondType = false;
         if (adapterPosition + 1 < mEntries.size()) {
             barEntryNext = mEntries.get(adapterPosition + 1);
             if (barEntryNext.type == BarEntry.TYPE_SECOND) {
                 isNextSecondType = true;
             }
-        }
-        if (adapterPosition + 2 < mEntries.size()) {
+        }else if (adapterPosition + 2 < mEntries.size()) {
             barEntryNext = mEntries.get(adapterPosition + 2);
             if (barEntryNext.type == BarEntry.TYPE_SECOND) {
                 isNextSecondType = true;
             }
+        }
+
+        mTextPaint.setTextSize(mXAxis.txtSize);
+        if (null != barEntryNext && barWidth > mTextPaint.measureText(barEntryNext.xAxisLabel)){
+            //对于宽的柱状体，不缩短临近TYPE_SECOND的月线
+            isNextSecondType = false;
         }
         return isNextSecondType;
     }

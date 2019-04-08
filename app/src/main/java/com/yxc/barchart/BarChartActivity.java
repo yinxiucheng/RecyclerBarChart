@@ -13,6 +13,7 @@ import org.joda.time.LocalDate;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.concurrent.TimeUnit;
 
 public class BarChartActivity extends AppCompatActivity {
 
@@ -53,7 +54,7 @@ public class BarChartActivity extends AppCompatActivity {
         recyclerView.setAdapter(mBarChartAdapter);
         recyclerView.setLayoutManager(layoutManager);
 
-        createEntries();
+        createWeekEntries();
         recyclerView.scrollToPosition(mEntries.size() - 1);
 
         int lastVisiblePosition = mEntries.size() - 1;
@@ -132,7 +133,8 @@ public class BarChartActivity extends AppCompatActivity {
         return max;
     }
 
-    private void createEntries() {
+    // 创建 月视图的数据
+    private void createMonthEntries() {
         long timestamp = TimeUtil.changZeroOfTheDay(LocalDate.now());
         List<BarEntry> entries = new ArrayList<>();
         for (int i = 0; i < 600; i++) {
@@ -140,7 +142,96 @@ public class BarChartActivity extends AppCompatActivity {
                 timestamp = timestamp - TimeUtil.TIME_DAY;
             }
             float mult = 10;
+            float value = 0;
+            if (i > 500) {
+                value = (float) (Math.random() * 30000) + mult;
+            } else if (i > 400) {
+                value = (float) (Math.random() * 3000) + mult;
+            } else if (i > 300) {
+                value = (float) (Math.random() * 20000) + mult;
+            } else if (i > 200) {
+                value = (float) (Math.random() * 5000) + mult;
+            } else if (i > 100) {
+                value = (float) (Math.random() * 300) + mult;
+            } else {
+                value = (float) (Math.random() * 6000) + mult;
+            }
+            value = Math.round(value);
+            int type = BarEntry.TYPE_THIRD;
+            String xAxisLabel = "";
+            LocalDate localDate = TimeUtil.timestampToLocalDate(timestamp);
+            boolean isLastDayOfMonth = TimeUtil.isLastDayOfMonth(localDate);
+            if (isLastDayOfMonth && i % 7 == 0) {
+                type = BarEntry.TYPE_SPECIAL;
+                xAxisLabel = localDate.getDayOfMonth() + "日";
+            } else if (isLastDayOfMonth) {
+                type = BarEntry.TYPE_FIRST;
+            } else if (i % 7 == 0) {
+                type = BarEntry.TYPE_SECOND;
+                xAxisLabel = localDate.getDayOfMonth() + "日";
+            }
+            BarEntry barEntry = new BarEntry(value, timestamp, type);
+            barEntry.localDate = localDate;
+            barEntry.xAxisLabel = xAxisLabel;
+            entries.add(barEntry);
+        }
+        Collections.sort(entries);
+        mEntries.addAll(0, entries);
+        mBarChartAdapter.notifyDataSetChanged();
+    }
 
+
+    //创建Week视图的数据
+    private void createWeekEntries() {
+        long timestamp = TimeUtil.changZeroOfTheDay(LocalDate.now());
+        List<BarEntry> entries = new ArrayList<>();
+        for (int i = 0; i < 600; i++) {
+            if (i > 0) {
+                timestamp = timestamp - TimeUtil.TIME_DAY;
+            }
+            float mult = 10;
+            float value = 0;
+            if (i > 500) {
+                value = (float) (Math.random() * 30000) + mult;
+            } else if (i > 400) {
+                value = (float) (Math.random() * 3000) + mult;
+            } else if (i > 300) {
+                value = (float) (Math.random() * 20000) + mult;
+            } else if (i > 200) {
+                value = (float) (Math.random() * 5000) + mult;
+            } else if (i > 100) {
+                value = (float) (Math.random() * 300) + mult;
+            } else {
+                value = (float) (Math.random() * 6000) + mult;
+            }
+            value = Math.round(value);
+            int type = BarEntry.TYPE_SECOND;
+            LocalDate localDate = TimeUtil.timestampToLocalDate(timestamp);
+            boolean isLastDayOfMonth = TimeUtil.isLastDayOfMonth(localDate);
+            if (isLastDayOfMonth) {
+                type = BarEntry.TYPE_FIRST;
+            }
+            String xAxis = TimeUtil.getWeekStr(localDate.getDayOfWeek());
+            BarEntry barEntry = new BarEntry(value, timestamp, type);
+            barEntry.localDate = localDate;
+            barEntry.xAxisLabel = xAxis;
+            entries.add(barEntry);
+        }
+        Collections.sort(entries);
+        mEntries.addAll(0, entries);
+        mBarChartAdapter.notifyDataSetChanged();
+    }
+
+
+    //创建 Day视图的数据
+    private void createDayEntries() {
+        long timestamp = TimeUtil.changZeroOfTheDay(LocalDate.now());
+        List<BarEntry> entries = new ArrayList<>();
+        for (int i = 0; i < 600; i++) {
+            if (i > 0) {
+                timestamp = timestamp - TimeUtil.TIME_DAY;
+            }
+            float mult = 10;
             float value = 0;
             if (i > 500) {
                 value = (float) (Math.random() * 30000) + mult;
@@ -158,7 +249,7 @@ public class BarChartActivity extends AppCompatActivity {
             value = Math.round(value);
             int type = BarEntry.TYPE_THIRD;
             LocalDate localDate = TimeUtil.timestampToLocalDate(timestamp);
-            boolean isLastDayofMonth = TimeUtil.isLastDayofMonth(localDate);
+            boolean isLastDayofMonth = TimeUtil.isLastDayOfMonth(localDate);
 
             if (isLastDayofMonth && (i + 1) % 7 == 0) {
                 type = BarEntry.TYPE_SPECIAL;

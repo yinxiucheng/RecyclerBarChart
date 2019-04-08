@@ -23,6 +23,8 @@ public class BarEntry implements Comparable<BarEntry>{
     int type;
     public LocalDate localDate;
 
+    public String xAxisLabel = "";
+
     public float currentHeight = 0f;
 
     public BarEntry(){
