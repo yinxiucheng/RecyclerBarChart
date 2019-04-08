@@ -20,19 +20,15 @@ public class BarChartActivity extends AppCompatActivity {
     BarChartAdapter mBarChartAdapter;
     List<BarEntry> mEntries;
     List<BarEntry> mVisibleEntries;
-
     BarChartItemDecoration mItemDecoration;
-
     private int displayNumber;
     YAxis mYAxis;
+    XAxis mXAxis;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.barchart_main);
-
-//        Toolbar toolbar = findViewById(R.id.toolbar);
-//        setSupportActionBar(toolbar);
 
         recyclerView = findViewById(R.id.recycler);
         mEntries = new ArrayList<>();
@@ -40,28 +36,26 @@ public class BarChartActivity extends AppCompatActivity {
         RecyclerView.LayoutManager layoutManager = new LinearLayoutManager(this);
         ((LinearLayoutManager) layoutManager).setOrientation(LinearLayoutManager.HORIZONTAL);
 
+        displayNumber = 33;
         mYAxis = new YAxis();
+        mXAxis = new XAxis(this, displayNumber);
 
-        mItemDecoration = new BarChartItemDecoration(this, BarChartItemDecoration.HORIZONTAL_LIST, mYAxis);
+        mItemDecoration = new BarChartItemDecoration(this, BarChartItemDecoration.HORIZONTAL_LIST, mYAxis, mXAxis);
+        mItemDecoration.setEnableCharValueDisplay(false);
+//        mItemDecoration.setEnableYAxisGridLine(false);
+//        mItemDecoration.setEnableYAxisZero(false);
         recyclerView.addItemDecoration(mItemDecoration);
-        mBarChartAdapter = new BarChartAdapter(this, mEntries, recyclerView);
-
-        displayNumber = 8;
-
-        mBarChartAdapter.setYAxis(mYAxis);
-        mBarChartAdapter.setDisplayChartNumbers(displayNumber);
+        mBarChartAdapter = new BarChartAdapter(this, mEntries, recyclerView, mXAxis);
         recyclerView.setAdapter(mBarChartAdapter);
         recyclerView.setLayoutManager(layoutManager);
 
         createEntries();
-        recyclerView.smoothScrollToPosition(mEntries.size()/2);
         recyclerView.scrollToPosition(mEntries.size() - 1);
 
         int lastVisiblePosition = mEntries.size() - 1;
         int firstVisiblePosition = lastVisiblePosition - displayNumber;
         mVisibleEntries = mEntries.subList(firstVisiblePosition, lastVisiblePosition);
         mYAxis = YAxis.getYAxis(getTheMaxNumber(mVisibleEntries));
-        mBarChartAdapter.setYAxis(mYAxis);
         mBarChartAdapter.notifyDataSetChanged();
 
         mItemDecoration.setYAxis(mYAxis);
@@ -100,8 +94,6 @@ public class BarChartActivity extends AppCompatActivity {
                     mYAxis = YAxis.getYAxis(max);
                     mItemDecoration.setYAxis(mYAxis);
                     recyclerView.invalidate();
-                    mBarChartAdapter.setYAxis(mYAxis);
-
                     int totalItemCount = manager.getItemCount();
                     // 判断是否滚动到底部，并且是向右滚动
                     if (lastVisibleItem == (totalItemCount - 1) && isSlidingToLast) {
@@ -159,9 +151,7 @@ public class BarChartActivity extends AppCompatActivity {
             } else {
                 value = (float) (Math.random() * 6000) + mult;
             }
-
             value = Math.round(value);
-
             int type = BarEntry.TYPE_THIRD;
             LocalDate localDate = TimeUtil.timestampToLocalDate(timestamp);
             boolean isLastDayofMonth = TimeUtil.isLastDayofMonth(localDate);

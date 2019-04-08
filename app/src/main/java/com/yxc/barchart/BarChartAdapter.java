@@ -18,49 +18,31 @@ public class BarChartAdapter extends RecyclerView.Adapter<BarChartAdapter.BarCha
 
     Context mContext;
 
-    public List<BarEntry> getEntries() {
-        return mEntries;
-    }
-
-    public void setEntries(List<BarEntry> mEntries) {
-        this.mEntries = mEntries;
-    }
-
-    public int getDisplayChartNumbers() {
-        return displayChartNumbers;
-    }
-
     List<BarEntry> mEntries;
 
     RecyclerView mRecyclerView;
 
-    YAxis mYAxis;
+    XAxis mXAxis;
 
-    public int displayChartNumbers;
-
-    public BarChartAdapter(Context context, List<BarEntry> entries, RecyclerView recyclerView) {
+    public BarChartAdapter(Context context, List<BarEntry> entries, RecyclerView recyclerView, XAxis xAxis) {
         this.mContext = context;
         this.mEntries = entries;
         this.mRecyclerView = recyclerView;
+        this.mXAxis = xAxis;
     }
 
-    public BarChartAdapter(Context context, List<BarEntry> entries, int displayChartNumbers) {
-        this.mContext = context;
-        this.mEntries = entries;
-        this.displayChartNumbers = displayChartNumbers;
-    }
-
-    public void setDisplayChartNumbers(int displayChartNumbers) {
-        this.displayChartNumbers = displayChartNumbers;
+    public void setXAxis(XAxis mXAxis) {
+        this.mXAxis = mXAxis;
         notifyDataSetChanged();
     }
 
-    public YAxis getYAxis() {
-        return mYAxis;
+    public void setEntries(List<BarEntry> mEntries) {
+        this.mEntries = mEntries;
+        notifyDataSetChanged();
     }
 
-    public void setYAxis(YAxis yAxis) {
-        this.mYAxis = yAxis;
+    public List<BarEntry> getEntries() {
+        return mEntries;
     }
 
     @NonNull
@@ -74,10 +56,9 @@ public class BarChartAdapter extends RecyclerView.Adapter<BarChartAdapter.BarCha
 
     @Override
     public void onBindViewHolder(@NonNull BarChartViewHolder viewHolder, int position) {
-        //设置每个格子高度
-        Log.d("BarChart", "onBindViewHolder");
+//        Log.d("BarChart", "onBindViewHolder");
         int contentWidth = (DisplayUtil.getScreenWidth(mContext) - mRecyclerView.getPaddingRight() - mRecyclerView.getPaddingLeft());
-        setLinearLayout(viewHolder.contentView, contentWidth / displayChartNumbers);
+        setLinearLayout(viewHolder.contentView, contentWidth / mXAxis.displayNumbers);
         BarEntry barEntry = mEntries.get(position);
 
         BarEntry viewBarEntry = (BarEntry) viewHolder.contentView.getTag();
@@ -85,18 +66,7 @@ public class BarChartAdapter extends RecyclerView.Adapter<BarChartAdapter.BarCha
         viewBarEntry.type = barEntry.type;
         viewBarEntry.timestamp = barEntry.timestamp;
         viewBarEntry.localDate = barEntry.localDate;
-
-
-//        int parentHeight = mRecyclerView.getHeight() - DisplayUtil.dip2px(36);
-//
-//        ViewGroup.LayoutParams layoutParams = viewHolder.barChartItem.getLayoutParams();
-//
-//        layoutParams.height = (int) (barEntry.value / mYAxis.maxLabel * parentHeight);
-//
-//        layoutParams.width = viewHolder.barContainer.getWidth() * 2 / 3;
-//        viewHolder.barChartItem.setBackgroundResource(R.drawable.shape_data_item_barchart_ee5971);
-//
-//        viewHolder.value.setText("" + barEntry.value);
+        viewBarEntry.currentHeight = barEntry.currentHeight;
     }
 
     @Override
@@ -112,7 +82,6 @@ public class BarChartAdapter extends RecyclerView.Adapter<BarChartAdapter.BarCha
     public int getItemCount() {
         return mEntries.size();
     }
-
 
     /**
      * * 设置每个色块宽度
@@ -130,20 +99,13 @@ public class BarChartAdapter extends RecyclerView.Adapter<BarChartAdapter.BarCha
 
     class BarChartViewHolder extends RecyclerView.ViewHolder {
         View contentView;
-//        ViewGroup barContainer;
-//        TextView value;
-//        TextView barChartItem;
 
         public BarChartViewHolder(@NonNull View itemView) {
             super(itemView);
             contentView = itemView;
             BarEntry barEntry = new BarEntry();
             contentView.setTag(barEntry);
-//            barContainer = itemView.findViewById(R.id.fl_chart);
-//            barChartItem = itemView.findViewById(R.id.barchartitem);
-//            value = itemView.findViewById(R.id.bar_value);
         }
     }
-
 
 }

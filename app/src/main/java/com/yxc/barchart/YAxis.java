@@ -1,5 +1,7 @@
 package com.yxc.barchart;
 
+import android.graphics.Color;
+
 /**
  * @author yxc
  * @date 2019/4/8
@@ -14,6 +16,10 @@ public class YAxis {
 
     public int labelSize = DEFAULT_LABEL_SIZE;
 
+    public int labelTxtSize;
+
+    public int labelTxtColor;
+
     public YAxis() {
         this(DEFAULT_MAX_YAXIS_LABEL, DEFAULT_LABEL_SIZE);
     }
@@ -21,6 +27,16 @@ public class YAxis {
     public YAxis(int maxLabel, int labelSize) {
         this.maxLabel = maxLabel;
         this.labelSize = labelSize;
+        this.labelTxtSize = DisplayUtil.dip2px(11);
+        this.labelTxtColor = Color.GRAY;
+    }
+
+    public void setLabelTxtSize(int labelTxtSize) {
+        this.labelTxtSize = labelTxtSize;
+    }
+
+    public void setLabelTxtColor(int labelTxtColor) {
+        this.labelTxtColor = labelTxtColor;
     }
 
 
