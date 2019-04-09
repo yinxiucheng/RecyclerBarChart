@@ -22,7 +22,7 @@
 
     <color name="pink">#FFF76E6E</color>
 
-    <color name="tab_checked">#000000</color>
+    <color name="tab_checked">#FFF76E6E</color>
     <color name="tab_unchecked">#d5d5d5</color>
 
 </resources>

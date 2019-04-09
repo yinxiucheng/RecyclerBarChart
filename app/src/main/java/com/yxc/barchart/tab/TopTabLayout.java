@@ -22,9 +22,7 @@ import android.view.animation.OvershootInterpolator;
 import android.widget.FrameLayout;
 import android.widget.LinearLayout;
 import android.widget.TextView;
-
 import com.yxc.barchart.R;
-
 import java.util.ArrayList;
 
 public class TopTabLayout extends FrameLayout implements ValueAnimator.AnimatorUpdateListener {
@@ -139,7 +137,7 @@ public class TopTabLayout extends FrameLayout implements ValueAnimator.AnimatorU
         mIndicatorAnimDuration = ta.getInt(R.styleable.TopTabLayout_tl_indicator_anim_duration, -1);
 
         mDividerColor = ta.getColor(R.styleable.TopTabLayout_tl_divider_color, mIndicatorColor);
-        mDividerWidth = ta.getDimension(R.styleable.TopTabLayout_tl_divider_width, dp2px(0.5f));
+        mDividerWidth = ta.getDimension(R.styleable.TopTabLayout_tl_divider_width, dp2px(1f));
         mDividerPadding = ta.getDimension(R.styleable.TopTabLayout_tl_divider_padding, 0);
 
         mTextsize = ta.getDimension(R.styleable.TopTabLayout_tl_textsize, sp2px(13f));
@@ -154,7 +152,7 @@ public class TopTabLayout extends FrameLayout implements ValueAnimator.AnimatorU
 
         mBarColor = ta.getColor(R.styleable.TopTabLayout_tl_bar_color, Color.TRANSPARENT);
         mBarStrokeColor = ta.getColor(R.styleable.TopTabLayout_tl_bar_stroke_color, mIndicatorColor);
-        mBarStrokeWidth = ta.getDimension(R.styleable.TopTabLayout_tl_bar_stroke_width, dp2px(0.5f));
+        mBarStrokeWidth = ta.getDimension(R.styleable.TopTabLayout_tl_bar_stroke_width, dp2px(1f));
 
         ta.recycle();
     }
@@ -607,10 +605,6 @@ public class TopTabLayout extends FrameLayout implements ValueAnimator.AnimatorU
     // show MsgTipView
     private Paint mTextPaint = new Paint(Paint.ANTI_ALIAS_FLAG);
     private SparseArray<Boolean> mInitSetMap = new SparseArray<>();
-
-
-
-
 
     private OnTabSelectListener mListener;
 

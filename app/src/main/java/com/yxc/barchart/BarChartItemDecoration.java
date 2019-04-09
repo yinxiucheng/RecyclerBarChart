@@ -59,6 +59,7 @@ public class BarChartItemDecoration extends RecyclerView.ItemDecoration {
         this.mYAxis = yAxis;
         this.mXAxis = xAxis;
         mBarChartConfig = new BarChartConfig(context);
+        mBarChartConfig.barSpace = 0.5f;
         setOrientation(orientation);
         initPaint();
         initDathPaint();
@@ -196,8 +197,9 @@ public class BarChartItemDecoration extends RecyclerView.ItemDecoration {
             int valueInt = (int) barEntry.value;
             ChartRectF rectF = new ChartRectF();
             int width = child.getWidth();
-            int barChartWidth = width * 2 / 3;//柱子的宽度
-            int start = child.getLeft() + barChartWidth / 4;
+            int barSpaceWidth = (int) (width * mBarChartConfig.barSpace);
+            int barChartWidth = width - barSpaceWidth;//柱子的宽度
+            int start = child.getLeft() + barSpaceWidth / 2;
             int end = start + barChartWidth;
             Log.d("BarChart", "i =" + i + " start: " + start + " end:" + end);
             int height = (int) (barEntry.value / mYAxis.maxLabel * realYAxisLabelHeight);
@@ -466,7 +468,7 @@ public class BarChartItemDecoration extends RecyclerView.ItemDecoration {
                         int index = length - displayLength;
                         canvas.drawText(dateStr, index, length, parentLeft, txtY, mTextPaint);
                     } else if (txtXRight > parentRight && txtXLeft < parentRight) {//处理右边界
-                        int displayLength = (int) ((parentRight - txtXLeft) / txtWidth * length);
+                        int displayLength = (int) ((parentRight - txtXLeft + 1) / txtWidth * length);
                         int endIndex = displayLength;
                         canvas.drawText(dateStr, 0, endIndex, txtXLeft, txtY, mTextPaint);
                     }

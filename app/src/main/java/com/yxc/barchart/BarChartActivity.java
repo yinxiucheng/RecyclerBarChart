@@ -7,6 +7,7 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.view.View;
+import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.yxc.barchart.tab.OnTabSelectListener;
@@ -14,7 +15,6 @@ import com.yxc.barchart.tab.TopTabLayout;
 
 import org.joda.time.LocalDate;
 
-import java.sql.Time;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -26,10 +26,13 @@ public class BarChartActivity extends AppCompatActivity {
     public static final int VIEW_MONTH = 2;
     public static final int VIEW_YEAR = 3;
     int mType;
+
     RecyclerView recyclerView;
     TopTabLayout mTabLayout;
     TextView txtLeftLocalDate;
     TextView txtRightLocalDate;
+    ImageView imgLast;
+    ImageView imgNext;
 
     BarChartAdapter mBarChartAdapter;
     List<BarEntry> mEntries;
@@ -51,6 +54,9 @@ public class BarChartActivity extends AppCompatActivity {
 
         txtLeftLocalDate = findViewById(R.id.txt_left_local_date);
         txtRightLocalDate = findViewById(R.id.txt_right_local_date);
+        imgLast = findViewById(R.id.img_left);
+        imgNext = findViewById(R.id.img_right);
+
 
         initTableLayout();
 
@@ -108,125 +114,151 @@ public class BarChartActivity extends AppCompatActivity {
         txtRightLocalDate.setText(TimeUtil.getDateStr(rightBarEntry.timestamp));
     }
 
-    private DistanceCompare creatMonthDistanceCompare(LocalDate localDate) {
-        LocalDate nextMonthFirstDay = TimeUtil.getFirstDayOfNextMonth(localDate);
-        LocalDate lastMonthLastDay = TimeUtil.getFirstDayOfMonth(localDate).minusDays(1);
-
-        int distanceRight = TimeUtil.getIntervalDay(localDate, nextMonthFirstDay); //右边的距离
-        int distanceLeft = TimeUtil.getIntervalDay(lastMonthLastDay, localDate);
-
-        return new DistanceCompare(distanceLeft, distanceRight);
-    }
 
     //滑动监听
     private void setListener() {
+        imgNext.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                LinearLayoutManager layoutManager = (LinearLayoutManager) recyclerView.getLayoutManager();
+                int lastVisiblePosition = layoutManager.findLastCompletelyVisibleItemPosition();
+                lastVisiblePosition = lastVisiblePosition + displayNumber - 1;
+                if (lastVisiblePosition < mEntries.size()){
+                    recyclerView.scrollToPosition(lastVisiblePosition);
+                }else {
+                    recyclerView.scrollToPosition(mEntries.size() - 1);
+                }
+                //微调
+                microRelocation(recyclerView);
+            }
+        });
+
+        imgLast.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                LinearLayoutManager layoutManager = (LinearLayoutManager) recyclerView.getLayoutManager();
+                int firstCompletelyVisibleItemPosition = layoutManager.findFirstCompletelyVisibleItemPosition();
+                int lastCompletelyVisibleItemPosition = firstCompletelyVisibleItemPosition - displayNumber;
+                if (lastCompletelyVisibleItemPosition < 0 ) {
+                    recyclerView.scrollToPosition(displayNumber);
+                } else {
+                    recyclerView.scrollToPosition(lastCompletelyVisibleItemPosition);
+                }
+                //微调
+                microRelocation(recyclerView);
+            }
+        });
+
         recyclerView.addOnScrollListener(new RecyclerView.OnScrollListener() {
-
-
             @Override
             public void onScrollStateChanged(RecyclerView recyclerView, int newState) {
                 super.onScrollStateChanged(recyclerView, newState);
-                LinearLayoutManager manager = (LinearLayoutManager) recyclerView.getLayoutManager();
                 // 当不滚动时
                 if (newState == RecyclerView.SCROLL_STATE_IDLE) {
-                    //获取最后一个完全显示的ItemPosition
-                    int lastVisibleItemPosition = manager.findLastCompletelyVisibleItemPosition();
-                    int firstVisibleItemPosition = manager.findFirstCompletelyVisibleItemPosition();
-                    BarEntry barEntry = mEntries.get(lastVisibleItemPosition);
-                    DistanceCompare distanceCompare = new DistanceCompare(0, 0);
-                    if (mType == VIEW_MONTH) {
-                        distanceCompare = createMonthDistance(barEntry.localDate);
-
-                    } else if (mType == VIEW_WEEK) {
-                        distanceCompare = createWeekDistance(barEntry.localDate);
-                    } else if (mType == VIEW_DAY) {
-                        distanceCompare = createDayDistance(barEntry);
-                    } else if (mType == VIEW_YEAR){
-                        distanceCompare = createYearDistance(barEntry.localDate);
-                    }
-
-                    int endOfPosition;
-                    int transactionType = 0;
-                    if (distanceCompare.distanceLeft < distanceCompare.distanceRight) {//左间距 小于 右间距
-                        transactionType = 1;
-                        endOfPosition = lastVisibleItemPosition - distanceCompare.distanceLeft + 1;
-                        if (lastVisibleItemPosition + distanceCompare.distanceRight > mEntries.size()) {//右尽头
-                            transactionType = 0;
-                        }
-                    } else {
-                        endOfPosition = lastVisibleItemPosition + distanceCompare.distanceRight;
-                        if (lastVisibleItemPosition - displayNumber <= 0) {//左尽头
-                            transactionType = 1;
-                        }
-                    }
-                    if (transactionType == 1 && endOfPosition <= displayNumber) {//左移到头
-                        recyclerView.smoothScrollToPosition(0);
-                        lastVisibleItemPosition = displayNumber;
-                    } else if (transactionType == 1) {
-                        recyclerView.scrollToPosition(endOfPosition - displayNumber);
-                        lastVisibleItemPosition = endOfPosition;
-                    }
-                    if (transactionType == 0 && endOfPosition >= mEntries.size()) {//右边界，lastVisibleItemPosition 保持不变
-                        recyclerView.smoothScrollToPosition(mEntries.size() - 1);
-                        lastVisibleItemPosition = mEntries.size() - 1;
-                    } else if (transactionType == 0) {
-                        recyclerView.smoothScrollToPosition(endOfPosition);
-                        lastVisibleItemPosition = endOfPosition;
-                    }
-                    firstVisibleItemPosition = lastVisibleItemPosition - displayNumber;
-
-                    List<BarEntry> displayEntries;
-                    displayEntries = mEntries.subList(firstVisibleItemPosition, lastVisibleItemPosition + 1);
-                    float max = getTheMaxNumber(displayEntries);
-                    mYAxis = YAxis.getYAxis(max);
-                    mItemDecoration.setYAxis(mYAxis);
-                    recyclerView.invalidate();
-
-                    //todo 调试显示用的
-                    BarEntry leftBarEntry = displayEntries.get(0);
-                    BarEntry rightBarEntry = displayEntries.get(displayEntries.size() - 1);
-                    txtLeftLocalDate.setText(TimeUtil.getDateStr(leftBarEntry.timestamp));
-                    txtRightLocalDate.setText(TimeUtil.getDateStr(rightBarEntry.timestamp));
-
+                    microRelocation(recyclerView);
                 }
-            }
-
-            private DistanceCompare createYearDistance(LocalDate localDate) {
-                int month = localDate.getMonthOfYear();
-                return new DistanceCompare(month, 12 - month);
-            }
-
-            private DistanceCompare createDayDistance(BarEntry barEntry) {
-                LocalDate localDate = barEntry.localDate;
-                long tomorrowZeroTime = TimeUtil.changZeroOfTheDay(localDate.plusDays(1));//明天凌晨
-                long todayZeroTime = TimeUtil.changZeroOfTheDay(localDate);//今天0点
-
-                int distanceRight = (int) ((tomorrowZeroTime - barEntry.timestamp) / TimeUtil.TIME_HOUR); //右边的距离
-                int distanceLeft = (int) ((barEntry.timestamp - todayZeroTime) / TimeUtil.TIME_HOUR);//左边的距离
-
-                return new  DistanceCompare(distanceLeft, distanceRight);
-            }
-
-            private DistanceCompare createWeekDistance(LocalDate localDate) {
-                int dayOfWeek = localDate.getDayOfWeek();
-                return  new DistanceCompare(dayOfWeek, 7 - dayOfWeek);
-            }
-
-            private DistanceCompare createMonthDistance(LocalDate localDate) {
-                LocalDate nextMonthFirstDay = TimeUtil.getFirstDayOfNextMonth(localDate);
-                LocalDate lastMonthLastDay = TimeUtil.getFirstDayOfMonth(localDate).minusDays(1);
-
-                int distanceRight = TimeUtil.getIntervalDay(localDate, nextMonthFirstDay); //右边的距离
-                int distanceLeft = TimeUtil.getIntervalDay(lastMonthLastDay, localDate);
-                return new DistanceCompare(distanceLeft, distanceRight);
             }
 
             @Override
             public void onScrolled(RecyclerView recyclerView, int dx, int dy) {
                 super.onScrolled(recyclerView, dx, dy);
+                //判断左滑，右滑时，ScrollView的位置不一样。
             }
 
         });
+    }
+
+    //位置微调
+    private void microRelocation(RecyclerView recyclerView) {
+        LinearLayoutManager manager = (LinearLayoutManager) recyclerView.getLayoutManager();
+        //获取最后一个完全显示的ItemPosition
+        int lastVisibleItemPosition = manager.findLastCompletelyVisibleItemPosition();
+        int firstVisibleItemPosition = manager.findFirstCompletelyVisibleItemPosition();
+        BarEntry barEntry = mEntries.get(lastVisibleItemPosition);
+        DistanceCompare distanceCompare = new DistanceCompare(0, 0);
+        if (mType == VIEW_MONTH) {
+            distanceCompare = createMonthDistance(barEntry.localDate);
+
+        } else if (mType == VIEW_WEEK) {
+            distanceCompare = createWeekDistance(barEntry.localDate);
+        } else if (mType == VIEW_DAY) {
+            distanceCompare = createDayDistance(barEntry);
+        } else if (mType == VIEW_YEAR) {
+            distanceCompare = createYearDistance(barEntry.localDate);
+        }
+
+        int endOfPosition;
+        int transactionType = 0;
+        if (distanceCompare.distanceLeft < distanceCompare.distanceRight) {//左间距 小于 右间距
+            transactionType = 1;
+            endOfPosition = lastVisibleItemPosition - distanceCompare.distanceLeft + 1;
+            if (lastVisibleItemPosition + distanceCompare.distanceRight > mEntries.size()) {//右尽头
+                transactionType = 0;
+            }
+        } else {
+            endOfPosition = lastVisibleItemPosition + distanceCompare.distanceRight;
+            if (lastVisibleItemPosition - displayNumber <= 0) {//左尽头
+                transactionType = 1;
+            }
+        }
+        if (transactionType == 1 && endOfPosition <= displayNumber) {//左移到头
+            recyclerView.smoothScrollToPosition(0);
+            lastVisibleItemPosition = displayNumber;
+        } else if (transactionType == 1) {
+            recyclerView.scrollToPosition(endOfPosition - displayNumber);
+            lastVisibleItemPosition = endOfPosition;
+        }
+        if (transactionType == 0 && endOfPosition >= mEntries.size()) {//右边界，lastVisibleItemPosition 保持不变
+            recyclerView.smoothScrollToPosition(mEntries.size() - 1);
+            lastVisibleItemPosition = mEntries.size() - 1;
+        } else if (transactionType == 0) {
+            recyclerView.smoothScrollToPosition(endOfPosition);
+            lastVisibleItemPosition = endOfPosition;
+        }
+        firstVisibleItemPosition = lastVisibleItemPosition - displayNumber;
+
+        List<BarEntry> displayEntries;
+        displayEntries = mEntries.subList(firstVisibleItemPosition, lastVisibleItemPosition + 1);
+        float max = getTheMaxNumber(displayEntries);
+        mYAxis = YAxis.getYAxis(max);
+        mItemDecoration.setYAxis(mYAxis);
+        recyclerView.invalidate();
+
+        //todo 调试显示用的
+        BarEntry leftBarEntry = displayEntries.get(0);
+        BarEntry rightBarEntry = displayEntries.get(displayEntries.size() - 1);
+        txtLeftLocalDate.setText(TimeUtil.getDateStr(leftBarEntry.timestamp));
+        txtRightLocalDate.setText(TimeUtil.getDateStr(rightBarEntry.timestamp));
+    }
+
+    private DistanceCompare createYearDistance(LocalDate localDate) {
+        int month = localDate.getMonthOfYear();
+        return new DistanceCompare(month, 12 - month);
+    }
+
+    private DistanceCompare createDayDistance(BarEntry barEntry) {
+        LocalDate localDate = barEntry.localDate;
+        long tomorrowZeroTime = TimeUtil.changZeroOfTheDay(localDate.plusDays(1));//明天凌晨
+        long todayZeroTime = TimeUtil.changZeroOfTheDay(localDate);//今天0点
+
+        int distanceRight = (int) ((tomorrowZeroTime - barEntry.timestamp) / TimeUtil.TIME_HOUR); //右边的距离
+        int distanceLeft = (int) ((barEntry.timestamp - todayZeroTime) / TimeUtil.TIME_HOUR);//左边的距离
+
+        return new DistanceCompare(distanceLeft, distanceRight);
+    }
+
+    private DistanceCompare createWeekDistance(LocalDate localDate) {
+        int dayOfWeek = localDate.getDayOfWeek();
+        return new DistanceCompare(dayOfWeek, 7 - dayOfWeek);
+    }
+
+    private DistanceCompare createMonthDistance(LocalDate localDate) {
+        LocalDate nextMonthFirstDay = TimeUtil.getFirstDayOfNextMonth(localDate);
+        LocalDate lastMonthLastDay = TimeUtil.getFirstDayOfMonth(localDate).minusDays(1);
+
+        int distanceRight = TimeUtil.getIntervalDay(localDate, nextMonthFirstDay); //右边的距离
+        int distanceLeft = TimeUtil.getIntervalDay(lastMonthLastDay, localDate);
+        return new DistanceCompare(distanceLeft, distanceRight);
     }
 
     //获取最大值
@@ -241,9 +273,10 @@ public class BarChartActivity extends AppCompatActivity {
     }
 
     private void initTableLayout() {
-        mTabLayout.setIndicatorColor(ColorUtil.getResourcesColor(this, R.color.tab_unchecked));
+        mTabLayout.setIndicatorColor(ColorUtil.getResourcesColor(this, R.color.pink));
         mTabLayout.setTextUnselectColor(ColorUtil.getResourcesColor(this, R.color.tab_checked));
-        mTabLayout.setDividerColor(ColorUtil.getResourcesColor(this, R.color.tab_unchecked));
+        mTabLayout.setDividerColor(ColorUtil.getResourcesColor(this, R.color.pink));
+//        mTabLayout.setIndicatorColor(ColorUtil.getResourcesColor(this, R.color.pink));
         mTabLayout.setTabData(mTitles);
 
         mTabLayout.setOnTabSelectListener(new OnTabSelectListener() {
