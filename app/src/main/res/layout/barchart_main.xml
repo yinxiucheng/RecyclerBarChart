@@ -1,5 +1,4 @@
 <?xml version="1.0" encoding="utf-8"?>
-
 <LinearLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
@@ -9,7 +8,27 @@
     android:fitsSystemWindows="true"
     android:orientation="vertical">
 
-    <include layout="@layout/content_barchart"/>
+    <com.yxc.barchart.tab.TopTabLayout
+        android:id="@+id/topTabLayout"
+        android:layout_width="match_parent"
+        android:layout_height="34dp"
+        android:layout_marginTop="40dp"
+        android:layout_marginBottom="40dp"
+        android:layout_marginLeft="30dp"
+        android:layout_marginRight="30dp"
+        android:layout_centerVertical="true"
+        android:layout_gravity="center"
+        app:tl_bar_color="#ffffff"
+        app:tl_textBold="2"
+        app:tl_indicator_corner_radius="8dp"
+        app:tl_tab_padding="45dp" />
+
+    <android.support.v7.widget.RecyclerView
+        android:id="@+id/recycler"
+        android:layout_width="match_parent"
+        android:layout_height="300dp"
+        android:paddingLeft="10dp"
+        android:layout_centerVertical="true"/>
 
     <android.support.design.widget.FloatingActionButton
         android:id="@+id/fab"

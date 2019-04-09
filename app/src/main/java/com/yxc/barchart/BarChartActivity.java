@@ -8,6 +8,9 @@ import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.view.View;
 
+import com.yxc.barchart.tab.OnTabSelectListener;
+import com.yxc.barchart.tab.TopTabLayout;
+
 import org.joda.time.LocalDate;
 
 import java.util.ArrayList;
@@ -17,6 +20,8 @@ import java.util.List;
 public class BarChartActivity extends AppCompatActivity {
 
     RecyclerView recyclerView;
+    TopTabLayout mTabLayout;
+
     BarChartAdapter mBarChartAdapter;
     List<BarEntry> mEntries;
     List<BarEntry> mVisibleEntries;
@@ -25,21 +30,25 @@ public class BarChartActivity extends AppCompatActivity {
     YAxis mYAxis;
     XAxis mXAxis;
 
+    private String[] mTitles = {"日", "周", "月"};
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.barchart_main);
 
+        mTabLayout = findViewById(R.id.topTabLayout);
         recyclerView = findViewById(R.id.recycler);
+        initTableLayout();
+
         mEntries = new ArrayList<>();
 
         RecyclerView.LayoutManager layoutManager = new LinearLayoutManager(this);
         ((LinearLayoutManager) layoutManager).setOrientation(LinearLayoutManager.HORIZONTAL);
 
-        displayNumber = 8;
+        displayNumber = 25;
         mYAxis = new YAxis();
         mXAxis = new XAxis(this, displayNumber);
-
         mItemDecoration = new BarChartItemDecoration(this, BarChartItemDecoration.HORIZONTAL_LIST, mYAxis, mXAxis);
 //        mItemDecoration.setEnableCharValueDisplay(false);
 //        mItemDecoration.setEnableYAxisGridLine(false);
@@ -53,17 +62,8 @@ public class BarChartActivity extends AppCompatActivity {
         recyclerView.setAdapter(mBarChartAdapter);
         recyclerView.setLayoutManager(layoutManager);
 
-        createWeekEntries();
-        recyclerView.scrollToPosition(mEntries.size() - 1);
-
-        int lastVisiblePosition = mEntries.size() - 1;
-        int firstVisiblePosition = lastVisiblePosition - displayNumber;
-        mVisibleEntries = mEntries.subList(firstVisiblePosition, lastVisiblePosition);
-        mYAxis = YAxis.getYAxis(getTheMaxNumber(mVisibleEntries));
-        mBarChartAdapter.notifyDataSetChanged();
-
-        mItemDecoration.setYAxis(mYAxis);
-        recyclerView.invalidate();
+        createDayEntries();
+        reSizeYAxis();
         setListener();
 
         FloatingActionButton fab = findViewById(R.id.fab);
@@ -76,6 +76,17 @@ public class BarChartActivity extends AppCompatActivity {
                 recyclerView.invalidate();
             }
         });
+    }
+
+    private void reSizeYAxis() {
+        recyclerView.scrollToPosition(mEntries.size()-1);
+        int lastVisiblePosition = mEntries.size() - 1;
+        int firstVisiblePosition = lastVisiblePosition - displayNumber;
+        mVisibleEntries = mEntries.subList(firstVisiblePosition, lastVisiblePosition);
+        mYAxis = YAxis.getYAxis(getTheMaxNumber(mVisibleEntries));
+        mBarChartAdapter.notifyDataSetChanged();
+        mItemDecoration.setYAxis(mYAxis);
+        recyclerView.invalidate();
     }
 
     //滑动监听
@@ -132,8 +143,41 @@ public class BarChartActivity extends AppCompatActivity {
         return max;
     }
 
+
+    private void initTableLayout() {
+        mTabLayout.setIndicatorColor(ColorUtil.getResourcesColor(this, R.color.tab_unchecked));
+        mTabLayout.setTextUnselectColor(ColorUtil.getResourcesColor(this, R.color.tab_checked));
+        mTabLayout.setDividerColor(ColorUtil.getResourcesColor(this, R.color.tab_unchecked));
+        mTabLayout.setTabData(mTitles);
+
+        mTabLayout.setOnTabSelectListener(new OnTabSelectListener() {
+            @Override
+            public void onTabSelect(int position) {
+                if (position == 0){
+                    createDayEntries();
+                    reSizeYAxis();
+                }else if (position == 1){
+                    createWeekEntries();
+                    reSizeYAxis();
+                }else if (position == 2){
+                    createMonthEntries();
+                    reSizeYAxis();
+                }
+            }
+
+            @Override
+            public void onTabReselect(int position) {
+
+            }
+        });
+        mTabLayout.setCurrentTab(0);
+    }
+
     // 创建 月视图的数据
     private void createMonthEntries() {
+        mEntries.clear();
+        displayNumber = 33;
+        mXAxis = new XAxis(this, displayNumber);
         long timestamp = TimeUtil.changZeroOfTheDay(LocalDate.now());
         List<BarEntry> entries = new ArrayList<>();
         for (int i = 0; i < 600; i++) {
@@ -176,12 +220,15 @@ public class BarChartActivity extends AppCompatActivity {
         }
         Collections.sort(entries);
         mEntries.addAll(0, entries);
-        mBarChartAdapter.notifyDataSetChanged();
+        mBarChartAdapter.setXAxis(mXAxis);
     }
 
 
     //创建Week视图的数据
     private void createWeekEntries() {
+        mEntries.clear();
+        displayNumber = 8;
+        mXAxis = new XAxis(this, displayNumber);
         long timestamp = TimeUtil.changZeroOfTheDay(LocalDate.now());
         List<BarEntry> entries = new ArrayList<>();
         for (int i = 0; i < 600; i++) {
@@ -218,12 +265,15 @@ public class BarChartActivity extends AppCompatActivity {
         }
         Collections.sort(entries);
         mEntries.addAll(0, entries);
-        mBarChartAdapter.notifyDataSetChanged();
+        mBarChartAdapter.setXAxis(mXAxis);
     }
 
 
     //创建 Day视图的数据
     private void createDayEntries() {
+        mEntries.clear();
+        displayNumber = 25;
+        mXAxis = new XAxis(this, displayNumber);
         long timestamp = TimeUtil.changZeroOfTheDay(LocalDate.now().plusDays(1));
         List<BarEntry> entries = new ArrayList<>();
         for (int i = 0; i < 72; i++) {
@@ -251,12 +301,12 @@ public class BarChartActivity extends AppCompatActivity {
             LocalDate localDate = TimeUtil.timestampToLocalDate(timestamp);
             String xAxisStr = "";
 
-            if (isNextDay && i  % 3 == 0) {
+            if (isNextDay && i % 3 == 0) {
                 type = BarEntry.TYPE_SPECIAL;
                 xAxisStr = TimeUtil.getHourOfTheDay(timestamp);
             } else if (isNextDay) {
                 type = BarEntry.TYPE_FIRST;
-            } else if (i  % 3 == 0) {
+            } else if (i % 3 == 0) {
                 type = BarEntry.TYPE_SECOND;
                 xAxisStr = TimeUtil.getHourOfTheDay(timestamp);
             }
@@ -267,6 +317,6 @@ public class BarChartActivity extends AppCompatActivity {
         }
         Collections.sort(entries);
         mEntries.addAll(0, entries);
-        mBarChartAdapter.notifyDataSetChanged();
+        mBarChartAdapter.setXAxis(mXAxis);
     }
 }

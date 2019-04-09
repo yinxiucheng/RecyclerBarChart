@@ -35,7 +35,6 @@ public class TimeUtil {
         return date1.getYear() == date2.getYear() && date1.getMonthOfYear() == date2.getMonthOfYear();
     }
 
-
     /**
      * 第一个是不是第二个的上一个月,只在此处有效
      *
