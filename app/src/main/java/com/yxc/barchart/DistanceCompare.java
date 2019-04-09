@@ -6,12 +6,12 @@ package com.yxc.barchart;
  */
 public class DistanceCompare {
 
-    int leftDistancePosition;
-    int rightDistancePosition;
+    int distanceLeft;
+    int distanceRight;
 
-    public DistanceCompare(int leftDistancePosition, int rightDistancePosition){
-        this.leftDistancePosition = leftDistancePosition;
-        this.rightDistancePosition = rightDistancePosition;
+    public DistanceCompare(int distanceLeft, int distanceRight){
+        this.distanceLeft = distanceLeft;
+        this.distanceRight = distanceRight;
     }
 
 }
