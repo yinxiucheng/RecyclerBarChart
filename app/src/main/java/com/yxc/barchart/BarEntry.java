@@ -8,7 +8,7 @@ import org.joda.time.LocalDate;
  * @author yxc
  * @date 2019/4/6
  */
-public class BarEntry implements Comparable<BarEntry>{
+public class BarEntry implements Comparable<BarEntry> {
 
     public static final int TYPE_FIRST = 1;//一个月
 
@@ -27,7 +27,7 @@ public class BarEntry implements Comparable<BarEntry>{
 
     public float currentHeight = 0f;
 
-    public BarEntry(){
+    public BarEntry() {
     }
 
     public BarEntry(float value, long timestamp, int type) {

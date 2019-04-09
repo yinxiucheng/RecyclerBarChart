@@ -19,14 +19,11 @@ import java.util.List;
 public class TimeUtil {
 
     public static final long TIME_DAY = 24 * 60 * 60;
-
     public static final long TIME_HOUR = 1 * 60 * 60;
     //一位小数
     public static final int ONE_LENGTH_DECIMAL = 1;
-
     //两位小数
     public static final int TWO_LENGTH_DECIMAL = 2;
-
     //三位小数
     public static final int THREE_LENGTH_DECIMAL = 3;
 
@@ -275,13 +272,20 @@ public class TimeUtil {
         return Timestamp.valueOf(dateStr).getTime();
     }
 
+
+    public static String getLocalDateStr(long timestamp){
+        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd 00:00:00");
+        Date date = new Date(timestamp);
+        String dateStr = sdf.format(date);
+        return dateStr;
+    }
+
     public static long changZeroOfTheDay(LocalDate localDate) {
         return changZeroOfTheDayInner(localDate) / 1000;
     }
 
-
     public static String getDateStr(long timestamp) {
-        SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy-MM-dd");
+        SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
         Date date = new Date(timestamp * 1000);
         String res = simpleDateFormat.format(date);
         return res;
@@ -353,25 +357,25 @@ public class TimeUtil {
     }
 
     //获取下个月1号 00：00：00
-    public static long getFirstDayOfNextMonthTime(LocalDate localDate) {
+    public static long getNextMonthFirstDayOfTime(LocalDate localDate) {
         LocalDate tempLocalDate = localDate.plusMonths(1);
         return changZeroOfTheDay(getFirstDayOfMonth(tempLocalDate));
     }
 
     //获取下个月1号 00：00：00
     public static LocalDate getFirstDayOfNextMonth(LocalDate localDate) {
-        long timestamp = getFirstDayOfNextMonthTime(localDate);
+        long timestamp = getNextMonthFirstDayOfTime(localDate);
         return timestampToLocalDate(timestamp);
     }
 
     //获取上个月1号 00：00：00
-    public static long getLastFirstDayMonthTime(long timestamp) {
+    public static long getLastMonthFirstDayTime(long timestamp) {
         LocalDate localDate = timestampToLocalDate(timestamp);
-        return getLastFirstDayMonthTime(localDate);
+        return getLastMonthFirstDayTime(localDate);
     }
 
     //获取上个月1号 00：00：00
-    public static long getLastFirstDayMonthTime(LocalDate localDate) {
+    public static long getLastMonthFirstDayTime(LocalDate localDate) {
         LocalDate tempLocalDate = localDate.minusMonths(1);
         LocalDate firstDayMonth = TimeUtil.getFirstDayOfMonth(tempLocalDate);
         long resultTimestamp = TimeUtil.changZeroOfTheDay(firstDayMonth);

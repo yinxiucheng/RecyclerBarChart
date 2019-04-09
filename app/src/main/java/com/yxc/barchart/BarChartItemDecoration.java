@@ -15,7 +15,6 @@ import android.support.v7.widget.RecyclerView;
 import android.text.TextUtils;
 import android.util.Log;
 import android.view.View;
-
 import java.util.List;
 
 /**
@@ -39,12 +38,10 @@ public class BarChartItemDecoration extends RecyclerView.ItemDecoration {
 
     private BarChartAdapter mAdapter;
     private List<BarEntry> mEntries;
-    private int contentPaddingBottom = DisplayUtil.dip2px(15);//底部的 X轴刻度所占的高度
-    private int maxYAxisPaddingTop = DisplayUtil.dip2px(10);//顶部显示的预留空间
-    private int mBarChartColor;
 
     private YAxis mYAxis;
     private XAxis mXAxis;
+    private BarChartConfig mBarChartConfig;
 
     private boolean enableCharValueDisplay = true;
     private boolean enableYAxisZero = true;
@@ -52,9 +49,6 @@ public class BarChartItemDecoration extends RecyclerView.ItemDecoration {
     private boolean enableRightYAxisLabel = true;
     private boolean enableLeftYAxisLabel = true;
     private boolean enableBarBorder = true;
-
-    private int mBarBorderColor;
-    private float mBarBorderWidth;
 
     public static final int HORIZONTAL_LIST = LinearLayoutManager.HORIZONTAL;
     public static final int VERTICAL_LIST = LinearLayoutManager.VERTICAL;
@@ -64,9 +58,7 @@ public class BarChartItemDecoration extends RecyclerView.ItemDecoration {
         this.mOrientation = orientation;
         this.mYAxis = yAxis;
         this.mXAxis = xAxis;
-        mBarChartColor = ColorUtil.getResourcesColor(mContext, R.color.pink);
-        mBarBorderColor = ColorUtil.getResourcesColor(mContext, R.color.black_80_transparent);
-        mBarBorderWidth = DisplayUtil.dip2px(0.5f);
+        mBarChartConfig = new BarChartConfig(context);
         setOrientation(orientation);
         initPaint();
         initDathPaint();
@@ -159,7 +151,7 @@ public class BarChartItemDecoration extends RecyclerView.ItemDecoration {
         mBarChartPaint.reset();
         mBarChartPaint.setAntiAlias(true);
         mBarChartPaint.setStyle(Paint.Style.FILL);
-        mBarChartPaint.setColor(mBarChartColor);
+        mBarChartPaint.setColor(mBarChartConfig.barChartColor);
     }
 
     private void initBarBorderPaint() {
@@ -167,8 +159,8 @@ public class BarChartItemDecoration extends RecyclerView.ItemDecoration {
         mBarBorderPaint.reset();
         mBarBorderPaint.setAntiAlias(true);
         mBarBorderPaint.setStyle(Paint.Style.STROKE);
-        mBarBorderPaint.setStrokeWidth(mBarBorderWidth);
-        mBarBorderPaint.setColor(mBarBorderColor);
+        mBarBorderPaint.setStrokeWidth(mBarChartConfig.barBorderWidth);
+        mBarBorderPaint.setColor(mBarChartConfig.barBorderColor);
     }
 
     private void drawBarBorder(@NonNull Canvas canvas, @NonNull RecyclerView parent) {
@@ -177,23 +169,23 @@ public class BarChartItemDecoration extends RecyclerView.ItemDecoration {
             int start = parent.getPaddingLeft();
             int top = parent.getPaddingTop();
             int end = parent.getRight() - parent.getPaddingRight();
-            int bottom = parent.getHeight() - parent.getPaddingBottom() - contentPaddingBottom;//底部有0的刻度是不是不用画，就画折线了。
+            int bottom = parent.getHeight() - parent.getPaddingBottom() - mBarChartConfig.contentPaddingBottom;//底部有0的刻度是不是不用画，就画折线了。
 
             rectF.set(start, top, end, bottom);
-            mBarBorderPaint.setStrokeWidth(mBarBorderWidth);
+            mBarBorderPaint.setStrokeWidth(mBarChartConfig.barBorderWidth);
             canvas.drawRect(rectF, mBarBorderPaint);
         }
     }
 
     //绘制柱状图
     private void drawBarChart(Canvas canvas, @NonNull RecyclerView parent, @NonNull RecyclerView.State state) {
-        int bottom = parent.getHeight() - parent.getPaddingBottom() - contentPaddingBottom;
+        int bottom = parent.getHeight() - parent.getPaddingBottom() - mBarChartConfig.contentPaddingBottom;
         int parentRight = parent.getWidth() - parent.getPaddingRight();
         int parentLeft = parent.getPaddingLeft();
 
         Log.d("BarChart", "parentLeft:" + parentLeft);
 
-        int realYAxisLabelHeight = bottom - maxYAxisPaddingTop;
+        int realYAxisLabelHeight = bottom - mBarChartConfig.maxYAxisPaddingTop;
         final int childCount = parent.getChildCount();
 
         View child;
@@ -224,6 +216,7 @@ public class BarChartItemDecoration extends RecyclerView.ItemDecoration {
             } else if (start < parentLeft && end > parentLeft) {//左边部分滑入的时候，处理柱状图、文字的显示
                 start = parentLeft;
                 rectF.set(start, top, end, bottom);
+                mBarChartPaint.setColor(mBarChartConfig.barBorderEndgColor);
                 canvas.drawRect(rectF, mBarChartPaint);
                 int displaySize = valueStr.length() * (end - parentLeft) / barChartWidth;//比如要显示  "123456"的末两位，需要从 length - displaySize的位置开始显示。
                 txtStart = valueStr.length() - displaySize;
@@ -231,12 +224,14 @@ public class BarChartItemDecoration extends RecyclerView.ItemDecoration {
                 displayCharValue(enableCharValueDisplay, canvas, valueStr, txtStart, txtEnd, txtX, txtY);
             } else if (end < parentRight) {
                 rectF.set(start, top, end, bottom);
+                mBarChartPaint.setColor(mBarChartConfig.barChartColor);
                 canvas.drawRect(rectF, mBarChartPaint);
                 displayCharValue(enableCharValueDisplay, canvas, valueStr, txtStart, txtEnd, txtX, txtY);
             } else if (start < parentRight) {//右边部分滑出的时候，处理柱状图，文字的显示
                 int distance = (parentRight - start);
                 end = start + distance;
                 rectF.set(start, top, end, bottom);
+                mBarChartPaint.setColor(mBarChartConfig.barBorderEndgColor);
                 canvas.drawRect(rectF, mBarChartPaint);
                 txtX = getTxtX(child, width, valueStr);
                 txtEnd = valueStr.length() * (end - start) / barChartWidth;
@@ -269,10 +264,10 @@ public class BarChartItemDecoration extends RecyclerView.ItemDecoration {
         mLinePaint.setColor(ColorUtil.getResourcesColor(mContext, R.color.black_20_transparent));
         int top = parent.getPaddingTop();
         int bottom = parent.getHeight() - parent.getPaddingBottom();
-        int distance = bottom - contentPaddingBottom - maxYAxisPaddingTop;
+        int distance = bottom - mBarChartConfig.contentPaddingBottom - mBarChartConfig.maxYAxisPaddingTop;
         int lineNums = yAxis.labelSize;
         int lineDistance = distance / lineNums;
-        int gridLine = top + maxYAxisPaddingTop;
+        int gridLine = top + mBarChartConfig.maxYAxisPaddingTop;
         for (int i = 0; i <= lineNums; i++) {
             if (i > 0) {
                 gridLine = gridLine + lineDistance;
@@ -298,7 +293,7 @@ public class BarChartItemDecoration extends RecyclerView.ItemDecoration {
         if (enableLeftYAxisLabel) {
             int top = parent.getPaddingTop();
             int bottom = parent.getHeight() - parent.getPaddingBottom();
-            int distance = bottom - contentPaddingBottom - (top + maxYAxisPaddingTop);
+            int distance = bottom - mBarChartConfig.contentPaddingBottom - (top + mBarChartConfig.maxYAxisPaddingTop);
             int max = yAxis.maxLabel;
             int lineNums = yAxis.labelSize;
             int lineDistance = distance / lineNums;
@@ -310,7 +305,7 @@ public class BarChartItemDecoration extends RecyclerView.ItemDecoration {
             float textWidth = mTextPaint.measureText(maxStr) + DisplayUtil.dip2px(2);
             parent.setPadding((int) textWidth, parent.getPaddingTop(), parent.getPaddingRight(), parent.getPaddingBottom());
             int labelDistance = max / lineNums;
-            int gridLine = top + maxYAxisPaddingTop;
+            int gridLine = top + mBarChartConfig.maxYAxisPaddingTop;
 
             for (int i = 0; i <= lineNums; i++) {
                 if (i > 0) {
@@ -330,7 +325,7 @@ public class BarChartItemDecoration extends RecyclerView.ItemDecoration {
             int right = parent.getWidth();
             int top = parent.getPaddingTop();
             int bottom = parent.getHeight() - parent.getPaddingBottom();
-            int distance = bottom - contentPaddingBottom - (top + maxYAxisPaddingTop);
+            int distance = bottom - mBarChartConfig.contentPaddingBottom - (top + mBarChartConfig.maxYAxisPaddingTop);
             int max = yAxis.maxLabel;
             int lineNums = yAxis.labelSize;
             int lineDistance = distance / lineNums;
@@ -341,7 +336,7 @@ public class BarChartItemDecoration extends RecyclerView.ItemDecoration {
             parent.setPadding(parent.getPaddingLeft(), parent.getPaddingTop(), (int) textWidth, parent.getPaddingBottom());
 
             int labelDistance = max / lineNums;
-            int gridLine = top + maxYAxisPaddingTop;
+            int gridLine = top + mBarChartConfig.maxYAxisPaddingTop;
 
             for (int i = 0; i <= lineNums; i++) {
                 if (i > 0) {
@@ -377,7 +372,7 @@ public class BarChartItemDecoration extends RecyclerView.ItemDecoration {
                 mLinePaint.setColor(xAxis.barEntryTypeFirstColor);
                 Path path = new Path();
                 if (isNextSecondType) {
-                    path.moveTo(x, parentBottom - contentPaddingBottom);
+                    path.moveTo(x, parentBottom - mBarChartConfig.contentPaddingBottom);
                 } else {
                     path.moveTo(x, parentBottom);
                 }
@@ -398,7 +393,7 @@ public class BarChartItemDecoration extends RecyclerView.ItemDecoration {
                 mDashPaint.setPathEffect(pathEffect);
                 mDashPaint.setColor(xAxis.barEntryTypeThirdColor);
                 Path path = new Path();
-                path.moveTo(x, parentBottom - contentPaddingBottom);
+                path.moveTo(x, parentBottom - mBarChartConfig.contentPaddingBottom);
                 path.lineTo(x, parentTop);
                 canvas.drawPath(path, mDashPaint);
             }
@@ -499,7 +494,6 @@ public class BarChartItemDecoration extends RecyclerView.ItemDecoration {
         this.enableYAxisGridLine = enableYAxisGridLine;
     }
 
-
     public void setEnableRightYAxisLabel(boolean enableRightYAxisLabel) {
         this.enableRightYAxisLabel = enableRightYAxisLabel;
     }
@@ -512,9 +506,8 @@ public class BarChartItemDecoration extends RecyclerView.ItemDecoration {
         this.enableBarBorder = enableBarBorder;
     }
 
-    public void setBarBorderWidth(float mBarBorderWidth) {
-        this.mBarBorderWidth = mBarBorderWidth;
-        enableBarBorder = true;
+    public void setBarChartConfig(BarChartConfig mBarChartConfig) {
+        this.mBarChartConfig = mBarChartConfig;
     }
 
 }

@@ -7,6 +7,7 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.view.View;
+import android.widget.TextView;
 
 import com.yxc.barchart.tab.OnTabSelectListener;
 import com.yxc.barchart.tab.TopTabLayout;
@@ -19,8 +20,15 @@ import java.util.List;
 
 public class BarChartActivity extends AppCompatActivity {
 
+    public static final int VIEW_DAY = 0;
+    public static final int VIEW_WEEK = 1;
+    public static final int VIEW_MONTH = 2;
+    public static final int VIEW_YEAR = 3;
+    int mType;
     RecyclerView recyclerView;
     TopTabLayout mTabLayout;
+    TextView txtLeftLocalDate;
+    TextView txtRightLocalDate;
 
     BarChartAdapter mBarChartAdapter;
     List<BarEntry> mEntries;
@@ -39,6 +47,10 @@ public class BarChartActivity extends AppCompatActivity {
 
         mTabLayout = findViewById(R.id.topTabLayout);
         recyclerView = findViewById(R.id.recycler);
+
+        txtLeftLocalDate = findViewById(R.id.txt_left_local_date);
+        txtRightLocalDate = findViewById(R.id.txt_right_local_date);
+
         initTableLayout();
 
         mEntries = new ArrayList<>();
@@ -87,6 +99,76 @@ public class BarChartActivity extends AppCompatActivity {
         mBarChartAdapter.notifyDataSetChanged();
         mItemDecoration.setYAxis(mYAxis);
         recyclerView.invalidate();
+
+        BarEntry leftBarEntry = mEntries.get(firstVisiblePosition);
+        BarEntry rightBarEntry = mEntries.get(lastVisiblePosition);
+
+        txtLeftLocalDate.setText(TimeUtil.getDateStr(leftBarEntry.timestamp));
+        txtRightLocalDate.setText(TimeUtil.getDateStr(rightBarEntry.timestamp));
+    }
+
+    //创建 周 左右间距比较 的 Model
+    private DistanceCompare createWeekDistanceCompare(LocalDate localDate) {
+        int dayOfWeek = localDate.getDayOfWeek();
+        return new DistanceCompare(dayOfWeek, 7 - dayOfWeek);
+    }
+
+    //创建 月 左右间距比较的 Model
+    private DistanceCompare createMonthDistanceCompare(LocalDate localDate) {
+        LocalDate nextMonthFirstDay = TimeUtil.getFirstDayOfNextMonth(localDate);
+        LocalDate lastMonthLastDay = TimeUtil.getFirstDayOfMonth(localDate).minusDays(1);
+        int distanceRight = TimeUtil.getIntervalDay(localDate, nextMonthFirstDay); //右边的距离
+        int distanceLeft = TimeUtil.getIntervalDay(lastMonthLastDay, localDate);
+        return new DistanceCompare(distanceLeft, distanceRight);
+    }
+
+    //创建 日 左右间距的 Model(可以直接用 24点做差来求值)
+    private DistanceCompare createDayDistanceCompare(BarEntry barEntry) {
+        LocalDate localDate = barEntry.localDate;
+        long tomorrowZeroTime = TimeUtil.changZeroOfTheDay(localDate.plusDays(1));//明天凌晨
+        long todayZeroTime = TimeUtil.changZeroOfTheDay(localDate);//今天0点
+        int distanceRight = (int) ((tomorrowZeroTime - barEntry.timestamp) / TimeUtil.TIME_HOUR); //右边的距离
+        int distanceLeft = (int) ((barEntry.timestamp - todayZeroTime) / TimeUtil.TIME_HOUR);//左边的距离
+        return new DistanceCompare(distanceLeft, distanceRight);
+    }
+
+    //创建年的 左右间距的 Model
+    private DistanceCompare createYearDistanceCompare(LocalDate localDate) {
+        int month = localDate.getMonthOfYear();
+        return new DistanceCompare(month, 12 - month);
+    }
+
+    private int getFirstVisibleItemPosition(DistanceCompare distanceCompare, int lastVisibleItemPosition) {
+        int endOfMonthPosition;
+        int transactionType = 0;
+        if (distanceCompare.leftDistancePosition < distanceCompare.rightDistancePosition) {//左间距 小于 右间距
+            transactionType = 1;
+            endOfMonthPosition = lastVisibleItemPosition - distanceCompare.leftDistancePosition + 1;
+            if (lastVisibleItemPosition + distanceCompare.rightDistancePosition > mEntries.size()) {//右尽头
+                transactionType = 0;
+            }
+        } else {
+            endOfMonthPosition = lastVisibleItemPosition + distanceCompare.rightDistancePosition;
+            if (lastVisibleItemPosition - displayNumber <= 0) {//左尽头
+                transactionType = 1;
+            }
+        }
+
+        if (transactionType == 1 && endOfMonthPosition <= displayNumber) {//左边界，左移到头
+            recyclerView.smoothScrollToPosition(0);
+            lastVisibleItemPosition = displayNumber;
+        } else if (transactionType == 1) {
+            recyclerView.scrollToPosition(endOfMonthPosition - displayNumber);
+            lastVisibleItemPosition = endOfMonthPosition;
+        }
+        if (transactionType == 0 && endOfMonthPosition >= mEntries.size()) {//右边界，lastVisibleItemPosition 保持不变
+            recyclerView.smoothScrollToPosition(mEntries.size() - 1);
+            lastVisibleItemPosition = mEntries.size() - 1;
+        } else if (transactionType == 0) {
+            recyclerView.smoothScrollToPosition(endOfMonthPosition);
+            lastVisibleItemPosition = endOfMonthPosition;
+        }
+        return lastVisibleItemPosition - displayNumber;
     }
 
     //滑动监听
@@ -102,18 +184,32 @@ public class BarChartActivity extends AppCompatActivity {
                 // 当不滚动时
                 if (newState == RecyclerView.SCROLL_STATE_IDLE) {
                     //获取最后一个完全显示的ItemPosition
-                    int lastVisibleItem = manager.findLastVisibleItemPosition();
-                    int firstVisibleItem = manager.findFirstVisibleItemPosition();
-                    List<BarEntry> displayEntries = mEntries.subList(firstVisibleItem, lastVisibleItem);
+                    int lastVisibleItemPosition = manager.findLastCompletelyVisibleItemPosition();
+                    BarEntry barEntry = mEntries.get(lastVisibleItemPosition);
+                    DistanceCompare distanceCompare;
+                    if (mType == VIEW_WEEK) {// 周
+                        distanceCompare = createWeekDistanceCompare(barEntry.localDate);
+                    } else if (mType == VIEW_DAY) {//日
+                        distanceCompare = createDayDistanceCompare(barEntry);
+                    } else if (mType == VIEW_YEAR) {//年
+                        distanceCompare = createYearDistanceCompare(barEntry.localDate);
+                    } else {//月
+                        distanceCompare = createMonthDistanceCompare(barEntry.localDate);
+                    }
+
+                    int firstVisibleItemPosition = getFirstVisibleItemPosition(distanceCompare, lastVisibleItemPosition);
+                    List<BarEntry> displayEntries;
+                    displayEntries = mEntries.subList(firstVisibleItemPosition, lastVisibleItemPosition + 1);
                     float max = getTheMaxNumber(displayEntries);
                     mYAxis = YAxis.getYAxis(max);
                     mItemDecoration.setYAxis(mYAxis);
                     recyclerView.invalidate();
-                    int totalItemCount = manager.getItemCount();
-                    // 判断是否滚动到底部，并且是向右滚动
-                    if (lastVisibleItem == (totalItemCount - 1) && isSlidingToLast) {
-                        //加载更多功能的代码
-                    }
+
+                    //todo 显示测试用的，看滑动的位置
+                    BarEntry leftBarEntry = displayEntries.get(0);
+                    BarEntry rightBarEntry = displayEntries.get(displayEntries.size() - 1);
+                    txtLeftLocalDate.setText(TimeUtil.getDateStr(leftBarEntry.timestamp));
+                    txtRightLocalDate.setText(TimeUtil.getDateStr(rightBarEntry.timestamp));
                 }
             }
 
@@ -168,7 +264,6 @@ public class BarChartActivity extends AppCompatActivity {
             }
             @Override
             public void onTabReselect(int position) {
-
             }
         });
         mTabLayout.setCurrentTab(0);
@@ -177,6 +272,7 @@ public class BarChartActivity extends AppCompatActivity {
     // 创建 月视图的数据
     private void createMonthEntries() {
         mEntries.clear();
+        mType = VIEW_MONTH;
         displayNumber = 33;
         mXAxis = new XAxis(this, displayNumber);
         long timestamp = TimeUtil.changZeroOfTheDay(LocalDate.now());
@@ -228,11 +324,12 @@ public class BarChartActivity extends AppCompatActivity {
     //创建Week视图的数据
     private void createWeekEntries() {
         mEntries.clear();
+        mType = VIEW_WEEK;
         displayNumber = 8;
         mXAxis = new XAxis(this, displayNumber);
         long timestamp = TimeUtil.changZeroOfTheDay(LocalDate.now());
         List<BarEntry> entries = new ArrayList<>();
-        for (int i = 0; i < 600; i++) {
+        for (int i = 0; i < 102; i++) {
             if (i > 0) {
                 timestamp = timestamp - TimeUtil.TIME_DAY;
             }
@@ -273,11 +370,12 @@ public class BarChartActivity extends AppCompatActivity {
     //创建 Day视图的数据
     private void createDayEntries() {
         mEntries.clear();
+        mType = VIEW_DAY;
         displayNumber = 25;
         mXAxis = new XAxis(this, displayNumber);
         long timestamp = TimeUtil.changZeroOfTheDay(LocalDate.now().plusDays(1));
         List<BarEntry> entries = new ArrayList<>();
-        for (int i = 0; i < 72; i++) {
+        for (int i = 0; i < 600; i++) {
             if (i > 0) {
                 timestamp = timestamp - TimeUtil.TIME_HOUR;
             }
@@ -322,9 +420,10 @@ public class BarChartActivity extends AppCompatActivity {
     }
 
 
-    //创建 Day视图的数据
+    //创建 Year视图的数据
     private void createYearEntries() {
         mEntries.clear();
+        mType = VIEW_YEAR;
         displayNumber = 13;
         mXAxis = new XAxis(this, displayNumber);
         //获取下个月1号
@@ -367,4 +466,6 @@ public class BarChartActivity extends AppCompatActivity {
         mEntries.addAll(0, entries);
         mBarChartAdapter.setXAxis(mXAxis);
     }
+
+
 }
