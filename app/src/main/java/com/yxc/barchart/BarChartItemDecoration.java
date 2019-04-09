@@ -419,7 +419,7 @@ public class BarChartItemDecoration extends RecyclerView.ItemDecoration {
                 return false;
             }
             return true;
-        }else if (position2 > 0 && mEntries.get(position2).type == BarEntry.TYPE_SECOND){
+        } else if (position2 > 0 && mEntries.get(position2).type == BarEntry.TYPE_SECOND) {
             barEntryNext = mEntries.get(position2);
             mTextPaint.setTextSize(mXAxis.txtSize);
             if (null != barEntryNext && barWidth > mTextPaint.measureText(barEntryNext.xAxisLabel)) {
@@ -443,29 +443,42 @@ public class BarChartItemDecoration extends RecyclerView.ItemDecoration {
             int adapterPosition = parent.getChildAdapterPosition(child);
             int type = parent.getAdapter().getItemViewType(adapterPosition);
             final int x = child.getLeft();
-            if (x > parentRight || x < parentLeft) {//超出的时候就不要画了
-                continue;
-            }
+
+//            if (x > parentRight || x < parentLeft) {//超出的时候就不要画了
+//                continue;
+//            }
             if (type == BarEntry.TYPE_SECOND || type == BarEntry.TYPE_SPECIAL || type == BarEntry.TYPE_FIRST) {
                 BarEntry barEntry = mEntries.get(adapterPosition);
                 String dateStr = barEntry.xAxisLabel;
                 if (!TextUtils.isEmpty(dateStr)) {
                     int childWidth = child.getWidth();
                     float txtWidth = mTextPaint.measureText(dateStr);
-                    float txtX = 0;
+                    float txtXLeft = 0;
                     float txtY = parentBottom - DisplayUtil.dip2px(1);
                     if (childWidth > txtWidth) {//柱状图的宽度比较大的时候，文字居中
                         float distance = childWidth - txtWidth;
-                        txtX = x + distance / 2;
+                        txtXLeft = x + distance / 2;
                     } else {
-                        txtX = x + DisplayUtil.dip2px(2);
+                        txtXLeft = x + DisplayUtil.dip2px(2);
                     }
-                    canvas.drawText(dateStr, txtX, txtY, mTextPaint);
+                    float txtXRight = txtXLeft + txtWidth;
+                    int length = dateStr.length();
+
+                    if (txtXLeft >= parentLeft && txtXRight <= parentRight) {//中间位置
+                        canvas.drawText(dateStr, txtXLeft, txtY, mTextPaint);
+                    } else if (txtXLeft < parentLeft && txtXRight > parentLeft) {//处理左边界
+                        int displayLength = (int) ((txtXRight - parentLeft) / txtWidth * length);
+                        int index = length - displayLength;
+                        canvas.drawText(dateStr, index, length, parentLeft, txtY, mTextPaint);
+                    } else if (txtXRight > parentRight && txtXLeft < parentRight) {//处理右边界
+                        int displayLength = (int) ((parentRight - txtXLeft) / txtWidth * length);
+                        int endIndex = displayLength;
+                        canvas.drawText(dateStr, 0, endIndex, txtXLeft, txtY, mTextPaint);
+                    }
                 }
             }
         }
     }
-
 
 
     @Override
