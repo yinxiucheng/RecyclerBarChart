@@ -36,7 +36,7 @@ public class BarChartActivity extends AppCompatActivity {
         RecyclerView.LayoutManager layoutManager = new LinearLayoutManager(this);
         ((LinearLayoutManager) layoutManager).setOrientation(LinearLayoutManager.HORIZONTAL);
 
-        displayNumber = 25;
+        displayNumber = 8;
         mYAxis = new YAxis();
         mXAxis = new XAxis(this, displayNumber);
 
@@ -53,7 +53,7 @@ public class BarChartActivity extends AppCompatActivity {
         recyclerView.setAdapter(mBarChartAdapter);
         recyclerView.setLayoutManager(layoutManager);
 
-        createDayEntries();
+        createWeekEntries();
         recyclerView.scrollToPosition(mEntries.size() - 1);
 
         int lastVisiblePosition = mEntries.size() - 1;
@@ -159,13 +159,13 @@ public class BarChartActivity extends AppCompatActivity {
             int type = BarEntry.TYPE_THIRD;
             String xAxisLabel = "";
             LocalDate localDate = TimeUtil.timestampToLocalDate(timestamp);
-            boolean isLastDayOfMonth = TimeUtil.isLastDayOfMonth(localDate);
-            if (isLastDayOfMonth && i % 7 == 0) {
+            boolean isFirstDayOfMonth = TimeUtil.isFirstDayOfMonth(localDate);
+            if (isFirstDayOfMonth && (i + 1) % 7 == 0) {
                 type = BarEntry.TYPE_SPECIAL;
                 xAxisLabel = localDate.getDayOfMonth() + "日";
-            } else if (isLastDayOfMonth) {
+            } else if (isFirstDayOfMonth) {
                 type = BarEntry.TYPE_FIRST;
-            } else if (i % 7 == 0) {
+            } else if ((i + 1) % 7 == 0) {
                 type = BarEntry.TYPE_SECOND;
                 xAxisLabel = localDate.getDayOfMonth() + "日";
             }
@@ -206,8 +206,8 @@ public class BarChartActivity extends AppCompatActivity {
             value = Math.round(value);
             int type = BarEntry.TYPE_SECOND;
             LocalDate localDate = TimeUtil.timestampToLocalDate(timestamp);
-            boolean isLastDayOfMonth = TimeUtil.isLastDayOfMonth(localDate);
-            if (isLastDayOfMonth) {
+            boolean isMonday = TimeUtil.isMonday(localDate);
+            if (isMonday) {
                 type = BarEntry.TYPE_FIRST;
             }
             String xAxis = TimeUtil.getWeekStr(localDate.getDayOfWeek());
@@ -226,7 +226,7 @@ public class BarChartActivity extends AppCompatActivity {
     private void createDayEntries() {
         long timestamp = TimeUtil.changZeroOfTheDay(LocalDate.now().plusDays(1));
         List<BarEntry> entries = new ArrayList<>();
-        for (int i = 0; i < 600; i++) {
+        for (int i = 0; i < 72; i++) {
             if (i > 0) {
                 timestamp = timestamp - TimeUtil.TIME_HOUR;
             }
@@ -247,14 +247,14 @@ public class BarChartActivity extends AppCompatActivity {
             }
             value = Math.round(value);
             int type = BarEntry.TYPE_THIRD;
-            boolean isLastDay = TimeUtil.isLastDay(timestamp);
+            boolean isNextDay = TimeUtil.isNextDay(timestamp);
             LocalDate localDate = TimeUtil.timestampToLocalDate(timestamp);
             String xAxisStr = "";
 
-            if (isLastDay && i  % 3 == 0) {
+            if (isNextDay && i  % 3 == 0) {
                 type = BarEntry.TYPE_SPECIAL;
                 xAxisStr = TimeUtil.getHourOfTheDay(timestamp);
-            } else if (isLastDay) {
+            } else if (isNextDay) {
                 type = BarEntry.TYPE_FIRST;
             } else if (i  % 3 == 0) {
                 type = BarEntry.TYPE_SECOND;

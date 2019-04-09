@@ -82,8 +82,17 @@ public class YAxis {
         } else if (max > 1000) {
             axis.maxLabel = 1500;
             axis.labelSize = 4;
+        } else if (max > 500) {
+            axis.maxLabel = 800;
+            axis.labelSize = 4;
+        } else if (max > 300) {
+            axis.maxLabel = 500;
+            axis.labelSize = 4;
+        } else if (max > 200) {
+            axis.maxLabel = 300;
+            axis.labelSize = 4;
         } else {
-            axis.maxLabel = 1200;
+            axis.maxLabel = 200;
             axis.labelSize = 4;
         }
         return axis;

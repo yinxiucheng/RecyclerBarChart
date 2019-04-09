@@ -15,6 +15,7 @@ import android.support.v7.widget.RecyclerView;
 import android.text.TextUtils;
 import android.util.Log;
 import android.view.View;
+
 import java.util.List;
 
 /**
@@ -366,7 +367,7 @@ public class BarChartItemDecoration extends RecyclerView.ItemDecoration {
             final View child = parent.getChildAt(i);
             int adapterPosition = parent.getChildAdapterPosition(child);
             int type = parent.getAdapter().getItemViewType(adapterPosition);
-            final int x = child.getRight();
+            final int x = child.getLeft();
             if (x > parentRight || x < parentLeft) {//超出的时候就不要画了
                 continue;
             }
@@ -374,7 +375,6 @@ public class BarChartItemDecoration extends RecyclerView.ItemDecoration {
             if (type == BarEntry.TYPE_FIRST || type == BarEntry.TYPE_SPECIAL) {
                 boolean isNextSecondType = isNearEntrySecondType(child.getWidth(), adapterPosition);
                 mLinePaint.setColor(xAxis.barEntryTypeFirstColor);
-
                 Path path = new Path();
                 if (isNextSecondType) {
                     path.moveTo(x, parentBottom - contentPaddingBottom);
@@ -405,6 +405,32 @@ public class BarChartItemDecoration extends RecyclerView.ItemDecoration {
         }
     }
 
+
+    //画月线的时候，当邻近的靠左的存在需要写 X轴坐标的BarEntry，返回true, 柱体宽度大于文本宽度时除外。
+    private boolean isNearEntrySecondType(int barWidth, int adapterPosition) {
+        int position1 = adapterPosition - 1;
+        int position2 = adapterPosition - 2;
+        BarEntry barEntryNext;
+        if (position1 > 0 && mEntries.get(position1).type == BarEntry.TYPE_SECOND) {
+            barEntryNext = mEntries.get(position1);
+            mTextPaint.setTextSize(mXAxis.txtSize);
+            if (null != barEntryNext && barWidth > mTextPaint.measureText(barEntryNext.xAxisLabel)) {
+                //对于宽的柱状体，不缩短临近TYPE_SECOND的月线
+                return false;
+            }
+            return true;
+        }else if (position2 > 0 && mEntries.get(position2).type == BarEntry.TYPE_SECOND){
+            barEntryNext = mEntries.get(position2);
+            mTextPaint.setTextSize(mXAxis.txtSize);
+            if (null != barEntryNext && barWidth > mTextPaint.measureText(barEntryNext.xAxisLabel)) {
+                //对于宽的柱状体，不缩短临近TYPE_SECOND的月线
+                return false;
+            }
+            return true;
+        }
+        return false;
+    }
+
     //绘制X坐标
     private void drawXAxis(Canvas canvas, RecyclerView parent, XAxis xAxis) {
         int parentBottom = parent.getHeight() - parent.getPaddingBottom();
@@ -416,7 +442,7 @@ public class BarChartItemDecoration extends RecyclerView.ItemDecoration {
             final View child = parent.getChildAt(i);
             int adapterPosition = parent.getChildAdapterPosition(child);
             int type = parent.getAdapter().getItemViewType(adapterPosition);
-            final int x = child.getRight();
+            final int x = child.getLeft();
             if (x > parentRight || x < parentLeft) {//超出的时候就不要画了
                 continue;
             }
@@ -424,16 +450,15 @@ public class BarChartItemDecoration extends RecyclerView.ItemDecoration {
                 BarEntry barEntry = mEntries.get(adapterPosition);
                 String dateStr = barEntry.xAxisLabel;
                 if (!TextUtils.isEmpty(dateStr)) {
-
                     int childWidth = child.getWidth();
                     float txtWidth = mTextPaint.measureText(dateStr);
                     float txtX = 0;
                     float txtY = parentBottom - DisplayUtil.dip2px(1);
                     if (childWidth > txtWidth) {//柱状图的宽度比较大的时候，文字居中
                         float distance = childWidth - txtWidth;
-                        txtX = child.getLeft() + distance/2;
+                        txtX = x + distance / 2;
                     } else {
-                        txtX = x - DisplayUtil.dip2px(3) - mTextPaint.measureText(dateStr);
+                        txtX = x + DisplayUtil.dip2px(2);
                     }
                     canvas.drawText(dateStr, txtX, txtY, mTextPaint);
                 }
@@ -441,29 +466,7 @@ public class BarChartItemDecoration extends RecyclerView.ItemDecoration {
         }
     }
 
-    //画月线的时候，当邻近的靠左的存在需要写 X轴坐标的BarEntry，返回true, 柱体宽度大于文本宽度时除外。
-    private boolean isNearEntrySecondType(int barWidth, int adapterPosition) {
-        BarEntry barEntryNext = null;
-        boolean isNextSecondType = false;
-        if (adapterPosition + 1 < mEntries.size()) {
-            barEntryNext = mEntries.get(adapterPosition + 1);
-            if (barEntryNext.type == BarEntry.TYPE_SECOND) {
-                isNextSecondType = true;
-            }
-        }else if (adapterPosition + 2 < mEntries.size()) {
-            barEntryNext = mEntries.get(adapterPosition + 2);
-            if (barEntryNext.type == BarEntry.TYPE_SECOND) {
-                isNextSecondType = true;
-            }
-        }
 
-        mTextPaint.setTextSize(mXAxis.txtSize);
-        if (null != barEntryNext && barWidth > mTextPaint.measureText(barEntryNext.xAxisLabel)){
-            //对于宽的柱状体，不缩短临近TYPE_SECOND的月线
-            isNextSecondType = false;
-        }
-        return isNextSecondType;
-    }
 
     @Override
     public void getItemOffsets(Rect outRect, View view, RecyclerView parent, RecyclerView.State state) {

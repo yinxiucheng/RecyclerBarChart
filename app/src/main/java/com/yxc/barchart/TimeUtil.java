@@ -394,11 +394,11 @@ public class TimeUtil {
         return date.getYear() == compareDate.getYear() && date.getMonthOfYear() == compareDate.getMonthOfYear() && date.getDayOfMonth() == compareDate.getDayOfMonth();
     }
 
-    //是否是上一天
-    public static boolean isLastDay(long timestamp){
-        long timestampPlusOneHour = timestamp + TIME_HOUR;
+    //下一天
+    public static boolean isNextDay(long timestamp){
+        long timestampMinusOneHour = timestamp - TIME_HOUR;
         LocalDate localDate1 = timestampToLocalDate(timestamp);
-        LocalDate localDate2 = timestampToLocalDate(timestampPlusOneHour);
+        LocalDate localDate2 = timestampToLocalDate(timestampMinusOneHour);
         return localDate1.getDayOfWeek() != localDate2.getDayOfWeek();
     }
 
@@ -408,13 +408,18 @@ public class TimeUtil {
         return currentLocalDate.getWeekOfWeekyear() == localDate.getWeekOfWeekyear();
     }
 
+    public static boolean isMonday(LocalDate localDate){
+        return localDate.getDayOfWeek() == 1;
+    }
+
     public static boolean isLastDayOfMonth(LocalDate localDate) {
         LocalDate temp = localDate.plusDays(1);
         return localDate.getMonthOfYear() != temp.getMonthOfYear();
     }
 
+
     public static boolean isFirstDayOfMonth(LocalDate localDate) {
-        LocalDate temp = localDate.plusDays(1);
+        LocalDate temp = localDate.minusDays(1);
         return localDate.getMonthOfYear() != temp.getMonthOfYear();
     }
 
@@ -434,8 +439,6 @@ public class TimeUtil {
                 return "周六";
             case 7:
                 return "周日";
-            case 0:
-                return "周八";
                 default:return "";
         }
     }
