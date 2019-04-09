@@ -1,8 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout
-    xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:fitsSystemWindows="true"
@@ -12,23 +10,59 @@
         android:id="@+id/topTabLayout"
         android:layout_width="match_parent"
         android:layout_height="34dp"
-        android:layout_marginTop="40dp"
-        android:layout_marginBottom="40dp"
-        android:layout_marginLeft="30dp"
-        android:layout_marginRight="30dp"
         android:layout_centerVertical="true"
         android:layout_gravity="center"
+        android:layout_marginLeft="20dp"
+        android:layout_marginTop="40dp"
+        android:layout_marginRight="20dp"
+        android:layout_marginBottom="15dp"
         app:tl_bar_color="#ffffff"
-        app:tl_textBold="2"
         app:tl_indicator_corner_radius="8dp"
-        app:tl_tab_padding="45dp" />
+        app:tl_tab_padding="45dp"
+        app:tl_textBold="2" />
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="40dp"
+        android:layout_marginLeft="20dp"
+        android:layout_marginRight="20dp"
+        android:layout_marginBottom="15dp">
+
+        <ImageView
+            android:id="@+id/img_left"
+            android:layout_width="30dp"
+            android:layout_height="30dp"
+            android:layout_alignParentLeft="true"
+            android:layout_centerVertical="true"
+            android:src="@drawable/ic_chevron_left_black_24dp"
+            android:scaleType="center" />
+
+        <TextView
+            android:id="@+id/txt_layout"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerInParent="true"
+            android:textColor="@color/pink"
+            android:text="2019年04月09日"
+            android:textSize="14sp" />
+
+        <ImageView
+            android:id="@+id/img_right"
+            android:layout_width="30dp"
+            android:layout_height="30dp"
+            android:layout_alignParentRight="true"
+            android:layout_centerVertical="true"
+            android:src="@drawable/ic_chevron_right_black_24dp"
+            android:scaleType="center" />
+
+    </RelativeLayout>
 
     <android.support.v7.widget.RecyclerView
         android:id="@+id/recycler"
         android:layout_width="match_parent"
         android:layout_height="300dp"
-        android:paddingLeft="10dp"
-        android:layout_centerVertical="true"/>
+        android:layout_centerVertical="true"
+        android:paddingLeft="10dp" />
 
     <android.support.design.widget.FloatingActionButton
         android:id="@+id/fab"
@@ -36,6 +70,6 @@
         android:layout_height="wrap_content"
         android:layout_gravity="bottom|end"
         android:layout_margin="@dimen/fab_margin"
-        android:src="@android:drawable/ic_dialog_email"/>
+        android:src="@android:drawable/ic_dialog_email" />
 
 </LinearLayout>

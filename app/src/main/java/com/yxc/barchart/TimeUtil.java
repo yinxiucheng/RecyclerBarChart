@@ -407,6 +407,12 @@ public class TimeUtil {
         return currentLocalDate.getWeekOfWeekyear() == localDate.getWeekOfWeekyear();
     }
 
+    //需要跟上个月比较
+    public static boolean isAnotherYear(LocalDate localDate){
+        LocalDate lastMonth = localDate.minusMonths(1);
+        return localDate.getYear() != lastMonth.getYear();
+    }
+
     public static boolean isMonday(LocalDate localDate){
         return localDate.getDayOfWeek() == 1;
     }

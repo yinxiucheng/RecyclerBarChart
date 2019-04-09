@@ -30,7 +30,7 @@ public class BarChartActivity extends AppCompatActivity {
     YAxis mYAxis;
     XAxis mXAxis;
 
-    private String[] mTitles = {"日", "周", "月"};
+    private String[] mTitles = {"日", "周", "月", "年"};
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -79,7 +79,7 @@ public class BarChartActivity extends AppCompatActivity {
     }
 
     private void reSizeYAxis() {
-        recyclerView.scrollToPosition(mEntries.size()-1);
+        recyclerView.scrollToPosition(mEntries.size() - 1);
         int lastVisiblePosition = mEntries.size() - 1;
         int firstVisiblePosition = lastVisiblePosition - displayNumber;
         mVisibleEntries = mEntries.subList(firstVisiblePosition, lastVisiblePosition);
@@ -143,7 +143,6 @@ public class BarChartActivity extends AppCompatActivity {
         return max;
     }
 
-
     private void initTableLayout() {
         mTabLayout.setIndicatorColor(ColorUtil.getResourcesColor(this, R.color.tab_unchecked));
         mTabLayout.setTextUnselectColor(ColorUtil.getResourcesColor(this, R.color.tab_checked));
@@ -153,18 +152,20 @@ public class BarChartActivity extends AppCompatActivity {
         mTabLayout.setOnTabSelectListener(new OnTabSelectListener() {
             @Override
             public void onTabSelect(int position) {
-                if (position == 0){
+                if (position == 0) {
                     createDayEntries();
                     reSizeYAxis();
-                }else if (position == 1){
+                } else if (position == 1) {
                     createWeekEntries();
                     reSizeYAxis();
-                }else if (position == 2){
+                } else if (position == 2) {
                     createMonthEntries();
+                    reSizeYAxis();
+                } else if (position == 3) {
+                    createYearEntries();
                     reSizeYAxis();
                 }
             }
-
             @Override
             public void onTabReselect(int position) {
 
@@ -313,6 +314,53 @@ public class BarChartActivity extends AppCompatActivity {
             BarEntry barEntry = new BarEntry(value, timestamp, type);
             barEntry.localDate = localDate;
             barEntry.xAxisLabel = xAxisStr;
+            entries.add(barEntry);
+        }
+        Collections.sort(entries);
+        mEntries.addAll(0, entries);
+        mBarChartAdapter.setXAxis(mXAxis);
+    }
+
+
+    //创建 Day视图的数据
+    private void createYearEntries() {
+        mEntries.clear();
+        displayNumber = 13;
+        mXAxis = new XAxis(this, displayNumber);
+        //获取下个月1号
+        LocalDate localDate = TimeUtil.getFirstDayOfMonth(LocalDate.now().plusMonths(1));
+        List<BarEntry> entries = new ArrayList<>();
+        for (int i = 0; i < 200; i++) {
+            if (i > 0) {
+                localDate = localDate.minusMonths(1);
+            }
+            float mult = 10;
+            float value = 0;
+            if (i > 500) {
+                value = (float) (Math.random() * 30000) + mult;
+            } else if (i > 400) {
+                value = (float) (Math.random() * 3000) + mult;
+            } else if (i > 300) {
+                value = (float) (Math.random() * 20000) + mult;
+            } else if (i > 200) {
+                value = (float) (Math.random() * 5000) + mult;
+            } else if (i > 100) {
+                value = (float) (Math.random() * 300) + mult;
+            } else {
+                value = (float) (Math.random() * 6000) + mult;
+            }
+            value = Math.round(value);
+
+            int type = BarEntry.TYPE_SECOND;
+            boolean isNextYear = TimeUtil.isAnotherYear(localDate);
+            if (isNextYear) {
+                type = BarEntry.TYPE_FIRST;
+            }
+            String xAxis = Integer.toString(localDate.getMonthOfYear());
+            long timestamp = TimeUtil.changZeroOfTheDay(localDate);
+            BarEntry barEntry = new BarEntry(value, timestamp, type);
+            barEntry.localDate = localDate;
+            barEntry.xAxisLabel = xAxis;
             entries.add(barEntry);
         }
         Collections.sort(entries);
