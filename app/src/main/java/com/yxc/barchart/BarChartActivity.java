@@ -16,10 +16,10 @@ import com.yxc.barchart.component.XAxis;
 import com.yxc.barchart.component.YAxis;
 import com.yxc.barchart.tab.OnTabSelectListener;
 import com.yxc.barchart.tab.TopTabLayout;
-import com.yxc.util.BarChartConfig;
+import com.yxc.util.BarChartAttrs;
 import com.yxc.util.ColorUtil;
 import com.yxc.util.TimeUtil;
-import com.yxc.wediget.CustomerRecyclerView;
+import com.yxc.wediget.BarChartRecyclerView;
 
 import org.joda.time.LocalDate;
 
@@ -35,7 +35,7 @@ public class BarChartActivity extends AppCompatActivity {
     public static final int VIEW_YEAR = 3;
     int mType;
 
-    CustomerRecyclerView recyclerView;
+    BarChartRecyclerView recyclerView;
     TopTabLayout mTabLayout;
     TextView txtLeftLocalDate;
     TextView txtRightLocalDate;
@@ -52,7 +52,7 @@ public class BarChartActivity extends AppCompatActivity {
 
     private String[] mTitles = {"日", "周", "月", "年"};
     private boolean needRelocation = false;
-    private BarChartConfig mBarChartConfig;
+    private BarChartAttrs mBarChartAttrs;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -61,6 +61,7 @@ public class BarChartActivity extends AppCompatActivity {
 
         mTabLayout = findViewById(R.id.topTabLayout);
         recyclerView = findViewById(R.id.recycler);
+        mBarChartAttrs = recyclerView.mAttrs;
 
         txtLeftLocalDate = findViewById(R.id.txt_left_local_date);
         txtRightLocalDate = findViewById(R.id.txt_right_local_date);
@@ -68,9 +69,6 @@ public class BarChartActivity extends AppCompatActivity {
         imgNext = findViewById(R.id.img_right);
         initTableLayout();
         mEntries = new ArrayList<>();
-        mBarChartConfig = new BarChartConfig(this);
-        mBarChartConfig.barSpace = 0.5f;
-        mBarChartConfig.enableLeftYAxisLabel = false;
 
         RecyclerView.LayoutManager layoutManager = new LinearLayoutManager(this);
         ((LinearLayoutManager) layoutManager).setOrientation(LinearLayoutManager.HORIZONTAL);
@@ -78,7 +76,7 @@ public class BarChartActivity extends AppCompatActivity {
         displayNumber = 25;
         mYAxis = new YAxis();
         mXAxis = new XAxis(this, displayNumber);
-        mItemDecoration = new BarChartItemDecoration(this, BarChartItemDecoration.HORIZONTAL_LIST, mYAxis, mXAxis, mBarChartConfig);
+        mItemDecoration = new BarChartItemDecoration(this, BarChartItemDecoration.HORIZONTAL_LIST, mYAxis, mXAxis, mBarChartAttrs);
         recyclerView.addItemDecoration(mItemDecoration);
         mBarChartAdapter = new BarChartAdapter(this, mEntries, recyclerView, mXAxis);
         recyclerView.setAdapter(mBarChartAdapter);

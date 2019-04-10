@@ -74,6 +74,31 @@
         </attr>
     </declare-styleable>
 
+    <declare-styleable name="BarChartRecyclerView">
+
+        <attr name="barBorderColor" format="color" />
+        <attr name="barChartEdgeColor" format="color" />
+        <attr name="barChartColor" format="color" />
+
+        <attr name="barBorderWidth" format="dimension" />
+        <attr name="contentPaddingBottom" format="dimension" />
+        <attr name="maxYAxisPaddingTop" format="dimension" />
+        <attr name="recyclerPaddingLeft" format="dimension" />
+        <attr name="recyclerPaddingRight" format="dimension" />
+
+        <attr name="enableCharValueDisplay" format="boolean" />
+        <attr name="enableYAxisZero" format="boolean" />
+        <attr name="enableXAxisGridLine" format="boolean" />
+        <attr name="enableRightYAxisLabel" format="boolean" />
+        <attr name="enableLeftYAxisLabel" format="boolean" />
+        <attr name="enableBarBorder" format="boolean" />
+        <attr name="enableScrollToScale" format="boolean"/>
+        
+        <attr name="barSpace" format="float"/>
+        <attr name="ratioVelocity" format="float"/>
+
+    </declare-styleable>
+
 
     <declare-styleable name="TopTabLayout">
         <!-- indicator -->

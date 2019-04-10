@@ -58,7 +58,7 @@
 
     </RelativeLayout>
 
-    <com.yxc.wediget.CustomerRecyclerView
+    <com.yxc.wediget.BarChartRecyclerView
         android:id="@+id/recycler"
         android:layout_width="match_parent"
         android:layout_height="300dp"

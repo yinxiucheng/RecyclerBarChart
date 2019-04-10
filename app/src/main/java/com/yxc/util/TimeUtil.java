@@ -133,8 +133,7 @@ public class TimeUtil {
 
 
         //周一开始的
-        if (type == Attrs.MONDAY) {
-
+        if (type == MONDAY) {
             //周一开始的
             for (int i = 0; i < firstDayOfWeek - 1; i++) {
                 LocalDate date = new LocalDate(lastMonthDate.getYear(), lastMonthDate.getMonthOfYear(), lastMonthDays - (firstDayOfWeek - i - 2));
@@ -148,7 +147,6 @@ public class TimeUtil {
                 LocalDate date = new LocalDate(nextMonthDate.getYear(), nextMonthDate.getMonthOfYear(), i + 1);
                 dateList.add(date);
             }
-
         } else {
             //上个月
             if (firstDayOfWeek != 7) {
