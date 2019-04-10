@@ -1,4 +1,4 @@
-package com.yxc.barchart;
+package com.yxc.barchart.component;
 
 import android.support.annotation.NonNull;
 
@@ -18,9 +18,12 @@ public class BarEntry implements Comparable<BarEntry> {
 
     public static final int TYPE_SPECIAL = 4;//同时是月线以及7日分隔线
 
-    float value;
-    long timestamp;
-    int type;
+    public float value;
+
+    public long timestamp;
+
+    public int type;
+
     public LocalDate localDate;
 
     public String xAxisLabel = "";

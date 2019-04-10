@@ -1,10 +1,11 @@
-package com.yxc.barchart;
+package com.yxc.barchart.component;
 
 import android.graphics.RectF;
 
 /**
  * @author yxc
  * @date 2019/4/8
+ *  想做属性动画，包装的一个类
  */
 public class ChartRectF extends RectF {
 

@@ -24,5 +24,28 @@
 
     <color name="tab_checked">#FFF76E6E</color>
     <color name="tab_unchecked">#d5d5d5</color>
+    <color name="white">#ffffff</color>
+    <color name="transparent">#00000000</color>
+
+
+
+    <!--todo 需要删除 -->
+    <color name="solarTextColor">#000000</color>
+    <color name="lunarTextColor">#F0EBEB</color>
+    <color name="solarTermTextColor">#B2B2B2</color>
+    <color name="lunarHolidayTextColor">#B2B2B2</color>
+    <color name="solarHolidayTextColor">#B2B2B2</color>
+    <color name="hintColor">#999999</color>
+    <color name="selectCircleColor">#39AF81</color>
+    <color name="todaySolarTextColor">#39AF81</color>
+    <color name="holidayColor">#39AF81</color>
+    <color name="workdayColor">#EC7230</color>
+    <color name="pointColor">#B2B2B2</color>
+    <color name="hollowCircleColor">#B2B2B2</color>
+    <color name="disabledColor">#999999</color>
+    <color name="todayWeekBgColor">#D6D6D6</color>
+    <color name="cpb_divider_color">#EDEDED</color>
+    <color name="cpb_unclick_color">#B2B2B2</color>
+
 
 </resources>

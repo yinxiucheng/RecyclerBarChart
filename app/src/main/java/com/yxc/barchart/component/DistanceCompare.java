@@ -1,4 +1,4 @@
-package com.yxc.barchart;
+package com.yxc.barchart.component;
 
 /**
  * @author yxc
@@ -6,8 +6,8 @@ package com.yxc.barchart;
  */
 public class DistanceCompare {
 
-    int distanceLeft;
-    int distanceRight;
+    public int distanceLeft;
+    public int distanceRight;
 
     public DistanceCompare(int distanceLeft, int distanceRight){
         this.distanceLeft = distanceLeft;

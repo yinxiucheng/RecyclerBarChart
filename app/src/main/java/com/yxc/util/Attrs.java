@@ -1,4 +1,4 @@
-package com.yxc.barchart;
+package com.yxc.util;
 
 
 public class Attrs {

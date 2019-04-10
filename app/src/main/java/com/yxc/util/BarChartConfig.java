@@ -1,6 +1,8 @@
-package com.yxc.barchart;
+package com.yxc.util;
 
 import android.content.Context;
+
+import com.yxc.barchart.R;
 
 /**
  * @author yxc

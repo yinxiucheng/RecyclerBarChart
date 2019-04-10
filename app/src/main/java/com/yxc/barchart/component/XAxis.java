@@ -1,7 +1,11 @@
-package com.yxc.barchart;
+package com.yxc.barchart.component;
 
 import android.content.Context;
 import android.graphics.Color;
+
+import com.yxc.util.DisplayUtil;
+import com.yxc.barchart.R;
+import com.yxc.util.ColorUtil;
 
 /**
  * @author yxc

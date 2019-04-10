@@ -1,4 +1,4 @@
-package com.yxc.barchart;
+package com.yxc.util;
 
 import org.joda.time.Days;
 import org.joda.time.Instant;
@@ -19,6 +19,7 @@ import java.util.List;
 public class TimeUtil {
 
     public static final long TIME_DAY = 24 * 60 * 60;
+
     public static final long TIME_HOUR = 1 * 60 * 60;
     //一位小数
     public static final int ONE_LENGTH_DECIMAL = 1;
@@ -26,6 +27,10 @@ public class TimeUtil {
     public static final int TWO_LENGTH_DECIMAL = 2;
     //三位小数
     public static final int THREE_LENGTH_DECIMAL = 3;
+
+    //周的第一天
+    public static final int SUNDAY = 300;//周的第一天 周日
+    public static final int MONDAY = 301;//周的第一天 周一
 
     //是否同月
     public static boolean isEqualsMonth(LocalDate date1, LocalDate date2) {
@@ -80,7 +85,7 @@ public class TimeUtil {
      */
     public static int getIntervalWeek(LocalDate date1, LocalDate date2, int type) {
 
-        if (type == Attrs.MONDAY) {
+        if (type == MONDAY) {
             date1 = getMonFirstDayOfWeek(date1);
             date2 = getMonFirstDayOfWeek(date2);
         } else {
@@ -109,9 +114,8 @@ public class TimeUtil {
 
     }
 
-
     public static List<LocalDate> getMonthLocalDateCalendar(LocalDate localDate) {
-        return getMonthLocalDateCalendar(localDate, Attrs.MONDAY);
+        return getMonthLocalDateCalendar(localDate, MONDAY);
     }
 
 

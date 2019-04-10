@@ -16,6 +16,14 @@ import android.text.TextUtils;
 import android.util.Log;
 import android.view.View;
 
+import com.yxc.barchart.component.BarEntry;
+import com.yxc.barchart.component.ChartRectF;
+import com.yxc.barchart.component.XAxis;
+import com.yxc.barchart.component.YAxis;
+import com.yxc.util.BarChartConfig;
+import com.yxc.util.ColorUtil;
+import com.yxc.util.DisplayUtil;
+
 import java.util.List;
 
 /**

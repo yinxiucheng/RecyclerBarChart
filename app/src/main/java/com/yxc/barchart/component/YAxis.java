@@ -1,6 +1,8 @@
-package com.yxc.barchart;
+package com.yxc.barchart.component;
 
 import android.graphics.Color;
+
+import com.yxc.util.DisplayUtil;
 
 /**
  * @author yxc

@@ -1,4 +1,4 @@
-package com.yxc.barchart;
+package com.yxc.util;
 
 import android.app.Activity;
 import android.content.Context;

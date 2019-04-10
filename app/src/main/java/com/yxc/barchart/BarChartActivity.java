@@ -10,8 +10,15 @@ import android.view.View;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import com.yxc.barchart.component.BarEntry;
+import com.yxc.barchart.component.DistanceCompare;
+import com.yxc.barchart.component.XAxis;
+import com.yxc.barchart.component.YAxis;
 import com.yxc.barchart.tab.OnTabSelectListener;
 import com.yxc.barchart.tab.TopTabLayout;
+import com.yxc.util.BarChartConfig;
+import com.yxc.util.ColorUtil;
+import com.yxc.util.TimeUtil;
 import com.yxc.wediget.CustomerRecyclerView;
 
 import org.joda.time.LocalDate;

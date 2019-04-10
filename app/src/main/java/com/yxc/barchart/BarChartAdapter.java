@@ -3,10 +3,13 @@ package com.yxc.barchart;
 import android.content.Context;
 import android.support.annotation.NonNull;
 import android.support.v7.widget.RecyclerView;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+
+import com.yxc.barchart.component.BarEntry;
+import com.yxc.barchart.component.XAxis;
+import com.yxc.util.DisplayUtil;
 
 import java.util.List;
 
