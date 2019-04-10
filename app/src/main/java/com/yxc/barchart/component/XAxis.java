@@ -30,5 +30,4 @@ public class XAxis {
         this.thirdDividerColor = attrs.xAxisThirdDividerColor;
         this.labelTxtPadding = attrs.xAxisLabelTxtPadding;
     }
-
 }

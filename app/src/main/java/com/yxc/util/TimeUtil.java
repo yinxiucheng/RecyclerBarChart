@@ -275,7 +275,7 @@ public class TimeUtil {
     }
 
 
-    public static String getLocalDateStr(long timestamp){
+    public static String getLocalDateStr(long timestamp) {
         SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd 00:00:00");
         Date date = new Date(timestamp);
         String dateStr = sdf.format(date);
@@ -398,12 +398,15 @@ public class TimeUtil {
         return changZeroOfTheDay(firstDayOfMonth);
     }
 
+    //同一天
     public static boolean isSameLocalDate(LocalDate date, LocalDate compareDate) {
-        return date.getYear() == compareDate.getYear() && date.getMonthOfYear() == compareDate.getMonthOfYear() && date.getDayOfMonth() == compareDate.getDayOfMonth();
+        return date.getYear() == compareDate.getYear() &&
+                date.getMonthOfYear() == compareDate.getMonthOfYear() &&
+                date.getDayOfMonth() == compareDate.getDayOfMonth();
     }
 
     //下一天
-    public static boolean isNextDay(long timestamp){
+    public static boolean isNextDay(long timestamp) {
         long timestampMinusOneHour = timestamp - TIME_HOUR;
         LocalDate localDate1 = timestampToLocalDate(timestamp);
         LocalDate localDate2 = timestampToLocalDate(timestampMinusOneHour);
@@ -417,12 +420,12 @@ public class TimeUtil {
     }
 
     //需要跟上个月比较
-    public static boolean isAnotherYear(LocalDate localDate){
+    public static boolean isAnotherYear(LocalDate localDate) {
         LocalDate lastMonth = localDate.minusMonths(1);
         return localDate.getYear() != lastMonth.getYear();
     }
 
-    public static boolean isMonday(LocalDate localDate){
+    public static boolean isMonday(LocalDate localDate) {
         return localDate.getDayOfWeek() == 1;
     }
 
@@ -438,7 +441,7 @@ public class TimeUtil {
     }
 
     public static String getWeekStr(int dayOfWeek) {
-        switch (dayOfWeek){
+        switch (dayOfWeek) {
             case 1:
                 return "周一";
             case 2:
@@ -453,7 +456,8 @@ public class TimeUtil {
                 return "周六";
             case 7:
                 return "周日";
-                default:return "";
+            default:
+                return "";
         }
     }
 
@@ -461,7 +465,7 @@ public class TimeUtil {
         LocalDate localDate = timestampToLocalDate(timestamp);
         long zeroHour = changZeroOfTheDay(localDate);
         long distance = timestamp - zeroHour;
-        int time = (int) (distance/TIME_HOUR);
+        int time = (int) (distance / TIME_HOUR);
         return time + "时";
     }
 
@@ -470,4 +474,19 @@ public class TimeUtil {
         LocalDate localDateCompare = timestampToLocalDate(timestampCompare);
         return localDate.getYear() == localDateCompare.getYear();
     }
+
+    public static boolean isSameMonth(long timestamp, long timestampCompare) {
+        LocalDate localDate = timestampToLocalDate(timestamp);
+        LocalDate localDateCompare = timestampToLocalDate(timestampCompare);
+        return localDate.getYear() == localDateCompare.getYear() && localDate.getMonthOfYear() == localDateCompare.getMonthOfYear();
+    }
+
+    public static boolean isTheSameDay(long timestamp, long timestampCompare){
+        LocalDate localDate = timestampToLocalDate(timestamp);
+        LocalDate localDateCompare = timestampToLocalDate(timestampCompare);
+        return isSameLocalDate(localDate, localDateCompare);
+    }
+
+
+
 }

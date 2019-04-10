@@ -262,12 +262,12 @@ public class BarChartActivity extends AppCompatActivity {
         }
         firstVisibleItemPosition = lastVisibleItemPosition - displayNumber;
 
-        List<BarEntry> displayEntries = mEntries.subList(firstVisibleItemPosition, lastVisibleItemPosition + 1);
-        float max = getTheMaxNumber(displayEntries);
+        List<BarEntry> visibleEntries = mEntries.subList(firstVisibleItemPosition, lastVisibleItemPosition + 1);
+        float max = getTheMaxNumber(visibleEntries);
         mYAxis = YAxis.getYAxis(mBarChartAttrs, max);
         mItemDecoration.setYAxis(mYAxis);
 //        recyclerView.invalidate();
-        displayDateAndStep(displayEntries);
+        displayDateAndStep(visibleEntries);
     }
 
     private void displayDateAndStep(List<BarEntry> displayEntries) {
@@ -277,12 +277,52 @@ public class BarChartActivity extends AppCompatActivity {
         txtLeftLocalDate.setText(TimeUtil.getDateStr(leftBarEntry.timestamp, "yyyy-MM-dd HH:mm:ss"));
         txtRightLocalDate.setText(TimeUtil.getDateStr(rightBarEntry.timestamp, "yyyy-MM-dd HH:mm:ss"));
 
-
-        String beginDateStr = TimeUtil.getDateStr(leftBarEntry.timestamp, "yyyy-MM-dd");
-        String patterStr = TimeUtil.isSameYear(leftBarEntry.timestamp, rightBarEntry.timestamp) ? "MM-dd" : "yyyy-MM-dd";
-        String endDateStr = TimeUtil.getDateStr(rightBarEntry.timestamp, patterStr);
-        String connectStr = " 至 ";
-        textTitle.setText(beginDateStr + connectStr + endDateStr);
+        if (mType == VIEW_MONTH) {
+            String beginDateStr = TimeUtil.getDateStr(leftBarEntry.timestamp, "yyyy年MM月dd日");
+            String patternStr = "yyyy年MM月dd日";
+            if (TimeUtil.isSameMonth(leftBarEntry.timestamp, rightBarEntry.timestamp)) {
+                textTitle.setText(TimeUtil.getDateStr(leftBarEntry.timestamp, "yyyy年MM月"));
+            } else if (TimeUtil.isSameYear(leftBarEntry.timestamp, rightBarEntry.timestamp)) {
+                patternStr = "MM月dd日";
+                String endDateStr = TimeUtil.getDateStr(rightBarEntry.timestamp, patternStr);
+                String connectStr = "至";
+                textTitle.setText(beginDateStr + connectStr + endDateStr);
+            } else {
+                String endDateStr = TimeUtil.getDateStr(rightBarEntry.timestamp, patternStr);
+                String connectStr = "至";
+                textTitle.setText(beginDateStr + connectStr + endDateStr);
+            }
+        } else if (mType == VIEW_WEEK) {
+            String beginDateStr = TimeUtil.getDateStr(leftBarEntry.timestamp, "yyyy年MM月dd日");
+            String patternStr = "yyyy年MM月dd日";
+            if (TimeUtil.isSameMonth(leftBarEntry.timestamp, rightBarEntry.timestamp)) {
+                patternStr = "dd日";
+            } else if (TimeUtil.isSameYear(leftBarEntry.timestamp, rightBarEntry.timestamp)) {
+                patternStr = "MM月dd日";
+            }
+            String endDateStr = TimeUtil.getDateStr(rightBarEntry.timestamp, patternStr);
+            String connectStr = "至";
+            textTitle.setText(beginDateStr + connectStr + endDateStr);
+        } else if (mType == VIEW_DAY) {
+            String beginDateStr = TimeUtil.getDateStr(leftBarEntry.timestamp, "yyyy年MM月dd日 HH:mm");
+            String patternStr = "yyyy年MM月dd日 HH:mm";
+            if (TimeUtil.isTheSameDay(leftBarEntry.timestamp, rightBarEntry.timestamp)) {
+                textTitle.setText(TimeUtil.getDateStr(leftBarEntry.timestamp, "yyyy年MM月dd日"));
+            } else {
+                String endDateStr = TimeUtil.getDateStr(rightBarEntry.timestamp, patternStr);
+                String connectStr = " - ";
+                textTitle.setText(beginDateStr + connectStr + endDateStr);
+            }
+        } else if (mType == VIEW_YEAR) {
+            if (TimeUtil.isSameYear(leftBarEntry.timestamp, rightBarEntry.timestamp)) {
+                textTitle.setText(TimeUtil.getDateStr(leftBarEntry.timestamp, "yyyy年"));
+            } else {
+                String beginDateStr = TimeUtil.getDateStr(leftBarEntry.timestamp, "yyyy/MM/dd");
+                String endDateStr = TimeUtil.getDateStr(rightBarEntry.timestamp, "yyyy/MM/dd");
+                String connectStr = " -- ";
+                textTitle.setText(beginDateStr + connectStr + endDateStr);
+            }
+        }
 
         long count = 0;
         for (int i = 0; i < displayEntries.size(); i++) {
