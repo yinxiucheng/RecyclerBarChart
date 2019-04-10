@@ -6,6 +6,7 @@ import android.support.design.widget.FloatingActionButton;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.text.SpannableStringBuilder;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.TextView;
@@ -18,6 +19,7 @@ import com.yxc.barchart.tab.OnTabSelectListener;
 import com.yxc.barchart.tab.TopTabLayout;
 import com.yxc.util.BarChartAttrs;
 import com.yxc.util.ColorUtil;
+import com.yxc.util.TextUtil;
 import com.yxc.util.TimeUtil;
 import com.yxc.wediget.BarChartRecyclerView;
 
@@ -33,12 +35,14 @@ public class BarChartActivity extends AppCompatActivity {
     public static final int VIEW_WEEK = 1;
     public static final int VIEW_MONTH = 2;
     public static final int VIEW_YEAR = 3;
-    int mType;
+    public int mType;
 
     BarChartRecyclerView recyclerView;
     TopTabLayout mTabLayout;
     TextView txtLeftLocalDate;
     TextView txtRightLocalDate;
+    TextView textTitle;
+    TextView txtCountStep;
     ImageView imgLast;
     ImageView imgNext;
 
@@ -64,6 +68,9 @@ public class BarChartActivity extends AppCompatActivity {
 
         txtLeftLocalDate = findViewById(R.id.txt_left_local_date);
         txtRightLocalDate = findViewById(R.id.txt_right_local_date);
+        textTitle = findViewById(R.id.txt_layout);
+        txtCountStep = findViewById(R.id.txt_count_Step);
+
         imgLast = findViewById(R.id.img_left);
         imgNext = findViewById(R.id.img_right);
         initTableLayout();
@@ -101,16 +108,12 @@ public class BarChartActivity extends AppCompatActivity {
         recyclerView.scrollToPosition(mEntries.size() - 1);
         int lastVisiblePosition = mEntries.size() - 1;
         int firstVisiblePosition = lastVisiblePosition - displayNumber + 1;
-        mVisibleEntries = mEntries.subList(firstVisiblePosition, lastVisiblePosition);
-        mYAxis = YAxis.getYAxis(mBarChartAttrs, getTheMaxNumber(mVisibleEntries));
+        List<BarEntry> visibleEntries = mEntries.subList(firstVisiblePosition, lastVisiblePosition);
+        mYAxis = YAxis.getYAxis(mBarChartAttrs, getTheMaxNumber(visibleEntries));
         mBarChartAdapter.notifyDataSetChanged();
         mItemDecoration.setYAxis(mYAxis);
 
-        BarEntry leftBarEntry = mEntries.get(firstVisiblePosition);
-        BarEntry rightBarEntry = mEntries.get(lastVisiblePosition);
-
-        txtLeftLocalDate.setText(TimeUtil.getDateStr(leftBarEntry.timestamp));
-        txtRightLocalDate.setText(TimeUtil.getDateStr(rightBarEntry.timestamp));
+        displayDateAndStep(visibleEntries);
     }
 
 
@@ -204,10 +207,7 @@ public class BarChartActivity extends AppCompatActivity {
         recyclerView.invalidate();
 
         //todo 调试显示用的
-        BarEntry leftBarEntry = displayEntries.get(0);
-        BarEntry rightBarEntry = displayEntries.get(displayEntries.size() - 1);
-        txtLeftLocalDate.setText(TimeUtil.getDateStr(leftBarEntry.timestamp));
-        txtRightLocalDate.setText(TimeUtil.getDateStr(rightBarEntry.timestamp));
+        displayDateAndStep(displayEntries);
     }
 
 
@@ -267,12 +267,33 @@ public class BarChartActivity extends AppCompatActivity {
         mYAxis = YAxis.getYAxis(mBarChartAttrs, max);
         mItemDecoration.setYAxis(mYAxis);
 //        recyclerView.invalidate();
+        displayDateAndStep(displayEntries);
+    }
 
+    private void displayDateAndStep(List<BarEntry> displayEntries) {
         //todo 调试显示用的
         BarEntry leftBarEntry = displayEntries.get(0);
         BarEntry rightBarEntry = displayEntries.get(displayEntries.size() - 1);
-        txtLeftLocalDate.setText(TimeUtil.getDateStr(leftBarEntry.timestamp));
-        txtRightLocalDate.setText(TimeUtil.getDateStr(rightBarEntry.timestamp));
+        txtLeftLocalDate.setText(TimeUtil.getDateStr(leftBarEntry.timestamp, "yyyy-MM-dd HH:mm:ss"));
+        txtRightLocalDate.setText(TimeUtil.getDateStr(rightBarEntry.timestamp, "yyyy-MM-dd HH:mm:ss"));
+
+
+        String beginDateStr = TimeUtil.getDateStr(leftBarEntry.timestamp, "yyyy-MM-dd");
+        String patterStr = TimeUtil.isSameYear(leftBarEntry.timestamp, rightBarEntry.timestamp) ? "MM-dd" : "yyyy-MM-dd";
+        String endDateStr = TimeUtil.getDateStr(rightBarEntry.timestamp, patterStr);
+        String connectStr = " 至 ";
+        textTitle.setText(beginDateStr + connectStr + endDateStr);
+
+        long count = 0;
+        for (int i = 0; i < displayEntries.size(); i++) {
+            BarEntry entry = displayEntries.get(i);
+            count += entry.value;
+        }
+        int averageStep = (int) (count / displayEntries.size());
+        String childStr = Integer.toString(averageStep);
+        String parentStr = String.format(getString(R.string.str_count_step), childStr);
+        SpannableStringBuilder spannable = TextUtil.getSpannableStr(this, parentStr, childStr, 24);
+        txtCountStep.setText(spannable);
     }
 
 

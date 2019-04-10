@@ -286,8 +286,11 @@ public class TimeUtil {
         return changZeroOfTheDayInner(localDate) / 1000;
     }
 
-    public static String getDateStr(long timestamp) {
-        SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+    public static String getDateStr(long timestamp, String patternStr) {
+//        SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+
+        SimpleDateFormat simpleDateFormat = new SimpleDateFormat(patternStr);
+
         Date date = new Date(timestamp * 1000);
         String res = simpleDateFormat.format(date);
         return res;
@@ -460,5 +463,11 @@ public class TimeUtil {
         long distance = timestamp - zeroHour;
         int time = (int) (distance/TIME_HOUR);
         return time + "时";
+    }
+
+    public static boolean isSameYear(long timestamp, long timestampCompare) {
+        LocalDate localDate = timestampToLocalDate(timestamp);
+        LocalDate localDateCompare = timestampToLocalDate(timestampCompare);
+        return localDate.getYear() == localDateCompare.getYear();
     }
 }

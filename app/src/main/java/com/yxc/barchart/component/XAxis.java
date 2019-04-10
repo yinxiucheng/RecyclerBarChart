@@ -12,9 +12,9 @@ public class XAxis {
     public float txtSize;
     public int txtColor;
 
-    public int barEntryTypeFirstColor;
-    public int barEntryTypeSecondColor;
-    public int barEntryTypeThirdColor;
+    public int firstDividerColor;
+    public int secondDividerColor;
+    public int thirdDividerColor;
 
     public float labelTxtPadding;
 
@@ -25,9 +25,9 @@ public class XAxis {
         this.displayNumbers = displayNumbers;
         this.txtColor = attrs.xAxisTxtColor;
         this.txtSize = attrs.xAxisTxtSize;
-        this.barEntryTypeFirstColor = attrs.xAxisFirstDividerColor;
-        this.barEntryTypeSecondColor = attrs.xAxisSecondDividerColor;
-        this.barEntryTypeThirdColor = attrs.xAxisThirdDividerColor;
+        this.firstDividerColor = attrs.xAxisFirstDividerColor;
+        this.secondDividerColor = attrs.xAxisSecondDividerColor;
+        this.thirdDividerColor = attrs.xAxisThirdDividerColor;
         this.labelTxtPadding = attrs.xAxisLabelTxtPadding;
     }
 

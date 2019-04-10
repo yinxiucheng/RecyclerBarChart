@@ -408,7 +408,7 @@ public class BarChartItemDecoration extends RecyclerView.ItemDecoration {
             }
             if (type == BarEntry.TYPE_XAXIS_FIRST || type == BarEntry.TYPE_XAXIS_SPECIAL) {
                 boolean isNextSecondType = isNearEntrySecondType(child.getWidth(), adapterPosition);
-                mLinePaint.setColor(xAxis.barEntryTypeFirstColor);
+                mLinePaint.setColor(xAxis.firstDividerColor);
                 Path path = new Path();
                 if (isNextSecondType) {
                     path.moveTo(x, parentBottom - mBarChartAttrs.contentPaddingBottom);
@@ -421,7 +421,7 @@ public class BarChartItemDecoration extends RecyclerView.ItemDecoration {
                 //拿到child 的布局信息
                 PathEffect pathEffect = new DashPathEffect(new float[]{5, 5, 5, 5}, 1);
                 mDashPaint.setPathEffect(pathEffect);
-                mDashPaint.setColor(xAxis.barEntryTypeSecondColor);
+                mDashPaint.setColor(xAxis.secondDividerColor);
                 Path path = new Path();
                 path.moveTo(x, parentBottom - DisplayUtil.dip2px(1));
                 path.lineTo(x, parentTop);
@@ -430,7 +430,7 @@ public class BarChartItemDecoration extends RecyclerView.ItemDecoration {
                 //拿到child 的布局信息
                 PathEffect pathEffect = new DashPathEffect(new float[]{5, 5, 5, 5}, 1);
                 mDashPaint.setPathEffect(pathEffect);
-                mDashPaint.setColor(xAxis.barEntryTypeThirdColor);
+                mDashPaint.setColor(xAxis.thirdDividerColor);
                 Path path = new Path();
                 path.moveTo(x, parentBottom - mBarChartAttrs.contentPaddingBottom);
                 path.lineTo(x, parentTop);
