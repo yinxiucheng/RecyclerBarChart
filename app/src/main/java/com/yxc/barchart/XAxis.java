@@ -18,6 +18,9 @@ public class XAxis {
     public int barEntryTypeSecondColor;
     public int barEntryTypeThirdColor;
 
+    public int lastVisiblePosition = -1;
+    public int firstVisiblePosition = -1;
+
     public XAxis(Context context, int displayNumbers) {
         this.mContext = context;
         this.displayNumbers = displayNumbers;

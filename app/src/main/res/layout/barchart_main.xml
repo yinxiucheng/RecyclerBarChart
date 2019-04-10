@@ -58,7 +58,7 @@
 
     </RelativeLayout>
 
-    <android.support.v7.widget.RecyclerView
+    <com.yxc.wediget.CustomerRecyclerView
         android:id="@+id/recycler"
         android:layout_width="match_parent"
         android:layout_height="300dp"
