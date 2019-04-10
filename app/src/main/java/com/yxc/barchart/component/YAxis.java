@@ -1,8 +1,6 @@
 package com.yxc.barchart.component;
 
-import android.graphics.Color;
-
-import com.yxc.util.DisplayUtil;
+import com.yxc.util.BarChartAttrs;
 
 /**
  * @author yxc
@@ -10,41 +8,28 @@ import com.yxc.util.DisplayUtil;
  */
 public class YAxis {
 
-    public static final int DEFAULT_MAX_YAXIS_LABEL = 30000;
+    BarChartAttrs attrs;
 
-    public static final int DEFAULT_LABEL_SIZE = 4;
+    public int maxLabel;//y轴刻度默认的最大刻度
+    public int labelSize;
+    public float labelTxtSize;
+    public float labelPaddingLeftRight;
+    public float labelCenterPadding;//刻度 字跟刻度线的位置对齐的调整
+    public int lineColor;
 
-    public int maxLabel = DEFAULT_MAX_YAXIS_LABEL;
-
-    public int labelSize = DEFAULT_LABEL_SIZE;
-
-    public int labelTxtSize;
-
-    public int labelTxtColor;
-
-    public YAxis() {
-        this(DEFAULT_MAX_YAXIS_LABEL, DEFAULT_LABEL_SIZE);
+    public YAxis(BarChartAttrs barChartAttrs) {
+        this.attrs = barChartAttrs;
+        this.maxLabel = attrs.yAxisLabelMaxScale;
+        this.labelSize = attrs.yAxisLabelSize;
+        this.labelTxtSize = attrs.yAxisLabelTxtSize;
+        this.lineColor = attrs.yAxisLineColor;
+        this.labelPaddingLeftRight = attrs.yAxisLabelPaddingLeftRight;
+        this.labelCenterPadding = attrs.yAxisLabelCenterPadding;
     }
-
-    public YAxis(int maxLabel, int labelSize) {
-        this.maxLabel = maxLabel;
-        this.labelSize = labelSize;
-        this.labelTxtSize = DisplayUtil.dip2px(11);
-        this.labelTxtColor = Color.GRAY;
-    }
-
-    public void setLabelTxtSize(int labelTxtSize) {
-        this.labelTxtSize = labelTxtSize;
-    }
-
-    public void setLabelTxtColor(int labelTxtColor) {
-        this.labelTxtColor = labelTxtColor;
-    }
-
 
     //获取Y轴刻度值
-    public static YAxis getYAxis(float max) {
-        YAxis axis = new YAxis();
+    public static YAxis getYAxis(BarChartAttrs attrs, float max) {
+        YAxis axis = new YAxis(attrs);
         if (max > 50000) {
             axis.maxLabel = 80000;
             axis.labelSize = 5;

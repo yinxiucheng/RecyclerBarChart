@@ -1,11 +1,6 @@
 package com.yxc.barchart.component;
 
-import android.content.Context;
-import android.graphics.Color;
-
-import com.yxc.util.DisplayUtil;
-import com.yxc.barchart.R;
-import com.yxc.util.ColorUtil;
+import com.yxc.util.BarChartAttrs;
 
 /**
  * @author yxc
@@ -13,27 +8,27 @@ import com.yxc.util.ColorUtil;
  */
 public class XAxis {
 
-    private Context mContext;
     public int displayNumbers;
-    public int txtSize;
+    public float txtSize;
     public int txtColor;
 
     public int barEntryTypeFirstColor;
     public int barEntryTypeSecondColor;
     public int barEntryTypeThirdColor;
 
+    public float labelTxtPadding;
+
     public int lastVisiblePosition = -1;
     public int firstVisiblePosition = -1;
 
-    public XAxis(Context context, int displayNumbers) {
-        this.mContext = context;
+    public XAxis(BarChartAttrs attrs, int displayNumbers) {
         this.displayNumbers = displayNumbers;
-        txtColor = Color.BLACK;
-        txtSize = DisplayUtil.dip2px(12);
-
-        barEntryTypeFirstColor = ColorUtil.getResourcesColor(mContext, R.color.black);
-        barEntryTypeSecondColor = ColorUtil.getResourcesColor(mContext, R.color.black_80_transparent);
-        barEntryTypeThirdColor = ColorUtil.getResourcesColor(mContext, R.color.black_30_transparent);
+        this.txtColor = attrs.xAxisTxtColor;
+        this.txtSize = attrs.xAxisTxtSize;
+        this.barEntryTypeFirstColor = attrs.xAxisFirstDividerColor;
+        this.barEntryTypeSecondColor = attrs.xAxisSecondDividerColor;
+        this.barEntryTypeThirdColor = attrs.xAxisThirdDividerColor;
+        this.labelTxtPadding = attrs.xAxisLabelTxtPadding;
     }
 
 }

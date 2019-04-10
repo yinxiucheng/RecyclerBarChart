@@ -10,13 +10,13 @@ import org.joda.time.LocalDate;
  */
 public class BarEntry implements Comparable<BarEntry> {
 
-    public static final int TYPE_FIRST = 1;//一个月
+    public static final int TYPE_XAXIS_FIRST = 1;//一个月
 
-    public static final int TYPE_SECOND = 2;//7天的线，需要drawText
+    public static final int TYPE_XAXIS_SECOND = 2;//7天的线，需要drawText
 
-    public static final int TYPE_THIRD = 3;//最小刻度的线
+    public static final int TYPE_XAXIS_THIRD = 3;//最小刻度的线
 
-    public static final int TYPE_SPECIAL = 4;//同时是月线以及7日分隔线
+    public static final int TYPE_XAXIS_SPECIAL = 4;//同时是月线以及7日分隔线
 
     public float value;
 

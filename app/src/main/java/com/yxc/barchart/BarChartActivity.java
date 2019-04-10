@@ -51,7 +51,6 @@ public class BarChartActivity extends AppCompatActivity {
     XAxis mXAxis;
 
     private String[] mTitles = {"日", "周", "月", "年"};
-    private boolean needRelocation = false;
     private BarChartAttrs mBarChartAttrs;
 
     @Override
@@ -74,8 +73,8 @@ public class BarChartActivity extends AppCompatActivity {
         ((LinearLayoutManager) layoutManager).setOrientation(LinearLayoutManager.HORIZONTAL);
 
         displayNumber = 25;
-        mYAxis = new YAxis();
-        mXAxis = new XAxis(this, displayNumber);
+        mYAxis = new YAxis(mBarChartAttrs);
+        mXAxis = new XAxis(mBarChartAttrs, displayNumber);
         mItemDecoration = new BarChartItemDecoration(this, BarChartItemDecoration.HORIZONTAL_LIST, mYAxis, mXAxis, mBarChartAttrs);
         recyclerView.addItemDecoration(mItemDecoration);
         mBarChartAdapter = new BarChartAdapter(this, mEntries, recyclerView, mXAxis);
@@ -103,7 +102,7 @@ public class BarChartActivity extends AppCompatActivity {
         int lastVisiblePosition = mEntries.size() - 1;
         int firstVisiblePosition = lastVisiblePosition - displayNumber + 1;
         mVisibleEntries = mEntries.subList(firstVisiblePosition, lastVisiblePosition);
-        mYAxis = YAxis.getYAxis(getTheMaxNumber(mVisibleEntries));
+        mYAxis = YAxis.getYAxis(mBarChartAttrs, getTheMaxNumber(mVisibleEntries));
         mBarChartAdapter.notifyDataSetChanged();
         mItemDecoration.setYAxis(mYAxis);
 
@@ -128,7 +127,7 @@ public class BarChartActivity extends AppCompatActivity {
                 } else {
                     recyclerView.scrollToPosition(mEntries.size() - 1);
                 }
-                if (needRelocation) {
+                if (mBarChartAttrs.enableScrollToScale) {
                     //微调
                     scrollToScale(recyclerView);
                 } else {
@@ -148,7 +147,7 @@ public class BarChartActivity extends AppCompatActivity {
                 } else {
                     recyclerView.scrollToPosition(lastCompletelyVisibleItemPosition);
                 }
-                if (needRelocation) {
+                if (mBarChartAttrs.enableScrollToScale) {
                     //微调
                     scrollToScale(recyclerView);
                 } else {
@@ -163,7 +162,7 @@ public class BarChartActivity extends AppCompatActivity {
                 super.onScrollStateChanged(recyclerView, newState);
                 // 当不滚动时
                 if (newState == RecyclerView.SCROLL_STATE_IDLE) {
-                    if (needRelocation) {
+                    if (mBarChartAttrs.enableScrollToScale) {
                         scrollToScale(recyclerView);
                     } else {
                         microRelation(recyclerView);
@@ -200,7 +199,7 @@ public class BarChartActivity extends AppCompatActivity {
 
         List<BarEntry> displayEntries = mEntries.subList(firstVisibleItemPosition, lastVisibleItemPosition + 1);
         float max = getTheMaxNumber(displayEntries);
-        mYAxis = YAxis.getYAxis(max);
+        mYAxis = YAxis.getYAxis(mBarChartAttrs, max);
         mItemDecoration.setYAxis(mYAxis);
         recyclerView.invalidate();
 
@@ -262,7 +261,7 @@ public class BarChartActivity extends AppCompatActivity {
 
         List<BarEntry> displayEntries = mEntries.subList(firstVisibleItemPosition, lastVisibleItemPosition + 1);
         float max = getTheMaxNumber(displayEntries);
-        mYAxis = YAxis.getYAxis(max);
+        mYAxis = YAxis.getYAxis(mBarChartAttrs, max);
         mItemDecoration.setYAxis(mYAxis);
 //        recyclerView.invalidate();
 
@@ -351,7 +350,7 @@ public class BarChartActivity extends AppCompatActivity {
         mEntries.clear();
         mType = VIEW_MONTH;
         displayNumber = 32;
-        mXAxis = new XAxis(this, displayNumber);
+        mXAxis = new XAxis(mBarChartAttrs, displayNumber);
         long timestamp = TimeUtil.changZeroOfTheDay(LocalDate.now());
         List<BarEntry> entries = new ArrayList<>();
         for (int i = 0; i < 600; i++) {
@@ -374,17 +373,17 @@ public class BarChartActivity extends AppCompatActivity {
                 value = (float) (Math.random() * 6000) + mult;
             }
             value = Math.round(value);
-            int type = BarEntry.TYPE_THIRD;
+            int type = BarEntry.TYPE_XAXIS_THIRD;
             String xAxisLabel = "";
             LocalDate localDate = TimeUtil.timestampToLocalDate(timestamp);
             boolean isFirstDayOfMonth = TimeUtil.isFirstDayOfMonth(localDate);
             if (isFirstDayOfMonth && (i + 1) % 7 == 0) {
-                type = BarEntry.TYPE_SPECIAL;
+                type = BarEntry.TYPE_XAXIS_SPECIAL;
                 xAxisLabel = localDate.getDayOfMonth() + "日";
             } else if (isFirstDayOfMonth) {
-                type = BarEntry.TYPE_FIRST;
+                type = BarEntry.TYPE_XAXIS_FIRST;
             } else if ((i + 1) % 7 == 0) {
-                type = BarEntry.TYPE_SECOND;
+                type = BarEntry.TYPE_XAXIS_SECOND;
                 xAxisLabel = localDate.getDayOfMonth() + "日";
             }
             BarEntry barEntry = new BarEntry(value, timestamp, type);
@@ -402,7 +401,7 @@ public class BarChartActivity extends AppCompatActivity {
         mEntries.clear();
         mType = VIEW_WEEK;
         displayNumber = 8;
-        mXAxis = new XAxis(this, displayNumber);
+        mXAxis = new XAxis(mBarChartAttrs, displayNumber);
         long timestamp = TimeUtil.changZeroOfTheDay(LocalDate.now());
         List<BarEntry> entries = new ArrayList<>();
         for (int i = 0; i < 102; i++) {
@@ -425,11 +424,11 @@ public class BarChartActivity extends AppCompatActivity {
                 value = (float) (Math.random() * 6000) + mult;
             }
             value = Math.round(value);
-            int type = BarEntry.TYPE_SECOND;
+            int type = BarEntry.TYPE_XAXIS_SECOND;
             LocalDate localDate = TimeUtil.timestampToLocalDate(timestamp);
             boolean isMonday = TimeUtil.isMonday(localDate);
             if (isMonday) {
-                type = BarEntry.TYPE_FIRST;
+                type = BarEntry.TYPE_XAXIS_FIRST;
             }
             String xAxis = TimeUtil.getWeekStr(localDate.getDayOfWeek());
             BarEntry barEntry = new BarEntry(value, timestamp, type);
@@ -448,7 +447,7 @@ public class BarChartActivity extends AppCompatActivity {
         mEntries.clear();
         mType = VIEW_DAY;
         displayNumber = 25;
-        mXAxis = new XAxis(this, displayNumber);
+        mXAxis = new XAxis(mBarChartAttrs, displayNumber);
         long timestamp = TimeUtil.changZeroOfTheDay(LocalDate.now().plusDays(1));
         List<BarEntry> entries = new ArrayList<>();
         for (int i = 0; i < 600; i++) {
@@ -471,18 +470,18 @@ public class BarChartActivity extends AppCompatActivity {
                 value = (float) (Math.random() * 6000) + mult;
             }
             value = Math.round(value);
-            int type = BarEntry.TYPE_THIRD;
+            int type = BarEntry.TYPE_XAXIS_THIRD;
             boolean isNextDay = TimeUtil.isNextDay(timestamp);
             LocalDate localDate = TimeUtil.timestampToLocalDate(timestamp);
             String xAxisStr = "";
 
             if (isNextDay && i % 3 == 0) {
-                type = BarEntry.TYPE_SPECIAL;
+                type = BarEntry.TYPE_XAXIS_SPECIAL;
                 xAxisStr = TimeUtil.getHourOfTheDay(timestamp);
             } else if (isNextDay) {
-                type = BarEntry.TYPE_FIRST;
+                type = BarEntry.TYPE_XAXIS_FIRST;
             } else if (i % 3 == 0) {
-                type = BarEntry.TYPE_SECOND;
+                type = BarEntry.TYPE_XAXIS_SECOND;
                 xAxisStr = TimeUtil.getHourOfTheDay(timestamp);
             }
             BarEntry barEntry = new BarEntry(value, timestamp, type);
@@ -501,7 +500,7 @@ public class BarChartActivity extends AppCompatActivity {
         mEntries.clear();
         mType = VIEW_YEAR;
         displayNumber = 13;
-        mXAxis = new XAxis(this, displayNumber);
+        mXAxis = new XAxis(mBarChartAttrs, displayNumber);
         //获取下个月1号
         LocalDate localDate = TimeUtil.getFirstDayOfMonth(LocalDate.now().plusMonths(1));
         List<BarEntry> entries = new ArrayList<>();
@@ -526,10 +525,10 @@ public class BarChartActivity extends AppCompatActivity {
             }
             value = Math.round(value);
 
-            int type = BarEntry.TYPE_SECOND;
+            int type = BarEntry.TYPE_XAXIS_SECOND;
             boolean isNextYear = TimeUtil.isAnotherYear(localDate);
             if (isNextYear) {
-                type = BarEntry.TYPE_FIRST;
+                type = BarEntry.TYPE_XAXIS_FIRST;
             }
             String xAxis = Integer.toString(localDate.getMonthOfYear());
             long timestamp = TimeUtil.changZeroOfTheDay(localDate);
