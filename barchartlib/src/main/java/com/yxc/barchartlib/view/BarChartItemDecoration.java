@@ -1,4 +1,4 @@
-package com.yxc.barchart;
+package com.yxc.barchartlib.view;
 
 import android.content.Context;
 import android.graphics.Canvas;
@@ -15,13 +15,13 @@ import android.support.v7.widget.RecyclerView;
 import android.text.TextUtils;
 import android.view.View;
 
-import com.yxc.barchart.component.BarEntry;
-import com.yxc.barchart.component.ChartRectF;
-import com.yxc.barchart.component.XAxis;
-import com.yxc.barchart.component.YAxis;
-import com.yxc.util.BarChartAttrs;
-import com.yxc.util.DecimalComparisonUtil;
-import com.yxc.util.DisplayUtil;
+import com.yxc.barchartlib.component.BarEntry;
+import com.yxc.barchartlib.component.ChartRectF;
+import com.yxc.barchartlib.component.XAxis;
+import com.yxc.barchartlib.component.YAxis;
+import com.yxc.barchartlib.util.BarChartAttrs;
+import com.yxc.barchartlib.util.DecimalComparisonUtil;
+import com.yxc.barchartlib.util.DisplayUtil;
 
 import java.util.List;
 
@@ -33,7 +33,7 @@ import java.util.List;
  */
 public class BarChartItemDecoration extends RecyclerView.ItemDecoration {
 
-    private static final String TAG = "DifWidthDecoration";
+    private static final String TAG = "BarChartItemDecoration";
 
     private Context mContext;
     private int mOrientation;

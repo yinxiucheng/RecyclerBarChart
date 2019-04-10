@@ -1,10 +1,11 @@
-package com.yxc.util;
+package com.yxc.barchartlib.util;
 
 import android.content.Context;
 import android.content.res.TypedArray;
 import android.graphics.Color;
 import android.util.AttributeSet;
-import com.yxc.barchart.R;
+
+import com.yxc.barchartlib.R;
 
 public class AttrsUtil {
 

@@ -11,17 +11,19 @@ import android.view.View;
 import android.widget.ImageView;
 import android.widget.TextView;
 
-import com.yxc.barchart.component.BarEntry;
-import com.yxc.barchart.component.DistanceCompare;
-import com.yxc.barchart.component.XAxis;
-import com.yxc.barchart.component.YAxis;
 import com.yxc.barchart.tab.OnTabSelectListener;
 import com.yxc.barchart.tab.TopTabLayout;
-import com.yxc.util.BarChartAttrs;
-import com.yxc.util.ColorUtil;
-import com.yxc.util.TextUtil;
-import com.yxc.util.TimeUtil;
-import com.yxc.wediget.BarChartRecyclerView;
+import com.yxc.barchartlib.component.BarEntry;
+import com.yxc.barchartlib.component.DistanceCompare;
+import com.yxc.barchartlib.component.XAxis;
+import com.yxc.barchartlib.component.YAxis;
+import com.yxc.barchartlib.util.BarChartAttrs;
+import com.yxc.barchartlib.util.ColorUtil;
+import com.yxc.barchartlib.util.TextUtil;
+import com.yxc.barchartlib.util.TimeUtil;
+import com.yxc.barchartlib.view.BarChartAdapter;
+import com.yxc.barchartlib.view.BarChartItemDecoration;
+import com.yxc.barchartlib.view.BarChartRecyclerView;
 
 import org.joda.time.LocalDate;
 
@@ -48,7 +50,6 @@ public class BarChartActivity extends AppCompatActivity {
 
     BarChartAdapter mBarChartAdapter;
     List<BarEntry> mEntries;
-    List<BarEntry> mVisibleEntries;
     BarChartItemDecoration mItemDecoration;
     private int displayNumber;
     YAxis mYAxis;

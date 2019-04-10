@@ -1,6 +1,6 @@
-package com.yxc.barchart.component;
+package com.yxc.barchartlib.component;
 
-import com.yxc.util.BarChartAttrs;
+import com.yxc.barchartlib.util.BarChartAttrs;
 
 /**
  * @author yxc

@@ -1,4 +1,4 @@
-package com.yxc.barchart.component;
+package com.yxc.barchartlib.component;
 
 /**
  * @author yxc

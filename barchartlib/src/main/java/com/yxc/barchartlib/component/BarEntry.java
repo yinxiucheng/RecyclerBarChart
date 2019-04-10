@@ -1,4 +1,4 @@
-package com.yxc.barchart.component;
+package com.yxc.barchartlib.component;
 
 import android.support.annotation.NonNull;
 

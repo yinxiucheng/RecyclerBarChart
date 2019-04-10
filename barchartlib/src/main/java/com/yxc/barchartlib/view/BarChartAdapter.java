@@ -1,4 +1,4 @@
-package com.yxc.barchart;
+package com.yxc.barchartlib.view;
 
 import android.content.Context;
 import android.support.annotation.NonNull;
@@ -7,9 +7,11 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
-import com.yxc.barchart.component.BarEntry;
-import com.yxc.barchart.component.XAxis;
-import com.yxc.util.DisplayUtil;
+
+import com.yxc.barchartlib.R;
+import com.yxc.barchartlib.component.BarEntry;
+import com.yxc.barchartlib.component.XAxis;
+import com.yxc.barchartlib.util.DisplayUtil;
 
 import java.util.List;
 
