@@ -235,11 +235,13 @@ public class BarChartActivity extends AppCompatActivity {
             endOfPosition = lastVisibleItemPosition - distanceCompare.distanceLeft + 1;
             if (lastVisibleItemPosition + distanceCompare.distanceRight > mEntries.size()) {//右尽头
                 transactionType = 0;
+                endOfPosition = mEntries.size() - 1;
             }
         } else {
             endOfPosition = lastVisibleItemPosition + distanceCompare.distanceRight;
             if (lastVisibleItemPosition - displayNumber <= 0) {//左尽头
                 transactionType = 1;
+                endOfPosition = displayNumber;
             }
         }
 
@@ -250,7 +252,8 @@ public class BarChartActivity extends AppCompatActivity {
             recyclerView.scrollToPosition(endOfPosition - displayNumber);
             lastVisibleItemPosition = endOfPosition;
         }
-        if (transactionType == 0 && endOfPosition >= mEntries.size()) {//右边界，lastVisibleItemPosition 保持不变
+
+        if (transactionType == 0 && endOfPosition >= mEntries.size() - 1) {//右边界，lastVisibleItemPosition 保持不变
             recyclerView.scrollToPosition(mEntries.size() - 1);
             lastVisibleItemPosition = mEntries.size() - 1;
         } else if (transactionType == 0) {
@@ -338,6 +341,7 @@ public class BarChartActivity extends AppCompatActivity {
                     reSizeYAxis();
                 }
             }
+
             @Override
             public void onTabReselect(int position) {
             }
