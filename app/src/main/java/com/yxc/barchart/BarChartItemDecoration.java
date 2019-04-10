@@ -217,7 +217,7 @@ public class BarChartItemDecoration extends RecyclerView.ItemDecoration {
                 }
                 rectF.set(start, top, end, bottom);
                 canvas.drawRect(rectF, mBarChartPaint);
-            } else if (DecimalComparisonUtil.smallOrEquals(start, parentLeft) && end > parentRight) {//右边部分滑出的时候，处理柱状图，文字的显示
+            } else if (DecimalComparisonUtil.smallOrEquals(start, parentRight) && end > parentRight) {//右边部分滑出的时候，处理柱状图，文字的显示
                 float distance = (parentRight - start);
                 end = start + distance;
                 rectF.set(start, top, end, bottom);
@@ -228,7 +228,7 @@ public class BarChartItemDecoration extends RecyclerView.ItemDecoration {
     }
 
 
-    //绘制柱状图 顶部value文字
+    //绘制柱状图顶部value文字
     private void drawBarChartValue(Canvas canvas, @NonNull RecyclerView parent) {
         float bottom = parent.getHeight() - parent.getPaddingBottom() - mBarChartAttrs.contentPaddingBottom;
         float parentRight = parent.getWidth() - parent.getPaddingRight();
