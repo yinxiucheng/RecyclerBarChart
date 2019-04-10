@@ -1,10 +1,14 @@
 package com.yxc.barchartlib.util;
 
+import com.yxc.barchartlib.component.BarEntry;
+
+import java.util.List;
+
 /**
  * @author yxc
  * @date 2019/4/10
  */
-public class DecimalComparisonUtil {
+public class DecimalUtil {
 
     final float THRESHOLD = 0.00001f;
 
@@ -40,6 +44,18 @@ public class DecimalComparisonUtil {
     public static final boolean smallOrEquals(float a, int b) {
         boolean result = (a < b) || equals(a, b);
         return result;
+    }
+
+
+    //获取最大值
+    public static float getTheMaxNumber(List<BarEntry> entries) {
+        BarEntry barEntry = entries.get(0);
+        float max = barEntry.value;
+        for (int i = 0; i < entries.size(); i++) {
+            BarEntry entryTemp = entries.get(i);
+            max = Math.max(max, entryTemp.value);
+        }
+        return max;
     }
 
 }

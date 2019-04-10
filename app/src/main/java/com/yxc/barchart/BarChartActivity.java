@@ -2,7 +2,6 @@
 package com.yxc.barchart;
 
 import android.os.Bundle;
-import android.support.design.widget.FloatingActionButton;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -19,16 +18,14 @@ import com.yxc.barchartlib.component.XAxis;
 import com.yxc.barchartlib.component.YAxis;
 import com.yxc.barchartlib.util.BarChartAttrs;
 import com.yxc.barchartlib.util.ColorUtil;
+import com.yxc.barchartlib.util.DecimalUtil;
 import com.yxc.barchartlib.util.TextUtil;
 import com.yxc.barchartlib.util.TimeUtil;
 import com.yxc.barchartlib.view.BarChartAdapter;
 import com.yxc.barchartlib.view.BarChartItemDecoration;
 import com.yxc.barchartlib.view.BarChartRecyclerView;
 
-import org.joda.time.LocalDate;
-
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 
 public class BarChartActivity extends AppCompatActivity {
@@ -58,28 +55,35 @@ public class BarChartActivity extends AppCompatActivity {
     private String[] mTitles = {"日", "周", "月", "年"};
     private BarChartAttrs mBarChartAttrs;
 
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.barchart_main);
+        initView();
+        initTableLayout();
+        initData();
+        bindBarChartList(25, TestData.createDayEntries());
+        reSizeYAxis();
+        setListener();
+    }
 
+    private void initView(){
         mTabLayout = findViewById(R.id.topTabLayout);
         recyclerView = findViewById(R.id.recycler);
         mBarChartAttrs = recyclerView.mAttrs;
-
         txtLeftLocalDate = findViewById(R.id.txt_left_local_date);
         txtRightLocalDate = findViewById(R.id.txt_right_local_date);
         textTitle = findViewById(R.id.txt_layout);
         txtCountStep = findViewById(R.id.txt_count_Step);
-
         imgLast = findViewById(R.id.img_left);
         imgNext = findViewById(R.id.img_right);
-        initTableLayout();
+    }
+
+    private void initData(){
         mEntries = new ArrayList<>();
-
-        RecyclerView.LayoutManager layoutManager = new LinearLayoutManager(this);
-        ((LinearLayoutManager) layoutManager).setOrientation(LinearLayoutManager.HORIZONTAL);
-
+        LinearLayoutManager layoutManager = new LinearLayoutManager(this);
+        layoutManager.setOrientation(LinearLayoutManager.HORIZONTAL);
         displayNumber = 25;
         mYAxis = new YAxis(mBarChartAttrs);
         mXAxis = new XAxis(mBarChartAttrs, displayNumber);
@@ -88,29 +92,15 @@ public class BarChartActivity extends AppCompatActivity {
         mBarChartAdapter = new BarChartAdapter(this, mEntries, recyclerView, mXAxis);
         recyclerView.setAdapter(mBarChartAdapter);
         recyclerView.setLayoutManager(layoutManager);
-
-        createDayEntries();
-        reSizeYAxis();
-        setListener();
-
-        FloatingActionButton fab = findViewById(R.id.fab);
-        fab.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                mYAxis.labelSize = 5;
-                mYAxis.maxLabel = 30000;
-                mItemDecoration.setYAxis(mYAxis);
-                recyclerView.invalidate();
-            }
-        });
     }
+
 
     private void reSizeYAxis() {
         recyclerView.scrollToPosition(mEntries.size() - 1);
         int lastVisiblePosition = mEntries.size() - 1;
         int firstVisiblePosition = lastVisiblePosition - displayNumber + 1;
         List<BarEntry> visibleEntries = mEntries.subList(firstVisiblePosition, lastVisiblePosition);
-        mYAxis = YAxis.getYAxis(mBarChartAttrs, getTheMaxNumber(visibleEntries));
+        mYAxis = YAxis.getYAxis(mBarChartAttrs, DecimalUtil.getTheMaxNumber(visibleEntries));
         mBarChartAdapter.notifyDataSetChanged();
         mItemDecoration.setYAxis(mYAxis);
 
@@ -173,7 +163,6 @@ public class BarChartActivity extends AppCompatActivity {
                     }
                 }
             }
-
             @Override
             public void onScrolled(RecyclerView recyclerView, int dx, int dy) {
                 super.onScrolled(recyclerView, dx, dy);
@@ -188,7 +177,6 @@ public class BarChartActivity extends AppCompatActivity {
         LinearLayoutManager manager = (LinearLayoutManager) recyclerView.getLayoutManager();
         //获取最后一个完全显示的ItemPosition
         int lastVisibleItemPosition = manager.findLastCompletelyVisibleItemPosition();
-
         //进行微调
         recyclerView.scrollToPosition(lastVisibleItemPosition);
 
@@ -202,11 +190,10 @@ public class BarChartActivity extends AppCompatActivity {
         mItemDecoration.setXAxis(mXAxis);
 
         List<BarEntry> displayEntries = mEntries.subList(firstVisibleItemPosition, lastVisibleItemPosition + 1);
-        float max = getTheMaxNumber(displayEntries);
+        float max = DecimalUtil.getTheMaxNumber(displayEntries);
         mYAxis = YAxis.getYAxis(mBarChartAttrs, max);
         mItemDecoration.setYAxis(mYAxis);
         recyclerView.invalidate();
-
         //todo 调试显示用的
         displayDateAndStep(displayEntries);
     }
@@ -221,13 +208,13 @@ public class BarChartActivity extends AppCompatActivity {
         BarEntry barEntry = mEntries.get(lastVisibleItemPosition);
         DistanceCompare distanceCompare = new DistanceCompare(0, 0);
         if (mType == VIEW_MONTH) {
-            distanceCompare = createMonthDistance(barEntry.localDate);
+            distanceCompare = TimeUtil.createMonthDistance(barEntry.localDate);
         } else if (mType == VIEW_WEEK) {
-            distanceCompare = createWeekDistance(barEntry.localDate);
+            distanceCompare = TimeUtil.createWeekDistance(barEntry.localDate);
         } else if (mType == VIEW_DAY) {
-            distanceCompare = createDayDistance(barEntry);
+            distanceCompare = TimeUtil.createDayDistance(barEntry);
         } else if (mType == VIEW_YEAR) {
-            distanceCompare = createYearDistance(barEntry.localDate);
+            distanceCompare = TimeUtil.createYearDistance(barEntry.localDate);
         }
         int endOfPosition;
         int transactionType = 0;
@@ -264,12 +251,50 @@ public class BarChartActivity extends AppCompatActivity {
         firstVisibleItemPosition = lastVisibleItemPosition - displayNumber;
 
         List<BarEntry> visibleEntries = mEntries.subList(firstVisibleItemPosition, lastVisibleItemPosition + 1);
-        float max = getTheMaxNumber(visibleEntries);
+        float max = DecimalUtil.getTheMaxNumber(visibleEntries);
         mYAxis = YAxis.getYAxis(mBarChartAttrs, max);
         mItemDecoration.setYAxis(mYAxis);
 //        recyclerView.invalidate();
         displayDateAndStep(visibleEntries);
     }
+
+    private void initTableLayout() {
+        mTabLayout.setIndicatorColor(ColorUtil.getResourcesColor(this, R.color.pink));
+        mTabLayout.setTextUnselectColor(ColorUtil.getResourcesColor(this, R.color.tab_checked));
+        mTabLayout.setDividerColor(ColorUtil.getResourcesColor(this, R.color.pink));
+//        mTabLayout.setIndicatorColor(ColorUtil.getResourcesColor(this, R.color.pink));
+        mTabLayout.setTabData(mTitles);
+
+        mTabLayout.setOnTabSelectListener(new OnTabSelectListener() {
+            @Override
+            public void onTabSelect(int position) {
+                if (position == 0) {// 创建 月视图的数据
+                    bindBarChartList(25, TestData.createDayEntries());
+                } else if (position == 1) {//创建Week视图的数据
+                    bindBarChartList(8, TestData.createWeekEntries());
+                } else if (position == 2) {//创建Month视图的数据
+                    bindBarChartList(32, TestData.createMonthEntries());
+                } else if (position == 3) {//创建Year视图的数据
+                    bindBarChartList(13, TestData.createYearEntries());
+                }
+                reSizeYAxis();
+            }
+
+            @Override
+            public void onTabReselect(int position) {
+            }
+        });
+        mTabLayout.setCurrentTab(0);
+    }
+
+    private void bindBarChartList(int displayNumber, List<BarEntry> entries){
+        mEntries.clear();
+        mType = VIEW_MONTH;
+        mXAxis = new XAxis(mBarChartAttrs, displayNumber);
+        mEntries.addAll(0, entries);
+        mBarChartAdapter.setXAxis(mXAxis);
+    }
+
 
     private void displayDateAndStep(List<BarEntry> displayEntries) {
         //todo 调试显示用的
@@ -336,277 +361,5 @@ public class BarChartActivity extends AppCompatActivity {
         SpannableStringBuilder spannable = TextUtil.getSpannableStr(this, parentStr, childStr, 24);
         txtCountStep.setText(spannable);
     }
-
-
-    private DistanceCompare createYearDistance(LocalDate localDate) {
-        int month = localDate.getMonthOfYear();
-        return new DistanceCompare(month, 12 - month);
-    }
-
-    private DistanceCompare createDayDistance(BarEntry barEntry) {
-        LocalDate localDate = barEntry.localDate;
-        long tomorrowZeroTime = TimeUtil.changZeroOfTheDay(localDate.plusDays(1));//明天凌晨
-        long todayZeroTime = TimeUtil.changZeroOfTheDay(localDate);//今天0点
-
-        int distanceRight = (int) ((tomorrowZeroTime - barEntry.timestamp) / TimeUtil.TIME_HOUR); //右边的距离
-        int distanceLeft = (int) ((barEntry.timestamp - todayZeroTime) / TimeUtil.TIME_HOUR);//左边的距离
-
-        return new DistanceCompare(distanceLeft, distanceRight);
-    }
-
-    private DistanceCompare createWeekDistance(LocalDate localDate) {
-        int dayOfWeek = localDate.getDayOfWeek();
-        return new DistanceCompare(dayOfWeek, 7 - dayOfWeek);
-    }
-
-    private DistanceCompare createMonthDistance(LocalDate localDate) {
-        LocalDate nextMonthFirstDay = TimeUtil.getFirstDayOfNextMonth(localDate);
-        LocalDate lastMonthLastDay = TimeUtil.getFirstDayOfMonth(localDate).minusDays(1);
-
-        int distanceRight = TimeUtil.getIntervalDay(localDate, nextMonthFirstDay); //右边的距离
-        int distanceLeft = TimeUtil.getIntervalDay(lastMonthLastDay, localDate);
-        return new DistanceCompare(distanceLeft, distanceRight);
-    }
-
-    //获取最大值
-    private float getTheMaxNumber(List<BarEntry> entries) {
-        BarEntry barEntry = entries.get(0);
-        float max = barEntry.value;
-        for (int i = 0; i < entries.size(); i++) {
-            BarEntry entryTemp = entries.get(i);
-            max = Math.max(max, entryTemp.value);
-        }
-        return max;
-    }
-
-    private void initTableLayout() {
-        mTabLayout.setIndicatorColor(ColorUtil.getResourcesColor(this, R.color.pink));
-        mTabLayout.setTextUnselectColor(ColorUtil.getResourcesColor(this, R.color.tab_checked));
-        mTabLayout.setDividerColor(ColorUtil.getResourcesColor(this, R.color.pink));
-//        mTabLayout.setIndicatorColor(ColorUtil.getResourcesColor(this, R.color.pink));
-        mTabLayout.setTabData(mTitles);
-
-        mTabLayout.setOnTabSelectListener(new OnTabSelectListener() {
-            @Override
-            public void onTabSelect(int position) {
-                if (position == 0) {
-                    createDayEntries();
-                    reSizeYAxis();
-                } else if (position == 1) {
-                    createWeekEntries();
-                    reSizeYAxis();
-                } else if (position == 2) {
-                    createMonthEntries();
-                    reSizeYAxis();
-                } else if (position == 3) {
-                    createYearEntries();
-                    reSizeYAxis();
-                }
-            }
-
-            @Override
-            public void onTabReselect(int position) {
-            }
-        });
-        mTabLayout.setCurrentTab(0);
-    }
-
-    // 创建 月视图的数据
-    private void createMonthEntries() {
-        mEntries.clear();
-        mType = VIEW_MONTH;
-        displayNumber = 32;
-        mXAxis = new XAxis(mBarChartAttrs, displayNumber);
-        long timestamp = TimeUtil.changZeroOfTheDay(LocalDate.now());
-        List<BarEntry> entries = new ArrayList<>();
-        for (int i = 0; i < 600; i++) {
-            if (i > 0) {
-                timestamp = timestamp - TimeUtil.TIME_DAY;
-            }
-            float mult = 10;
-            float value = 0;
-            if (i > 500) {
-                value = (float) (Math.random() * 30000) + mult;
-            } else if (i > 400) {
-                value = (float) (Math.random() * 3000) + mult;
-            } else if (i > 300) {
-                value = (float) (Math.random() * 20000) + mult;
-            } else if (i > 200) {
-                value = (float) (Math.random() * 5000) + mult;
-            } else if (i > 100) {
-                value = (float) (Math.random() * 300) + mult;
-            } else {
-                value = (float) (Math.random() * 6000) + mult;
-            }
-            value = Math.round(value);
-            int type = BarEntry.TYPE_XAXIS_THIRD;
-            String xAxisLabel = "";
-            LocalDate localDate = TimeUtil.timestampToLocalDate(timestamp);
-            boolean isFirstDayOfMonth = TimeUtil.isFirstDayOfMonth(localDate);
-            if (isFirstDayOfMonth && (i + 1) % 7 == 0) {
-                type = BarEntry.TYPE_XAXIS_SPECIAL;
-                xAxisLabel = localDate.getDayOfMonth() + "日";
-            } else if (isFirstDayOfMonth) {
-                type = BarEntry.TYPE_XAXIS_FIRST;
-            } else if ((i + 1) % 7 == 0) {
-                type = BarEntry.TYPE_XAXIS_SECOND;
-                xAxisLabel = localDate.getDayOfMonth() + "日";
-            }
-            BarEntry barEntry = new BarEntry(value, timestamp, type);
-            barEntry.localDate = localDate;
-            barEntry.xAxisLabel = xAxisLabel;
-            entries.add(barEntry);
-        }
-        Collections.sort(entries);
-        mEntries.addAll(0, entries);
-        mBarChartAdapter.setXAxis(mXAxis);
-    }
-
-    //创建Week视图的数据
-    private void createWeekEntries() {
-        mEntries.clear();
-        mType = VIEW_WEEK;
-        displayNumber = 8;
-        mXAxis = new XAxis(mBarChartAttrs, displayNumber);
-        long timestamp = TimeUtil.changZeroOfTheDay(LocalDate.now());
-        List<BarEntry> entries = new ArrayList<>();
-        for (int i = 0; i < 102; i++) {
-            if (i > 0) {
-                timestamp = timestamp - TimeUtil.TIME_DAY;
-            }
-            float mult = 10;
-            float value = 0;
-            if (i > 500) {
-                value = (float) (Math.random() * 30000) + mult;
-            } else if (i > 400) {
-                value = (float) (Math.random() * 3000) + mult;
-            } else if (i > 300) {
-                value = (float) (Math.random() * 20000) + mult;
-            } else if (i > 200) {
-                value = (float) (Math.random() * 5000) + mult;
-            } else if (i > 100) {
-                value = (float) (Math.random() * 300) + mult;
-            } else {
-                value = (float) (Math.random() * 6000) + mult;
-            }
-            value = Math.round(value);
-            int type = BarEntry.TYPE_XAXIS_SECOND;
-            LocalDate localDate = TimeUtil.timestampToLocalDate(timestamp);
-            boolean isMonday = TimeUtil.isMonday(localDate);
-            if (isMonday) {
-                type = BarEntry.TYPE_XAXIS_FIRST;
-            }
-            String xAxis = TimeUtil.getWeekStr(localDate.getDayOfWeek());
-            BarEntry barEntry = new BarEntry(value, timestamp, type);
-            barEntry.localDate = localDate;
-            barEntry.xAxisLabel = xAxis;
-            entries.add(barEntry);
-        }
-        Collections.sort(entries);
-        mEntries.addAll(0, entries);
-        mBarChartAdapter.setXAxis(mXAxis);
-    }
-
-
-    //创建 Day视图的数据
-    private void createDayEntries() {
-        mEntries.clear();
-        mType = VIEW_DAY;
-        displayNumber = 25;
-        mXAxis = new XAxis(mBarChartAttrs, displayNumber);
-        long timestamp = TimeUtil.changZeroOfTheDay(LocalDate.now().plusDays(1));
-        List<BarEntry> entries = new ArrayList<>();
-        for (int i = 0; i < 600; i++) {
-            if (i > 0) {
-                timestamp = timestamp - TimeUtil.TIME_HOUR;
-            }
-            float mult = 10;
-            float value = 0;
-            if (i > 500) {
-                value = (float) (Math.random() * 30000) + mult;
-            } else if (i > 400) {
-                value = (float) (Math.random() * 3000) + mult;
-            } else if (i > 300) {
-                value = (float) (Math.random() * 20000) + mult;
-            } else if (i > 200) {
-                value = (float) (Math.random() * 5000) + mult;
-            } else if (i > 100) {
-                value = (float) (Math.random() * 300) + mult;
-            } else {
-                value = (float) (Math.random() * 6000) + mult;
-            }
-            value = Math.round(value);
-            int type = BarEntry.TYPE_XAXIS_THIRD;
-            boolean isNextDay = TimeUtil.isNextDay(timestamp);
-            LocalDate localDate = TimeUtil.timestampToLocalDate(timestamp);
-            String xAxisStr = "";
-
-            if (isNextDay && i % 3 == 0) {
-                type = BarEntry.TYPE_XAXIS_SPECIAL;
-                xAxisStr = TimeUtil.getHourOfTheDay(timestamp);
-            } else if (isNextDay) {
-                type = BarEntry.TYPE_XAXIS_FIRST;
-            } else if (i % 3 == 0) {
-                type = BarEntry.TYPE_XAXIS_SECOND;
-                xAxisStr = TimeUtil.getHourOfTheDay(timestamp);
-            }
-            BarEntry barEntry = new BarEntry(value, timestamp, type);
-            barEntry.localDate = localDate;
-            barEntry.xAxisLabel = xAxisStr;
-            entries.add(barEntry);
-        }
-        Collections.sort(entries);
-        mEntries.addAll(0, entries);
-        mBarChartAdapter.setXAxis(mXAxis);
-    }
-
-
-    //创建 Day视图的数据
-    private void createYearEntries() {
-        mEntries.clear();
-        mType = VIEW_YEAR;
-        displayNumber = 13;
-        mXAxis = new XAxis(mBarChartAttrs, displayNumber);
-        //获取下个月1号
-        LocalDate localDate = TimeUtil.getFirstDayOfMonth(LocalDate.now().plusMonths(1));
-        List<BarEntry> entries = new ArrayList<>();
-        for (int i = 0; i < 200; i++) {
-            if (i > 0) {
-                localDate = localDate.minusMonths(1);
-            }
-            float mult = 10;
-            float value = 0;
-            if (i > 500) {
-                value = (float) (Math.random() * 30000) + mult;
-            } else if (i > 400) {
-                value = (float) (Math.random() * 3000) + mult;
-            } else if (i > 300) {
-                value = (float) (Math.random() * 20000) + mult;
-            } else if (i > 200) {
-                value = (float) (Math.random() * 5000) + mult;
-            } else if (i > 100) {
-                value = (float) (Math.random() * 300) + mult;
-            } else {
-                value = (float) (Math.random() * 6000) + mult;
-            }
-            value = Math.round(value);
-
-            int type = BarEntry.TYPE_XAXIS_SECOND;
-            boolean isNextYear = TimeUtil.isAnotherYear(localDate);
-            if (isNextYear) {
-                type = BarEntry.TYPE_XAXIS_FIRST;
-            }
-            String xAxis = Integer.toString(localDate.getMonthOfYear());
-            long timestamp = TimeUtil.changZeroOfTheDay(localDate);
-            BarEntry barEntry = new BarEntry(value, timestamp, type);
-            barEntry.localDate = localDate;
-            barEntry.xAxisLabel = xAxis;
-            entries.add(barEntry);
-        }
-        Collections.sort(entries);
-        mEntries.addAll(0, entries);
-        mBarChartAdapter.setXAxis(mXAxis);
-    }
-
 
 }

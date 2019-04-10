@@ -20,7 +20,7 @@ import com.yxc.barchartlib.component.ChartRectF;
 import com.yxc.barchartlib.component.XAxis;
 import com.yxc.barchartlib.component.YAxis;
 import com.yxc.barchartlib.util.BarChartAttrs;
-import com.yxc.barchartlib.util.DecimalComparisonUtil;
+import com.yxc.barchartlib.util.DecimalUtil;
 import com.yxc.barchartlib.util.DisplayUtil;
 
 import java.util.List;
@@ -201,14 +201,14 @@ public class BarChartItemDecoration extends RecyclerView.ItemDecoration {
             float top = bottom - height;
 
             // 浮点数的 == 比较需要注意
-            if (DecimalComparisonUtil.smallOrEquals(end, parentLeft)) {//continue 会闪，原因是end == parentLeft 没有过滤掉，显示出来柱状图了。
+            if (DecimalUtil.smallOrEquals(end, parentLeft)) {//continue 会闪，原因是end == parentLeft 没有过滤掉，显示出来柱状图了。
                 continue;
             } else if (start < parentLeft && end > parentLeft) {//左边部分滑入的时候，处理柱状图、文字的显示
                 start = parentLeft;
                 rectF.set(start, top, end, bottom);
                 mBarChartPaint.setColor(mBarChartAttrs.barChartEdgeColor);
                 canvas.drawRect(rectF, mBarChartPaint);
-            } else if (DecimalComparisonUtil.bigOrEquals(start, parentLeft) && DecimalComparisonUtil.smallOrEquals(end, parentRight)) {//中间的; 浮点数的 == 比较需要注意
+            } else if (DecimalUtil.bigOrEquals(start, parentLeft) && DecimalUtil.smallOrEquals(end, parentRight)) {//中间的; 浮点数的 == 比较需要注意
                 if (child.getLeft() < parentLeft || child.getRight() > parentRight) {
                     //为了配合 findLastCompletelyVisibleItemPosition，看着压线都到不了 CompletelyVisible
                     mBarChartPaint.setColor(mBarChartAttrs.barChartEdgeColor);
@@ -217,7 +217,7 @@ public class BarChartItemDecoration extends RecyclerView.ItemDecoration {
                 }
                 rectF.set(start, top, end, bottom);
                 canvas.drawRect(rectF, mBarChartPaint);
-            } else if (DecimalComparisonUtil.smallOrEquals(start, parentRight) && end > parentRight) {//右边部分滑出的时候，处理柱状图，文字的显示
+            } else if (DecimalUtil.smallOrEquals(start, parentRight) && end > parentRight) {//右边部分滑出的时候，处理柱状图，文字的显示
                 float distance = (parentRight - start);
                 end = start + distance;
                 rectF.set(start, top, end, bottom);
@@ -269,7 +269,7 @@ public class BarChartItemDecoration extends RecyclerView.ItemDecoration {
                 txtStart = valueStr.length() - displaySize;
                 txtXLeft = Math.max(txtXLeft, parentLeft);
                 displayCharValue(mBarChartAttrs.enableCharValueDisplay, canvas, valueStr, txtStart, txtEnd, txtXLeft, txtY);
-            } else if (DecimalComparisonUtil.bigOrEquals(txtXLeft, parentLeft) && DecimalComparisonUtil.smallOrEquals(txtXRight, parentRight)) {//中间的
+            } else if (DecimalUtil.bigOrEquals(txtXLeft, parentLeft) && DecimalUtil.smallOrEquals(txtXRight, parentRight)) {//中间的
                 displayCharValue(mBarChartAttrs.enableCharValueDisplay, canvas, valueStr, txtStart, txtEnd, txtXLeft, txtY);
             } else if (txtXLeft <= parentRight && txtXRight > parentRight) {//右边部分滑出的时候，处理柱状图，文字的显示
                 txtXLeft = getTxtX(child, width, valueStr);
@@ -495,7 +495,7 @@ public class BarChartItemDecoration extends RecyclerView.ItemDecoration {
                     float txtXRight = txtXLeft + txtWidth;
                     int length = dateStr.length();
 
-                    if (DecimalComparisonUtil.bigOrEquals(txtXLeft, parentLeft) && DecimalComparisonUtil.smallOrEquals(txtXRight, parentRight)) {//中间位置
+                    if (DecimalUtil.bigOrEquals(txtXLeft, parentLeft) && DecimalUtil.smallOrEquals(txtXRight, parentRight)) {//中间位置
                         canvas.drawText(dateStr, txtXLeft, txtY, mTextPaint);
                     } else if (txtXLeft < parentLeft && txtXRight > parentLeft) {//处理左边界
                         int displayLength = (int) ((txtXRight - parentLeft) / txtWidth * length);

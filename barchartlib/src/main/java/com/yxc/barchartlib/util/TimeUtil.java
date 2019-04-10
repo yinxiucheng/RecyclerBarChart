@@ -1,5 +1,8 @@
 package com.yxc.barchartlib.util;
 
+import com.yxc.barchartlib.component.BarEntry;
+import com.yxc.barchartlib.component.DistanceCompare;
+
 import org.joda.time.Days;
 import org.joda.time.Instant;
 import org.joda.time.LocalDate;
@@ -485,6 +488,37 @@ public class TimeUtil {
         LocalDate localDate = timestampToLocalDate(timestamp);
         LocalDate localDateCompare = timestampToLocalDate(timestampCompare);
         return isSameLocalDate(localDate, localDateCompare);
+    }
+
+
+    public static DistanceCompare createYearDistance(LocalDate localDate) {
+        int month = localDate.getMonthOfYear();
+        return new DistanceCompare(month, 12 - month);
+    }
+
+    public static DistanceCompare createDayDistance(BarEntry barEntry) {
+        LocalDate localDate = barEntry.localDate;
+        long tomorrowZeroTime = TimeUtil.changZeroOfTheDay(localDate.plusDays(1));//明天凌晨
+        long todayZeroTime = TimeUtil.changZeroOfTheDay(localDate);//今天0点
+
+        int distanceRight = (int) ((tomorrowZeroTime - barEntry.timestamp) / TimeUtil.TIME_HOUR); //右边的距离
+        int distanceLeft = (int) ((barEntry.timestamp - todayZeroTime) / TimeUtil.TIME_HOUR);//左边的距离
+
+        return new DistanceCompare(distanceLeft, distanceRight);
+    }
+
+    public static DistanceCompare createWeekDistance(LocalDate localDate) {
+        int dayOfWeek = localDate.getDayOfWeek();
+        return new DistanceCompare(dayOfWeek, 7 - dayOfWeek);
+    }
+
+    public static DistanceCompare createMonthDistance(LocalDate localDate) {
+        LocalDate nextMonthFirstDay = TimeUtil.getFirstDayOfNextMonth(localDate);
+        LocalDate lastMonthLastDay = TimeUtil.getFirstDayOfMonth(localDate).minusDays(1);
+
+        int distanceRight = TimeUtil.getIntervalDay(localDate, nextMonthFirstDay); //右边的距离
+        int distanceLeft = TimeUtil.getIntervalDay(lastMonthLastDay, localDate);
+        return new DistanceCompare(distanceLeft, distanceRight);
     }
 
 
