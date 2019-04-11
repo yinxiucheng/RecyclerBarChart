@@ -14,6 +14,12 @@ import java.util.List;
  * @date 2019/4/10
  */
 public class TestData {
+
+    public static final int VIEW_DAY = 0;
+    public static final int VIEW_WEEK = 1;
+    public static final int VIEW_MONTH = 2;
+    public static final int VIEW_YEAR = 3;
+
     // 创建 月视图的数据
     public static List<BarEntry> createMonthEntries() {
         long timestamp = TimeUtil.changZeroOfTheDay(LocalDate.now());
