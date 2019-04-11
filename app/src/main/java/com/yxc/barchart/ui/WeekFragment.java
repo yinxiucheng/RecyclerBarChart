@@ -13,7 +13,6 @@ import com.yxc.barchart.BaseFragment;
 import com.yxc.barchart.R;
 import com.yxc.barchart.ReLocationUtil;
 import com.yxc.barchart.TestData;
-import com.yxc.barchart.formatter.XAxisMonthFormatter;
 import com.yxc.barchart.formatter.XAxisWeekFormatter;
 import com.yxc.barchartlib.component.XAxis;
 import com.yxc.barchartlib.component.YAxis;
@@ -64,7 +63,8 @@ public class WeekFragment extends BaseFragment {
         valueFormatter = new XAxisWeekFormatter();
 
         initData(displayNumber, valueFormatter);
-        bindBarChartList(displayNumber, TestData.createWeekEntries(), mType);
+        bindBarChartList(TestData.createWeekEntries());
+        setXAxis(displayNumber);
         reSizeYAxis();
         setListener(mType, displayNumber);
         return view;
@@ -135,16 +135,17 @@ public class WeekFragment extends BaseFragment {
         }
     }
 
-    private void bindBarChartList(int displayNumber, List<BarEntry> entries, int type){
+    private void bindBarChartList(List<BarEntry> entries){
         if (null == mEntries){
             mEntries = new ArrayList<>();
         }else {
             mEntries.clear();
         }
-
-        mType = type;
-        mXAxis = new XAxis(mBarChartAttrs, displayNumber);
         mEntries.addAll(0, entries);
+    }
+
+    private void setXAxis(int displayNumber){
+        mXAxis = new XAxis(mBarChartAttrs, displayNumber);
         mBarChartAdapter.setXAxis(mXAxis);
     }
 

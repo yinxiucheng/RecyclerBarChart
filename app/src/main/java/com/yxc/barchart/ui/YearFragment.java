@@ -63,7 +63,8 @@ public class YearFragment extends BaseFragment {
         valueFormatter = new XAxisYearFormatter();
 
         initData(displayNumber, valueFormatter);
-        bindBarChartList(displayNumber, TestData.createYearEntries(), mType);
+        bindBarChartList(TestData.createYearEntries());
+        setXAxis(displayNumber);
         reSizeYAxis();
         setListener(mType, displayNumber);
         return view;
@@ -135,15 +136,17 @@ public class YearFragment extends BaseFragment {
         }
     }
 
-    private void bindBarChartList(int displayNumber, List<BarEntry> entries, int type) {
-        if (null == mEntries) {
+    private void bindBarChartList(List<BarEntry> entries){
+        if (null == mEntries){
             mEntries = new ArrayList<>();
-        } else {
+        }else {
             mEntries.clear();
         }
-        mType = type;
-        mXAxis = new XAxis(mBarChartAttrs, displayNumber);
         mEntries.addAll(0, entries);
+    }
+
+    private void setXAxis(int displayNumber){
+        mXAxis = new XAxis(mBarChartAttrs, displayNumber);
         mBarChartAdapter.setXAxis(mXAxis);
     }
 
