@@ -15,6 +15,7 @@ import com.yxc.barchart.BaseFragment;
 import com.yxc.barchart.R;
 import com.yxc.barchart.TestData;
 import com.yxc.barchart.formatter.XAxisDayFormatter;
+import com.yxc.barchart.formatter.XAxisMonthFormatter;
 import com.yxc.barchartlib.component.DistanceCompare;
 import com.yxc.barchartlib.component.XAxis;
 import com.yxc.barchartlib.component.YAxis;
@@ -79,7 +80,7 @@ public class MonthFragment extends BaseFragment {
         displayNumber = 32;
         mYAxis = new YAxis(mBarChartAttrs);
         mXAxis = new XAxis(mBarChartAttrs, displayNumber);
-        mXAxis.setValueFormatter(new XAxisDayFormatter());
+        mXAxis.setValueFormatter(new XAxisMonthFormatter(getActivity()));
         mItemDecoration = new BarChartItemDecoration(getActivity(), mYAxis, mXAxis, mBarChartAttrs);
         recyclerView.addItemDecoration(mItemDecoration);
         mBarChartAdapter = new BarChartAdapter(getActivity(), mEntries, recyclerView, mXAxis);

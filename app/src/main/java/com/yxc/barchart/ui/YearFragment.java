@@ -14,6 +14,7 @@ import com.yxc.barchart.BaseFragment;
 import com.yxc.barchart.R;
 import com.yxc.barchart.TestData;
 import com.yxc.barchart.formatter.XAxisDayFormatter;
+import com.yxc.barchart.formatter.XAxisYearFormatter;
 import com.yxc.barchartlib.component.DistanceCompare;
 import com.yxc.barchartlib.component.XAxis;
 import com.yxc.barchartlib.component.YAxis;
@@ -61,7 +62,7 @@ public class YearFragment extends BaseFragment {
         View view = View.inflate(getActivity(), R.layout.fragment_day_step, null);
         initView(view);
         initData();
-        bindBarChartList(13, TestData.createWeekEntries(), TestData.VIEW_YEAR);
+        bindBarChartList(13, TestData.createYearEntries(), TestData.VIEW_YEAR);
         reSizeYAxis();
         setListener();
         return view;
@@ -79,7 +80,7 @@ public class YearFragment extends BaseFragment {
         displayNumber = 13;
         mYAxis = new YAxis(mBarChartAttrs);
         mXAxis = new XAxis(mBarChartAttrs, displayNumber);
-        mXAxis.setValueFormatter(new XAxisDayFormatter());
+        mXAxis.setValueFormatter(new XAxisYearFormatter());
         mItemDecoration = new BarChartItemDecoration(getActivity(), mYAxis, mXAxis, mBarChartAttrs);
         recyclerView.addItemDecoration(mItemDecoration);
         mBarChartAdapter = new BarChartAdapter(getActivity(), mEntries, recyclerView, mXAxis);

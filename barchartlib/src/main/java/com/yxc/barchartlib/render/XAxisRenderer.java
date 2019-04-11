@@ -167,7 +167,8 @@ public class XAxisRenderer{
             int type = parent.getAdapter().getItemViewType(adapterPosition);
             final int x = child.getLeft();
 
-            if (type == BarEntry.TYPE_XAXIS_SECOND || type == BarEntry.TYPE_XAXIS_SPECIAL || type == BarEntry.TYPE_XAXIS_FIRST) {
+            if (type == BarEntry.TYPE_XAXIS_SECOND || type == BarEntry.TYPE_XAXIS_SPECIAL
+                    || type == BarEntry.TYPE_XAXIS_FIRST) {
                 BarEntry barEntry = entries.get(adapterPosition);
 
                 String dateStr = xAxis.getValueFormatter().getBarLabel(barEntry);
