@@ -146,7 +146,7 @@ public class BarChartItemDecoration extends RecyclerView.ItemDecoration {
         mTextPaint.setStyle(Paint.Style.FILL);
         mTextPaint.setStrokeWidth(1);
         mTextPaint.setColor(Color.GRAY);
-        mTextPaint.setTextSize(mXAxis.txtSize);
+        mTextPaint.setTextSize(mXAxis.getTextSize());
     }
 
     private void initBarChartPaint() {
@@ -302,7 +302,7 @@ public class BarChartItemDecoration extends RecyclerView.ItemDecoration {
     private void drawHorizontalLine(Canvas canvas, RecyclerView parent, YAxis yAxis) {
         int left = parent.getPaddingLeft();
         int right = parent.getWidth() - parent.getPaddingRight();
-        mLinePaint.setColor(yAxis.lineColor);
+        mLinePaint.setColor(yAxis.getGridColor());
         int top = parent.getPaddingTop();
         int bottom = parent.getHeight() - parent.getPaddingBottom();
         float distance = bottom - mBarChartAttrs.contentPaddingBottom - mBarChartAttrs.maxYAxisPaddingTop;
@@ -395,7 +395,7 @@ public class BarChartItemDecoration extends RecyclerView.ItemDecoration {
         int parentBottom = parent.getHeight() - parent.getPaddingBottom();
         int parentLeft = parent.getPaddingLeft();
         final int childCount = parent.getChildCount();
-        mTextPaint.setTextSize(xAxis.txtSize);
+        mTextPaint.setTextSize(xAxis.getTextSize());
         int parentRight = parent.getWidth() - parent.getPaddingRight();
         for (int i = 0; i < childCount; i++) {
             final View child = parent.getChildAt(i);
@@ -406,7 +406,7 @@ public class BarChartItemDecoration extends RecyclerView.ItemDecoration {
                 continue;
             }
             if (type == BarEntry.TYPE_XAXIS_FIRST || type == BarEntry.TYPE_XAXIS_SPECIAL) {
-                boolean isNextSecondType = isNearEntrySecondType(child.getWidth(), adapterPosition);
+                boolean isNextSecondType = isNearEntrySecondType(xAxis, child.getWidth(), adapterPosition);
                 mLinePaint.setColor(xAxis.firstDividerColor);
                 Path path = new Path();
                 if (isNextSecondType) {
@@ -438,24 +438,25 @@ public class BarChartItemDecoration extends RecyclerView.ItemDecoration {
         }
     }
 
-
     //画月线的时候，当邻近的靠左的存在需要写 X轴坐标的BarEntry，返回true, 柱体宽度大于文本宽度时除外。
-    private boolean isNearEntrySecondType(int barWidth, int adapterPosition) {
+    private boolean isNearEntrySecondType(XAxis xAxis, int barWidth, int adapterPosition) {
         int position1 = adapterPosition - 1;
         int position2 = adapterPosition - 2;
         BarEntry barEntryNext;
         if (position1 > 0 && mEntries.get(position1).type == BarEntry.TYPE_XAXIS_SECOND) {
             barEntryNext = mEntries.get(position1);
-            mTextPaint.setTextSize(mXAxis.txtSize);
-            if (null != barEntryNext && barWidth > mTextPaint.measureText(barEntryNext.xAxisLabel)) {
+            mTextPaint.setTextSize(xAxis.getTextSize());
+            String xAxisLabel = xAxis.getValueFormatter().getBarLabel(barEntryNext);
+            if (null != barEntryNext && barWidth > mTextPaint.measureText(xAxisLabel)) {
                 //对于宽的柱状体，不缩短临近TYPE_SECOND的月线
                 return false;
             }
             return true;
         } else if (position2 > 0 && mEntries.get(position2).type == BarEntry.TYPE_XAXIS_SECOND) {
             barEntryNext = mEntries.get(position2);
-            mTextPaint.setTextSize(mXAxis.txtSize);
-            if (null != barEntryNext && barWidth > mTextPaint.measureText(barEntryNext.xAxisLabel)) {
+            mTextPaint.setTextSize(xAxis.getTextSize());
+            String xAxisLabel = xAxis.getValueFormatter().getBarLabel(barEntryNext);
+            if (null != barEntryNext && barWidth > mTextPaint.measureText(xAxisLabel)){
                 //对于宽的柱状体，不缩短临近TYPE_SECOND的月线
                 return false;
             }
@@ -466,10 +467,11 @@ public class BarChartItemDecoration extends RecyclerView.ItemDecoration {
 
     //绘制X坐标
     private void drawXAxis(Canvas canvas, RecyclerView parent, XAxis xAxis) {
+
         int parentBottom = parent.getHeight() - parent.getPaddingBottom();
         int parentLeft = parent.getPaddingLeft();
         final int childCount = parent.getChildCount();
-        mTextPaint.setTextSize(xAxis.txtSize);
+        mTextPaint.setTextSize(xAxis.getTextSize());
         int parentRight = parent.getWidth() - parent.getPaddingRight();
         for (int i = 0; i < childCount; i++) {
             final View child = parent.getChildAt(i);
@@ -479,7 +481,9 @@ public class BarChartItemDecoration extends RecyclerView.ItemDecoration {
 
             if (type == BarEntry.TYPE_XAXIS_SECOND || type == BarEntry.TYPE_XAXIS_SPECIAL || type == BarEntry.TYPE_XAXIS_FIRST) {
                 BarEntry barEntry = mEntries.get(adapterPosition);
-                String dateStr = barEntry.xAxisLabel;
+
+                String dateStr = xAxis.getValueFormatter().getBarLabel(barEntry);
+
                 if (!TextUtils.isEmpty(dateStr)) {
                     int childWidth = child.getWidth();
                     float txtWidth = mTextPaint.measureText(dateStr);

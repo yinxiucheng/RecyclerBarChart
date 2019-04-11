@@ -16,17 +16,19 @@ public class YAxis extends AxisBase {
     BarChartAttrs attrs;
     public float labelHorizontalPadding;
     public float labelVerticalPadding;//刻度 字跟刻度线的位置对齐的调整
-    public int lineColor;
     public List<Float> scaleYLocationList;
     public HashMap<Float, Float> yAxisScaleMap;
 
     public YAxis(BarChartAttrs barChartAttrs) {
         this.attrs = barChartAttrs;
+
         setAxisMinimum(attrs.yAxisMinimum);
         setAxisMaximum(attrs.yAxisMaximum);
         setLabelCount(attrs.yAxisLabelSize);
         setTextSize(attrs.yAxisLabelTxtSize);
-        this.lineColor = attrs.yAxisLineColor;
+        setTextColor(attrs.yAxisLabelTxtColor);
+        setGridColor(attrs.yAxisLineColor);
+
         this.labelHorizontalPadding = attrs.yAxisLabelHorizontalPadding;
         this.labelVerticalPadding = attrs.yAxisLabelVerticalPadding;
         scaleYLocationList = new ArrayList<>();
@@ -36,6 +38,12 @@ public class YAxis extends AxisBase {
         super.setLabelCount(count);
         float label = mAxisMaximum;
         float itemRange = mAxisMaximum / count;
+
+        if (null == mEntries) {
+            mEntries = new ArrayList<>();
+        } else {
+            mEntries.clear();
+        }
         for (int i = 0; i <= count; i++) {
             if (i > 0) {
                 label = label - itemRange;
@@ -74,8 +82,9 @@ public class YAxis extends AxisBase {
         float location = topLocation;
         for (int i = 0; i <= count; i++) {
             if (i > 0) {
-                location = location - itemHeight;
+                location = location + itemHeight;
             }
+
             if (i < mEntries.size()) {
                 yAxisScaleMap.put(location, mEntries.get(i));
             } else {
@@ -85,6 +94,7 @@ public class YAxis extends AxisBase {
         }
         return yAxisScaleMap;
     }
+
 
     //获取Y轴刻度值
     public static YAxis getYAxis(BarChartAttrs attrs, float max) {
@@ -142,5 +152,69 @@ public class YAxis extends AxisBase {
             axis.setLabelCount(4);
         }
         return axis;
+    }
+
+    //获取Y轴刻度值, 当上一次 跟 这一次 对应的 刻度一样的时候，
+    public YAxis resetYAxis(YAxis axis,  float max) {
+        float axisMaximum;
+        int layoutCount;
+        if (max > 50000) {
+            axisMaximum = 8000;
+            layoutCount = 5;
+        } else if (max > 30000) {
+            axisMaximum = 50000;
+            layoutCount = 5;
+        } else if (max > 25000) {
+            axisMaximum = 30000;
+            layoutCount = 5;
+        } else if (max > 20000) {
+            axisMaximum = 25000;
+            layoutCount = 4;
+        } else if (max > 15000) {
+            axisMaximum = 20000;
+            layoutCount = 4;
+        } else if (max > 10000) {
+            axisMaximum = 15000;
+            layoutCount = 4;
+        } else if (max > 8000) {
+            axisMaximum = 10000;
+            layoutCount = 4;
+        } else if (max > 6000) {
+            axisMaximum = 8000;
+            layoutCount = 4;
+        } else if (max > 4000) {
+            axisMaximum = 6000;
+            layoutCount = 4;
+        } else if (max > 3000) {
+            axisMaximum = 5000;
+            layoutCount = 4;
+        } else if (max > 2000) {
+            axisMaximum = 3000;
+            layoutCount = 4;
+        } else if (max > 1500) {
+            axisMaximum = 2000;
+            layoutCount = 4;
+        } else if (max > 1000) {
+            axisMaximum = 1500;
+            layoutCount = 4;
+        } else if (max > 500) {
+            axisMaximum = 800;
+            layoutCount = 4;
+        } else if (max > 300) {
+            axisMaximum = 500;
+            layoutCount = 4;
+        } else if (max > 200) {
+            axisMaximum = 300;
+            layoutCount = 4;
+        } else {
+            axisMaximum = 200;
+            layoutCount = 4;
+        }
+        if (axisMaximum != mAxisMaximum ){
+            axis.setAxisMaximum(axisMaximum);
+            axis.setLabelCount(layoutCount);
+            return axis;
+        }
+        return null;
     }
 }

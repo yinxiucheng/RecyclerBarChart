@@ -14,7 +14,6 @@ import java.util.List;
  * @date 2019/4/10
  */
 public class TestData {
-
     // 创建 月视图的数据
     public static List<BarEntry> createMonthEntries() {
         long timestamp = TimeUtil.changZeroOfTheDay(LocalDate.now());
@@ -40,21 +39,17 @@ public class TestData {
             }
             value = Math.round(value);
             int type = BarEntry.TYPE_XAXIS_THIRD;
-            String xAxisLabel = "";
             LocalDate localDate = TimeUtil.timestampToLocalDate(timestamp);
             boolean isFirstDayOfMonth = TimeUtil.isFirstDayOfMonth(localDate);
             if (isFirstDayOfMonth && (i + 1) % 7 == 0) {
                 type = BarEntry.TYPE_XAXIS_SPECIAL;
-                xAxisLabel = localDate.getDayOfMonth() + "日";
             } else if (isFirstDayOfMonth) {
                 type = BarEntry.TYPE_XAXIS_FIRST;
             } else if ((i + 1) % 7 == 0) {
                 type = BarEntry.TYPE_XAXIS_SECOND;
-                xAxisLabel = localDate.getDayOfMonth() + "日";
             }
             BarEntry barEntry = new BarEntry(i, value, timestamp, type);
             barEntry.localDate = localDate;
-            barEntry.xAxisLabel = xAxisLabel;
             entries.add(barEntry);
         }
         Collections.sort(entries);
@@ -91,10 +86,8 @@ public class TestData {
             if (isMonday) {
                 type = BarEntry.TYPE_XAXIS_FIRST;
             }
-            String xAxis = TimeUtil.getWeekStr(localDate.getDayOfWeek());
             BarEntry barEntry = new BarEntry(i, value, timestamp, type);
             barEntry.localDate = localDate;
-            barEntry.xAxisLabel = xAxis;
             entries.add(barEntry);
         }
         Collections.sort(entries);
@@ -129,20 +122,15 @@ public class TestData {
             int type = BarEntry.TYPE_XAXIS_THIRD;
             boolean isNextDay = TimeUtil.isNextDay(timestamp);
             LocalDate localDate = TimeUtil.timestampToLocalDate(timestamp);
-            String xAxisStr = "";
-
             if (isNextDay && i % 3 == 0) {
                 type = BarEntry.TYPE_XAXIS_SPECIAL;
-                xAxisStr = TimeUtil.getHourOfTheDay(timestamp);
             } else if (isNextDay) {
                 type = BarEntry.TYPE_XAXIS_FIRST;
             } else if (i % 3 == 0) {
                 type = BarEntry.TYPE_XAXIS_SECOND;
-                xAxisStr = TimeUtil.getHourOfTheDay(timestamp);
             }
             BarEntry barEntry = new BarEntry(i, value, timestamp, type);
             barEntry.localDate = localDate;
-            barEntry.xAxisLabel = xAxisStr;
             entries.add(barEntry);
         }
         Collections.sort(entries);
@@ -181,11 +169,9 @@ public class TestData {
             if (isNextYear) {
                 type = BarEntry.TYPE_XAXIS_FIRST;
             }
-            String xAxis = Integer.toString(localDate.getMonthOfYear());
             long timestamp = TimeUtil.changZeroOfTheDay(localDate);
             BarEntry barEntry = new BarEntry(i, value, timestamp, type);
             barEntry.localDate = localDate;
-            barEntry.xAxisLabel = xAxis;
             entries.add(barEntry);
         }
         Collections.sort(entries);

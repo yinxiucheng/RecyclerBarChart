@@ -10,6 +10,10 @@ import android.view.View;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import com.yxc.barchart.formatter.XAxisDayFormatter;
+import com.yxc.barchart.formatter.XAxisMonthFormatter;
+import com.yxc.barchart.formatter.XAxisWeekFormatter;
+import com.yxc.barchart.formatter.XAxisYearFormatter;
 import com.yxc.barchart.tab.OnTabSelectListener;
 import com.yxc.barchart.tab.TopTabLayout;
 import com.yxc.barchartlib.entrys.BarEntry;
@@ -86,6 +90,7 @@ public class BarChartActivity extends AppCompatActivity {
         displayNumber = 25;
         mYAxis = new YAxis(mBarChartAttrs);
         mXAxis = new XAxis(mBarChartAttrs, displayNumber);
+        mXAxis.setValueFormatter(new XAxisDayFormatter());
         mItemDecoration = new BarChartItemDecoration(this, BarChartItemDecoration.HORIZONTAL_LIST, mYAxis, mXAxis, mBarChartAttrs);
         recyclerView.addItemDecoration(mItemDecoration);
         mBarChartAdapter = new BarChartAdapter(this, mEntries, recyclerView, mXAxis);
@@ -189,9 +194,12 @@ public class BarChartActivity extends AppCompatActivity {
 
         List<BarEntry> displayEntries = mEntries.subList(firstVisibleItemPosition, lastVisibleItemPosition + 1);
         float max = DecimalUtil.getTheMaxNumber(displayEntries);
-        mYAxis = YAxis.getYAxis(mBarChartAttrs, max);
-        mItemDecoration.setYAxis(mYAxis);
-        recyclerView.invalidate();
+        YAxis yAxis = mYAxis.resetYAxis(mYAxis, max);
+        if (null != yAxis){
+            mYAxis = yAxis;
+            mItemDecoration.setYAxis(mYAxis);
+            recyclerView.invalidate();
+        }
         //todo 调试显示用的
         displayDateAndStep(displayEntries);
     }
@@ -257,8 +265,12 @@ public class BarChartActivity extends AppCompatActivity {
         List<BarEntry> visibleEntries = mEntries.subList(firstVisibleItemPosition, lastVisibleItemPosition + 1);
         float max = DecimalUtil.getTheMaxNumber(visibleEntries);
 
-        mYAxis = YAxis.getYAxis(mBarChartAttrs, max);
-        mItemDecoration.setYAxis(mYAxis);
+        YAxis yAxis = mYAxis.resetYAxis(mYAxis, max);
+        if (null != yAxis){
+            mYAxis = yAxis;
+            mItemDecoration.setYAxis(mYAxis);
+        }
+
 //        recyclerView.invalidate();
         displayDateAndStep(visibleEntries);
     }
@@ -275,15 +287,23 @@ public class BarChartActivity extends AppCompatActivity {
             public void onTabSelect(int position) {
                 if (position == VIEW_DAY) {// 创建 月视图的数据
                     displayNumber = 25;
+                    mXAxis.setValueFormatter(new XAxisDayFormatter());
+                    mItemDecoration.setXAxis(mXAxis);
                     bindBarChartList(displayNumber, TestData.createDayEntries(), VIEW_DAY);
                 } else if (position == VIEW_WEEK) {//创建Week视图的数据
                     displayNumber = 8;
+                    mXAxis.setValueFormatter(new XAxisWeekFormatter());
+                    mItemDecoration.setXAxis(mXAxis);
                     bindBarChartList(displayNumber, TestData.createWeekEntries(), VIEW_WEEK);
                 } else if (position == VIEW_MONTH) {//创建Month视图的数据
                     displayNumber = 32;
+                    mXAxis.setValueFormatter(new XAxisMonthFormatter(BarChartActivity.this));
+                    mItemDecoration.setXAxis(mXAxis);
                     bindBarChartList(displayNumber, TestData.createMonthEntries(), VIEW_MONTH);
                 } else if (position == VIEW_YEAR) {//创建Year视图的数据
                     displayNumber = 13;
+                    mXAxis.setValueFormatter(new XAxisYearFormatter());
+                    mItemDecoration.setXAxis(mXAxis);
                     bindBarChartList(displayNumber, TestData.createYearEntries(), VIEW_YEAR);
                 }
                 reSizeYAxis();

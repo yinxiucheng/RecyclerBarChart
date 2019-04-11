@@ -18,6 +18,28 @@ import java.util.List;
  */
 public abstract class AxisBase extends ComponentBase {
 
+    @Override
+    public int getTextColor() {
+        return textColor;
+    }
+
+    @Override
+    public void setTextColor(int textColor) {
+        this.textColor = textColor;
+    }
+
+    @Override
+    public float getTextSize() {
+        return textSize;
+    }
+
+    @Override
+    public void setTextSize(float textSize) {
+        this.textSize = textSize;
+    }
+
+    public int textColor;
+    public float textSize;
     /**
      * custom formatter that is used instead of the auto-formatter if set
      */

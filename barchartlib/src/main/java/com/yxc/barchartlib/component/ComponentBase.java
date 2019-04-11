@@ -118,7 +118,6 @@ public abstract class ComponentBase {
             size = 24f;
         if (size < 6f)
             size = 6f;
-
         mTextSize = Utils.convertDpToPixel(size);
     }
 

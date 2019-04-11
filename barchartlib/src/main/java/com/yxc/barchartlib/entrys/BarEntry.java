@@ -24,10 +24,7 @@ public class BarEntry extends Entry implements Comparable<BarEntry> {
 
     public LocalDate localDate;
 
-    public String xAxisLabel = "";
-
     public BarEntry() {
-
     }
 
     public BarEntry(float x, float y, long timestamp, int type){
