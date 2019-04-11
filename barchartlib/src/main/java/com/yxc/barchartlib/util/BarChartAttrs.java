@@ -33,14 +33,14 @@ public class BarChartAttrs {
     public boolean enableBarBorder;//控制是否显示边框
     public boolean enableScrollToScale;
 
-
-    public int yAxisLabelMaxScale;//y轴刻度默认的最大刻度
+    public float yAxisMaximum;//y轴刻度默认的最大刻度
+    public float yAxisMinimum;//y轴刻度默认的最小刻度
     public float yAxisLabelTxtSize;//y轴刻度字体大小
     public int yAxisLabelTxtColor;//y轴字体颜色
     public int yAxisLabelSize;//y轴刻度的格数
     public int yAxisLineColor;//y轴对应的网格线的颜色
-    public float yAxisLabelPaddingLeftRight;//刻度字跟边框的间距
-    public float yAxisLabelCenterPadding;//刻度 字跟刻度线的位置对齐的调整
+    public float yAxisLabelHorizontalPadding;//刻度字跟边框的间距
+    public float yAxisLabelVerticalPadding;//刻度 字跟刻度线的位置对齐的调整
 
     public float xAxisTxtSize;//x轴刻度字体大小
     public int xAxisTxtColor;//x轴刻度字体颜色

@@ -2,85 +2,144 @@ package com.yxc.barchartlib.component;
 
 import com.yxc.barchartlib.util.BarChartAttrs;
 
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.LinkedHashMap;
+import java.util.List;
+
 /**
  * @author yxc
  * @date 2019/4/8
  */
-public class YAxis {
+public class YAxis extends AxisBase {
 
     BarChartAttrs attrs;
-
-    public int maxLabel;//y轴刻度默认的最大刻度
-    public int labelSize;
-    public float labelTxtSize;
-    public float labelPaddingLeftRight;
-    public float labelCenterPadding;//刻度 字跟刻度线的位置对齐的调整
+    public float labelHorizontalPadding;
+    public float labelVerticalPadding;//刻度 字跟刻度线的位置对齐的调整
     public int lineColor;
+    public List<Float> scaleYLocationList;
+    public HashMap<Float, Float> yAxisScaleMap;
 
     public YAxis(BarChartAttrs barChartAttrs) {
         this.attrs = barChartAttrs;
-        this.maxLabel = attrs.yAxisLabelMaxScale;
-        this.labelSize = attrs.yAxisLabelSize;
-        this.labelTxtSize = attrs.yAxisLabelTxtSize;
+        setAxisMinimum(attrs.yAxisMinimum);
+        setAxisMaximum(attrs.yAxisMaximum);
+        setLabelCount(attrs.yAxisLabelSize);
+        setTextSize(attrs.yAxisLabelTxtSize);
         this.lineColor = attrs.yAxisLineColor;
-        this.labelPaddingLeftRight = attrs.yAxisLabelPaddingLeftRight;
-        this.labelCenterPadding = attrs.yAxisLabelCenterPadding;
+        this.labelHorizontalPadding = attrs.yAxisLabelHorizontalPadding;
+        this.labelVerticalPadding = attrs.yAxisLabelVerticalPadding;
+        scaleYLocationList = new ArrayList<>();
+    }
+
+    public void setLabelCount(int count) {
+        super.setLabelCount(count);
+        float label = mAxisMaximum;
+        float itemRange = mAxisMaximum / count;
+        for (int i = 0; i <= count; i++) {
+            if (i > 0) {
+                label = label - itemRange;
+            }
+            mEntries.add(i, label);
+        }
+    }
+
+    //获取 刻度的 位置列表
+    public List<Float> getScaleYLocationList(float topLocation, int count) {
+        if (null == scaleYLocationList) {
+            scaleYLocationList = new ArrayList<>();
+        } else {
+            scaleYLocationList.clear();
+        }
+        float location = topLocation;
+        float locationRange = topLocation / count;
+        for (int i = 0; i <= count; i++) {
+            if (i > 0) {
+                location = location - locationRange;
+            }
+            scaleYLocationList.add(i, location);
+        }
+        return scaleYLocationList;
+    }
+
+    public HashMap<Float, Float> getYAxisScaleMap(float topLocation, float itemHeight, int count) {
+        if (null == mEntries || mEntries.isEmpty()) {
+            return new HashMap<>();
+        }
+        if (null == yAxisScaleMap) {
+            yAxisScaleMap = new LinkedHashMap<>();
+        } else {
+            yAxisScaleMap.clear();
+        }
+        float location = topLocation;
+        for (int i = 0; i <= count; i++) {
+            if (i > 0) {
+                location = location - itemHeight;
+            }
+            if (i < mEntries.size()) {
+                yAxisScaleMap.put(location, mEntries.get(i));
+            } else {
+                //这里其实已经出错了，值的个数跟位置不匹配
+                yAxisScaleMap.put(location, 0f);
+            }
+        }
+        return yAxisScaleMap;
     }
 
     //获取Y轴刻度值
     public static YAxis getYAxis(BarChartAttrs attrs, float max) {
         YAxis axis = new YAxis(attrs);
         if (max > 50000) {
-            axis.maxLabel = 80000;
-            axis.labelSize = 5;
+            axis.mAxisMaximum = 80000;
+            axis.setLabelCount(5);
         } else if (max > 30000) {
-            axis.maxLabel = 50000;
-            axis.labelSize = 5;
+            axis.mAxisMaximum = 50000;
+            axis.setLabelCount(5);
         } else if (max > 25000) {
-            axis.maxLabel = 30000;
-            axis.labelSize = 5;
+            axis.mAxisMaximum = 30000;
+            axis.setLabelCount(5);
         } else if (max > 20000) {
-            axis.maxLabel = 25000;
-            axis.labelSize = 4;
+            axis.mAxisMaximum = 25000;
+            axis.setLabelCount(4);
         } else if (max > 15000) {
-            axis.maxLabel = 20000;
-            axis.labelSize = 4;
+            axis.mAxisMaximum = 20000;
+            axis.setLabelCount(4);
         } else if (max > 10000) {
-            axis.maxLabel = 15000;
-            axis.labelSize = 4;
+            axis.mAxisMaximum = 15000;
+            axis.setLabelCount(4);
         } else if (max > 8000) {
-            axis.maxLabel = 10000;
-            axis.labelSize = 4;
+            axis.mAxisMaximum = 10000;
+            axis.setLabelCount(4);
         } else if (max > 6000) {
-            axis.maxLabel = 8000;
-            axis.labelSize = 4;
+            axis.mAxisMaximum = 8000;
+            axis.setLabelCount(4);
         } else if (max > 4000) {
-            axis.maxLabel = 6000;
-            axis.labelSize = 4;
+            axis.mAxisMaximum = 6000;
+            axis.setLabelCount(4);
         } else if (max > 3000) {
-            axis.maxLabel = 5000;
-            axis.labelSize = 4;
+            axis.mAxisMaximum = 5000;
+            axis.setLabelCount(4);
         } else if (max > 2000) {
-            axis.maxLabel = 3000;
-            axis.labelSize = 4;
+            axis.mAxisMaximum = 3000;
+            axis.setLabelCount(4);
         } else if (max > 1500) {
-            axis.maxLabel = 2000;
-            axis.labelSize = 4;
+            axis.mAxisMaximum = 2000;
+            axis.setLabelCount(4);
         } else if (max > 1000) {
-            axis.maxLabel = 1500;
-            axis.labelSize = 4;
+            axis.mAxisMaximum = 1500;
+            axis.setLabelCount(4);
         } else if (max > 500) {
-            axis.maxLabel = 800;
-            axis.labelSize = 4;
+            axis.mAxisMaximum = 800;
+            axis.setLabelCount(4);
         } else if (max > 300) {
-            axis.maxLabel = 500;
-            axis.labelSize = 4;
+            axis.mAxisMaximum = 500;
+            axis.setLabelCount(4);
         } else if (max > 200) {
-            axis.maxLabel = 300;
-            axis.labelSize = 4;
+            axis.mAxisMaximum = 300;
+            axis.setLabelCount(4);
         } else {
-            axis.maxLabel = 200;
-            axis.labelSize = 4;
+            axis.mAxisMaximum = 200;
+            axis.setLabelCount(4);
         }
         return axis;
     }

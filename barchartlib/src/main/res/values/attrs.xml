@@ -34,13 +34,14 @@
         <attr name="ratioSpeed" format="float"/>
 
         <!-- y坐标相关 -->
-        <attr name="yAxisLabelMaxScale" format="integer"/>
+        <attr name="yAxisMaximum" format="integer"/>
+        <attr name="yAxisMinimum" format="float"/>
         <attr name="yAxisLabelTxtSize" format="dimension"/>
         <attr name="yAxisLabelTxtColor" format="color"/>
         <attr name="yAxisLabelSize" format="integer"/>
         <attr name="yAxisLineColor" format="color"/>
-        <attr name="yAxisLabelPaddingLeftRight" format="dimension"/>
-        <attr name="yAxisLabelCenterPadding" format="dimension"/>
+        <attr name="yAxisLabelHorizontalPadding" format="dimension"/>
+        <attr name="yAxisLabelVerticalPadding" format="dimension"/>
 
 
         <!-- x坐标相关 -->

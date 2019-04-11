@@ -34,7 +34,7 @@ public abstract class AxisBase extends ComponentBase {
     /**
      * the actual array of entries
      */
-    public float[] mEntries = new float[]{};
+    public List<Float> mEntries = new ArrayList<>();
 
     /**
      * axis label entries only used for centered labels
@@ -318,7 +318,6 @@ public abstract class AxisBase extends ComponentBase {
             count = 25;
         if (count < 2)
             count = 2;
-
         mLabelCount = count;
         mForceLabels = false;
     }
@@ -470,7 +469,7 @@ public abstract class AxisBase extends ComponentBase {
 
         String longest = "";
 
-        for (int i = 0; i < mEntries.length; i++) {
+        for (int i = 0; i < mEntries.size(); i++) {
             String text = getFormattedLabel(i);
 
             if (text != null && longest.length() < text.length())
@@ -482,10 +481,10 @@ public abstract class AxisBase extends ComponentBase {
 
     public String getFormattedLabel(int index) {
 
-        if (index < 0 || index >= mEntries.length)
+        if (index < 0 || index >= mEntries.size())
             return "";
         else
-            return getValueFormatter().getAxisLabel(mEntries[index], this);
+            return getValueFormatter().getAxisLabel(mEntries.get(index), this);
     }
 
     /**

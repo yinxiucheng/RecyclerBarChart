@@ -45,13 +45,14 @@ public class AttrsUtil {
         attrs.layoutManagerOrientation = ta.getInteger(R.styleable.BarChartRecyclerView_layoutManagerOrientation, 0);
 
         //y轴相关
-        attrs.yAxisLabelMaxScale = ta.getInteger(R.styleable.BarChartRecyclerView_yAxisLabelMaxScale, 30000);
+        attrs.yAxisMaximum = ta.getFloat(R.styleable.BarChartRecyclerView_yAxisMaximum, 30000);
+        attrs.yAxisMinimum = ta.getFloat(R.styleable.BarChartRecyclerView_yAxisMinimum, 0);
         attrs.yAxisLabelTxtColor = ta.getColor(R.styleable.BarChartRecyclerView_yAxisLabelTxtColor, Color.GRAY);
         attrs.yAxisLabelTxtSize = ta.getDimension(R.styleable.BarChartRecyclerView_yAxisLabelTxtSize, DisplayUtil.dip2px(11));
         attrs.yAxisLabelSize = ta.getInteger(R.styleable.BarChartRecyclerView_yAxisLabelSize, 5);
         attrs.yAxisLineColor = ta.getColor(R.styleable.BarChartRecyclerView_yAxisLineColor, ColorUtil.getResourcesColor(context, R.color.black_20_transparent));
-        attrs.yAxisLabelPaddingLeftRight = ta.getDimension(R.styleable.BarChartRecyclerView_yAxisLabelPaddingLeftRight, DisplayUtil.dip2px(2));
-        attrs.yAxisLabelCenterPadding = ta.getDimension(R.styleable.BarChartRecyclerView_yAxisLabelCenterPadding, DisplayUtil.dip2px(3));
+        attrs.yAxisLabelHorizontalPadding = ta.getDimension(R.styleable.BarChartRecyclerView_yAxisLabelHorizontalPadding, DisplayUtil.dip2px(2));
+        attrs.yAxisLabelVerticalPadding = ta.getDimension(R.styleable.BarChartRecyclerView_yAxisLabelVerticalPadding, DisplayUtil.dip2px(3));
 
         //X轴相关
         attrs.xAxisFirstDividerColor = ta.getColor(R.styleable.BarChartRecyclerView_xAxisFirstDividerColor, ColorUtil.getResourcesColor(context, R.color.black));

@@ -23,7 +23,9 @@ import com.yxc.barchartlib.util.BarChartAttrs;
 import com.yxc.barchartlib.util.DecimalUtil;
 import com.yxc.barchartlib.util.DisplayUtil;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 /**
  * @author yxc
@@ -197,7 +199,7 @@ public class BarChartItemDecoration extends RecyclerView.ItemDecoration {
             float barChartWidth = width - barSpaceWidth;//柱子的宽度
             float start = child.getLeft() + barSpaceWidth / 2;
             float end = start + barChartWidth;
-            float height = barEntry.getY() / mYAxis.maxLabel * realYAxisLabelHeight;
+            float height = barEntry.getY() / mYAxis.getAxisMaximum() * realYAxisLabelHeight;
             float top = bottom - height;
 
             // 浮点数的 == 比较需要注意
@@ -243,7 +245,7 @@ public class BarChartItemDecoration extends RecyclerView.ItemDecoration {
             BarEntry barEntry = (BarEntry) child.getTag();
             int valueInt = (int) barEntry.getY();
             int width = child.getWidth();
-            int height = (int) (barEntry.getY() / mYAxis.maxLabel * realYAxisLabelHeight);
+            int height = (int) (barEntry.getY() / mYAxis.getAxisMaximum() * realYAxisLabelHeight);
             float top = bottom - height;
 
             mTextPaint.setTextSize(mBarChartAttrs.barChartValueTxtSize);
@@ -304,8 +306,7 @@ public class BarChartItemDecoration extends RecyclerView.ItemDecoration {
         int top = parent.getPaddingTop();
         int bottom = parent.getHeight() - parent.getPaddingBottom();
         float distance = bottom - mBarChartAttrs.contentPaddingBottom - mBarChartAttrs.maxYAxisPaddingTop;
-        int lineNums = yAxis.labelSize;
-
+        int lineNums = yAxis.getLabelCount();
         float lineDistance = distance / lineNums;
         float gridLine = top + mBarChartAttrs.maxYAxisPaddingTop;
 
@@ -334,27 +335,26 @@ public class BarChartItemDecoration extends RecyclerView.ItemDecoration {
         if (mBarChartAttrs.enableLeftYAxisLabel) {
             int top = parent.getPaddingTop();
             int bottom = parent.getHeight() - parent.getPaddingBottom();
-            float distance = bottom - mBarChartAttrs.contentPaddingBottom - (top + mBarChartAttrs.maxYAxisPaddingTop);
-            int max = yAxis.maxLabel;
-            int lineNums = yAxis.labelSize;
-            float lineDistance = distance / lineNums;
-            int label = max;
-            mTextPaint.setTextSize(yAxis.labelTxtSize);
 
-            String maxStr = DecimalUtil.addComma( Integer.toString(max));
-            float textWidth = mTextPaint.measureText(maxStr) + mBarChartAttrs.recyclerPaddingLeft;
-            parent.setPadding((int) textWidth, parent.getPaddingTop(), parent.getPaddingRight(), parent.getPaddingBottom());
-            int labelDistance = max / lineNums;
-            float gridLine = top + mBarChartAttrs.maxYAxisPaddingTop;
+            mTextPaint.setTextSize(yAxis.getTextSize());
+            String longestStr = yAxis.getLongestLabel();
+            float yAxisWidth = mTextPaint.measureText(longestStr) + mBarChartAttrs.recyclerPaddingLeft;
+            //设置 recyclerView的 BarChart 内容区域
+            parent.setPadding((int) yAxisWidth, parent.getPaddingTop(), parent.getPaddingRight(), parent.getPaddingBottom());
 
-            for (int i = 0; i <= lineNums; i++) {
-                if (i > 0) {
-                    gridLine = gridLine + lineDistance;
-                    label = label - labelDistance;
-                }
-                String labelStr = DecimalUtil.addComma(Integer.toString(label));
-                canvas.drawText(labelStr, textWidth - mTextPaint.measureText(labelStr) - yAxis.labelPaddingLeftRight,
-                        gridLine + yAxis.labelCenterPadding, mTextPaint);
+            float topLocation = top + mBarChartAttrs.maxYAxisPaddingTop;
+            float containerHeight = bottom - mBarChartAttrs.contentPaddingBottom - topLocation;
+            float itemHeight = containerHeight / yAxis.getLabelCount();
+            HashMap<Float, Float> yAxisScaleMap = yAxis.getYAxisScaleMap(topLocation, itemHeight, yAxis.getLabelCount());
+
+            for (Map.Entry<Float, Float> entry : yAxisScaleMap.entrySet()) {
+                float yAxisScaleLocation = entry.getKey();
+                float yAxisScaleValue = entry.getValue();
+                String labelStr = yAxis.getValueFormatter().getFormattedValue(yAxisScaleValue);
+
+                float txtY = yAxisScaleLocation + yAxis.labelVerticalPadding;
+                float txtX = yAxisWidth - mTextPaint.measureText(labelStr) - yAxis.labelHorizontalPadding;
+                canvas.drawText(labelStr, txtX, txtY, mTextPaint);
             }
         }
     }
@@ -365,27 +365,26 @@ public class BarChartItemDecoration extends RecyclerView.ItemDecoration {
             int right = parent.getWidth();
             int top = parent.getPaddingTop();
             int bottom = parent.getHeight() - parent.getPaddingBottom();
-            float distance = bottom - mBarChartAttrs.contentPaddingBottom - (top + mBarChartAttrs.maxYAxisPaddingTop);
-            int max = yAxis.maxLabel;
-            int lineNums = yAxis.labelSize;
-            float lineDistance = distance / lineNums;
-            int label = max;
-            mTextPaint.setTextSize(yAxis.labelTxtSize);
-            String maxStr = DecimalUtil.addComma(Integer.toString(max));
-            float textWidth = mTextPaint.measureText(maxStr) + mBarChartAttrs.recyclerPaddingRight;
-            parent.setPadding(parent.getPaddingLeft(), parent.getPaddingTop(), (int) textWidth, parent.getPaddingBottom());
 
-            int labelDistance = max / lineNums;
-            float gridLine = top + mBarChartAttrs.maxYAxisPaddingTop;
+            mTextPaint.setTextSize(yAxis.getTextSize());
+            String longestStr = yAxis.getLongestLabel();
+            float yAxisWidth = mTextPaint.measureText(longestStr) + mBarChartAttrs.recyclerPaddingRight;
+            //设置 recyclerView的 BarChart 内容区域
+            parent.setPadding(parent.getPaddingLeft(), parent.getPaddingTop(), (int) yAxisWidth, parent.getPaddingBottom());
 
-            for (int i = 0; i <= lineNums; i++) {
-                if (i > 0) {
-                    gridLine = gridLine + lineDistance;
-                    label = label - labelDistance;
-                }
-                String labelStr =DecimalUtil.addComma(Integer.toString(label));
-                canvas.drawText(labelStr, right - parent.getPaddingRight() + yAxis.labelPaddingLeftRight,
-                        gridLine + yAxis.labelCenterPadding, mTextPaint);
+            float topLocation = top + mBarChartAttrs.maxYAxisPaddingTop;
+            float containerHeight = bottom - mBarChartAttrs.contentPaddingBottom - topLocation;
+            float itemHeight = containerHeight / yAxis.getLabelCount();
+            HashMap<Float, Float> yAxisScaleMap = yAxis.getYAxisScaleMap(topLocation, itemHeight, yAxis.getLabelCount());
+
+            float txtX = right - parent.getPaddingRight() + yAxis.labelHorizontalPadding;
+
+            for (Map.Entry<Float, Float> entry : yAxisScaleMap.entrySet()) {
+                float yAxisScaleLocation = entry.getKey();
+                float yAxisScaleValue = entry.getValue();
+                String labelStr = yAxis.getValueFormatter().getFormattedValue(yAxisScaleValue);
+                float txtY = yAxisScaleLocation + yAxis.labelVerticalPadding;
+                canvas.drawText(labelStr, txtX, txtY, mTextPaint);
             }
         }
     }
@@ -504,7 +503,7 @@ public class BarChartItemDecoration extends RecyclerView.ItemDecoration {
                     } else if (txtXRight > parentRight && txtXLeft < parentRight) {//处理右边界
                         int displayLength = (int) ((parentRight - txtXLeft + 1) / txtWidth * length);
                         int endIndex = displayLength;
-                        if (endIndex < length){
+                        if (endIndex < length) {
                             endIndex += 1;
                         }
                         canvas.drawText(dateStr, 0, endIndex, txtXLeft, txtY, mTextPaint);
