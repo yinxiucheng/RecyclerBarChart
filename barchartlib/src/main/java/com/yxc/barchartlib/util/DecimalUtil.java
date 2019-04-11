@@ -1,7 +1,8 @@
 package com.yxc.barchartlib.util;
 
-import com.yxc.barchartlib.component.BarEntry;
+import com.yxc.barchartlib.entrys.BarEntry;
 
+import java.text.DecimalFormat;
 import java.util.List;
 
 /**
@@ -9,8 +10,6 @@ import java.util.List;
  * @date 2019/4/10
  */
 public class DecimalUtil {
-
-    final float THRESHOLD = 0.00001f;
 
     public static final boolean equals(float a, float b) {
         return Math.abs(a - b) < 0.00001;
@@ -50,12 +49,24 @@ public class DecimalUtil {
     //获取最大值
     public static float getTheMaxNumber(List<BarEntry> entries) {
         BarEntry barEntry = entries.get(0);
-        float max = barEntry.value;
+        float max = barEntry.getY();
         for (int i = 0; i < entries.size(); i++) {
             BarEntry entryTemp = entries.get(i);
-            max = Math.max(max, entryTemp.value);
+            max = Math.max(max, entryTemp.getY());
         }
         return max;
+    }
+
+
+    /**
+     * 将每三个数字加上逗号处理（通常使用金额方面的编辑）
+     *
+     * @param str 需要处理的字符串
+     * @return 处理完之后的字符串
+     */
+    public static String addComma(String str) {
+        DecimalFormat decimalFormat = new DecimalFormat(",###");
+        return decimalFormat.format(Double.parseDouble(str));
     }
 
 }

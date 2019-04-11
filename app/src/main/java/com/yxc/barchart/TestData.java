@@ -1,6 +1,6 @@
 package com.yxc.barchart;
 
-import com.yxc.barchartlib.component.BarEntry;
+import com.yxc.barchartlib.entrys.BarEntry;
 import com.yxc.barchartlib.util.TimeUtil;
 
 import org.joda.time.LocalDate;
@@ -52,7 +52,7 @@ public class TestData {
                 type = BarEntry.TYPE_XAXIS_SECOND;
                 xAxisLabel = localDate.getDayOfMonth() + "日";
             }
-            BarEntry barEntry = new BarEntry(value, timestamp, type);
+            BarEntry barEntry = new BarEntry(i, value, timestamp, type);
             barEntry.localDate = localDate;
             barEntry.xAxisLabel = xAxisLabel;
             entries.add(barEntry);
@@ -92,7 +92,7 @@ public class TestData {
                 type = BarEntry.TYPE_XAXIS_FIRST;
             }
             String xAxis = TimeUtil.getWeekStr(localDate.getDayOfWeek());
-            BarEntry barEntry = new BarEntry(value, timestamp, type);
+            BarEntry barEntry = new BarEntry(i, value, timestamp, type);
             barEntry.localDate = localDate;
             barEntry.xAxisLabel = xAxis;
             entries.add(barEntry);
@@ -140,7 +140,7 @@ public class TestData {
                 type = BarEntry.TYPE_XAXIS_SECOND;
                 xAxisStr = TimeUtil.getHourOfTheDay(timestamp);
             }
-            BarEntry barEntry = new BarEntry(value, timestamp, type);
+            BarEntry barEntry = new BarEntry(i, value, timestamp, type);
             barEntry.localDate = localDate;
             barEntry.xAxisLabel = xAxisStr;
             entries.add(barEntry);
@@ -183,7 +183,7 @@ public class TestData {
             }
             String xAxis = Integer.toString(localDate.getMonthOfYear());
             long timestamp = TimeUtil.changZeroOfTheDay(localDate);
-            BarEntry barEntry = new BarEntry(value, timestamp, type);
+            BarEntry barEntry = new BarEntry(i, value, timestamp, type);
             barEntry.localDate = localDate;
             barEntry.xAxisLabel = xAxis;
             entries.add(barEntry);

@@ -15,11 +15,15 @@ public class BarChartAttrs {
     public float barChartValuePaddingBottom;//柱状图顶部value文字据柱状图的padding
     public float barChartValuePaddingLeft;//柱状图顶部value文字不居中时据左的padding
 
+    public float barSpace;//barchart item中 space 占比，能够控制barchart的宽度
     public float barBorderWidth;//边框的宽度
     public float contentPaddingBottom;//底部的 X轴刻度所占的高度
     public float maxYAxisPaddingTop;//顶部显示的预留空间
     public float recyclerPaddingLeft;//原始RecyclerView的 paddingLeft 值
     public float recyclerPaddingRight;//原始RecyclerView的 paddingRight 值
+    public double ratioVelocity;//recyclerView 惯性滑动的 加速度 比率。
+    public double ratioSpeed;//LinearLayoutManager 速度的 比率。
+    public int layoutManagerOrientation;//layout  orientation
 
     public boolean enableCharValueDisplay;//控制是否显示顶部的 value值
     public boolean enableYAxisZero;// 控制是否显示 Y轴中的 0 刻度线
@@ -29,8 +33,6 @@ public class BarChartAttrs {
     public boolean enableBarBorder;//控制是否显示边框
     public boolean enableScrollToScale;
 
-    public float barSpace;//barchart item中 space 占比，能够控制barchart的宽度
-    public float ratioVelocity;//recyclerView 惯性滑动的 加速度 比率。
 
     public int yAxisLabelMaxScale;//y轴刻度默认的最大刻度
     public float yAxisLabelTxtSize;//y轴刻度字体大小

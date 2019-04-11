@@ -12,7 +12,7 @@ import android.widget.TextView;
 
 import com.yxc.barchart.tab.OnTabSelectListener;
 import com.yxc.barchart.tab.TopTabLayout;
-import com.yxc.barchartlib.component.BarEntry;
+import com.yxc.barchartlib.entrys.BarEntry;
 import com.yxc.barchartlib.component.DistanceCompare;
 import com.yxc.barchartlib.component.XAxis;
 import com.yxc.barchartlib.component.YAxis;
@@ -24,6 +24,7 @@ import com.yxc.barchartlib.util.TimeUtil;
 import com.yxc.barchartlib.view.BarChartAdapter;
 import com.yxc.barchartlib.view.BarChartItemDecoration;
 import com.yxc.barchartlib.view.BarChartRecyclerView;
+import com.yxc.barchartlib.view.SpeedRatioLinearLayoutManager;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -35,6 +36,7 @@ public class BarChartActivity extends AppCompatActivity {
     public static final int VIEW_MONTH = 2;
     public static final int VIEW_YEAR = 3;
     public int mType;
+    private String[] mTitles = {"日", "周", "月", "年"};
 
     BarChartRecyclerView recyclerView;
     TopTabLayout mTabLayout;
@@ -49,12 +51,9 @@ public class BarChartActivity extends AppCompatActivity {
     List<BarEntry> mEntries;
     BarChartItemDecoration mItemDecoration;
     private int displayNumber;
+    private BarChartAttrs mBarChartAttrs;
     YAxis mYAxis;
     XAxis mXAxis;
-
-    private String[] mTitles = {"日", "周", "月", "年"};
-    private BarChartAttrs mBarChartAttrs;
-
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -63,27 +62,27 @@ public class BarChartActivity extends AppCompatActivity {
         initView();
         initTableLayout();
         initData();
-        bindBarChartList(25, TestData.createDayEntries());
+        bindBarChartList(25, TestData.createDayEntries(), VIEW_DAY);
         reSizeYAxis();
         setListener();
     }
 
     private void initView(){
         mTabLayout = findViewById(R.id.topTabLayout);
-        recyclerView = findViewById(R.id.recycler);
-        mBarChartAttrs = recyclerView.mAttrs;
         txtLeftLocalDate = findViewById(R.id.txt_left_local_date);
         txtRightLocalDate = findViewById(R.id.txt_right_local_date);
         textTitle = findViewById(R.id.txt_layout);
         txtCountStep = findViewById(R.id.txt_count_Step);
         imgLast = findViewById(R.id.img_left);
         imgNext = findViewById(R.id.img_right);
+        recyclerView = findViewById(R.id.recycler);
+
+        mBarChartAttrs = recyclerView.mAttrs;
     }
 
     private void initData(){
         mEntries = new ArrayList<>();
-        LinearLayoutManager layoutManager = new LinearLayoutManager(this);
-        layoutManager.setOrientation(LinearLayoutManager.HORIZONTAL);
+        SpeedRatioLinearLayoutManager layoutManager = new SpeedRatioLinearLayoutManager(this, mBarChartAttrs);
         displayNumber = 25;
         mYAxis = new YAxis(mBarChartAttrs);
         mXAxis = new XAxis(mBarChartAttrs, displayNumber);
@@ -103,7 +102,6 @@ public class BarChartActivity extends AppCompatActivity {
         mYAxis = YAxis.getYAxis(mBarChartAttrs, DecimalUtil.getTheMaxNumber(visibleEntries));
         mBarChartAdapter.notifyDataSetChanged();
         mItemDecoration.setYAxis(mYAxis);
-
         displayDateAndStep(visibleEntries);
     }
 
@@ -122,9 +120,9 @@ public class BarChartActivity extends AppCompatActivity {
                     recyclerView.scrollToPosition(mEntries.size() - 1);
                 }
                 if (mBarChartAttrs.enableScrollToScale) {
-                    //微调
-                    scrollToScale(recyclerView);
+                    scrollToScale(recyclerView, createDistanceCompare(recyclerView));
                 } else {
+                    //微调
                     microRelation(recyclerView);
                 }
             }
@@ -143,7 +141,7 @@ public class BarChartActivity extends AppCompatActivity {
                 }
                 if (mBarChartAttrs.enableScrollToScale) {
                     //微调
-                    scrollToScale(recyclerView);
+                    scrollToScale(recyclerView, createDistanceCompare(recyclerView));
                 } else {
                     microRelation(recyclerView);
                 }
@@ -157,7 +155,7 @@ public class BarChartActivity extends AppCompatActivity {
                 // 当不滚动时
                 if (newState == RecyclerView.SCROLL_STATE_IDLE) {
                     if (mBarChartAttrs.enableScrollToScale) {
-                        scrollToScale(recyclerView);
+                        scrollToScale(recyclerView, createDistanceCompare(recyclerView));
                     } else {
                         microRelation(recyclerView);
                     }
@@ -198,13 +196,9 @@ public class BarChartActivity extends AppCompatActivity {
         displayDateAndStep(displayEntries);
     }
 
-
-    //滑动到附近的刻度线
-    private void scrollToScale(RecyclerView recyclerView) {
+    private DistanceCompare createDistanceCompare(RecyclerView recyclerView){
         LinearLayoutManager manager = (LinearLayoutManager) recyclerView.getLayoutManager();
-        //获取最后一个完全显示的ItemPosition
         int lastVisibleItemPosition = manager.findLastCompletelyVisibleItemPosition();
-        int firstVisibleItemPosition = manager.findFirstCompletelyVisibleItemPosition();
         BarEntry barEntry = mEntries.get(lastVisibleItemPosition);
         DistanceCompare distanceCompare = new DistanceCompare(0, 0);
         if (mType == VIEW_MONTH) {
@@ -216,7 +210,17 @@ public class BarChartActivity extends AppCompatActivity {
         } else if (mType == VIEW_YEAR) {
             distanceCompare = TimeUtil.createYearDistance(barEntry.localDate);
         }
+        return distanceCompare;
+    }
+
+
+    //滑动到附近的刻度线
+    private void scrollToScale(RecyclerView recyclerView, DistanceCompare distanceCompare) {
+        LinearLayoutManager manager = (LinearLayoutManager) recyclerView.getLayoutManager();
+        //获取最后一个完全显示的ItemPosition
+        int lastVisibleItemPosition = manager.findLastCompletelyVisibleItemPosition();
         int endOfPosition;
+
         int transactionType = 0;
         if (distanceCompare.distanceLeft < distanceCompare.distanceRight) {//左间距 小于 右间距
             transactionType = 1;
@@ -248,10 +252,11 @@ public class BarChartActivity extends AppCompatActivity {
             recyclerView.scrollToPosition(endOfPosition);
             lastVisibleItemPosition = endOfPosition;
         }
-        firstVisibleItemPosition = lastVisibleItemPosition - displayNumber;
 
+        int firstVisibleItemPosition = lastVisibleItemPosition - displayNumber;
         List<BarEntry> visibleEntries = mEntries.subList(firstVisibleItemPosition, lastVisibleItemPosition + 1);
         float max = DecimalUtil.getTheMaxNumber(visibleEntries);
+
         mYAxis = YAxis.getYAxis(mBarChartAttrs, max);
         mItemDecoration.setYAxis(mYAxis);
 //        recyclerView.invalidate();
@@ -268,14 +273,18 @@ public class BarChartActivity extends AppCompatActivity {
         mTabLayout.setOnTabSelectListener(new OnTabSelectListener() {
             @Override
             public void onTabSelect(int position) {
-                if (position == 0) {// 创建 月视图的数据
-                    bindBarChartList(25, TestData.createDayEntries());
-                } else if (position == 1) {//创建Week视图的数据
-                    bindBarChartList(8, TestData.createWeekEntries());
-                } else if (position == 2) {//创建Month视图的数据
-                    bindBarChartList(32, TestData.createMonthEntries());
-                } else if (position == 3) {//创建Year视图的数据
-                    bindBarChartList(13, TestData.createYearEntries());
+                if (position == VIEW_DAY) {// 创建 月视图的数据
+                    displayNumber = 25;
+                    bindBarChartList(displayNumber, TestData.createDayEntries(), VIEW_DAY);
+                } else if (position == VIEW_WEEK) {//创建Week视图的数据
+                    displayNumber = 8;
+                    bindBarChartList(displayNumber, TestData.createWeekEntries(), VIEW_WEEK);
+                } else if (position == VIEW_MONTH) {//创建Month视图的数据
+                    displayNumber = 32;
+                    bindBarChartList(displayNumber, TestData.createMonthEntries(), VIEW_MONTH);
+                } else if (position == VIEW_YEAR) {//创建Year视图的数据
+                    displayNumber = 13;
+                    bindBarChartList(displayNumber, TestData.createYearEntries(), VIEW_YEAR);
                 }
                 reSizeYAxis();
             }
@@ -287,9 +296,9 @@ public class BarChartActivity extends AppCompatActivity {
         mTabLayout.setCurrentTab(0);
     }
 
-    private void bindBarChartList(int displayNumber, List<BarEntry> entries){
+    private void bindBarChartList(int displayNumber, List<BarEntry> entries, int type){
         mEntries.clear();
-        mType = VIEW_MONTH;
+        mType = type;
         mXAxis = new XAxis(mBarChartAttrs, displayNumber);
         mEntries.addAll(0, entries);
         mBarChartAdapter.setXAxis(mXAxis);
@@ -353,10 +362,10 @@ public class BarChartActivity extends AppCompatActivity {
         long count = 0;
         for (int i = 0; i < displayEntries.size(); i++) {
             BarEntry entry = displayEntries.get(i);
-            count += entry.value;
+            count += entry.getY();
         }
         int averageStep = (int) (count / displayEntries.size());
-        String childStr = Integer.toString(averageStep);
+        String childStr = DecimalUtil.addComma(Integer.toString(averageStep));
         String parentStr = String.format(getString(R.string.str_count_step), childStr);
         SpannableStringBuilder spannable = TextUtil.getSpannableStr(this, parentStr, childStr, 24);
         txtCountStep.setText(spannable);

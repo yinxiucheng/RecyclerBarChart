@@ -19,6 +19,7 @@
         <attr name="maxYAxisPaddingTop" format="dimension" />
         <attr name="recyclerPaddingLeft" format="dimension" />
         <attr name="recyclerPaddingRight" format="dimension" />
+        <attr name="layoutManagerOrientation" format="integer"/>
 
         <attr name="enableCharValueDisplay" format="boolean" />
         <attr name="enableYAxisZero" format="boolean" />
@@ -30,6 +31,7 @@
         
         <attr name="barSpace" format="float"/>
         <attr name="ratioVelocity" format="float"/>
+        <attr name="ratioSpeed" format="float"/>
 
         <!-- y坐标相关 -->
         <attr name="yAxisLabelMaxScale" format="integer"/>

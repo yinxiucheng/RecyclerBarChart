@@ -15,7 +15,7 @@ import android.support.v7.widget.RecyclerView;
 import android.text.TextUtils;
 import android.view.View;
 
-import com.yxc.barchartlib.component.BarEntry;
+import com.yxc.barchartlib.entrys.BarEntry;
 import com.yxc.barchartlib.component.ChartRectF;
 import com.yxc.barchartlib.component.XAxis;
 import com.yxc.barchartlib.component.YAxis;
@@ -197,7 +197,7 @@ public class BarChartItemDecoration extends RecyclerView.ItemDecoration {
             float barChartWidth = width - barSpaceWidth;//柱子的宽度
             float start = child.getLeft() + barSpaceWidth / 2;
             float end = start + barChartWidth;
-            float height = barEntry.value / mYAxis.maxLabel * realYAxisLabelHeight;
+            float height = barEntry.getY() / mYAxis.maxLabel * realYAxisLabelHeight;
             float top = bottom - height;
 
             // 浮点数的 == 比较需要注意
@@ -241,9 +241,9 @@ public class BarChartItemDecoration extends RecyclerView.ItemDecoration {
         for (int i = 0; i < childCount; i++) {
             child = parent.getChildAt(i);
             BarEntry barEntry = (BarEntry) child.getTag();
-            int valueInt = (int) barEntry.value;
+            int valueInt = (int) barEntry.getY();
             int width = child.getWidth();
-            int height = (int) (barEntry.value / mYAxis.maxLabel * realYAxisLabelHeight);
+            int height = (int) (barEntry.getY() / mYAxis.maxLabel * realYAxisLabelHeight);
             float top = bottom - height;
 
             mTextPaint.setTextSize(mBarChartAttrs.barChartValueTxtSize);
@@ -341,7 +341,7 @@ public class BarChartItemDecoration extends RecyclerView.ItemDecoration {
             int label = max;
             mTextPaint.setTextSize(yAxis.labelTxtSize);
 
-            String maxStr = Integer.toString(max);
+            String maxStr = DecimalUtil.addComma( Integer.toString(max));
             float textWidth = mTextPaint.measureText(maxStr) + mBarChartAttrs.recyclerPaddingLeft;
             parent.setPadding((int) textWidth, parent.getPaddingTop(), parent.getPaddingRight(), parent.getPaddingBottom());
             int labelDistance = max / lineNums;
@@ -352,7 +352,7 @@ public class BarChartItemDecoration extends RecyclerView.ItemDecoration {
                     gridLine = gridLine + lineDistance;
                     label = label - labelDistance;
                 }
-                String labelStr = Integer.toString(label);
+                String labelStr = DecimalUtil.addComma(Integer.toString(label));
                 canvas.drawText(labelStr, textWidth - mTextPaint.measureText(labelStr) - yAxis.labelPaddingLeftRight,
                         gridLine + yAxis.labelCenterPadding, mTextPaint);
             }
@@ -371,7 +371,7 @@ public class BarChartItemDecoration extends RecyclerView.ItemDecoration {
             float lineDistance = distance / lineNums;
             int label = max;
             mTextPaint.setTextSize(yAxis.labelTxtSize);
-            String maxStr = Integer.toString(max);
+            String maxStr = DecimalUtil.addComma(Integer.toString(max));
             float textWidth = mTextPaint.measureText(maxStr) + mBarChartAttrs.recyclerPaddingRight;
             parent.setPadding(parent.getPaddingLeft(), parent.getPaddingTop(), (int) textWidth, parent.getPaddingBottom());
 
@@ -383,7 +383,7 @@ public class BarChartItemDecoration extends RecyclerView.ItemDecoration {
                     gridLine = gridLine + lineDistance;
                     label = label - labelDistance;
                 }
-                String labelStr = Integer.toString(label);
+                String labelStr =DecimalUtil.addComma(Integer.toString(label));
                 canvas.drawText(labelStr, right - parent.getPaddingRight() + yAxis.labelPaddingLeftRight,
                         gridLine + yAxis.labelCenterPadding, mTextPaint);
             }
@@ -504,6 +504,9 @@ public class BarChartItemDecoration extends RecyclerView.ItemDecoration {
                     } else if (txtXRight > parentRight && txtXLeft < parentRight) {//处理右边界
                         int displayLength = (int) ((parentRight - txtXLeft + 1) / txtWidth * length);
                         int endIndex = displayLength;
+                        if (endIndex < length){
+                            endIndex += 1;
+                        }
                         canvas.drawText(dateStr, 0, endIndex, txtXLeft, txtY, mTextPaint);
                     }
                 }

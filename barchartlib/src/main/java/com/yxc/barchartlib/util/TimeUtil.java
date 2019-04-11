@@ -1,6 +1,6 @@
 package com.yxc.barchartlib.util;
 
-import com.yxc.barchartlib.component.BarEntry;
+import com.yxc.barchartlib.entrys.BarEntry;
 import com.yxc.barchartlib.component.DistanceCompare;
 
 import org.joda.time.Days;

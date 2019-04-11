@@ -9,7 +9,7 @@ import android.view.ViewGroup;
 
 
 import com.yxc.barchartlib.R;
-import com.yxc.barchartlib.component.BarEntry;
+import com.yxc.barchartlib.entrys.BarEntry;
 import com.yxc.barchartlib.component.XAxis;
 import com.yxc.barchartlib.util.DisplayUtil;
 
@@ -67,11 +67,10 @@ public class BarChartAdapter extends RecyclerView.Adapter<BarChartAdapter.BarCha
         BarEntry barEntry = mEntries.get(position);
 
         BarEntry viewBarEntry = (BarEntry) viewHolder.contentView.getTag();
-        viewBarEntry.value = barEntry.value;
+        viewBarEntry.setY(barEntry.getY());
         viewBarEntry.type = barEntry.type;
         viewBarEntry.timestamp = barEntry.timestamp;
         viewBarEntry.localDate = barEntry.localDate;
-        viewBarEntry.currentHeight = barEntry.currentHeight;
     }
 
     @Override
@@ -109,6 +108,7 @@ public class BarChartAdapter extends RecyclerView.Adapter<BarChartAdapter.BarCha
             super(itemView);
             contentView = itemView;
             BarEntry barEntry = new BarEntry();
+            //
             contentView.setTag(barEntry);
         }
     }
