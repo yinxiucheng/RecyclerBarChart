@@ -6,7 +6,7 @@ import android.util.Log;
 
 import com.yxc.barchartlib.formatter.DefaultAxisValueFormatter;
 import com.yxc.barchartlib.formatter.ValueFormatter;
-import com.yxc.barchartlib.util.Utils;
+import com.yxc.barchartlib.util.DisplayUtil;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -177,9 +177,9 @@ public abstract class AxisBase extends ComponentBase {
      * default constructor
      */
     public AxisBase() {
-        this.mTextSize = Utils.convertDpToPixel(10f);
-        this.mXOffset = Utils.convertDpToPixel(5f);
-        this.mYOffset = Utils.convertDpToPixel(5f);
+        this.mTextSize = DisplayUtil.dip2px(10);
+        this.mXOffset = DisplayUtil.dip2px(5);
+        this.mYOffset = DisplayUtil.dip2px(5f);
         this.mLimitLines = new ArrayList<LimitLine>();
     }
 
@@ -259,7 +259,7 @@ public abstract class AxisBase extends ComponentBase {
      * @param width
      */
     public void setAxisLineWidth(float width) {
-        mAxisLineWidth = Utils.convertDpToPixel(width);
+        mAxisLineWidth = DisplayUtil.dip2px(width);
     }
 
     /**
@@ -278,7 +278,7 @@ public abstract class AxisBase extends ComponentBase {
      * @param width
      */
     public void setGridLineWidth(float width) {
-        mGridLineWidth = Utils.convertDpToPixel(width);
+        mGridLineWidth = DisplayUtil.dip2px(width);
     }
 
     /**

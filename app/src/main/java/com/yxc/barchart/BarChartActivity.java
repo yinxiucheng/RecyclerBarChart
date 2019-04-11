@@ -25,7 +25,6 @@ import com.yxc.barchartlib.util.ColorUtil;
 import com.yxc.barchartlib.util.DecimalUtil;
 import com.yxc.barchartlib.util.TextUtil;
 import com.yxc.barchartlib.util.TimeUtil;
-import com.yxc.barchartlib.util.Utils;
 import com.yxc.barchartlib.view.BarChartAdapter;
 import com.yxc.barchartlib.view.BarChartItemDecoration;
 import com.yxc.barchartlib.view.BarChartRecyclerView;
@@ -64,7 +63,6 @@ public class BarChartActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.barchart_main);
-        Utils.init(getApplicationContext());
         initView();
         initTableLayout();
         initData();
@@ -93,7 +91,7 @@ public class BarChartActivity extends AppCompatActivity {
         mYAxis = new YAxis(mBarChartAttrs);
         mXAxis = new XAxis(mBarChartAttrs, displayNumber);
         mXAxis.setValueFormatter(new XAxisDayFormatter());
-        mItemDecoration = new BarChartItemDecoration(this, BarChartItemDecoration.HORIZONTAL_LIST, mYAxis, mXAxis, mBarChartAttrs);
+        mItemDecoration = new BarChartItemDecoration(this, mYAxis, mXAxis, mBarChartAttrs);
         recyclerView.addItemDecoration(mItemDecoration);
         mBarChartAdapter = new BarChartAdapter(this, mEntries, recyclerView, mXAxis);
         recyclerView.setAdapter(mBarChartAdapter);

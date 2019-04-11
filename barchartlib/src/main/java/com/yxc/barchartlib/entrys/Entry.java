@@ -6,7 +6,7 @@ import android.os.Parcel;
 import android.os.ParcelFormatException;
 import android.os.Parcelable;
 
-import com.yxc.barchartlib.util.Utils;
+import com.yxc.barchartlib.util.DecimalUtil;
 
 /**
  * Class representing one entry in the chart. Might contain multiple values.
@@ -115,10 +115,10 @@ public class Entry extends BaseEntry implements Parcelable {
         if (e.getData() != this.getData())
             return false;
 
-        if (Math.abs(e.x - this.x) > Utils.FLOAT_EPSILON)
+        if (Math.abs(e.x - this.x) > DecimalUtil.FLOAT_EPSILON)
             return false;
 
-        if (Math.abs(e.getY() - this.getY()) > Utils.FLOAT_EPSILON)
+        if (Math.abs(e.getY() - this.getY()) > DecimalUtil.FLOAT_EPSILON)
             return false;
 
         return true;

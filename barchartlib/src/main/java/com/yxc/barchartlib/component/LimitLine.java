@@ -5,7 +5,8 @@ import android.graphics.Color;
 import android.graphics.DashPathEffect;
 import android.graphics.Paint;
 
-import com.yxc.barchartlib.util.Utils;
+import com.yxc.barchartlib.util.DisplayUtil;
+
 
 /**
  * The limit line is an additional feature for all Line-, Bar- and
@@ -85,7 +86,7 @@ public class LimitLine extends ComponentBase {
             width = 0.2f;
         if (width > 12.0f)
             width = 12.0f;
-        mLineWidth = Utils.convertDpToPixel(width);
+        mLineWidth = DisplayUtil.dip2px(width);
     }
 
     /**

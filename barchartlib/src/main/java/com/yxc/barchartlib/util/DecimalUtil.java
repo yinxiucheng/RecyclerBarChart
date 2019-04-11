@@ -11,6 +11,15 @@ import java.util.List;
  */
 public class DecimalUtil {
 
+
+    @SuppressWarnings("unused")
+    public final static double DOUBLE_EPSILON = Double.longBitsToDouble(1);
+
+    @SuppressWarnings("unused")
+    public final static float FLOAT_EPSILON = Float.intBitsToFloat(1);
+
+
+
     public static final boolean equals(float a, float b) {
         return Math.abs(a - b) < 0.00001;
     }

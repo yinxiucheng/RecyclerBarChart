@@ -52,9 +52,9 @@ public class BarChartItemDecoration extends RecyclerView.ItemDecoration {
     public static final int HORIZONTAL_LIST = LinearLayoutManager.HORIZONTAL;
     public static final int VERTICAL_LIST = LinearLayoutManager.VERTICAL;
 
-    public BarChartItemDecoration(Context context, int orientation, YAxis yAxis, XAxis xAxis, BarChartAttrs barChartAttrs) {
+    public BarChartItemDecoration(Context context, YAxis yAxis, XAxis xAxis, BarChartAttrs barChartAttrs) {
         this.mContext = context;
-        this.mOrientation = orientation;
+        this.mOrientation = barChartAttrs.layoutManagerOrientation;
         this.mYAxis = yAxis;
         this.mXAxis = xAxis;
         this.mBarChartAttrs = barChartAttrs;
@@ -62,7 +62,6 @@ public class BarChartItemDecoration extends RecyclerView.ItemDecoration {
         this.yAxisRenderer = new YAxisRenderer(mBarChartAttrs, mYAxis);
         this.xAxisRenderer = new XAxisRenderer(mBarChartAttrs, mXAxis);
 
-        setOrientation(orientation);
         initPaint();
         initDathPaint();
         initTextPaint();
@@ -70,17 +69,8 @@ public class BarChartItemDecoration extends RecyclerView.ItemDecoration {
         initBarBorderPaint();
     }
 
-    public void setYAxis(YAxis mYAxis) {
-        this.mYAxis = mYAxis;
-    }
 
-    //设置屏幕方向
-    public void setOrientation(int orientation) {
-        if (orientation != HORIZONTAL_LIST && orientation != VERTICAL_LIST) {
-            throw new IllegalArgumentException("invalid orientation");
-        }
-        this.mOrientation = orientation;
-    }
+
 
     @Override
     public void onDrawOver(Canvas canvas, RecyclerView parent, RecyclerView.State state) {
@@ -108,21 +98,6 @@ public class BarChartItemDecoration extends RecyclerView.ItemDecoration {
 
     @Override
     public void onDraw(@NonNull Canvas c, @NonNull RecyclerView parent, @NonNull RecyclerView.State state) {
-//        super.onDraw(c, parent, state);
-//        mAdapter = (BarChartAdapter) parent.getAdapter();
-//        mEntries = mAdapter.getEntries();
-//
-//        if (mOrientation == HORIZONTAL_LIST) {
-//            //横向 list 画竖线
-//            drawVerticalLine(c, parent, mXAxis);
-//            drawHorizontalLine(c, parent, mYAxis);
-//            drawRightYAxisLabel(c, parent, mYAxis);
-//            drawBarChart(c, parent, state);
-//            drawBarBorder(c, parent);
-//        } else if (mOrientation == VERTICAL_LIST) {
-//            //竖向list 画横线
-//            drawHorizontalLine(c, parent, mXAxis);
-//        }
     }
 
     private void initPaint() {
@@ -311,6 +286,11 @@ public class BarChartItemDecoration extends RecyclerView.ItemDecoration {
 
     public void setXAxis(XAxis mXAxis) {
         this.mXAxis = mXAxis;
+    }
+
+
+    public void setYAxis(YAxis mYAxis) {
+        this.mYAxis = mYAxis;
     }
 
 }

@@ -4,7 +4,7 @@ package com.yxc.barchartlib.component;
 import android.graphics.Color;
 import android.graphics.Typeface;
 
-import com.yxc.barchartlib.util.Utils;
+import com.yxc.barchartlib.util.DisplayUtil;
 
 /**
  * This class encapsulates everything both Axis, Legend and LimitLines have in common.
@@ -36,7 +36,7 @@ public abstract class ComponentBase {
     /**
      * the text size of the labels
      */
-    protected float mTextSize = Utils.convertDpToPixel(10f);
+    protected float mTextSize = DisplayUtil.dip2px(10f);
 
     /**
      * the text color to use for the labels
@@ -64,7 +64,7 @@ public abstract class ComponentBase {
      * @param xOffset
      */
     public void setXOffset(float xOffset) {
-        mXOffset = Utils.convertDpToPixel(xOffset);
+        mXOffset = DisplayUtil.dip2px(xOffset);
     }
 
     /**
@@ -85,7 +85,7 @@ public abstract class ComponentBase {
      * @param yOffset
      */
     public void setYOffset(float yOffset) {
-        mYOffset = Utils.convertDpToPixel(yOffset);
+        mYOffset = DisplayUtil.dip2px(yOffset);
     }
 
     /**
@@ -118,7 +118,7 @@ public abstract class ComponentBase {
             size = 24f;
         if (size < 6f)
             size = 6f;
-        mTextSize = Utils.convertDpToPixel(size);
+        mTextSize = DisplayUtil.dip2px(size);
     }
 
     /**
