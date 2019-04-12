@@ -15,6 +15,7 @@ public class XAxisWeekFormatter extends ValueFormatter {
     @Override
     public String getBarLabel(BarEntry barEntry) {
         LocalDate localDate = barEntry.localDate;
+//        return TimeUtil.getDateStr(barEntry.timestamp, "MM-dd");
         return TimeUtil.getWeekStr(localDate.getDayOfWeek());
     }
 }

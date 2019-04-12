@@ -19,6 +19,7 @@ import com.yxc.barchartlib.render.XAxisRenderer;
 import com.yxc.barchartlib.render.YAxisRenderer;
 import com.yxc.barchartlib.util.BarChartAttrs;
 import com.yxc.barchartlib.util.DecimalUtil;
+import com.yxc.barchartlib.util.TimeUtil;
 
 import java.util.List;
 
@@ -228,7 +229,9 @@ public class BarChartItemDecoration extends RecyclerView.ItemDecoration {
             float top = bottom - height;
 
             mTextPaint.setTextSize(mBarChartAttrs.barChartValueTxtSize);
-            String valueStr = Integer.toString(valueInt);
+            //todo
+            String valueStr = TimeUtil.getDateStr(barEntry.timestamp, "MM-dd");
+//            String valueStr = Integer.toString(valueInt);
 
             float widthText = mTextPaint.measureText(valueStr);
             float txtXLeft = 0;

@@ -31,6 +31,12 @@ public class TimeUtil {
     //三位小数
     public static final int THREE_LENGTH_DECIMAL = 3;
 
+    public static final int NUM_DAY_OF_WEEK = 7;
+
+    public static final int NUM_HOUR_OF_DAY = 24;
+
+    public static final int NUM_MONTH_OF_YEAR = 12;
+
     //周的第一天
     public static final int SUNDAY = 300;//周的第一天 周日
     public static final int MONDAY = 301;//周的第一天 周一

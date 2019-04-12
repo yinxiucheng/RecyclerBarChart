@@ -14,4 +14,14 @@ public class DistanceCompare {
         this.distanceRight = distanceRight;
     }
 
+    //月线靠近左边
+    public boolean isNearLeft(){
+        return distanceLeft < distanceRight;
+    }
+
+    //月线靠近左边
+    public boolean isNearRight(){
+        return distanceLeft > distanceRight;
+    }
+
 }
