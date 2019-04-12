@@ -5,13 +5,14 @@ import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
 import com.yxc.barchart.BaseFragment;
 import com.yxc.barchart.R;
-import com.yxc.barchart.ReLocationUtil;
+import com.yxc.barchartlib.util.ReLocationUtil;
 import com.yxc.barchart.TestData;
 import com.yxc.barchart.formatter.XAxisDayFormatter;
 import com.yxc.barchartlib.component.XAxis;
@@ -33,7 +34,6 @@ public class DayFragment extends BaseFragment {
     public int mType;
 
     BarChartRecyclerView recyclerView;
-
     BarChartAdapter mBarChartAdapter;
     List<BarEntry> mEntries;
     BarChartItemDecoration mItemDecoration;
@@ -41,8 +41,18 @@ public class DayFragment extends BaseFragment {
     private BarChartAttrs mBarChartAttrs;
     YAxis mYAxis;
     XAxis mXAxis;
-
     ValueFormatter valueFormatter;
+
+    private OnDaySelectListener mListener;
+
+    public interface OnDaySelectListener {
+        void onDaySelect(List<BarEntry> visibleList);
+    }
+
+
+    public void setOnDaySelectListener(OnDaySelectListener mListener) {
+        this.mListener = mListener;
+    }
 
 
     //防止 Fragment重叠
@@ -74,12 +84,12 @@ public class DayFragment extends BaseFragment {
     }
 
 
-    private void initView(View view){
+    private void initView(View view) {
         recyclerView = view.findViewById(R.id.recycler);
         mBarChartAttrs = recyclerView.mAttrs;
     }
 
-    private void initData(int displayNumber, ValueFormatter valueFormatter){
+    private void initData(int displayNumber, ValueFormatter valueFormatter) {
         mEntries = new ArrayList<>();
         SpeedRatioLinearLayoutManager layoutManager = new SpeedRatioLinearLayoutManager(getActivity(), mBarChartAttrs);
         mYAxis = new YAxis(mBarChartAttrs);
@@ -92,6 +102,39 @@ public class DayFragment extends BaseFragment {
         recyclerView.setLayoutManager(layoutManager);
     }
 
+    @Override
+    public void onResume() {
+        super.onResume();
+        Log.d("DayFragment", "onResume");
+//        if (mListener != null){
+//            mListener.onDaySelect(ReLocationUtil.getVisibleEntries(recyclerView, mType, displayNumber));
+//        }
+    }
+
+    @Override
+    public void setUserVisibleHint(boolean isVisibleToUser) {
+        Log.d("DayFragment", "setUserVisibleHint");
+        super.setUserVisibleHint(isVisibleToUser);
+        if (getUserVisibleHint()) {//当可见的时候执行操作
+            Log.d("DayFragment", "onDaySelect if setUserVisibleHint");
+            if (mListener != null) {
+                Log.d("DayFragment", "onDaySelect if");
+                mListener.onDaySelect(ReLocationUtil.getVisibleEntries(recyclerView, mType, displayNumber));
+            }
+        } else {//不可见时执行相应的操作
+        }
+    }
+
+    @Override
+    public void onHiddenChanged(boolean hidden) {
+        Log.d("DayFragment", "onHiddenChanged");
+        if (!hidden){
+            Log.d("DayFragment", "onDaySelect if onHiddenChanged");
+            if (mListener != null) {
+                mListener.onDaySelect(ReLocationUtil.getVisibleEntries(recyclerView, mType, displayNumber));
+            }
+        }
+    }
 
     private void reSizeYAxis() {
         recyclerView.scrollToPosition(mEntries.size() - 1);
@@ -113,8 +156,12 @@ public class DayFragment extends BaseFragment {
                 // 当不滚动时
                 if (newState == RecyclerView.SCROLL_STATE_IDLE) {
                     resetYAxis(recyclerView, type, displayNumber);
+                    if (mListener != null) {
+                        mListener.onDaySelect(ReLocationUtil.getVisibleEntries(recyclerView, type, displayNumber));
+                    }
                 }
             }
+
             @Override
             public void onScrolled(RecyclerView recyclerView, int dx, int dy) {
                 super.onScrolled(recyclerView, dx, dy);
@@ -138,19 +185,18 @@ public class DayFragment extends BaseFragment {
         }
     }
 
-    private void bindBarChartList(List<BarEntry> entries){
-        if (null == mEntries){
+    private void bindBarChartList(List<BarEntry> entries) {
+        if (null == mEntries) {
             mEntries = new ArrayList<>();
-        }else {
+        } else {
             mEntries.clear();
         }
         mEntries.addAll(0, entries);
     }
 
-    private void setXAxis(int displayNumber){
+    private void setXAxis(int displayNumber) {
         mXAxis = new XAxis(mBarChartAttrs, displayNumber);
         mBarChartAdapter.setXAxis(mXAxis);
     }
-
 
 }

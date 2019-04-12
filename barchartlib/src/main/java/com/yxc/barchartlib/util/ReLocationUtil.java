@@ -1,12 +1,10 @@
-package com.yxc.barchart;
+package com.yxc.barchartlib.util;
 
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 
 import com.yxc.barchartlib.component.DistanceCompare;
 import com.yxc.barchartlib.entrys.BarEntry;
-import com.yxc.barchartlib.util.DecimalUtil;
-import com.yxc.barchartlib.util.TimeUtil;
 import com.yxc.barchartlib.view.BarChartAdapter;
 
 import java.util.List;
@@ -16,6 +14,11 @@ import java.util.List;
  * @date 2019/4/12
  */
 public class ReLocationUtil {
+
+    public static final int VIEW_DAY = 0;
+    public static final int VIEW_WEEK = 1;
+    public static final int VIEW_MONTH = 2;
+    public static final int VIEW_YEAR = 3;
 
     //位置进行微调
     public static float microRelation(RecyclerView recyclerView) {
@@ -44,13 +47,13 @@ public class ReLocationUtil {
 
         BarEntry barEntry = entries.get(lastVisibleItemPosition);
         DistanceCompare distanceCompare = new DistanceCompare(0, 0);
-        if (type == TestData.VIEW_MONTH) {
+        if (type == VIEW_MONTH) {
             distanceCompare = TimeUtil.createMonthDistance(barEntry.localDate);
-        } else if (type == TestData.VIEW_WEEK) {
+        } else if (type == VIEW_WEEK) {
             distanceCompare = TimeUtil.createWeekDistance(barEntry.localDate);
-        } else if (type == TestData.VIEW_DAY) {
+        } else if (type == VIEW_DAY) {
             distanceCompare = TimeUtil.createDayDistance(barEntry);
-        } else if (type == TestData.VIEW_YEAR) {
+        } else if (type == VIEW_YEAR) {
             distanceCompare = TimeUtil.createYearDistance(barEntry.localDate);
         }
         return distanceCompare;
@@ -59,6 +62,13 @@ public class ReLocationUtil {
 
     //滑动到附近的刻度线
     public static float scrollToScale(RecyclerView recyclerView, int type, int displayNumber) {
+        float yAxisMaximum = DecimalUtil.getTheMaxNumber(getVisibleEntries(recyclerView, type, displayNumber));
+        return yAxisMaximum;
+    }
+
+
+    //滑动到附近的刻度线
+    public static List<BarEntry> getVisibleEntries(RecyclerView recyclerView, int type, int displayNumber) {
         DistanceCompare distanceCompare = createDistanceCompare(recyclerView, type);
         LinearLayoutManager manager = (LinearLayoutManager) recyclerView.getLayoutManager();
         BarChartAdapter adapter = (BarChartAdapter) recyclerView.getAdapter();
@@ -101,7 +111,8 @@ public class ReLocationUtil {
 
         int firstVisibleItemPosition = lastVisibleItemPosition - displayNumber;
         List<BarEntry> visibleEntries = mEntries.subList(firstVisibleItemPosition, lastVisibleItemPosition + 1);
-        float yAxisMaximum = DecimalUtil.getTheMaxNumber(visibleEntries);
-        return yAxisMaximum;
+        return  visibleEntries;
     }
+
+
 }

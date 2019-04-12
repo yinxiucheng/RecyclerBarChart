@@ -11,7 +11,7 @@ import android.view.ViewGroup;
 
 import com.yxc.barchart.BaseFragment;
 import com.yxc.barchart.R;
-import com.yxc.barchart.ReLocationUtil;
+import com.yxc.barchartlib.util.ReLocationUtil;
 import com.yxc.barchart.TestData;
 import com.yxc.barchart.formatter.XAxisWeekFormatter;
 import com.yxc.barchartlib.component.XAxis;
@@ -42,6 +42,16 @@ public class WeekFragment extends BaseFragment {
     YAxis mYAxis;
     XAxis mXAxis;
     ValueFormatter valueFormatter;
+
+    public void setOnWeekSelectListener(OnWeekSelectListener mListener) {
+        this.mListener = mListener;
+    }
+
+    OnWeekSelectListener mListener;
+
+    public interface OnWeekSelectListener{
+        void onWeekSelect(List<BarEntry> barEntries);
+    }
 
     //防止 Fragment重叠
     @Override
@@ -110,6 +120,9 @@ public class WeekFragment extends BaseFragment {
                 // 当不滚动时
                 if (newState == RecyclerView.SCROLL_STATE_IDLE) {
                     resetYAxis(recyclerView, type, displayNumber);
+                    if (mListener != null){
+                        mListener.onWeekSelect(ReLocationUtil.getVisibleEntries(recyclerView, type, displayNumber));
+                    }
                 }
             }
             @Override

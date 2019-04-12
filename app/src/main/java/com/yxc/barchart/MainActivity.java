@@ -24,7 +24,8 @@ import com.yxc.barchartlib.util.TimeUtil;
 
 import java.util.List;
 
-public class MainActivity extends AppCompatActivity {
+public class MainActivity extends AppCompatActivity implements DayFragment.OnDaySelectListener,
+        WeekFragment.OnWeekSelectListener, MonthFragment.OnMonthSelectListener, YearFragment.OnYearSelectListener {
 
     public static final int VIEW_DAY = 0;
     public static final int VIEW_WEEK = 1;
@@ -52,7 +53,7 @@ public class MainActivity extends AppCompatActivity {
         setListener();
     }
 
-    private void initView(){
+    private void initView() {
         mTabLayout = findViewById(R.id.topTabLayout);
         txtLeftLocalDate = findViewById(R.id.txt_left_local_date);
         txtRightLocalDate = findViewById(R.id.txt_right_local_date);
@@ -64,7 +65,6 @@ public class MainActivity extends AppCompatActivity {
 
         switchTab(DayFragment.class, "DayFragment");
     }
-
 
     //滑动监听
     private void setListener() {
@@ -82,7 +82,6 @@ public class MainActivity extends AppCompatActivity {
             }
         });
     }
-
 
     private void initTableLayout() {
         mTabLayout.setCurrentTab(0);
@@ -122,6 +121,7 @@ public class MainActivity extends AppCompatActivity {
             try {
                 fragment = (BaseFragment) clz.newInstance();
                 ft.add(R.id.container, fragment, tag);
+                addListener(fragment);
             } catch (IllegalAccessException e) {
                 e.printStackTrace();
             } catch (InstantiationException e) {
@@ -134,8 +134,47 @@ public class MainActivity extends AppCompatActivity {
         currentFragment = fragment;
     }
 
+    private void addListener(BaseFragment fragment) {
+        if (fragment instanceof DayFragment) {
+            ((DayFragment) fragment).setOnDaySelectListener(this);
+        }
 
-    private void displayDateAndStep(List<BarEntry> displayEntries) {
+        if (fragment instanceof WeekFragment) {
+            ((WeekFragment) fragment).setOnWeekSelectListener(this);
+        }
+
+        if (fragment instanceof MonthFragment) {
+            ((MonthFragment) fragment).setOnMonthSelectListener(this);
+        }
+
+        if (fragment instanceof YearFragment) {
+            ((YearFragment) fragment).setOnYearSelectListener(this);
+        }
+    }
+
+    @Override
+    public void onDaySelect(List<BarEntry> displayEntries) {
+        displayDateAndStep(displayEntries, VIEW_DAY);
+
+    }
+
+    @Override
+    public void onWeekSelect(List<BarEntry> displayEntries) {
+        displayDateAndStep(displayEntries, VIEW_WEEK);
+    }
+
+    @Override
+    public void onSelectMonth(List<BarEntry> displayEntries) {
+        displayDateAndStep(displayEntries, VIEW_MONTH);
+    }
+
+    @Override
+    public void onYearSelect(List<BarEntry> displayEntries) {
+        displayDateAndStep(displayEntries, VIEW_YEAR);
+    }
+
+
+    private void displayDateAndStep(List<BarEntry> displayEntries, int mType) {
         //todo 调试显示用的
         BarEntry leftBarEntry = displayEntries.get(0);
         BarEntry rightBarEntry = displayEntries.get(displayEntries.size() - 1);
@@ -200,5 +239,4 @@ public class MainActivity extends AppCompatActivity {
         SpannableStringBuilder spannable = TextUtil.getSpannableStr(this, parentStr, childStr, 24);
         txtCountStep.setText(spannable);
     }
-
 }

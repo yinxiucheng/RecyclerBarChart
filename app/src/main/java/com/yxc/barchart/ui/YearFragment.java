@@ -1,4 +1,3 @@
-
 package com.yxc.barchart.ui;
 
 import android.os.Bundle;
@@ -11,7 +10,7 @@ import android.view.ViewGroup;
 
 import com.yxc.barchart.BaseFragment;
 import com.yxc.barchart.R;
-import com.yxc.barchart.ReLocationUtil;
+import com.yxc.barchartlib.util.ReLocationUtil;
 import com.yxc.barchart.TestData;
 import com.yxc.barchart.formatter.XAxisYearFormatter;
 import com.yxc.barchartlib.component.XAxis;
@@ -42,6 +41,16 @@ public class YearFragment extends BaseFragment {
     YAxis mYAxis;
     XAxis mXAxis;
     ValueFormatter valueFormatter;
+
+    public void setOnYearSelectListener(OnYearSelectListener mListener) {
+        this.mListener = mListener;
+    }
+
+    OnYearSelectListener mListener;
+
+    public interface OnYearSelectListener{
+        void onYearSelect(List<BarEntry> entries);
+    }
 
     //防止 Fragment重叠
     @Override
@@ -110,6 +119,9 @@ public class YearFragment extends BaseFragment {
                 // 当不滚动时
                 if (newState == RecyclerView.SCROLL_STATE_IDLE) {
                     resetYAxis(recyclerView, type, displayNumber);
+                    if (mListener != null){
+                        mListener.onYearSelect(ReLocationUtil.getVisibleEntries(recyclerView, type, displayNumber));
+                    }
                 }
             }
 

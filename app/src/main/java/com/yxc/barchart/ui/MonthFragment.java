@@ -11,7 +11,7 @@ import android.view.ViewGroup;
 
 import com.yxc.barchart.BaseFragment;
 import com.yxc.barchart.R;
-import com.yxc.barchart.ReLocationUtil;
+import com.yxc.barchartlib.util.ReLocationUtil;
 import com.yxc.barchart.TestData;
 import com.yxc.barchart.formatter.XAxisMonthFormatter;
 import com.yxc.barchartlib.component.XAxis;
@@ -43,6 +43,16 @@ public class MonthFragment extends BaseFragment {
     YAxis mYAxis;
     XAxis mXAxis;
     ValueFormatter valueFormatter;
+
+    public void setOnMonthSelectListener(OnMonthSelectListener listener) {
+        this.mListener = listener;
+    }
+
+    OnMonthSelectListener mListener;
+
+    public interface  OnMonthSelectListener{
+        void onSelectMonth(List<BarEntry> entries );
+    }
 
     //防止 Fragment重叠
     @Override
@@ -112,6 +122,9 @@ public class MonthFragment extends BaseFragment {
                 // 当不滚动时
                 if (newState == RecyclerView.SCROLL_STATE_IDLE) {
                     resetYAxis(recyclerView, type, displayNumber);
+                    if (mListener != null){
+                        mListener.onSelectMonth(ReLocationUtil.getVisibleEntries(recyclerView, type, displayNumber));
+                    }
                 }
             }
             @Override
