@@ -151,7 +151,7 @@ public class MonthFragment extends BaseFragment {
             public void onScrolled(RecyclerView recyclerView, int dx, int dy) {
                 super.onScrolled(recyclerView, dx, dy);
                 //判断左滑，右滑时，ScrollView的位置不一样。
-                if (dx < -2){
+                if (dx < 0){
                     isRightScroll = true;
                 }else {
                     isRightScroll = false;

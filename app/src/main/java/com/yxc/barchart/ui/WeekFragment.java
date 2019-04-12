@@ -149,7 +149,7 @@ public class WeekFragment extends BaseFragment {
             public void onScrolled(RecyclerView recyclerView, int dx, int dy) {
                 super.onScrolled(recyclerView, dx, dy);
                 Log.d("weekFragment", "dx:" + dx);
-                if (dx < -2){
+                if (dx < 0){
                     isRightScroll = true;
                 }else {
                     isRightScroll = false;
