@@ -21,10 +21,13 @@ import com.yxc.barchartlib.entrys.BarEntry;
 import com.yxc.barchartlib.formatter.ValueFormatter;
 import com.yxc.barchartlib.util.BarChartAttrs;
 import com.yxc.barchartlib.util.DecimalUtil;
+import com.yxc.barchartlib.util.TimeUtil;
 import com.yxc.barchartlib.view.BarChartAdapter;
 import com.yxc.barchartlib.view.BarChartItemDecoration;
 import com.yxc.barchartlib.view.BarChartRecyclerView;
 import com.yxc.barchartlib.view.SpeedRatioLinearLayoutManager;
+
+import org.joda.time.LocalDate;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -42,8 +45,15 @@ public class DayFragment extends BaseFragment {
     YAxis mYAxis;
     XAxis mXAxis;
     ValueFormatter valueFormatter;
-
     private OnDaySelectListener mListener;
+
+    long currentTimestamp;
+
+    public void showDisplayEntries() {
+        if (null != mListener) {
+            mListener.onDaySelect(ReLocationUtil.getVisibleEntries(recyclerView, mType, displayNumber));
+        }
+    }
 
     public interface OnDaySelectListener {
         void onDaySelect(List<BarEntry> visibleList);
@@ -74,9 +84,10 @@ public class DayFragment extends BaseFragment {
         mType = TestData.VIEW_DAY;
         valueFormatter = new XAxisDayFormatter();
 
-
         initData(displayNumber, valueFormatter);
-        bindBarChartList(TestData.createDayEntries());
+        currentTimestamp = TimeUtil.changZeroOfTheDay(LocalDate.now());
+        bindBarChartList(TestData.createDayEntries(currentTimestamp, displayNumber));
+        currentTimestamp = currentTimestamp - TimeUtil.TIME_HOUR * displayNumber;
         setXAxis(displayNumber);
         reSizeYAxis();
         setListener(mType, displayNumber);
@@ -102,40 +113,6 @@ public class DayFragment extends BaseFragment {
         recyclerView.setLayoutManager(layoutManager);
     }
 
-    @Override
-    public void onResume() {
-        super.onResume();
-        Log.d("DayFragment", "onResume");
-//        if (mListener != null){
-//            mListener.onDaySelect(ReLocationUtil.getVisibleEntries(recyclerView, mType, displayNumber));
-//        }
-    }
-
-    @Override
-    public void setUserVisibleHint(boolean isVisibleToUser) {
-        Log.d("DayFragment", "setUserVisibleHint");
-        super.setUserVisibleHint(isVisibleToUser);
-        if (getUserVisibleHint()) {//当可见的时候执行操作
-            Log.d("DayFragment", "onDaySelect if setUserVisibleHint");
-            if (mListener != null) {
-                Log.d("DayFragment", "onDaySelect if");
-                mListener.onDaySelect(ReLocationUtil.getVisibleEntries(recyclerView, mType, displayNumber));
-            }
-        } else {//不可见时执行相应的操作
-        }
-    }
-
-    @Override
-    public void onHiddenChanged(boolean hidden) {
-        Log.d("DayFragment", "onHiddenChanged");
-        if (!hidden){
-            Log.d("DayFragment", "onDaySelect if onHiddenChanged");
-            if (mListener != null) {
-                mListener.onDaySelect(ReLocationUtil.getVisibleEntries(recyclerView, mType, displayNumber));
-            }
-        }
-    }
-
     private void reSizeYAxis() {
         recyclerView.scrollToPosition(mEntries.size() - 1);
         int lastVisiblePosition = mEntries.size() - 1;
@@ -150,14 +127,26 @@ public class DayFragment extends BaseFragment {
     //滑动监听
     private void setListener(final int type, final int displayNumber) {
         recyclerView.addOnScrollListener(new RecyclerView.OnScrollListener() {
+            private boolean isRightScroll;
             @Override
             public void onScrollStateChanged(RecyclerView recyclerView, int newState) {
                 super.onScrollStateChanged(recyclerView, newState);
                 // 当不滚动时
                 if (newState == RecyclerView.SCROLL_STATE_IDLE) {
+
                     resetYAxis(recyclerView, type, displayNumber);
+
                     if (mListener != null) {
                         mListener.onDaySelect(ReLocationUtil.getVisibleEntries(recyclerView, type, displayNumber));
+                    }
+
+                    if (recyclerView.canScrollHorizontally(1) && isRightScroll) {
+
+                        List<BarEntry> entries = TestData.createDayEntries(currentTimestamp, displayNumber);
+                        currentTimestamp = currentTimestamp - displayNumber * TimeUtil.TIME_HOUR;
+
+                        mEntries.addAll(0, entries);
+                        mBarChartAdapter.notifyDataSetChanged();
                     }
                 }
             }
@@ -166,6 +155,11 @@ public class DayFragment extends BaseFragment {
             public void onScrolled(RecyclerView recyclerView, int dx, int dy) {
                 super.onScrolled(recyclerView, dx, dy);
                 //判断左滑，右滑时，ScrollView的位置不一样。
+                if (dx < -2){
+                    isRightScroll = true;
+                }else{
+                    isRightScroll = false;
+                }
             }
         });
     }

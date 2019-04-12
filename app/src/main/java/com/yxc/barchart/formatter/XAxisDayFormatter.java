@@ -14,7 +14,7 @@ public class XAxisDayFormatter extends ValueFormatter {
     public String getBarLabel(BarEntry barEntry) {
         if (barEntry.type == BarEntry.TYPE_XAXIS_SECOND
                 || barEntry.type == BarEntry.TYPE_XAXIS_SPECIAL) {
-            return TimeUtil.getHourOfTheDay(barEntry.timestamp);
+            return TimeUtil.getHourOfTheDay(barEntry.timestamp) + "时";
         } else {
             return "";
         }

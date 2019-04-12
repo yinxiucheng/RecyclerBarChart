@@ -5,6 +5,7 @@ import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -25,6 +26,8 @@ import com.yxc.barchartlib.view.BarChartItemDecoration;
 import com.yxc.barchartlib.view.BarChartRecyclerView;
 import com.yxc.barchartlib.view.SpeedRatioLinearLayoutManager;
 
+import org.joda.time.LocalDate;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -42,6 +45,7 @@ public class WeekFragment extends BaseFragment {
     YAxis mYAxis;
     XAxis mXAxis;
     ValueFormatter valueFormatter;
+    LocalDate currentLocalDate;
 
     public void setOnWeekSelectListener(OnWeekSelectListener mListener) {
         this.mListener = mListener;
@@ -51,6 +55,12 @@ public class WeekFragment extends BaseFragment {
 
     public interface OnWeekSelectListener{
         void onWeekSelect(List<BarEntry> barEntries);
+    }
+
+    public void showDisplayEntries() {
+        if (null != mListener){
+            mListener.onWeekSelect(ReLocationUtil.getVisibleEntries(recyclerView, mType, displayNumber));
+        }
     }
 
     //防止 Fragment重叠
@@ -73,7 +83,10 @@ public class WeekFragment extends BaseFragment {
         valueFormatter = new XAxisWeekFormatter();
 
         initData(displayNumber, valueFormatter);
-        bindBarChartList(TestData.createWeekEntries());
+        currentLocalDate = LocalDate.now();
+        bindBarChartList(TestData.createWeekEntries(currentLocalDate, displayNumber));
+        currentLocalDate = currentLocalDate.minusDays(displayNumber);
+
         setXAxis(displayNumber);
         reSizeYAxis();
         setListener(mType, displayNumber);
@@ -114,6 +127,7 @@ public class WeekFragment extends BaseFragment {
     //滑动监听
     private void setListener(final int type, final int displayNumber) {
         recyclerView.addOnScrollListener(new RecyclerView.OnScrollListener() {
+            boolean isRightScroll;
             @Override
             public void onScrollStateChanged(RecyclerView recyclerView, int newState) {
                 super.onScrollStateChanged(recyclerView, newState);
@@ -123,11 +137,23 @@ public class WeekFragment extends BaseFragment {
                     if (mListener != null){
                         mListener.onWeekSelect(ReLocationUtil.getVisibleEntries(recyclerView, type, displayNumber));
                     }
+                    if (recyclerView.canScrollHorizontally(1) && isRightScroll) {//加载更多
+                        List<BarEntry> entries = TestData.createWeekEntries(currentLocalDate, displayNumber);
+                        currentLocalDate = currentLocalDate.minusDays(displayNumber);
+                        mEntries.addAll(0, entries);
+                        mBarChartAdapter.notifyDataSetChanged();
+                    }
                 }
             }
             @Override
             public void onScrolled(RecyclerView recyclerView, int dx, int dy) {
                 super.onScrolled(recyclerView, dx, dy);
+                Log.d("weekFragment", "dx:" + dx);
+                if (dx < -2){
+                    isRightScroll = true;
+                }else {
+                    isRightScroll = false;
+                }
                 //判断左滑，右滑时，ScrollView的位置不一样。
             }
         });

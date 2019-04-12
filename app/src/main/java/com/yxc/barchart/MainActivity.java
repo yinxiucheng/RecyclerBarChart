@@ -64,6 +64,7 @@ public class MainActivity extends AppCompatActivity implements DayFragment.OnDay
         container = findViewById(R.id.container);
 
         switchTab(DayFragment.class, "DayFragment");
+        showDisplayEntries("DayFragment");
     }
 
     //滑动监听
@@ -95,12 +96,16 @@ public class MainActivity extends AppCompatActivity implements DayFragment.OnDay
             public void onTabSelect(int position) {
                 if (position == VIEW_DAY) {// 创建 月视图的数据
                     switchTab(DayFragment.class, "DayFragment");
+//                    showDisplayEntries("DayFragment");
                 } else if (position == VIEW_WEEK) {//创建Week视图的数据
                     switchTab(WeekFragment.class, "WeekFragment");
+//                    showDisplayEntries("WeekFragment");
                 } else if (position == VIEW_MONTH) {//创建Month视图的数据
                     switchTab(MonthFragment.class, "MonthFragment");
+//                    showDisplayEntries("MonthFragment");
                 } else if (position == VIEW_YEAR) {//创建Year视图的数据
                     switchTab(YearFragment.class, "YearFragment");
+//                    showDisplayEntries("YearFragment");
                 }
             }
 
@@ -132,6 +137,27 @@ public class MainActivity extends AppCompatActivity implements DayFragment.OnDay
         }
         ft.commitAllowingStateLoss();
         currentFragment = fragment;
+        showDisplayEntries(tag);
+    }
+
+    public void showDisplayEntries(String tag){
+        FragmentTransaction ft = getSupportFragmentManager().beginTransaction();
+        BaseFragment fragment = (BaseFragment) getSupportFragmentManager().findFragmentByTag(tag);
+        if (fragment instanceof DayFragment) {
+            ((DayFragment) fragment).showDisplayEntries();
+        }
+
+        if (fragment instanceof WeekFragment) {
+            ((WeekFragment) fragment).showDisplayEntries();
+        }
+
+        if (fragment instanceof MonthFragment) {
+            ((MonthFragment) fragment).showDisplayEntries();
+        }
+
+        if (fragment instanceof YearFragment) {
+            ((YearFragment) fragment).showDisplayEntries();
+        }
     }
 
     private void addListener(BaseFragment fragment) {

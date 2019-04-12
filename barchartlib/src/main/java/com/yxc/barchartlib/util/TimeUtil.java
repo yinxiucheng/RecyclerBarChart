@@ -464,12 +464,12 @@ public class TimeUtil {
         }
     }
 
-    public static String getHourOfTheDay(long timestamp) {
+    public static int getHourOfTheDay(long timestamp) {
         LocalDate localDate = timestampToLocalDate(timestamp);
         long zeroHour = changZeroOfTheDay(localDate);
         long distance = timestamp - zeroHour;
         int time = (int) (distance / TIME_HOUR);
-        return time + "时";
+        return time;
     }
 
     public static boolean isSameYear(long timestamp, long timestampCompare) {

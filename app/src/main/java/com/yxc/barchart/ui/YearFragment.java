@@ -24,6 +24,8 @@ import com.yxc.barchartlib.view.BarChartItemDecoration;
 import com.yxc.barchartlib.view.BarChartRecyclerView;
 import com.yxc.barchartlib.view.SpeedRatioLinearLayoutManager;
 
+import org.joda.time.LocalDate;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -41,6 +43,7 @@ public class YearFragment extends BaseFragment {
     YAxis mYAxis;
     XAxis mXAxis;
     ValueFormatter valueFormatter;
+    LocalDate currentLocalDate;
 
     public void setOnYearSelectListener(OnYearSelectListener mListener) {
         this.mListener = mListener;
@@ -50,6 +53,12 @@ public class YearFragment extends BaseFragment {
 
     public interface OnYearSelectListener{
         void onYearSelect(List<BarEntry> entries);
+    }
+
+    public void showDisplayEntries() {
+        if (null != mListener){
+            mListener.onYearSelect(ReLocationUtil.getVisibleEntries(recyclerView, mType, displayNumber));
+        }
     }
 
     //防止 Fragment重叠
@@ -72,7 +81,9 @@ public class YearFragment extends BaseFragment {
         valueFormatter = new XAxisYearFormatter();
 
         initData(displayNumber, valueFormatter);
-        bindBarChartList(TestData.createYearEntries());
+        currentLocalDate = LocalDate.now();
+        bindBarChartList(TestData.createYearEntries(currentLocalDate, displayNumber));
+        currentLocalDate = currentLocalDate.minusMonths(displayNumber);
         setXAxis(displayNumber);
         reSizeYAxis();
         setListener(mType, displayNumber);
@@ -113,6 +124,7 @@ public class YearFragment extends BaseFragment {
     //滑动监听
     private void setListener(final int type, final int displayNumber) {
         recyclerView.addOnScrollListener(new RecyclerView.OnScrollListener() {
+            private boolean isRightScroll;
             @Override
             public void onScrollStateChanged(RecyclerView recyclerView, int newState) {
                 super.onScrollStateChanged(recyclerView, newState);
@@ -122,6 +134,16 @@ public class YearFragment extends BaseFragment {
                     if (mListener != null){
                         mListener.onYearSelect(ReLocationUtil.getVisibleEntries(recyclerView, type, displayNumber));
                     }
+
+                    //左滑
+                    if (recyclerView.canScrollHorizontally(1) && isRightScroll) {
+
+                        List<BarEntry> entries = TestData.createYearEntries(currentLocalDate, displayNumber);
+                        currentLocalDate = currentLocalDate.minusMonths(displayNumber);
+
+                        mEntries.addAll(0, entries);
+                        mBarChartAdapter.notifyDataSetChanged();
+                    }
                 }
             }
 
@@ -129,6 +151,11 @@ public class YearFragment extends BaseFragment {
             public void onScrolled(RecyclerView recyclerView, int dx, int dy) {
                 super.onScrolled(recyclerView, dx, dy);
                 //判断左滑，右滑时，ScrollView的位置不一样。
+                if (dx < -2){
+                    isRightScroll = true;
+                }else {
+                    isRightScroll = false;
+                }
             }
         });
     }

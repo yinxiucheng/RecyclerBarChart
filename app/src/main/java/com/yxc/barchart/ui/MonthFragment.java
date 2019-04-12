@@ -25,13 +25,14 @@ import com.yxc.barchartlib.view.BarChartItemDecoration;
 import com.yxc.barchartlib.view.BarChartRecyclerView;
 import com.yxc.barchartlib.view.SpeedRatioLinearLayoutManager;
 
+import org.joda.time.LocalDate;
+
 import java.util.ArrayList;
 import java.util.List;
 
 public class MonthFragment extends BaseFragment {
 
     public int mType;
-    private String[] mTitles = {"日", "周", "月", "年"};
 
     BarChartRecyclerView recyclerView;
 
@@ -43,6 +44,7 @@ public class MonthFragment extends BaseFragment {
     YAxis mYAxis;
     XAxis mXAxis;
     ValueFormatter valueFormatter;
+    LocalDate currentLocalDate;
 
     public void setOnMonthSelectListener(OnMonthSelectListener listener) {
         this.mListener = listener;
@@ -52,6 +54,12 @@ public class MonthFragment extends BaseFragment {
 
     public interface  OnMonthSelectListener{
         void onSelectMonth(List<BarEntry> entries );
+    }
+
+    public void showDisplayEntries() {
+        if (null != mListener){
+            mListener.onSelectMonth(ReLocationUtil.getVisibleEntries(recyclerView, mType, displayNumber));
+        }
     }
 
     //防止 Fragment重叠
@@ -75,7 +83,11 @@ public class MonthFragment extends BaseFragment {
         valueFormatter = new XAxisMonthFormatter(getActivity());
 
         initData(displayNumber, valueFormatter);
-        bindBarChartList(TestData.createMonthEntries());
+        currentLocalDate = LocalDate.now();
+
+        bindBarChartList(TestData.getMonthEntries(currentLocalDate, displayNumber));
+        currentLocalDate = currentLocalDate.minusDays(displayNumber);
+
         setXAxis(displayNumber);
         reSizeYAxis();
         setListener(mType, displayNumber);
@@ -116,6 +128,7 @@ public class MonthFragment extends BaseFragment {
     //滑动监听
     private void setListener(final int type, final int displayNumber) {
         recyclerView.addOnScrollListener(new RecyclerView.OnScrollListener() {
+            private boolean isRightScroll;
             @Override
             public void onScrollStateChanged(RecyclerView recyclerView, int newState) {
                 super.onScrollStateChanged(recyclerView, newState);
@@ -125,12 +138,24 @@ public class MonthFragment extends BaseFragment {
                     if (mListener != null){
                         mListener.onSelectMonth(ReLocationUtil.getVisibleEntries(recyclerView, type, displayNumber));
                     }
+
+                    if (recyclerView.canScrollHorizontally(1) && isRightScroll) {
+                        List<BarEntry> entries = TestData.getMonthEntries(currentLocalDate, displayNumber);
+                        currentLocalDate = currentLocalDate.minusDays(displayNumber);
+                        mEntries.addAll(0, entries);
+                        mBarChartAdapter.notifyDataSetChanged();
+                    }
                 }
             }
             @Override
             public void onScrolled(RecyclerView recyclerView, int dx, int dy) {
                 super.onScrolled(recyclerView, dx, dy);
                 //判断左滑，右滑时，ScrollView的位置不一样。
+                if (dx < -2){
+                    isRightScroll = true;
+                }else {
+                    isRightScroll = false;
+                }
             }
         });
     }

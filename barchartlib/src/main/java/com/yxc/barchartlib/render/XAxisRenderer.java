@@ -167,40 +167,35 @@ public class XAxisRenderer{
             int type = parent.getAdapter().getItemViewType(adapterPosition);
             final int x = child.getLeft();
 
-            if (type == BarEntry.TYPE_XAXIS_SECOND || type == BarEntry.TYPE_XAXIS_SPECIAL
-                    || type == BarEntry.TYPE_XAXIS_FIRST) {
-                BarEntry barEntry = entries.get(adapterPosition);
+            BarEntry barEntry = entries.get(adapterPosition);
+            String dateStr = xAxis.getValueFormatter().getBarLabel(barEntry);
+            if (!TextUtils.isEmpty(dateStr)) {
+                int childWidth = child.getWidth();
+                float txtWidth = mTextPaint.measureText(dateStr);
+                float txtXLeft = 0;
+                float txtY = parentBottom - DisplayUtil.dip2px(1);
+                if (childWidth > txtWidth) {//柱状图的宽度比较大的时候，文字居中
+                    float distance = childWidth - txtWidth;
+                    txtXLeft = x + distance / 2;
+                } else {
+                    txtXLeft = x + xAxis.labelTxtPadding;
+                }
+                float txtXRight = txtXLeft + txtWidth;
+                int length = dateStr.length();
 
-                String dateStr = xAxis.getValueFormatter().getBarLabel(barEntry);
-
-                if (!TextUtils.isEmpty(dateStr)) {
-                    int childWidth = child.getWidth();
-                    float txtWidth = mTextPaint.measureText(dateStr);
-                    float txtXLeft = 0;
-                    float txtY = parentBottom - DisplayUtil.dip2px(1);
-                    if (childWidth > txtWidth) {//柱状图的宽度比较大的时候，文字居中
-                        float distance = childWidth - txtWidth;
-                        txtXLeft = x + distance / 2;
-                    } else {
-                        txtXLeft = x + xAxis.labelTxtPadding;
+                if (DecimalUtil.bigOrEquals(txtXLeft, parentLeft) && DecimalUtil.smallOrEquals(txtXRight, parentRight)) {//中间位置
+                    canvas.drawText(dateStr, txtXLeft, txtY, mTextPaint);
+                } else if (txtXLeft < parentLeft && txtXRight > parentLeft) {//处理左边界
+                    int displayLength = (int) ((txtXRight - parentLeft) / txtWidth * length);
+                    int index = length - displayLength;
+                    canvas.drawText(dateStr, index, length, parentLeft, txtY, mTextPaint);
+                } else if (txtXRight > parentRight && txtXLeft < parentRight) {//处理右边界
+                    int displayLength = (int) ((parentRight - txtXLeft + 1) / txtWidth * length);
+                    int endIndex = displayLength;
+                    if (endIndex < length) {
+                        endIndex += 1;
                     }
-                    float txtXRight = txtXLeft + txtWidth;
-                    int length = dateStr.length();
-
-                    if (DecimalUtil.bigOrEquals(txtXLeft, parentLeft) && DecimalUtil.smallOrEquals(txtXRight, parentRight)) {//中间位置
-                        canvas.drawText(dateStr, txtXLeft, txtY, mTextPaint);
-                    } else if (txtXLeft < parentLeft && txtXRight > parentLeft) {//处理左边界
-                        int displayLength = (int) ((txtXRight - parentLeft) / txtWidth * length);
-                        int index = length - displayLength;
-                        canvas.drawText(dateStr, index, length, parentLeft, txtY, mTextPaint);
-                    } else if (txtXRight > parentRight && txtXLeft < parentRight) {//处理右边界
-                        int displayLength = (int) ((parentRight - txtXLeft + 1) / txtWidth * length);
-                        int endIndex = displayLength;
-                        if (endIndex < length) {
-                            endIndex += 1;
-                        }
-                        canvas.drawText(dateStr, 0, endIndex, txtXLeft, txtY, mTextPaint);
-                    }
+                    canvas.drawText(dateStr, 0, endIndex, txtXLeft, txtY, mTextPaint);
                 }
             }
         }
