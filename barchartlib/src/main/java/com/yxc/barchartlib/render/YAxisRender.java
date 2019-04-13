@@ -12,7 +12,7 @@ import com.yxc.barchartlib.util.BarChartAttrs;
 import java.util.HashMap;
 import java.util.Map;
 
-public class YAxisRenderer {
+public class YAxisRender {
 
     protected YAxis mYAxis;
 
@@ -26,7 +26,7 @@ public class YAxisRenderer {
 
 
 
-    public YAxisRenderer(BarChartAttrs barChartAttrs, YAxis yAxis) {
+    public YAxisRender(BarChartAttrs barChartAttrs, YAxis yAxis) {
         this.mBarChartAttrs = barChartAttrs;
         this.mYAxis = yAxis;
         initPaint();

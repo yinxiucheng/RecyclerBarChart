@@ -20,7 +20,7 @@ import com.yxc.barchartlib.view.BarChartAdapter;
 
 import java.util.List;
 
-public class XAxisRenderer {
+public class XAxisRender {
 
     protected XAxis mXAxis;
 
@@ -33,7 +33,7 @@ public class XAxisRenderer {
     private BarChartAttrs mBarChartAttrs;
 
 
-    public XAxisRenderer(BarChartAttrs barChartAttrs, XAxis xAxis) {
+    public XAxisRender(BarChartAttrs barChartAttrs, XAxis xAxis) {
         this.mBarChartAttrs = barChartAttrs;
         this.mXAxis = xAxis;
         initTextPaint();
@@ -163,7 +163,6 @@ public class XAxisRenderer {
             final View child = parent.getChildAt(i);
             final int x = child.getLeft();
             BarEntry barEntry = (BarEntry) child.getTag();
-            Log.d("XAxisRender", barEntry.localDate + " child'left = " + child.getLeft() + " |||||| child'width = " + child.getWidth());
 
             String dateStr = xAxis.getValueFormatter().getBarLabel(barEntry);
             if (!TextUtils.isEmpty(dateStr)) {

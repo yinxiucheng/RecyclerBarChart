@@ -15,8 +15,9 @@ import com.yxc.barchartlib.component.ChartRectF;
 import com.yxc.barchartlib.component.XAxis;
 import com.yxc.barchartlib.component.YAxis;
 import com.yxc.barchartlib.entrys.BarEntry;
-import com.yxc.barchartlib.render.XAxisRenderer;
-import com.yxc.barchartlib.render.YAxisRenderer;
+import com.yxc.barchartlib.formatter.BarChartValueFormatter;
+import com.yxc.barchartlib.render.XAxisRender;
+import com.yxc.barchartlib.render.YAxisRender;
 import com.yxc.barchartlib.util.BarChartAttrs;
 import com.yxc.barchartlib.util.DecimalUtil;
 import com.yxc.barchartlib.util.TimeUtil;
@@ -43,8 +44,10 @@ public class BarChartItemDecoration extends RecyclerView.ItemDecoration {
     private XAxis mXAxis;
     private BarChartAdapter mAdapter;
     private BarChartAttrs mBarChartAttrs;
-    private YAxisRenderer yAxisRenderer;
-    private XAxisRenderer xAxisRenderer;
+    private YAxisRender yAxisRenderer;
+    private XAxisRender xAxisRenderer;
+
+    private BarChartValueFormatter barChartValueFormatter;
 
     public static final int HORIZONTAL_LIST = LinearLayoutManager.HORIZONTAL;
     public static final int VERTICAL_LIST = LinearLayoutManager.VERTICAL;
@@ -55,8 +58,9 @@ public class BarChartItemDecoration extends RecyclerView.ItemDecoration {
         this.mXAxis = xAxis;
         this.mBarChartAttrs = barChartAttrs;
 
-        this.yAxisRenderer = new YAxisRenderer(mBarChartAttrs, mYAxis);
-        this.xAxisRenderer = new XAxisRenderer(mBarChartAttrs, mXAxis);
+        this.yAxisRenderer = new YAxisRender(mBarChartAttrs, mYAxis);
+        this.xAxisRenderer = new XAxisRender(mBarChartAttrs, mXAxis);
+        this.barChartValueFormatter = new BarChartValueFormatter(0);
 
         initPaint();
         initDathPaint();
@@ -206,7 +210,6 @@ public class BarChartItemDecoration extends RecyclerView.ItemDecoration {
         float bottom = parent.getHeight() - parent.getPaddingBottom() - mBarChartAttrs.contentPaddingBottom;
         float parentRight = parent.getWidth() - parent.getPaddingRight();
         float parentLeft = parent.getPaddingLeft();
-        float parentContentWidth = parentRight - parentLeft;
 
         float realYAxisLabelHeight = bottom - mBarChartAttrs.maxYAxisPaddingTop;
         int childCount = parent.getChildCount();
@@ -215,22 +218,15 @@ public class BarChartItemDecoration extends RecyclerView.ItemDecoration {
         for (int i = 0; i < childCount; i++) {
             child = parent.getChildAt(i);
             BarEntry barEntry = (BarEntry) child.getTag();
-            int valueInt = (int) barEntry.getY();
-            float width = parentContentWidth/mXAxis.displayNumbers;
+            float width = child.getWidth();
             int height = (int) (barEntry.getY() / mYAxis.getAxisMaximum() * realYAxisLabelHeight);
             float top = bottom - height;
 
             mTextPaint.setTextSize(mBarChartAttrs.barChartValueTxtSize);
-            String valueStr = TimeUtil.getDateStr(barEntry.timestamp, "MM-dd");
-//            String valueStr = Integer.toString(valueInt);
+            String valueStr = barChartValueFormatter.getFormattedValue(barEntry.getY());
 
             float widthText = mTextPaint.measureText(valueStr);
-            float txtXLeft = 0;
-            if (widthText < width) {
-                txtXLeft = getTxtX(child, width, valueStr);
-            } else {
-                txtXLeft = child.getLeft() + mBarChartAttrs.barChartValuePaddingLeft;
-            }
+            float txtXLeft = getTxtX(child, width, valueStr);
             float txtXRight = txtXLeft + widthText;
             float txtY = top - mBarChartAttrs.barChartValuePaddingBottom;
 
@@ -256,11 +252,7 @@ public class BarChartItemDecoration extends RecyclerView.ItemDecoration {
 
     //文字宽度小于item的宽度时，获取文字显示的起始 X 坐标
     private float getTxtX(View child, float width, String valueStr) {
-        float txtDistance = width - mTextPaint.measureText(valueStr);
-        float txtX = child.getLeft();
-        if (txtDistance > 0) {
-            txtX = txtX + txtDistance / 2;
-        }
+        float txtX = child.getLeft() + width / 2 - mTextPaint.measureText(valueStr)/2;
         return txtX;
     }
 
