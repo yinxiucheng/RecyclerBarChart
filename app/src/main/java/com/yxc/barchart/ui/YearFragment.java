@@ -80,8 +80,8 @@ public class YearFragment extends BaseFragment {
 
         initData(displayNumber, valueFormatter);
         currentLocalDate = LocalDate.now();
-        bindBarChartList(TestData.createYearEntries(currentLocalDate, displayNumber));
-        currentLocalDate = currentLocalDate.minusMonths(displayNumber);
+        bindBarChartList(TestData.createYearEntries(currentLocalDate, 5 * displayNumber));
+        currentLocalDate = currentLocalDate.minusMonths(displayNumber * 5);
         setXAxis(displayNumber);
         reSizeYAxis();
         setListener(mType, displayNumber);
@@ -116,13 +116,11 @@ public class YearFragment extends BaseFragment {
 
 
     private void reSizeYAxis() {
-        recyclerView.scrollToPosition(mEntries.size() - 1);
-        int lastVisiblePosition = mEntries.size() - 1;
-        int firstVisiblePosition = lastVisiblePosition - displayNumber + 1;
-        List<BarEntry> visibleEntries = mEntries.subList(firstVisiblePosition, lastVisiblePosition);
+        List<BarEntry> visibleEntries = mEntries.subList(0, displayNumber + 1);
         mYAxis = YAxis.getYAxis(mBarChartAttrs, DecimalUtil.getTheMaxNumber(visibleEntries));
         mBarChartAdapter.notifyDataSetChanged();
         mItemDecoration.setYAxis(mYAxis);
+        displayDateAndStep(visibleEntries, mType);
     }
 
 
@@ -166,9 +164,9 @@ public class YearFragment extends BaseFragment {
         float yAxisMaximum = 0;
         HashMap<Float, List<BarEntry>> map;
         if (mBarChartAttrs.enableScrollToScale) {
-            DistanceCompare distanceCompare = ReLocationUtil.findNearFirstType(recyclerView, displayNumber);
-            int scrollToPosition = ReLocationUtil.findScrollToPosition(type, recyclerView, distanceCompare, displayNumber);
-            map = ReLocationUtil.getVisibleEntries(scrollToPosition, recyclerView);
+            //int scrollByDx = ReLocationUtil.computeScrollByXOffset(recyclerView, displayNumber);
+            //recyclerView.scrollBy(scrollByDx, 0);
+            map = ReLocationUtil.getVisibleEntries(recyclerView);
         } else {
             map = ReLocationUtil.microRelation(recyclerView);
         }
@@ -190,7 +188,7 @@ public class YearFragment extends BaseFragment {
         }else {
             mEntries.clear();
         }
-        mEntries.addAll(0, entries);
+        mEntries.addAll(entries);
     }
 
     private void setXAxis(int displayNumber){

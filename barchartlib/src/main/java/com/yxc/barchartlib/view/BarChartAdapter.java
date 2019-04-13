@@ -3,15 +3,18 @@ package com.yxc.barchartlib.view;
 import android.content.Context;
 import android.support.annotation.NonNull;
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
 
 import com.yxc.barchartlib.R;
+import com.yxc.barchartlib.component.YAxis;
 import com.yxc.barchartlib.entrys.BarEntry;
 import com.yxc.barchartlib.component.XAxis;
 import com.yxc.barchartlib.util.DisplayUtil;
+import com.yxc.barchartlib.util.TimeUtil;
 
 import java.util.List;
 
@@ -28,6 +31,7 @@ public class BarChartAdapter extends RecyclerView.Adapter<BarChartAdapter.BarCha
     RecyclerView mRecyclerView;
 
     XAxis mXAxis;
+    YAxis mYAxis;
 
     public BarChartAdapter(Context context, List<BarEntry> entries, RecyclerView recyclerView, XAxis xAxis) {
         this.mContext = context;
@@ -62,8 +66,11 @@ public class BarChartAdapter extends RecyclerView.Adapter<BarChartAdapter.BarCha
     @Override
     public void onBindViewHolder(@NonNull BarChartViewHolder viewHolder, int position) {
 //        Log.d("BarChart", "onBindViewHolder");
-        int contentWidth = (DisplayUtil.getScreenWidth(mContext) - mRecyclerView.getPaddingRight() - mRecyclerView.getPaddingLeft());
-        setLinearLayout(viewHolder.contentView, contentWidth / mXAxis.displayNumbers);
+        float contentWidth = (DisplayUtil.getScreenWidth(mContext) - mRecyclerView.getPaddingRight() - mRecyclerView.getPaddingLeft());
+
+        int itemWidth = (int) (contentWidth / mXAxis.displayNumbers);
+        setLinearLayout(viewHolder.contentView, itemWidth);
+        Log.d("XAxisRender",  "itemWidth:" + itemWidth + " time:" + TimeUtil.getDateStr(System.currentTimeMillis()/1000, "HH:mm:ss"));
         BarEntry barEntry = mEntries.get(position);
 
         BarEntry viewBarEntry = (BarEntry) viewHolder.contentView.getTag();
@@ -111,6 +118,11 @@ public class BarChartAdapter extends RecyclerView.Adapter<BarChartAdapter.BarCha
             //
             contentView.setTag(barEntry);
         }
+    }
+
+    public void setYAxis(YAxis mYAxis) {
+        this.mYAxis = mYAxis;
+        notifyDataSetChanged();
     }
 
 }

@@ -19,6 +19,7 @@ public class SpeedRatioLinearLayoutManager extends LinearLayoutManager {
         super(context);
         this.mAttrs = attrs;
         setOrientation(mAttrs.layoutManagerOrientation);
+        setReverseLayout(mAttrs.layoutManagerReverseLayout);
     }
 
     public SpeedRatioLinearLayoutManager(Context context, int orientation, boolean reverseLayout) {

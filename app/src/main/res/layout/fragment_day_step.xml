@@ -9,9 +9,9 @@
     <RelativeLayout
         android:layout_width="match_parent"
         android:layout_height="40dp"
-        android:layout_marginLeft="20dp"
-        android:layout_marginRight="20dp"
-        android:layout_marginBottom="15dp">
+        android:layout_marginLeft="15dp"
+        android:layout_marginRight="15dp"
+        android:layout_marginBottom="8dp">
 
         <ImageView
             android:id="@+id/img_left"
@@ -27,7 +27,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_centerInParent="true"
-            android:textColor="@color/pink"
+            android:textColor="@color/red"
             android:text="2019年04月09日"
             android:textStyle="bold"
             android:textSize="12sp" />
@@ -59,7 +59,7 @@
         android:paddingLeft="10dp"
         android:layout_marginTop="20dp"
         android:textSize="14sp"
-        android:textColor="@color/pink"/>
+        android:textColor="@color/red"/>
 
     <RelativeLayout
         android:layout_width="match_parent"

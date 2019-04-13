@@ -24,6 +24,7 @@ public class BarChartAttrs {
     public double ratioVelocity;//recyclerView 惯性滑动的 加速度 比率。
     public double ratioSpeed;//LinearLayoutManager 速度的 比率。
     public int layoutManagerOrientation;//layout  orientation
+    public boolean layoutManagerReverseLayout;//layout Horizontall layout from right to left, default is true;
 
     public boolean enableCharValueDisplay;//控制是否显示顶部的 value值
     public boolean enableYAxisZero;// 控制是否显示 Y轴中的 0 刻度线

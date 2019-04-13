@@ -24,6 +24,8 @@ public class YAxisRenderer {
 
     protected BarChartAttrs mBarChartAttrs;
 
+
+
     public YAxisRenderer(BarChartAttrs barChartAttrs, YAxis yAxis) {
         this.mBarChartAttrs = barChartAttrs;
         this.mYAxis = yAxis;
@@ -41,7 +43,6 @@ public class YAxisRenderer {
         mTextPaint.setTextSize(mYAxis.getTextSize());
     }
 
-
     private void initPaint() {
         mLinePaint = new Paint();
         mLinePaint.reset();
@@ -53,14 +54,14 @@ public class YAxisRenderer {
 
 
     //绘制 Y轴刻度线 横的网格线
-    public void drawHorizontalLine(Canvas canvas, RecyclerView parent, YAxis yAxis) {
+    public void drawHorizontalLine(Canvas canvas, RecyclerView parent) {
         int left = parent.getPaddingLeft();
         int right = parent.getWidth() - parent.getPaddingRight();
-        mLinePaint.setColor(yAxis.getGridColor());
+        mLinePaint.setColor(mYAxis.getGridColor());
         int top = parent.getPaddingTop();
         int bottom = parent.getHeight() - parent.getPaddingBottom();
         float distance = bottom - mBarChartAttrs.contentPaddingBottom - mBarChartAttrs.maxYAxisPaddingTop;
-        int lineNums = yAxis.getLabelCount();
+        int lineNums = mYAxis.getLabelCount();
         float lineDistance = distance / lineNums;
         float gridLine = top + mBarChartAttrs.maxYAxisPaddingTop;
 
@@ -85,59 +86,66 @@ public class YAxisRenderer {
     }
 
     //绘制左边的刻度
-    public void drawLeftYAxisLabel(Canvas canvas, RecyclerView parent, YAxis yAxis) {
+    public void drawLeftYAxisLabel(Canvas canvas, RecyclerView parent) {
         if (mBarChartAttrs.enableLeftYAxisLabel) {
             int top = parent.getPaddingTop();
             int bottom = parent.getHeight() - parent.getPaddingBottom();
 
-            mTextPaint.setTextSize(yAxis.getTextSize());
-            String longestStr = yAxis.getLongestLabel();
+            mTextPaint.setTextSize(mYAxis.getTextSize());
+            String longestStr = mYAxis.getLongestLabel();
+
             float yAxisWidth = mTextPaint.measureText(longestStr) + mBarChartAttrs.recyclerPaddingLeft;
+            mYAxis.leftTxtWidth = mTextPaint.measureText(longestStr);
+
             //设置 recyclerView的 BarChart 内容区域
             parent.setPadding((int) yAxisWidth, parent.getPaddingTop(), parent.getPaddingRight(), parent.getPaddingBottom());
 
             float topLocation = top + mBarChartAttrs.maxYAxisPaddingTop;
             float containerHeight = bottom - mBarChartAttrs.contentPaddingBottom - topLocation;
-            float itemHeight = containerHeight / yAxis.getLabelCount();
-            HashMap<Float, Float> yAxisScaleMap = yAxis.getYAxisScaleMap(topLocation, itemHeight, yAxis.getLabelCount());
+            float itemHeight = containerHeight / mYAxis.getLabelCount();
+            HashMap<Float, Float> yAxisScaleMap = mYAxis.getYAxisScaleMap(topLocation, itemHeight, mYAxis.getLabelCount());
 
             for (Map.Entry<Float, Float> entry : yAxisScaleMap.entrySet()) {
                 float yAxisScaleLocation = entry.getKey();
                 float yAxisScaleValue = entry.getValue();
-                String labelStr = yAxis.getValueFormatter().getFormattedValue(yAxisScaleValue);
+                String labelStr = mYAxis.getValueFormatter().getFormattedValue(yAxisScaleValue);
 
-                float txtY = yAxisScaleLocation + yAxis.labelVerticalPadding;
-                float txtX = yAxisWidth - mTextPaint.measureText(labelStr) - yAxis.labelHorizontalPadding;
+                float txtY = yAxisScaleLocation + mYAxis.labelVerticalPadding;
+                float txtX = yAxisWidth - mTextPaint.measureText(labelStr) - mYAxis.labelHorizontalPadding;
                 canvas.drawText(labelStr, txtX, txtY, mTextPaint);
             }
         }
     }
 
+
+
     //绘制右边的刻度
-    public void drawRightYAxisLabel(Canvas canvas, RecyclerView parent, YAxis yAxis) {
+    public void drawRightYAxisLabel(Canvas canvas, RecyclerView parent) {
         if (mBarChartAttrs.enableRightYAxisLabel) {
             int right = parent.getWidth();
             int top = parent.getPaddingTop();
             int bottom = parent.getHeight() - parent.getPaddingBottom();
 
-            mTextPaint.setTextSize(yAxis.getTextSize());
-            String longestStr = yAxis.getLongestLabel();
+            mTextPaint.setTextSize(mYAxis.getTextSize());
+            String longestStr = mYAxis.getLongestLabel();
             float yAxisWidth = mTextPaint.measureText(longestStr) + mBarChartAttrs.recyclerPaddingRight;
+            mYAxis.rightTxtWidth = mTextPaint.measureText(longestStr);
+
             //设置 recyclerView的 BarChart 内容区域
             parent.setPadding(parent.getPaddingLeft(), parent.getPaddingTop(), (int) yAxisWidth, parent.getPaddingBottom());
 
             float topLocation = top + mBarChartAttrs.maxYAxisPaddingTop;
             float containerHeight = bottom - mBarChartAttrs.contentPaddingBottom - topLocation;
-            float itemHeight = containerHeight / yAxis.getLabelCount();
-            HashMap<Float, Float> yAxisScaleMap = yAxis.getYAxisScaleMap(topLocation, itemHeight, yAxis.getLabelCount());
+            float itemHeight = containerHeight / mYAxis.getLabelCount();
+            HashMap<Float, Float> yAxisScaleMap = mYAxis.getYAxisScaleMap(topLocation, itemHeight, mYAxis.getLabelCount());
 
-            float txtX = right - parent.getPaddingRight() + yAxis.labelHorizontalPadding;
+            float txtX = right - parent.getPaddingRight() + mYAxis.labelHorizontalPadding;
 
             for (Map.Entry<Float, Float> entry : yAxisScaleMap.entrySet()) {
                 float yAxisScaleLocation = entry.getKey();
                 float yAxisScaleValue = entry.getValue();
-                String labelStr = yAxis.getValueFormatter().getFormattedValue(yAxisScaleValue);
-                float txtY = yAxisScaleLocation + yAxis.labelVerticalPadding;
+                String labelStr = mYAxis.getValueFormatter().getFormattedValue(yAxisScaleValue);
+                float txtY = yAxisScaleLocation + mYAxis.labelVerticalPadding;
                 canvas.drawText(labelStr, txtX, txtY, mTextPaint);
             }
         }

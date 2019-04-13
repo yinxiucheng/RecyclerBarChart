@@ -8,6 +8,7 @@ public class DistanceCompare {
 
     public int distanceLeft;
     public int distanceRight;
+    public int position;
 
     public DistanceCompare(int distanceLeft, int distanceRight){
         this.distanceLeft = distanceLeft;
@@ -24,4 +25,12 @@ public class DistanceCompare {
         return distanceLeft > distanceRight;
     }
 
+    @Override
+    public String toString() {
+        return "DistanceCompare{" +
+                "distanceLeft=" + distanceLeft +
+                ", distanceRight=" + distanceRight +
+                ", position=" + position +
+                '}';
+    }
 }

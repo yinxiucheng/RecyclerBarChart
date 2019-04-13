@@ -3,6 +3,7 @@ package com.yxc.barchartlib.util;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
+import android.view.View;
 
 import com.yxc.barchartlib.component.DistanceCompare;
 import com.yxc.barchartlib.entrys.BarEntry;
@@ -34,163 +35,121 @@ public class ReLocationUtil {
 
         lastVisibleItemPosition = manager.findLastCompletelyVisibleItemPosition();
         int firstVisibleItemPosition = manager.findFirstCompletelyVisibleItemPosition();
-
-        Log.d("VisiblePosition", "begin:" + entries.get(firstVisibleItemPosition).localDate + ": end" + entries.get(lastVisibleItemPosition).localDate ) ;
-
+        Log.d("VisiblePosition", "begin:" + entries.get(firstVisibleItemPosition).localDate + ": end" + entries.get(lastVisibleItemPosition).localDate);
         List<BarEntry> visibleEntries = entries.subList(firstVisibleItemPosition, lastVisibleItemPosition + 1);
         float yAxisMaximum = DecimalUtil.getTheMaxNumber(visibleEntries);
         HashMap<Float, List<BarEntry>> map = new HashMap<>();
         map.put(yAxisMaximum, visibleEntries);
-        return map;
 
-    }
-
-    public static DistanceCompare createDistanceCompare(RecyclerView recyclerView, int type) {
-        LinearLayoutManager manager = (LinearLayoutManager) recyclerView.getLayoutManager();
-        BarChartAdapter adapter = (BarChartAdapter) recyclerView.getAdapter();
-        List<BarEntry> entries = adapter.getEntries();
-        int lastVisibleItemPosition = manager.findLastCompletelyVisibleItemPosition();
-
-        BarEntry barEntry = entries.get(lastVisibleItemPosition);
-        DistanceCompare distanceCompare = new DistanceCompare(0, 0);
-        if (type == VIEW_MONTH) {
-            distanceCompare = TimeUtil.createMonthDistance(barEntry.localDate);
-        } else if (type == VIEW_WEEK) {
-            distanceCompare = TimeUtil.createWeekDistance(barEntry.localDate);
-        } else if (type == VIEW_DAY) {
-            distanceCompare = TimeUtil.createDayDistance(barEntry);
-        } else if (type == VIEW_YEAR) {
-            distanceCompare = TimeUtil.createYearDistance(barEntry.localDate);
-        }
-        return distanceCompare;
-    }
-
-
-    //滑动到附近的刻度线
-    public static HashMap<Float, List<BarEntry>> scrollToScale(RecyclerView recyclerView, int type, int displayNumber) {
-        List<BarEntry> visibleEntries = scrollToScaleXAxis(recyclerView, type, displayNumber);
-        float yAxisMaximum = DecimalUtil.getTheMaxNumber(visibleEntries);
-        HashMap<Float, List<BarEntry>> map = new HashMap<>();
-        map.put(yAxisMaximum, visibleEntries);
         return map;
     }
 
-    public static DistanceCompare findNearFirstType(RecyclerView recyclerView, int displayNumbers){
+
+    public static DistanceCompare findNearFirstType(RecyclerView recyclerView, int displayNumbers, boolean isRightScroll) {
         LinearLayoutManager manager = (LinearLayoutManager) recyclerView.getLayoutManager();
         BarChartAdapter adapter = (BarChartAdapter) recyclerView.getAdapter();
         List<BarEntry> entries = adapter.getEntries();
-        int lastVisibleItemPosition = manager.findLastCompletelyVisibleItemPosition();
-        int position = lastVisibleItemPosition;
+
+        int firstVisibleItemPosition = manager.findFirstVisibleItemPosition();
+        int position = firstVisibleItemPosition; //从右边的第一个View开始找
+        int parentRight = recyclerView.getWidth() - recyclerView.getPaddingRight();
+        int parentLeft = recyclerView.getPaddingLeft();
+
         DistanceCompare distanceCompare = new DistanceCompare(0, 0);
-        for (int i = 0; i < displayNumbers ; i++) {
-            if (position > 0 && position < entries.size()){
+        for (int i = 0; i < displayNumbers; i++) {
+            if (i > 0) {
+                position++;
+            }
+            if (position > 0 && position < entries.size()) {
                 BarEntry barEntry = entries.get(position);
-                if (barEntry.type == BarEntry.TYPE_XAXIS_FIRST || barEntry.type == BarEntry.TYPE_XAXIS_SPECIAL){
-                    distanceCompare.distanceRight = i + 1;
-                    distanceCompare.distanceLeft = displayNumbers - distanceCompare.distanceRight;
+                if (barEntry.type == BarEntry.TYPE_XAXIS_FIRST || barEntry.type == BarEntry.TYPE_XAXIS_SPECIAL) {
+                    distanceCompare.position = position;
+                    View positionView = manager.findViewByPosition(position);
+                    int viewLeft = positionView.getLeft();
+                    distanceCompare.distanceRight = parentRight - viewLeft;
+                    distanceCompare.distanceLeft = viewLeft - parentLeft;
                     break;
                 }
             }
-            position--;
         }
         return distanceCompare;
     }
 
-
-    //todo 注意左右滑的到定的问题。
-    public static int findScrollToPosition(int type, RecyclerView recyclerView,
-                                           DistanceCompare distanceCompare, int displayNums){
+    //compute the scrollByDx, the left is large position, right is small position.
+    public static int computeScrollByXOffset(RecyclerView recyclerView, int displayNumbers) {
+        DistanceCompare distanceCompare = findNearFirstType(recyclerView, displayNumbers, false);
         LinearLayoutManager manager = (LinearLayoutManager) recyclerView.getLayoutManager();
         BarChartAdapter adapter = (BarChartAdapter) recyclerView.getAdapter();
         List<BarEntry> entries = adapter.getEntries();
-        int lastVisibleItemPosition = manager.findLastCompletelyVisibleItemPosition();
-        int scrollToPosition = entries.size() - 1;
-        if (type == VIEW_MONTH){
-            BarEntry barEntry = entries.get(lastVisibleItemPosition);
-            LocalDate currentLocalDate = barEntry.localDate;
-            LocalDate nearFirstDay;
-            int distance;
+        int positionCompare = distanceCompare.position;
 
-            if (distanceCompare.isNearLeft()){//靠近左边，移动到 下一条月线
-                nearFirstDay = TimeUtil.getFirstDayOfNextMonth(currentLocalDate);
-                distance = TimeUtil.getIntervalDay(currentLocalDate, nearFirstDay);
-                scrollToPosition = lastVisibleItemPosition + distance;
-                if (scrollToPosition >= entries.size()){
-                    scrollToPosition = entries.size() - 1;
-                }
-            }else {//靠近右边，移动到当前的月线
-                nearFirstDay = TimeUtil.getFirstDayOfMonth(currentLocalDate);
-                distance = TimeUtil.getIntervalDay(currentLocalDate, nearFirstDay);
-                scrollToPosition = lastVisibleItemPosition - distance;
-                if (scrollToPosition < displayNums){
-                    scrollToPosition = 0;
-                }
+        View compareView = manager.findViewByPosition(positionCompare);
+        int compareViewLeft = compareView.getLeft();
+        BarEntry barEntry = (BarEntry) compareView.getTag();
+        Log.d("Scroll1", " DistanceCompare's Position " + barEntry.localDate + " value:" + barEntry.getY());
+        Log.d("Scroll1", " compareView's left:" + compareViewLeft + " compareView's right:" + compareView.getRight());
+
+        int parentWidth = recyclerView.getWidth();
+        int leftPadding = recyclerView.getPaddingLeft();
+        int rightPadding = recyclerView.getPaddingRight();
+        int parentContent = parentWidth - leftPadding - rightPadding;
+
+        int childWidthCompute = parentContent/ displayNumbers;
+        int childWidth = compareView.getWidth();
+
+        Log.d("Scroll1", " /parentWidth: " + parentWidth +
+                " /leftPadding:" + leftPadding + " /rightPadding:" +
+                rightPadding + " /parentContentWidth:" + parentContent +
+                " /childWidthCompute:" + childWidthCompute +
+                " /childWidth:"+ childWidth);
+
+        int parentLeft = recyclerView.getPaddingLeft();
+        int parentRight = recyclerView.getWidth() - recyclerView.getPaddingRight();
+
+        //这里拿到的 lastView为空，所以通过 CompareView的跨度来计算lastViewRight的值。
+//        View lastView = manager.getChildAt(entries.size() - 1);
+//        int lastViewRight = lastView.getRight();
+
+        //todo int 会不会 越界
+        int firstViewRight = compareViewLeft + positionCompare * childWidth;
+
+        //这里同样拿到的lastView为空
+//        View firstView = manager.getChildAt(0);
+//        int firstViewLeft = firstView.getLeft();
+
+        //这个值会为 负的。
+        int lastViewLeft = compareViewLeft - (entries.size() - 1 - positionCompare) * childWidth;
+
+        int scrollByXOffset;
+
+        if (distanceCompare.isNearLeft()) {//靠近左边，content左移，recyclerView右移，取正。
+            //情况 1.
+            int distanceOrigin = compareViewLeft - parentLeft;//原始调整距离
+            int distance = distanceOrigin - childWidth / 2;//原始 + 修正值（半个宽度的修正）
+            int distanceRightBoundary = Math.abs(firstViewRight - parentRight);//右边界
+
+            if (distanceRightBoundary < distance) { //content左移不够，顶到头，用 distanceRightBoundary
+                distance = distanceRightBoundary;
+            } else {//distance 不用修改
+
             }
-            return scrollToPosition;
-        }else if (type == VIEW_WEEK){
-            BarEntry barEntry = entries.get(lastVisibleItemPosition);
-            LocalDate currentLocalDate = barEntry.localDate;
-            int distance;
-            if (distanceCompare.isNearLeft()){//靠近左边，移动到下一个周一
-                int dayOfWeek = currentLocalDate.getDayOfWeek();
-                distance = TimeUtil.NUM_DAY_OF_WEEK - dayOfWeek + 1;
-                scrollToPosition = lastVisibleItemPosition + distance;
-                if (scrollToPosition >= entries.size()){
-                    scrollToPosition = entries.size() - 1;
-                }
-            }else {
-                int dayOfWeek = currentLocalDate.getDayOfWeek();
-                distance = dayOfWeek - 1;
-                scrollToPosition = lastVisibleItemPosition - distance;
-                if (scrollToPosition < displayNums){
-                    scrollToPosition = 0;
-                }
+            scrollByXOffset = distance;
+        } else {//靠近右边，content右移，recyclerView左移，取负。
+            int distanceOrigin = parentRight - compareViewLeft;//原始调整距离
+            int distance = distanceOrigin - childWidth / 2;//原始 + 修正值（半个宽度的修正）
+            int distanceLeftBoundary = Math.abs(lastViewLeft - parentLeft);//这里用 + 是因为 firstViewLeft为负的。
+
+            if (distanceLeftBoundary < distance) {//content右移不够，顶到头，distanceLeftBoundary
+                distance = distanceLeftBoundary;
             }
-            return scrollToPosition;
-        }else if (type == VIEW_DAY){
-            BarEntry barEntry = entries.get(lastVisibleItemPosition);
-            long timestamp = barEntry.timestamp;
-            int distance;
-            int hourOfTheDay = TimeUtil.getHourOfTheDay(timestamp);
-            if (distanceCompare.isNearLeft()){//靠近左边，移动到下一天的0点
-                distance = TimeUtil.NUM_HOUR_OF_DAY - hourOfTheDay;
-                scrollToPosition = lastVisibleItemPosition + distance;
-                if (scrollToPosition >= entries.size()){
-                    scrollToPosition = entries.size() - 1;
-                }
-            }else {
-                distance = hourOfTheDay;
-                scrollToPosition = lastVisibleItemPosition - distance;
-                if (scrollToPosition < displayNums){
-                    scrollToPosition = 0;
-                }
-            }
-            return scrollToPosition;
-        }else if (type == VIEW_YEAR){
-            BarEntry barEntry = entries.get(lastVisibleItemPosition);
-            LocalDate localDate = barEntry.localDate;
-            int distance;
-            if (distanceCompare.isNearLeft()){
-                distance = TimeUtil.NUM_MONTH_OF_YEAR - localDate.getMonthOfYear() + 1;
-                scrollToPosition = lastVisibleItemPosition + distance;
-                if (scrollToPosition >= entries.size()){
-                    scrollToPosition = entries.size() - 1;
-                }
-            }else {
-                distance = localDate.getMonthOfYear() - 1;
-                scrollToPosition = lastVisibleItemPosition - distance;
-                if (scrollToPosition < displayNums){
-                    scrollToPosition = 0;
-                }
-            }
-            return scrollToPosition;
+            //记得取负， scrollBy的话
+            scrollByXOffset = distance - 2 * distance;
         }
-        return scrollToPosition;
+        return scrollByXOffset;
     }
 
-
-    public static HashMap<Float, List<BarEntry>> getVisibleEntries(int scrollToPosition, RecyclerView recyclerView){
-        recyclerView.scrollToPosition(scrollToPosition);
+    public static HashMap<Float, List<BarEntry>> getVisibleEntries(RecyclerView recyclerView) {
+//        recyclerView.scrollToPosition(scrollToPosition);
         LinearLayoutManager manager = (LinearLayoutManager) recyclerView.getLayoutManager();
         BarChartAdapter adapter = (BarChartAdapter) recyclerView.getAdapter();
         List<BarEntry> mEntries = adapter.getEntries();
@@ -205,6 +164,152 @@ public class ReLocationUtil {
         return map;
     }
 
+    //todo 注意左右滑的到定的问题。
+    @Deprecated
+    public static int findScrollToPosition(int type, RecyclerView recyclerView,
+                                           DistanceCompare distanceCompare, int displayNums) {
+        LinearLayoutManager manager = (LinearLayoutManager) recyclerView.getLayoutManager();
+        BarChartAdapter adapter = (BarChartAdapter) recyclerView.getAdapter();
+        List<BarEntry> entries = adapter.getEntries();
+        int lastVisibleItemPosition = manager.findLastVisibleItemPosition();
+        int firstVisibleItemPosition = manager.findFirstVisibleItemPosition();
+
+        View lastVisibleView = manager.findViewByPosition(lastVisibleItemPosition);
+        View firstVisibleView = manager.findViewByPosition(firstVisibleItemPosition);
+
+        BarEntry lastVisibleBarEntry = (BarEntry) lastVisibleView.getTag();
+        BarEntry firstVisibleBarEntry = (BarEntry) firstVisibleView.getTag();
+
+        BarEntry lastEntry = entries.get(entries.size() - 1);
+        BarEntry firstEntry = entries.get(0);
+
+        LocalDate lastVisibleLocalDate = lastVisibleBarEntry.localDate;
+        LocalDate lastLocalDate = lastEntry.localDate;
+
+        LocalDate firstVisibleLocalDate = firstVisibleBarEntry.localDate;
+        LocalDate firstLocalDate = firstEntry.localDate;
+
+        int childWidth = lastVisibleView.getWidth();
+        int lastVisibleViewRight = lastVisibleView.getRight();
+        int lastVisibleViewLeft = lastVisibleView.getLeft();
+        int parentRight = recyclerView.getWidth() - recyclerView.getPaddingRight();
+        int parentLeft = recyclerView.getPaddingLeft();
+        int reSizeDistance = parentRight - lastVisibleViewLeft;//调整距离
+
+        int distance = 0;
+        int scrollToPosition = entries.size() - 1;
+        if (type == VIEW_MONTH) {//左移为 负的
+            LocalDate nearFirstDay;
+            if (distanceCompare.isNearLeft()) {//靠近左边，移动到 下一条月线
+                nearFirstDay = TimeUtil.getFirstDayOfNextMonth(lastVisibleLocalDate);
+                int range = TimeUtil.getIntervalDay(lastVisibleLocalDate, nearFirstDay);
+                distance = range * childWidth;
+                distance = distance - reSizeDistance;
+                scrollToPosition = lastVisibleItemPosition + range;
+                if (scrollToPosition >= entries.size()) {
+                    range = TimeUtil.getIntervalDay(lastVisibleLocalDate, lastLocalDate);
+                    distance = range * childWidth;
+                }
+
+            } else {//靠近右边，移动到当前的月线
+                nearFirstDay = TimeUtil.getFirstDayOfMonth(lastVisibleLocalDate);
+                int range = TimeUtil.getIntervalDay(lastVisibleLocalDate, nearFirstDay);
+                distance = range * childWidth;
+                distance = distance + reSizeDistance;
+                scrollToPosition = lastVisibleItemPosition - range;
+                if (scrollToPosition < displayNums) {
+                    range = TimeUtil.getIntervalDay(firstVisibleLocalDate, firstLocalDate);
+                    distance = range * childWidth;
+                }
+                distance = distance - 2 * distance;
+            }
+        } else if (type == VIEW_WEEK) {
+            if (distanceCompare.isNearLeft()) {//靠近左边，移动到下一个周一
+                int dayOfWeek = lastVisibleLocalDate.getDayOfWeek();
+                int range = TimeUtil.NUM_DAY_OF_WEEK - dayOfWeek + 1;
+                distance = range * childWidth;
+                distance = distance - reSizeDistance + childWidth / 2;
+
+                scrollToPosition = lastVisibleItemPosition + range;
+                if (scrollToPosition >= entries.size()) {
+                    View lastChildView = manager.findViewByPosition(entries.size() - 1);
+                    distance = lastChildView.getRight() - parentRight;
+                }
+            } else {//靠近右边
+                int dayOfWeek = lastVisibleLocalDate.getDayOfWeek();
+                int range = dayOfWeek - 1;
+                distance = range * childWidth;
+                distance = distance + reSizeDistance - childWidth / 2;
+                scrollToPosition = lastVisibleItemPosition - range;
+                if (scrollToPosition < displayNums) {
+                    View firstChildView = manager.findViewByPosition(0);
+                    distance = parentLeft - firstChildView.getLeft();
+                }
+                distance = distance - 2 * distance;
+            }
+        } else if (type == VIEW_DAY) {
+            long timestamp = lastVisibleBarEntry.timestamp;
+            int hourOfTheDay = TimeUtil.getHourOfTheDay(timestamp);
+            if (distanceCompare.isNearLeft()) {//靠近左边，移动到下一天的0点
+                int range = TimeUtil.NUM_HOUR_OF_DAY - hourOfTheDay;
+                distance = range * childWidth;
+                distance = distance - reSizeDistance;
+                scrollToPosition = lastVisibleItemPosition + range;
+                if (scrollToPosition >= entries.size()) {
+                    range = TimeUtil.getIntervalDay(lastVisibleLocalDate, lastLocalDate);
+                    distance = range * childWidth;
+                }
+
+            } else {//靠近右边
+                int range = hourOfTheDay;
+                distance = range * childWidth;
+                distance = distance + reSizeDistance;
+                scrollToPosition = lastVisibleItemPosition - range;
+                if (scrollToPosition < displayNums) {
+                    range = TimeUtil.getIntervalDay(firstVisibleLocalDate, firstLocalDate);
+                    distance = range * childWidth;
+                }
+                distance = distance - 2 * distance;
+            }
+        } else if (type == VIEW_YEAR) {
+
+            if (distanceCompare.isNearLeft()) {
+                int range = TimeUtil.NUM_MONTH_OF_YEAR - lastVisibleLocalDate.getMonthOfYear() + 1;
+                distance = range * childWidth;
+                distance = distance - reSizeDistance;
+                scrollToPosition = lastVisibleItemPosition + range;
+                if (scrollToPosition >= entries.size()) {
+                    range = TimeUtil.getIntervalDay(lastVisibleLocalDate, lastLocalDate);
+                    distance = range * childWidth;
+                }
+
+            } else {
+                int range = lastVisibleLocalDate.getMonthOfYear() - 1;
+                distance = range * childWidth;
+                distance = distance + reSizeDistance;
+                scrollToPosition = lastVisibleItemPosition - range;
+                if (scrollToPosition < displayNums) {
+                    range = TimeUtil.getIntervalDay(firstVisibleLocalDate, firstLocalDate);
+                    distance = range * childWidth;
+                }
+                distance = distance - 2 * distance;
+            }
+        }
+        return distance;
+    }
+
+
+    //滑动到附近的刻度线
+    @Deprecated
+    public static HashMap<Float, List<BarEntry>> scrollToScale(RecyclerView recyclerView, int type, int displayNumber) {
+        List<BarEntry> visibleEntries = scrollToScaleXAxis(recyclerView, type, displayNumber);
+        float yAxisMaximum = DecimalUtil.getTheMaxNumber(visibleEntries);
+        HashMap<Float, List<BarEntry>> map = new HashMap<>();
+        map.put(yAxisMaximum, visibleEntries);
+        return map;
+    }
+
+    @Deprecated
     public static List<BarEntry> scrollToScaleXAxis(RecyclerView recyclerView, int type, int displayNumber) {
         DistanceCompare distanceCompare = createDistanceCompare(recyclerView, type);
         LinearLayoutManager manager = (LinearLayoutManager) recyclerView.getLayoutManager();
@@ -264,5 +369,26 @@ public class ReLocationUtil {
         }
         List<BarEntry> visibleEntries = mEntries.subList(firstVisibleItemPosition, endPosition);
         return visibleEntries;
+    }
+
+    @Deprecated
+    public static DistanceCompare createDistanceCompare(RecyclerView recyclerView, int type) {
+        LinearLayoutManager manager = (LinearLayoutManager) recyclerView.getLayoutManager();
+        BarChartAdapter adapter = (BarChartAdapter) recyclerView.getAdapter();
+        List<BarEntry> entries = adapter.getEntries();
+        int lastVisibleItemPosition = manager.findLastCompletelyVisibleItemPosition();
+
+        BarEntry barEntry = entries.get(lastVisibleItemPosition);
+        DistanceCompare distanceCompare = new DistanceCompare(0, 0);
+        if (type == VIEW_MONTH) {
+            distanceCompare = TimeUtil.createMonthDistance(barEntry.localDate);
+        } else if (type == VIEW_WEEK) {
+            distanceCompare = TimeUtil.createWeekDistance(barEntry.localDate);
+        } else if (type == VIEW_DAY) {
+            distanceCompare = TimeUtil.createDayDistance(barEntry);
+        } else if (type == VIEW_YEAR) {
+            distanceCompare = TimeUtil.createYearDistance(barEntry.localDate);
+        }
+        return distanceCompare;
     }
 }

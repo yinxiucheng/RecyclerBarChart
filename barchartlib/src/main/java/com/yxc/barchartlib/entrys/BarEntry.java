@@ -35,7 +35,7 @@ public class BarEntry extends Entry implements Comparable<BarEntry> {
 
     @Override
     public int compareTo(@NonNull BarEntry o) {
-        return (int) (timestamp - o.timestamp);
+        return (int) (o.timestamp - timestamp);
     }
 
 }

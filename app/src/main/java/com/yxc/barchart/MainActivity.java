@@ -4,6 +4,7 @@ package com.yxc.barchart;
 import android.os.Bundle;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.Toolbar;
 import android.widget.FrameLayout;
 
 import com.yxc.barchart.tab.OnTabSelectListener;
@@ -13,12 +14,16 @@ import com.yxc.barchart.ui.MonthFragment;
 import com.yxc.barchart.ui.WeekFragment;
 import com.yxc.barchart.ui.YearFragment;
 import com.yxc.barchartlib.util.ColorUtil;
+import com.yxc.barchartlib.util.TimeUtil;
+
+import org.joda.time.LocalDate;
 
 public class MainActivity extends AppCompatActivity {
 
     private String[] mTitles = {"日", "周", "月", "年"};
 
     TopTabLayout mTabLayout;
+    Toolbar toolbar;
     FrameLayout container;
     private BaseFragment currentFragment;
 
@@ -33,14 +38,19 @@ public class MainActivity extends AppCompatActivity {
     private void initView() {
         mTabLayout = findViewById(R.id.topTabLayout);
         container = findViewById(R.id.container);
+        toolbar = findViewById(R.id.toolBar);
+        toolbar.setTitle(TimeUtil.getDateStr(TimeUtil.localDateToTimestamp(LocalDate.now()), "M月dd日"));
+        toolbar.setNavigationIcon(R.drawable.ic_navigation_left_black_45dp);
+        setSupportActionBar(toolbar);
+
         switchTab(DayFragment.class, "DayFragment");
     }
 
     private void initTableLayout() {
         mTabLayout.setCurrentTab(0);
-        mTabLayout.setIndicatorColor(ColorUtil.getResourcesColor(this, R.color.pink));
-        mTabLayout.setTextUnselectColor(ColorUtil.getResourcesColor(this, R.color.tab_checked));
-        mTabLayout.setDividerColor(ColorUtil.getResourcesColor(this, R.color.pink));
+        mTabLayout.setIndicatorColor(ColorUtil.getResourcesColor(this, R.color.red));
+        mTabLayout.setTextUnselectColor(ColorUtil.getResourcesColor(this, R.color.red));
+        mTabLayout.setDividerColor(ColorUtil.getResourcesColor(this, R.color.red));
         mTabLayout.setTabData(mTitles);
 
         mTabLayout.setOnTabSelectListener(new OnTabSelectListener() {

@@ -8,6 +8,7 @@ import android.graphics.Path;
 import android.graphics.PathEffect;
 import android.support.v7.widget.RecyclerView;
 import android.text.TextUtils;
+import android.util.Log;
 import android.view.View;
 
 import com.yxc.barchartlib.component.XAxis;
@@ -152,8 +153,6 @@ public class XAxisRenderer{
 
     //绘制X坐标
     public void drawXAxis(Canvas canvas, RecyclerView parent, XAxis xAxis) {
-        BarChartAdapter mAdapter = (BarChartAdapter) parent.getAdapter();
-        List<BarEntry> entries = mAdapter.getEntries();
 
         int parentBottom = parent.getHeight() - parent.getPaddingBottom();
         int parentLeft = parent.getPaddingLeft();
@@ -163,11 +162,10 @@ public class XAxisRenderer{
 
         for (int i = 0; i < childCount; i++) {
             final View child = parent.getChildAt(i);
-            int adapterPosition = parent.getChildAdapterPosition(child);
-            int type = parent.getAdapter().getItemViewType(adapterPosition);
             final int x = child.getLeft();
+            BarEntry barEntry = (BarEntry) child.getTag();
+            Log.d("XAxisRender" , barEntry.localDate + " child'left = " + child.getLeft() + " |||||| child'width = " + child.getWidth());
 
-            BarEntry barEntry = entries.get(adapterPosition);
             String dateStr = xAxis.getValueFormatter().getBarLabel(barEntry);
             if (!TextUtils.isEmpty(dateStr)) {
                 int childWidth = child.getWidth();

@@ -43,6 +43,7 @@ public class AttrsUtil {
         attrs.ratioSpeed = ta.getFloat(R.styleable.BarChartRecyclerView_ratioSpeed, 0.7f);
         //default is horizontal
         attrs.layoutManagerOrientation = ta.getInteger(R.styleable.BarChartRecyclerView_layoutManagerOrientation, 0);
+        attrs.layoutManagerReverseLayout = ta.getBoolean(R.styleable.BarChartRecyclerView_layoutManagerReverseLayout, true);
 
         //y轴相关
         attrs.yAxisMaximum = ta.getFloat(R.styleable.BarChartRecyclerView_yAxisMaximum, 30000);

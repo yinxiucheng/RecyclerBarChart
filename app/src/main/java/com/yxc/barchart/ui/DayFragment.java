@@ -16,7 +16,6 @@ import com.yxc.barchart.BaseFragment;
 import com.yxc.barchart.R;
 import com.yxc.barchart.TestData;
 import com.yxc.barchart.formatter.XAxisDayFormatter;
-import com.yxc.barchartlib.component.DistanceCompare;
 import com.yxc.barchartlib.component.XAxis;
 import com.yxc.barchartlib.component.YAxis;
 import com.yxc.barchartlib.entrys.BarEntry;
@@ -80,8 +79,8 @@ public class DayFragment extends BaseFragment {
 
         initData(displayNumber, valueFormatter);
         currentTimestamp = TimeUtil.changZeroOfTheDay(LocalDate.now());
-        bindBarChartList(TestData.createDayEntries(currentTimestamp, displayNumber));
-        currentTimestamp = currentTimestamp - TimeUtil.TIME_HOUR * displayNumber;
+        bindBarChartList(TestData.createDayEntries(currentTimestamp, 3* displayNumber));
+        currentTimestamp = currentTimestamp - TimeUtil.TIME_HOUR * displayNumber * 3;
         setXAxis(displayNumber);
         reSizeYAxis();
         setListener(mType, displayNumber);
@@ -130,13 +129,11 @@ public class DayFragment extends BaseFragment {
     }
 
     private void reSizeYAxis() {
-        recyclerView.scrollToPosition(mEntries.size() - 1);
-        int lastVisiblePosition = mEntries.size() - 1;
-        int firstVisiblePosition = lastVisiblePosition - displayNumber + 1;
-        List<BarEntry> visibleEntries = mEntries.subList(firstVisiblePosition, lastVisiblePosition);
+        List<BarEntry> visibleEntries = mEntries.subList(0, displayNumber + 1);
         mYAxis = YAxis.getYAxis(mBarChartAttrs, DecimalUtil.getTheMaxNumber(visibleEntries));
         mBarChartAdapter.notifyDataSetChanged();
         mItemDecoration.setYAxis(mYAxis);
+        displayDateAndStep(visibleEntries, mType);
     }
 
 
@@ -152,7 +149,7 @@ public class DayFragment extends BaseFragment {
                     if (recyclerView.canScrollHorizontally(1) && isRightScroll) {
                         List<BarEntry> entries = TestData.createDayEntries(currentTimestamp, displayNumber);
                         currentTimestamp = currentTimestamp - displayNumber * TimeUtil.TIME_HOUR;
-                        mEntries.addAll(0, entries);
+                        mEntries.addAll(entries);
                         mBarChartAdapter.notifyDataSetChanged();
                     }
                     resetYAxis(recyclerView, type, displayNumber);
@@ -177,9 +174,9 @@ public class DayFragment extends BaseFragment {
         float yAxisMaximum = 0;
         HashMap<Float, List<BarEntry>> map;
         if (mBarChartAttrs.enableScrollToScale) {
-            DistanceCompare distanceCompare = ReLocationUtil.findNearFirstType(recyclerView, displayNumber);
-            int scrollToPosition = ReLocationUtil.findScrollToPosition(type, recyclerView, distanceCompare, displayNumber);
-            map = ReLocationUtil.getVisibleEntries(scrollToPosition, recyclerView);
+            //int scrollDx = ReLocationUtil.computeScrollByXOffset( recyclerView, displayNumber);
+            //recyclerView.scrollBy(scrollDx, 0);
+            map = ReLocationUtil.getVisibleEntries(recyclerView);
         } else {
             map = ReLocationUtil.microRelation(recyclerView);
         }
@@ -201,7 +198,7 @@ public class DayFragment extends BaseFragment {
         } else {
             mEntries.clear();
         }
-        mEntries.addAll(0, entries);
+        mEntries.addAll(entries);
     }
 
     private void setXAxis(int displayNumber) {
@@ -211,9 +208,10 @@ public class DayFragment extends BaseFragment {
 
 
     private void displayDateAndStep(List<BarEntry> displayEntries, int mType) {
+        mBarChartAdapter.setYAxis(mYAxis);
         //todo 调试显示用的
-        BarEntry leftBarEntry = displayEntries.get(0);
-        BarEntry rightBarEntry = displayEntries.get(displayEntries.size() - 1);
+        BarEntry rightBarEntry = displayEntries.get(0);
+        BarEntry leftBarEntry = displayEntries.get(displayEntries.size() - 1);
         txtLeftLocalDate.setText(TimeUtil.getDateStr(leftBarEntry.timestamp, "yyyy-MM-dd HH:mm:ss"));
         txtRightLocalDate.setText(TimeUtil.getDateStr(rightBarEntry.timestamp, "yyyy-MM-dd HH:mm:ss"));
 

@@ -21,8 +21,6 @@ import com.yxc.barchartlib.util.BarChartAttrs;
 import com.yxc.barchartlib.util.DecimalUtil;
 import com.yxc.barchartlib.util.TimeUtil;
 
-import java.util.List;
-
 /**
  * @author yxc
  * @date 2019/4/6
@@ -33,7 +31,6 @@ public class BarChartItemDecoration extends RecyclerView.ItemDecoration {
 
     private static final String TAG = "BarChartItemDecoration";
 
-    private Context mContext;
     private int mOrientation;
 
     private Paint mDashPaint;
@@ -42,10 +39,9 @@ public class BarChartItemDecoration extends RecyclerView.ItemDecoration {
     private Paint mBarChartPaint;
     private Paint mBarBorderPaint;
 
-    private BarChartAdapter mAdapter;
-    private List<BarEntry> mEntries;
     private YAxis mYAxis;
     private XAxis mXAxis;
+    private BarChartAdapter mAdapter;
     private BarChartAttrs mBarChartAttrs;
     private YAxisRenderer yAxisRenderer;
     private XAxisRenderer xAxisRenderer;
@@ -54,7 +50,6 @@ public class BarChartItemDecoration extends RecyclerView.ItemDecoration {
     public static final int VERTICAL_LIST = LinearLayoutManager.VERTICAL;
 
     public BarChartItemDecoration(Context context, YAxis yAxis, XAxis xAxis, BarChartAttrs barChartAttrs) {
-        this.mContext = context;
         this.mOrientation = barChartAttrs.layoutManagerOrientation;
         this.mYAxis = yAxis;
         this.mXAxis = xAxis;
@@ -70,23 +65,18 @@ public class BarChartItemDecoration extends RecyclerView.ItemDecoration {
         initBarBorderPaint();
     }
 
-
-
-
     @Override
     public void onDrawOver(Canvas canvas, RecyclerView parent, RecyclerView.State state) {
         super.onDraw(canvas, parent, state);
         mAdapter = (BarChartAdapter) parent.getAdapter();
-        mEntries = mAdapter.getEntries();
         if (mOrientation == HORIZONTAL_LIST) {
             //横向 list 画竖线
-            yAxisRenderer.drawLeftYAxisLabel(canvas, parent, mYAxis);//画左边y坐标的刻度，会设定RecyclerView的 leftPadding
-            yAxisRenderer.drawRightYAxisLabel(canvas, parent, mYAxis);//画右边y坐标的刻度，会设定RecyclerView的 rightPadding
-            yAxisRenderer.drawHorizontalLine(canvas, parent, mYAxis);//画横的网格线
+            yAxisRenderer.drawLeftYAxisLabel(canvas, parent);//画左边y坐标的刻度，会设定RecyclerView的 leftPadding
+            yAxisRenderer.drawRightYAxisLabel(canvas, parent);//画右边y坐标的刻度，会设定RecyclerView的 rightPadding
+            yAxisRenderer.drawHorizontalLine(canvas, parent);//画横的网格线
 
             xAxisRenderer.drawVerticalLine(canvas, parent, mXAxis);//画竖的网格线
             xAxisRenderer.drawXAxis(canvas, parent, mXAxis);//画x轴坐标的刻度
-
 
             drawBarChart(canvas, parent);//draw barchart
             drawBarChartValue(canvas, parent);//draw barchart value
@@ -165,6 +155,7 @@ public class BarChartItemDecoration extends RecyclerView.ItemDecoration {
         float bottom = parent.getHeight() - parent.getPaddingBottom() - mBarChartAttrs.contentPaddingBottom;
         float parentRight = parent.getWidth() - parent.getPaddingRight();
         float parentLeft = parent.getPaddingLeft();
+        float parentContentWidth = parentRight - parentLeft;
 
         float realYAxisLabelHeight = bottom - mBarChartAttrs.maxYAxisPaddingTop;
         final int childCount = parent.getChildCount();
@@ -174,7 +165,7 @@ public class BarChartItemDecoration extends RecyclerView.ItemDecoration {
             child = parent.getChildAt(i);
             BarEntry barEntry = (BarEntry) child.getTag();
             ChartRectF rectF = new ChartRectF();
-            int width = child.getWidth();
+            float width = parentContentWidth / mXAxis.displayNumbers;
             float barSpaceWidth = width * mBarChartAttrs.barSpace;
             float barChartWidth = width - barSpaceWidth;//柱子的宽度
             float start = child.getLeft() + barSpaceWidth / 2;
@@ -215,6 +206,7 @@ public class BarChartItemDecoration extends RecyclerView.ItemDecoration {
         float bottom = parent.getHeight() - parent.getPaddingBottom() - mBarChartAttrs.contentPaddingBottom;
         float parentRight = parent.getWidth() - parent.getPaddingRight();
         float parentLeft = parent.getPaddingLeft();
+        float parentContentWidth = parentRight - parentLeft;
 
         float realYAxisLabelHeight = bottom - mBarChartAttrs.maxYAxisPaddingTop;
         int childCount = parent.getChildCount();
@@ -224,12 +216,11 @@ public class BarChartItemDecoration extends RecyclerView.ItemDecoration {
             child = parent.getChildAt(i);
             BarEntry barEntry = (BarEntry) child.getTag();
             int valueInt = (int) barEntry.getY();
-            int width = child.getWidth();
+            float width = parentContentWidth/mXAxis.displayNumbers;
             int height = (int) (barEntry.getY() / mYAxis.getAxisMaximum() * realYAxisLabelHeight);
             float top = bottom - height;
 
             mTextPaint.setTextSize(mBarChartAttrs.barChartValueTxtSize);
-            //todo
             String valueStr = TimeUtil.getDateStr(barEntry.timestamp, "MM-dd");
 //            String valueStr = Integer.toString(valueInt);
 
@@ -264,7 +255,7 @@ public class BarChartItemDecoration extends RecyclerView.ItemDecoration {
     }
 
     //文字宽度小于item的宽度时，获取文字显示的起始 X 坐标
-    private float getTxtX(View child, int width, String valueStr) {
+    private float getTxtX(View child, float width, String valueStr) {
         float txtDistance = width - mTextPaint.measureText(valueStr);
         float txtX = child.getLeft();
         if (txtDistance > 0) {
@@ -279,7 +270,6 @@ public class BarChartItemDecoration extends RecyclerView.ItemDecoration {
             canvas.drawText(valueStr, start, end, x, y, mTextPaint);
         }
     }
-
 
 
     @Override
