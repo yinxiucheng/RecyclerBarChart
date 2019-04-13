@@ -128,6 +128,7 @@ public class YearFragment extends BaseFragment {
     private void setListener(final int type, final int displayNumber) {
         recyclerView.addOnScrollListener(new RecyclerView.OnScrollListener() {
             private boolean isRightScroll;
+
             @Override
             public void onScrollStateChanged(RecyclerView recyclerView, int newState) {
                 super.onScrollStateChanged(recyclerView, newState);
@@ -150,9 +151,9 @@ public class YearFragment extends BaseFragment {
             public void onScrolled(RecyclerView recyclerView, int dx, int dy) {
                 super.onScrolled(recyclerView, dx, dy);
                 //判断左滑，右滑时，ScrollView的位置不一样。
-                if (dx < 0){
+                if (dx < 0) {
                     isRightScroll = true;
-                }else {
+                } else {
                     isRightScroll = false;
                 }
             }
@@ -182,72 +183,32 @@ public class YearFragment extends BaseFragment {
         }
     }
 
-    private void bindBarChartList(List<BarEntry> entries){
-        if (null == mEntries){
+    private void bindBarChartList(List<BarEntry> entries) {
+        if (null == mEntries) {
             mEntries = new ArrayList<>();
-        }else {
+        } else {
             mEntries.clear();
         }
         mEntries.addAll(entries);
     }
 
-    private void setXAxis(int displayNumber){
+    private void setXAxis(int displayNumber) {
         mXAxis = new XAxis(mBarChartAttrs, displayNumber);
         mBarChartAdapter.setXAxis(mXAxis);
     }
 
     private void displayDateAndStep(List<BarEntry> displayEntries, int mType) {
-        //todo 调试显示用的
-        BarEntry leftBarEntry = displayEntries.get(0);
-        BarEntry rightBarEntry = displayEntries.get(displayEntries.size() - 1);
+        BarEntry rightBarEntry  = displayEntries.get(0);
+        BarEntry leftBarEntry = displayEntries.get(displayEntries.size() - 1);
         txtLeftLocalDate.setText(TimeUtil.getDateStr(leftBarEntry.timestamp, "yyyy-MM-dd HH:mm:ss"));
         txtRightLocalDate.setText(TimeUtil.getDateStr(rightBarEntry.timestamp, "yyyy-MM-dd HH:mm:ss"));
-
-        if (mType == TestData.VIEW_MONTH) {
-            String beginDateStr = TimeUtil.getDateStr(leftBarEntry.timestamp, "yyyy年MM月dd日");
-            String patternStr = "yyyy年MM月dd日";
-            if (TimeUtil.isSameMonth(leftBarEntry.timestamp, rightBarEntry.timestamp)) {
-                textTitle.setText(TimeUtil.getDateStr(leftBarEntry.timestamp, "yyyy年MM月"));
-            } else if (TimeUtil.isSameYear(leftBarEntry.timestamp, rightBarEntry.timestamp)) {
-                patternStr = "MM月dd日";
-                String endDateStr = TimeUtil.getDateStr(rightBarEntry.timestamp, patternStr);
-                String connectStr = "至";
-                textTitle.setText(beginDateStr + connectStr + endDateStr);
-            } else {
-                String endDateStr = TimeUtil.getDateStr(rightBarEntry.timestamp, patternStr);
-                String connectStr = "至";
-                textTitle.setText(beginDateStr + connectStr + endDateStr);
-            }
-        } else if (mType == TestData.VIEW_WEEK) {
-            String beginDateStr = TimeUtil.getDateStr(leftBarEntry.timestamp, "yyyy年MM月dd日");
-            String patternStr = "yyyy年MM月dd日";
-            if (TimeUtil.isSameMonth(leftBarEntry.timestamp, rightBarEntry.timestamp)) {
-                patternStr = "dd日";
-            } else if (TimeUtil.isSameYear(leftBarEntry.timestamp, rightBarEntry.timestamp)) {
-                patternStr = "MM月dd日";
-            }
-            String endDateStr = TimeUtil.getDateStr(rightBarEntry.timestamp, patternStr);
-            String connectStr = "至";
+        if (TimeUtil.isSameYear(leftBarEntry.timestamp, rightBarEntry.timestamp)) {
+            textTitle.setText(TimeUtil.getDateStr(leftBarEntry.timestamp, "yyyy年"));
+        } else {
+            String beginDateStr = TimeUtil.getDateStr(leftBarEntry.timestamp, "yyyy/MM/dd");
+            String endDateStr = TimeUtil.getDateStr(rightBarEntry.timestamp, "yyyy/MM/dd");
+            String connectStr = " -- ";
             textTitle.setText(beginDateStr + connectStr + endDateStr);
-        } else if (mType == TestData.VIEW_DAY) {
-            String beginDateStr = TimeUtil.getDateStr(leftBarEntry.timestamp, "yyyy年MM月dd日 HH:mm");
-            String patternStr = "yyyy年MM月dd日 HH:mm";
-            if (TimeUtil.isTheSameDay(leftBarEntry.timestamp, rightBarEntry.timestamp)) {
-                textTitle.setText(TimeUtil.getDateStr(leftBarEntry.timestamp, "yyyy年MM月dd日"));
-            } else {
-                String endDateStr = TimeUtil.getDateStr(rightBarEntry.timestamp, patternStr);
-                String connectStr = " - ";
-                textTitle.setText(beginDateStr + connectStr + endDateStr);
-            }
-        } else if (mType == TestData.VIEW_YEAR) {
-            if (TimeUtil.isSameYear(leftBarEntry.timestamp, rightBarEntry.timestamp)) {
-                textTitle.setText(TimeUtil.getDateStr(leftBarEntry.timestamp, "yyyy年"));
-            } else {
-                String beginDateStr = TimeUtil.getDateStr(leftBarEntry.timestamp, "yyyy/MM/dd");
-                String endDateStr = TimeUtil.getDateStr(rightBarEntry.timestamp, "yyyy/MM/dd");
-                String connectStr = " -- ";
-                textTitle.setText(beginDateStr + connectStr + endDateStr);
-            }
         }
 
         long count = 0;
@@ -255,6 +216,7 @@ public class YearFragment extends BaseFragment {
             BarEntry entry = displayEntries.get(i);
             count += entry.getY();
         }
+
         int averageStep = (int) (count / displayEntries.size());
         String childStr = DecimalUtil.addComma(Integer.toString(averageStep));
         String parentStr = String.format(getString(R.string.str_count_step), childStr);

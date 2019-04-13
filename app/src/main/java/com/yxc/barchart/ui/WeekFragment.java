@@ -4,7 +4,6 @@ package com.yxc.barchart.ui;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
-import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.text.SpannableStringBuilder;
 import android.util.Log;
@@ -16,8 +15,6 @@ import android.widget.TextView;
 
 import com.yxc.barchart.BaseFragment;
 import com.yxc.barchart.R;
-import com.yxc.barchartlib.component.DistanceCompare;
-import com.yxc.barchartlib.util.ReLocationUtil;
 import com.yxc.barchart.TestData;
 import com.yxc.barchart.formatter.XAxisWeekFormatter;
 import com.yxc.barchartlib.component.XAxis;
@@ -26,6 +23,7 @@ import com.yxc.barchartlib.entrys.BarEntry;
 import com.yxc.barchartlib.formatter.ValueFormatter;
 import com.yxc.barchartlib.util.BarChartAttrs;
 import com.yxc.barchartlib.util.DecimalUtil;
+import com.yxc.barchartlib.util.ReLocationUtil;
 import com.yxc.barchartlib.util.TextUtil;
 import com.yxc.barchartlib.util.TimeUtil;
 import com.yxc.barchartlib.view.BarChartAdapter;
@@ -124,9 +122,8 @@ public class WeekFragment extends BaseFragment {
         mYAxis = YAxis.getYAxis(mBarChartAttrs, DecimalUtil.getTheMaxNumber(visibleEntries));
         mBarChartAdapter.notifyDataSetChanged();
         mItemDecoration.setYAxis(mYAxis);
-        displayDateAndStep(visibleEntries, mType);
+        displayDateAndStep(visibleEntries);
     }
-
 
     //滑动监听
     private void setListener(final int type, final int displayNumber) {
@@ -176,7 +173,7 @@ public class WeekFragment extends BaseFragment {
 
         for (Map.Entry<Float, List<BarEntry>> entry : map.entrySet()) {
             yAxisMaximum = entry.getKey();
-            displayDateAndStep(entry.getValue(), mType);
+            displayDateAndStep(entry.getValue());
             break;
         }
         YAxis yAxis = mYAxis.resetYAxis(mYAxis, yAxisMaximum);
@@ -200,61 +197,22 @@ public class WeekFragment extends BaseFragment {
         mBarChartAdapter.setXAxis(mXAxis);
     }
 
-    private void displayDateAndStep(List<BarEntry> displayEntries, int mType) {
-        mBarChartAdapter.setYAxis(mYAxis);
-        //todo 调试显示用的
-        BarEntry leftBarEntry = displayEntries.get(0);
-        BarEntry rightBarEntry = displayEntries.get(displayEntries.size() - 1);
+    private void displayDateAndStep(List<BarEntry> displayEntries) {
+        BarEntry rightBarEntry = displayEntries.get(0);
+        BarEntry leftBarEntry = displayEntries.get(displayEntries.size() - 1);
         txtLeftLocalDate.setText(TimeUtil.getDateStr(leftBarEntry.timestamp, "yyyy-MM-dd HH:mm:ss"));
         txtRightLocalDate.setText(TimeUtil.getDateStr(rightBarEntry.timestamp, "yyyy-MM-dd HH:mm:ss"));
 
-        if (mType == TestData.VIEW_MONTH) {
-            String beginDateStr = TimeUtil.getDateStr(leftBarEntry.timestamp, "yyyy年MM月dd日");
-            String patternStr = "yyyy年MM月dd日";
-            if (TimeUtil.isSameMonth(leftBarEntry.timestamp, rightBarEntry.timestamp)) {
-                textTitle.setText(TimeUtil.getDateStr(leftBarEntry.timestamp, "yyyy年MM月"));
-            } else if (TimeUtil.isSameYear(leftBarEntry.timestamp, rightBarEntry.timestamp)) {
-                patternStr = "MM月dd日";
-                String endDateStr = TimeUtil.getDateStr(rightBarEntry.timestamp, patternStr);
-                String connectStr = "至";
-                textTitle.setText(beginDateStr + connectStr + endDateStr);
-            } else {
-                String endDateStr = TimeUtil.getDateStr(rightBarEntry.timestamp, patternStr);
-                String connectStr = "至";
-                textTitle.setText(beginDateStr + connectStr + endDateStr);
-            }
-        } else if (mType == TestData.VIEW_WEEK) {
-            String beginDateStr = TimeUtil.getDateStr(leftBarEntry.timestamp, "yyyy年MM月dd日");
-            String patternStr = "yyyy年MM月dd日";
-            if (TimeUtil.isSameMonth(leftBarEntry.timestamp, rightBarEntry.timestamp)) {
-                patternStr = "dd日";
-            } else if (TimeUtil.isSameYear(leftBarEntry.timestamp, rightBarEntry.timestamp)) {
-                patternStr = "MM月dd日";
-            }
-            String endDateStr = TimeUtil.getDateStr(rightBarEntry.timestamp, patternStr);
-            String connectStr = "至";
-            textTitle.setText(beginDateStr + connectStr + endDateStr);
-        } else if (mType == TestData.VIEW_DAY) {
-            String beginDateStr = TimeUtil.getDateStr(leftBarEntry.timestamp, "yyyy年MM月dd日 HH:mm");
-            String patternStr = "yyyy年MM月dd日 HH:mm";
-            if (TimeUtil.isTheSameDay(leftBarEntry.timestamp, rightBarEntry.timestamp)) {
-                textTitle.setText(TimeUtil.getDateStr(leftBarEntry.timestamp, "yyyy年MM月dd日"));
-            } else {
-                String endDateStr = TimeUtil.getDateStr(rightBarEntry.timestamp, patternStr);
-                String connectStr = " - ";
-                textTitle.setText(beginDateStr + connectStr + endDateStr);
-            }
-        } else if (mType == TestData.VIEW_YEAR) {
-            if (TimeUtil.isSameYear(leftBarEntry.timestamp, rightBarEntry.timestamp)) {
-                textTitle.setText(TimeUtil.getDateStr(leftBarEntry.timestamp, "yyyy年"));
-            } else {
-                String beginDateStr = TimeUtil.getDateStr(leftBarEntry.timestamp, "yyyy/MM/dd");
-                String endDateStr = TimeUtil.getDateStr(rightBarEntry.timestamp, "yyyy/MM/dd");
-                String connectStr = " -- ";
-                textTitle.setText(beginDateStr + connectStr + endDateStr);
-            }
+        String beginDateStr = TimeUtil.getDateStr(leftBarEntry.timestamp, "yyyy年MM月dd日");
+        String patternStr = "yyyy年MM月dd日";
+        if (TimeUtil.isSameMonth(leftBarEntry.timestamp, rightBarEntry.timestamp)) {
+            patternStr = "dd日";
+        } else if (TimeUtil.isSameYear(leftBarEntry.timestamp, rightBarEntry.timestamp)) {
+            patternStr = "MM月dd日";
         }
-
+        String endDateStr = TimeUtil.getDateStr(rightBarEntry.timestamp, patternStr);
+        String connectStr = "至";
+        textTitle.setText(beginDateStr + connectStr + endDateStr);
         long count = 0;
         for (int i = 0; i < displayEntries.size(); i++) {
             BarEntry entry = displayEntries.get(i);

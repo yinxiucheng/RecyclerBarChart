@@ -215,51 +215,14 @@ public class DayFragment extends BaseFragment {
         txtLeftLocalDate.setText(TimeUtil.getDateStr(leftBarEntry.timestamp, "yyyy-MM-dd HH:mm:ss"));
         txtRightLocalDate.setText(TimeUtil.getDateStr(rightBarEntry.timestamp, "yyyy-MM-dd HH:mm:ss"));
 
-        if (mType == TestData.VIEW_MONTH) {
-            String beginDateStr = TimeUtil.getDateStr(leftBarEntry.timestamp, "yyyy年MM月dd日");
-            String patternStr = "yyyy年MM月dd日";
-            if (TimeUtil.isSameMonth(leftBarEntry.timestamp, rightBarEntry.timestamp)) {
-                textTitle.setText(TimeUtil.getDateStr(leftBarEntry.timestamp, "yyyy年MM月"));
-            } else if (TimeUtil.isSameYear(leftBarEntry.timestamp, rightBarEntry.timestamp)) {
-                patternStr = "MM月dd日";
-                String endDateStr = TimeUtil.getDateStr(rightBarEntry.timestamp, patternStr);
-                String connectStr = "至";
-                textTitle.setText(beginDateStr + connectStr + endDateStr);
-            } else {
-                String endDateStr = TimeUtil.getDateStr(rightBarEntry.timestamp, patternStr);
-                String connectStr = "至";
-                textTitle.setText(beginDateStr + connectStr + endDateStr);
-            }
-        } else if (mType == TestData.VIEW_WEEK) {
-            String beginDateStr = TimeUtil.getDateStr(leftBarEntry.timestamp, "yyyy年MM月dd日");
-            String patternStr = "yyyy年MM月dd日";
-            if (TimeUtil.isSameMonth(leftBarEntry.timestamp, rightBarEntry.timestamp)) {
-                patternStr = "dd日";
-            } else if (TimeUtil.isSameYear(leftBarEntry.timestamp, rightBarEntry.timestamp)) {
-                patternStr = "MM月dd日";
-            }
+        String beginDateStr = TimeUtil.getDateStr(leftBarEntry.timestamp, "yyyy年MM月dd日 HH:mm");
+        String patternStr = "yyyy年MM月dd日 HH:mm";
+        if (TimeUtil.isTheSameDay(leftBarEntry.timestamp, rightBarEntry.timestamp)) {
+            textTitle.setText(TimeUtil.getDateStr(leftBarEntry.timestamp, "yyyy年MM月dd日"));
+        } else {
             String endDateStr = TimeUtil.getDateStr(rightBarEntry.timestamp, patternStr);
-            String connectStr = "至";
+            String connectStr = " - ";
             textTitle.setText(beginDateStr + connectStr + endDateStr);
-        } else if (mType == TestData.VIEW_DAY) {
-            String beginDateStr = TimeUtil.getDateStr(leftBarEntry.timestamp, "yyyy年MM月dd日 HH:mm");
-            String patternStr = "yyyy年MM月dd日 HH:mm";
-            if (TimeUtil.isTheSameDay(leftBarEntry.timestamp, rightBarEntry.timestamp)) {
-                textTitle.setText(TimeUtil.getDateStr(leftBarEntry.timestamp, "yyyy年MM月dd日"));
-            } else {
-                String endDateStr = TimeUtil.getDateStr(rightBarEntry.timestamp, patternStr);
-                String connectStr = " - ";
-                textTitle.setText(beginDateStr + connectStr + endDateStr);
-            }
-        } else if (mType == TestData.VIEW_YEAR) {
-            if (TimeUtil.isSameYear(leftBarEntry.timestamp, rightBarEntry.timestamp)) {
-                textTitle.setText(TimeUtil.getDateStr(leftBarEntry.timestamp, "yyyy年"));
-            } else {
-                String beginDateStr = TimeUtil.getDateStr(leftBarEntry.timestamp, "yyyy/MM/dd");
-                String endDateStr = TimeUtil.getDateStr(rightBarEntry.timestamp, "yyyy/MM/dd");
-                String connectStr = " -- ";
-                textTitle.setText(beginDateStr + connectStr + endDateStr);
-            }
         }
 
         long count = 0;

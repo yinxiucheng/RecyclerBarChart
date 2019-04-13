@@ -20,7 +20,7 @@ import com.yxc.barchartlib.view.BarChartAdapter;
 
 import java.util.List;
 
-public class XAxisRenderer{
+public class XAxisRenderer {
 
     protected XAxis mXAxis;
 
@@ -142,7 +142,7 @@ public class XAxisRenderer{
             barEntryNext = entries.get(position2);
             mTextPaint.setTextSize(xAxis.getTextSize());
             String xAxisLabel = xAxis.getValueFormatter().getBarLabel(barEntryNext);
-            if (null != barEntryNext && barWidth > mTextPaint.measureText(xAxisLabel)){
+            if (null != barEntryNext && barWidth > mTextPaint.measureText(xAxisLabel)) {
                 //对于宽的柱状体，不缩短临近TYPE_SECOND的月线
                 return false;
             }
@@ -153,7 +153,6 @@ public class XAxisRenderer{
 
     //绘制X坐标
     public void drawXAxis(Canvas canvas, RecyclerView parent, XAxis xAxis) {
-
         int parentBottom = parent.getHeight() - parent.getPaddingBottom();
         int parentLeft = parent.getPaddingLeft();
         final int childCount = parent.getChildCount();
@@ -164,7 +163,7 @@ public class XAxisRenderer{
             final View child = parent.getChildAt(i);
             final int x = child.getLeft();
             BarEntry barEntry = (BarEntry) child.getTag();
-            Log.d("XAxisRender" , barEntry.localDate + " child'left = " + child.getLeft() + " |||||| child'width = " + child.getWidth());
+            Log.d("XAxisRender", barEntry.localDate + " child'left = " + child.getLeft() + " |||||| child'width = " + child.getWidth());
 
             String dateStr = xAxis.getValueFormatter().getBarLabel(barEntry);
             if (!TextUtils.isEmpty(dateStr)) {
