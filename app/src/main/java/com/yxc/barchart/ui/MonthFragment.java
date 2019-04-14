@@ -73,10 +73,9 @@ public class MonthFragment extends BaseFragment {
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container,
                              @Nullable Bundle savedInstanceState) {
-        View view = View.inflate(getActivity(), R.layout.fragment_day_step, null);
+        View view = View.inflate(getActivity(), R.layout.fragment_month_step, null);
         initView(view);
-
-        displayNumber = 31;
+        displayNumber = mBarChartAttrs.displayNumbers;
         mType = TestData.VIEW_MONTH;
         valueFormatter = new XAxisMonthFormatter(getActivity());
         initData(displayNumber, valueFormatter);
@@ -117,7 +116,6 @@ public class MonthFragment extends BaseFragment {
 
 
     private void reSizeYAxis() {
-        recyclerView.scrollToPosition(0);
         List<BarEntry> visibleEntries = mEntries.subList(0, displayNumber + 1);
         mYAxis = YAxis.getYAxis(mBarChartAttrs, DecimalUtil.getTheMaxNumber(visibleEntries));
         mBarChartAdapter.notifyDataSetChanged();

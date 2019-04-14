@@ -43,8 +43,8 @@ public class BarChartItemDecoration extends RecyclerView.ItemDecoration {
         this.mYAxis = yAxis;
         this.mXAxis = xAxis;
         this.mBarChartAttrs = barChartAttrs;
-        this.yAxisRenderer = new YAxisRender(mBarChartAttrs, mYAxis);
-        this.xAxisRenderer = new XAxisRender(mBarChartAttrs, mXAxis);
+        this.yAxisRenderer = new YAxisRender(mBarChartAttrs);
+        this.xAxisRenderer = new XAxisRender(mBarChartAttrs);
         this.mBarBoardRender = new BarBoardRender(mBarChartAttrs);
         this.mBarChartValueFormatter = new DefaultBarChartValueFormatter(0);
         this.mBarChartRender = new BarChartRender(mBarChartAttrs, mBarChartValueFormatter);
@@ -70,10 +70,9 @@ public class BarChartItemDecoration extends RecyclerView.ItemDecoration {
             mBarChartRender.drawBarChart(canvas, parent, mYAxis);//draw BarChart
             mBarChartRender.drawBarChartValue(canvas, parent, mYAxis);//draw BarChart value
             mBarBoardRender.drawBarBorder(canvas, parent);//绘制边框
-
-        } else if (mOrientation == VERTICAL_LIST) {
+        } else if (mOrientation == VERTICAL_LIST) {//暂时不支持
             //竖向list 画横线
-//            drawHorizontalLine(c, parent, mXAxis);
+            //drawHorizontalLine(c, parent, mXAxis);
         }
     }
 

@@ -8,7 +8,6 @@ import android.graphics.Path;
 import android.graphics.PathEffect;
 import android.support.v7.widget.RecyclerView;
 import android.text.TextUtils;
-import android.util.Log;
 import android.view.View;
 
 import com.yxc.barchartlib.component.XAxis;
@@ -20,22 +19,15 @@ import com.yxc.barchartlib.view.BarChartAdapter;
 
 import java.util.List;
 
-public class XAxisRender {
-
-    protected XAxis mXAxis;
+final public class XAxisRender {
 
     private Paint mTextPaint;
-
     private Paint mDashPaint;
-
     private Paint mLinePaint;
-
     private BarChartAttrs mBarChartAttrs;
 
-
-    public XAxisRender(BarChartAttrs barChartAttrs, XAxis xAxis) {
+    public XAxisRender(BarChartAttrs barChartAttrs) {
         this.mBarChartAttrs = barChartAttrs;
-        this.mXAxis = xAxis;
         initTextPaint();
         initDathPaint();
         initPaint();
@@ -59,7 +51,6 @@ public class XAxisRender {
         mDashPaint.setColor(Color.GRAY);
     }
 
-
     private void initTextPaint() {
         mTextPaint = new Paint();
         mTextPaint.reset();
@@ -67,12 +58,12 @@ public class XAxisRender {
         mTextPaint.setStyle(Paint.Style.FILL);
         mTextPaint.setStrokeWidth(1);
         mTextPaint.setColor(Color.GRAY);
-        mTextPaint.setTextSize(mXAxis.getTextSize());
+        mTextPaint.setTextSize(mBarChartAttrs.xAxisTxtSize);
     }
 
 
     //绘制网格 纵轴线
-    public void drawVerticalLine(Canvas canvas, RecyclerView parent, XAxis xAxis) {
+    final public void drawVerticalLine(Canvas canvas, RecyclerView parent, XAxis xAxis) {
 
         BarChartAdapter mAdapter = (BarChartAdapter) parent.getAdapter();
         List<BarEntry> entries = mAdapter.getEntries();
@@ -152,7 +143,7 @@ public class XAxisRender {
     }
 
     //绘制X坐标
-    public void drawXAxis(Canvas canvas, RecyclerView parent, XAxis xAxis) {
+    final public void drawXAxis(Canvas canvas, RecyclerView parent, XAxis xAxis) {
         int parentBottom = parent.getHeight() - parent.getPaddingBottom();
         int parentLeft = parent.getPaddingLeft();
         final int childCount = parent.getChildCount();

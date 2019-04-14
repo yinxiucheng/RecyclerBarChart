@@ -48,7 +48,8 @@ public class BarChartAttrs {
     public int xAxisFirstDividerColor;//x轴对应纵轴 第一种网格线颜色
     public int xAxisSecondDividerColor;//x轴对应纵轴 第二种网格线颜色
     public int xAxisThirdDividerColor;//x轴对应纵轴 第三种网格线颜色
-    public float xAxisLabelTxtPadding;//x轴刻度跟 坐标线之间的间距（不居中的情况下）
+    public float xAxisLabelTxtPadding;//x轴刻度跟 坐标线之间的间距（不居中的情况下)
+    public int xAxisScaleDistance;//x轴刻度 文字的间距
 
     public int displayNumbers;//一屏显示多少个 barChart
 

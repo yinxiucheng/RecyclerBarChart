@@ -16,20 +16,12 @@ import java.util.Map;
 
 public class YAxisRender {
 
-    protected YAxis mYAxis;
-
-    protected Paint mZeroLinePaint;
-
     protected Paint mLinePaint;
-
     protected Paint mTextPaint;
-
     protected BarChartAttrs mBarChartAttrs;
 
-
-    public YAxisRender(BarChartAttrs barChartAttrs, YAxis yAxis) {
+    public YAxisRender(BarChartAttrs barChartAttrs) {
         this.mBarChartAttrs = barChartAttrs;
-        this.mYAxis = yAxis;
         initPaint();
         initTextPaint();
     }
@@ -41,7 +33,7 @@ public class YAxisRender {
         mTextPaint.setStyle(Paint.Style.FILL);
         mTextPaint.setStrokeWidth(1);
         mTextPaint.setColor(Color.GRAY);
-        mTextPaint.setTextSize(mYAxis.getTextSize());
+        mTextPaint.setTextSize(mBarChartAttrs.yAxisLabelTxtSize);
     }
 
     private void initPaint() {

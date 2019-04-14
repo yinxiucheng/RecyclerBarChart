@@ -6,27 +6,27 @@
     android:layout_marginTop="10dp"
     android:orientation="vertical">
 
-    <include layout="@layout/layout_step_date_title"/>
+    <include layout="@layout/layout_step_date_title" />
 
     <com.yxc.barchartlib.view.BarChartRecyclerView
         android:id="@+id/recycler"
         android:layout_width="match_parent"
         android:layout_height="300dp"
         android:paddingLeft="3dp"
-        app:enableLeftYAxisLabel="false"
         app:enableCharValueDisplay="true"
+        app:enableLeftYAxisLabel="false"
         app:recyclerPaddingRight="3dp"
-        app:displayNumbers="24" />
+        app:displayNumbers="12"/>
 
     <TextView
         android:id="@+id/txt_count_Step"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:paddingLeft="10dp"
         android:layout_marginTop="20dp"
-        android:textSize="14sp"
-        android:textColor="@color/red"/>
+        android:paddingLeft="10dp"
+        android:textColor="@color/red"
+        android:textSize="14sp" />
 
-    <include layout="@layout/layout_step_bottom_desc"/>
+    <include layout="@layout/layout_step_date_title" />
 
 </LinearLayout>

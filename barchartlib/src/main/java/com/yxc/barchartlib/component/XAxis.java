@@ -16,10 +16,6 @@ public class XAxis extends AxisBase {
 
     public float labelTxtPadding;
 
-    public int lastVisiblePosition = -1;
-    public int firstVisiblePosition = -1;
-
-
     public XAxis(BarChartAttrs attrs, int displayNumbers, ValueFormatter valueFormatter) {
         this(attrs, displayNumbers);
         setValueFormatter(valueFormatter);
@@ -29,28 +25,9 @@ public class XAxis extends AxisBase {
         this.displayNumbers = displayNumbers;
         setTextColor(attrs.xAxisTxtColor);
         setTextSize(attrs.xAxisTxtSize);
-
         this.firstDividerColor = attrs.xAxisFirstDividerColor;
         this.secondDividerColor = attrs.xAxisSecondDividerColor;
         this.thirdDividerColor = attrs.xAxisThirdDividerColor;
         this.labelTxtPadding = attrs.xAxisLabelTxtPadding;
-    }
-
-    @Override
-    public int getTextColor() {
-        return textColor;
-    }
-
-    @Override
-    public void setTextColor(int textColor) {
-        this.textColor = textColor;
-    }
-
-    public float getTextSize() {
-        return textSize;
-    }
-
-    public void setTextSize(float textSize) {
-        this.textSize = textSize;
     }
 }

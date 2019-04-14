@@ -36,7 +36,7 @@
         <attr name="ratioVelocity" format="float"/>
         <attr name="ratioSpeed" format="float"/>
 
-        <!-- y坐标相关 -->
+        <!-- YAxis -->
         <attr name="yAxisMaximum" format="integer"/>
         <attr name="yAxisMinimum" format="float"/>
         <attr name="yAxisLabelTxtSize" format="dimension"/>
@@ -47,7 +47,7 @@
         <attr name="yAxisLabelVerticalPadding" format="dimension"/>
 
 
-        <!-- x坐标相关 -->
+        <!-- XAxis -->
         <attr name="xAxisTxtSize" format="dimension"/>
         <attr name="xAxisTxtColor" format="color"/>
         <attr name="xAxisFirstDividerColor" format="color"/>

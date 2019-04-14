@@ -16,7 +16,7 @@
         app:enableLeftYAxisLabel="false"
         app:enableCharValueDisplay="true"
         app:recyclerPaddingRight="3dp"
-        app:displayNumbers="24" />
+        app:displayNumbers="7"/>
 
     <TextView
         android:id="@+id/txt_count_Step"

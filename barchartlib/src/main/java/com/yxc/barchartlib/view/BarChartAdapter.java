@@ -22,14 +22,11 @@ import java.util.List;
  * @author yxc
  * @date 2019/4/6
  */
-public class BarChartAdapter extends RecyclerView.Adapter<BarChartAdapter.BarChartViewHolder> {
+final public class BarChartAdapter extends RecyclerView.Adapter<BarChartAdapter.BarChartViewHolder> {
 
     Context mContext;
-
     List<BarEntry> mEntries;
-
     RecyclerView mRecyclerView;
-
     XAxis mXAxis;
     YAxis mYAxis;
 
@@ -65,21 +62,18 @@ public class BarChartAdapter extends RecyclerView.Adapter<BarChartAdapter.BarCha
 
     @Override
     public void onBindViewHolder(@NonNull BarChartViewHolder viewHolder, int position) {
-//        Log.d("BarChart", "onBindViewHolder");
         float contentWidth = (DisplayUtil.getScreenWidth(mContext) - mRecyclerView.getPaddingRight() - mRecyclerView.getPaddingLeft());
 
         int itemWidth = (int) (contentWidth / mXAxis.displayNumbers);
         int reminderWidth = (int) (contentWidth % mXAxis.displayNumbers);
 
-        //这里只画右边，所以调整多余的只加在右边。 会造成重绘时，月的抖动，因为来回变动。
+        //todo 这里只画右边，所以调整多余的只加在右边。 会造成重绘时，月的抖动，因为来回变动。
         if (position > mEntries.size() - 2){//最后两次绘制item时 再改RecyclerView的padding
             mRecyclerView.setPadding(mRecyclerView.getPaddingLeft() , mRecyclerView.getPaddingTop(),
                     mRecyclerView.getPaddingRight() + reminderWidth, mRecyclerView.getPaddingBottom());
         }
         setLinearLayout(viewHolder.contentView, itemWidth);
-        Log.d("XAxisRender",  "itemWidth:" + itemWidth + " time:" + TimeUtil.getDateStr(System.currentTimeMillis()/1000, "HH:mm:ss"));
         BarEntry barEntry = mEntries.get(position);
-
         BarEntry viewBarEntry = (BarEntry) viewHolder.contentView.getTag();
         viewBarEntry.setY(barEntry.getY());
         viewBarEntry.type = barEntry.type;

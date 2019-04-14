@@ -56,7 +56,6 @@ public class WeekFragment extends BaseFragment {
 
     private int displayNumber;
     private BarChartAttrs mBarChartAttrs;
-    private int mType;
     private LocalDate currentLocalDate;
 
     //防止 Fragment重叠
@@ -72,10 +71,9 @@ public class WeekFragment extends BaseFragment {
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container,
                              @Nullable Bundle savedInstanceState) {
-        View view = View.inflate(getActivity(), R.layout.fragment_day_step, null);
+        View view = View.inflate(getActivity(), R.layout.fragment_week_step, null);
         initView(view);
-        displayNumber = 7;
-        mType = TestData.VIEW_WEEK;
+        displayNumber = mBarChartAttrs.displayNumbers;
         valueFormatter = new XAxisWeekFormatter();
 
         initData(displayNumber, valueFormatter);
@@ -116,7 +114,6 @@ public class WeekFragment extends BaseFragment {
 
 
     private void reSizeYAxis() {
-        recyclerView.scrollToPosition(0);
         List<BarEntry> visibleEntries = mEntries.subList(0, displayNumber+1);
         mYAxis = YAxis.getYAxis(mBarChartAttrs, DecimalUtil.getTheMaxNumber(visibleEntries));
         mBarChartAdapter.notifyDataSetChanged();

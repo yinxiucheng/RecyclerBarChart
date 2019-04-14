@@ -12,7 +12,7 @@ import com.yxc.barchartlib.util.BarChartAttrs;
  * @author yxc
  * @date 2019/4/14
  */
-public class BarBoardRender {
+final public class BarBoardRender {
 
     BarChartAttrs mBarChartAttrs;
     Paint mBarBorderPaint;
@@ -31,7 +31,7 @@ public class BarBoardRender {
         mBarBorderPaint.setColor(mBarChartAttrs.barBorderColor);
     }
 
-    public void drawBarBorder(@NonNull Canvas canvas, @NonNull RecyclerView parent) {
+    final public void drawBarBorder(@NonNull Canvas canvas, @NonNull RecyclerView parent) {
         if (mBarChartAttrs.enableBarBorder) {
             RectF rectF = new RectF();
             float start = parent.getPaddingLeft();

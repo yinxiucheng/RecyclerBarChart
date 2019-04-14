@@ -17,8 +17,9 @@ import com.yxc.barchartlib.util.DecimalUtil;
 /**
  * @author yxc
  * @date 2019/4/14
+ *
  */
-public class BarChartRender {
+final public class BarChartRender {
     private BarChartAttrs mBarChartAttrs;
     private Paint mBarChartPaint;
     private Paint mTextPaint;
@@ -50,7 +51,7 @@ public class BarChartRender {
     }
 
     //绘制柱状图, mYAxis这个坐标会实时变动，所以通过 BarChartItemDecoration 传过来的精确值。
-    public void drawBarChart(Canvas canvas, @NonNull RecyclerView parent, YAxis mYAxis) {
+    final public void drawBarChart(Canvas canvas, @NonNull RecyclerView parent, YAxis mYAxis) {
         float bottom = parent.getHeight() - parent.getPaddingBottom() - mBarChartAttrs.contentPaddingBottom;
         float parentRight = parent.getWidth() - parent.getPaddingRight();
         float parentLeft = parent.getPaddingLeft();
@@ -95,7 +96,7 @@ public class BarChartRender {
 
 
     //绘制柱状图顶部value文字
-    public void drawBarChartValue(Canvas canvas, @NonNull RecyclerView parent, YAxis mYAxis) {
+    final public void drawBarChartValue(Canvas canvas, @NonNull RecyclerView parent, YAxis mYAxis) {
         float bottom = parent.getHeight() - parent.getPaddingBottom() - mBarChartAttrs.contentPaddingBottom;
         float parentRight = parent.getWidth() - parent.getPaddingRight();
         float parentLeft = parent.getPaddingLeft();

@@ -72,13 +72,13 @@ public class DayFragment extends BaseFragment {
                              @Nullable Bundle savedInstanceState) {
         View view = View.inflate(getActivity(), R.layout.fragment_day_step, null);
         initView(view);
-        displayNumber = 24;
+        displayNumber = mBarChartAttrs.displayNumbers;
         mType = TestData.VIEW_DAY;
         valueFormatter = new XAxisDayFormatter();
 
         initData(displayNumber, valueFormatter);
         currentTimestamp = TimeUtil.changZeroOfTheDay(LocalDate.now());
-        bindBarChartList(TestData.createDayEntries(currentTimestamp, 3* displayNumber, mEntries.size()));
+        bindBarChartList(TestData.createDayEntries(currentTimestamp, 3 * displayNumber, mEntries.size()));
         currentTimestamp = currentTimestamp - TimeUtil.TIME_HOUR * displayNumber * 3;
         setXAxis(displayNumber);
         reSizeYAxis();
@@ -93,7 +93,6 @@ public class DayFragment extends BaseFragment {
         textTitle = view.findViewById(R.id.txt_layout);
         txtCountStep = view.findViewById(R.id.txt_count_Step);
         recyclerView = view.findViewById(R.id.recycler);
-
         mBarChartAttrs = recyclerView.mAttrs;
     }
 
@@ -110,7 +109,6 @@ public class DayFragment extends BaseFragment {
     }
 
     private void reSizeYAxis() {
-        recyclerView.scrollToPosition(0);
         List<BarEntry> visibleEntries = mEntries.subList(0, displayNumber + 1);
         mYAxis = YAxis.getYAxis(mBarChartAttrs, DecimalUtil.getTheMaxNumber(visibleEntries));
         mBarChartAdapter.notifyDataSetChanged();
@@ -123,6 +121,7 @@ public class DayFragment extends BaseFragment {
     private void setListener(final int type, final int displayNumber) {
         recyclerView.addOnScrollListener(new RecyclerView.OnScrollListener() {
             private boolean isRightScroll;
+
             @Override
             public void onScrollStateChanged(RecyclerView recyclerView, int newState) {
                 super.onScrollStateChanged(recyclerView, newState);
@@ -135,14 +134,14 @@ public class DayFragment extends BaseFragment {
                         mEntries.addAll(entries);
                         mBarChartAdapter.notifyDataSetChanged();
                     }
-                    Log.d("ScrollListener" , "Day idle resizeYAxis" + " time: " +
-                            TimeUtil.getDateStr(System.currentTimeMillis()/1000, "mm-ss"));
+                    Log.d("ScrollListener", "Day idle resizeYAxis" + " time: " +
+                            TimeUtil.getDateStr(System.currentTimeMillis() / 1000, "mm-ss"));
                     //回溯
                     if (mBarChartAttrs.enableScrollToScale) {
                         DistanceCompare distanceCompare = ReLocationUtil.findNearFirstType(recyclerView, displayNumber, TestData.VIEW_DAY);
                         recyclerView.scrollToPosition(distanceCompare.position);
-                        Log.d("ScrollListener" , "scrollToPosition " + " time: " +
-                                TimeUtil.getDateStr(System.currentTimeMillis()/1000, "mm-ss"));
+                        Log.d("ScrollListener", "scrollToPosition " + " time: " +
+                                TimeUtil.getDateStr(System.currentTimeMillis() / 1000, "mm-ss"));
                     } else {
                         ReLocationUtil.microRelation(recyclerView);
                     }
@@ -156,9 +155,9 @@ public class DayFragment extends BaseFragment {
             public void onScrolled(RecyclerView recyclerView, int dx, int dy) {
                 super.onScrolled(recyclerView, dx, dy);
                 //判断左滑，右滑时，ScrollView的位置不一样。
-                if (dx < 0){
+                if (dx < 0) {
                     isRightScroll = true;
-                }else{
+                } else {
                     isRightScroll = false;
                 }
             }
