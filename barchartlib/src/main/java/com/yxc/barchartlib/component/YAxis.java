@@ -19,10 +19,6 @@ public class YAxis extends AxisBase {
     public List<Float> scaleYLocationList;
     public HashMap<Float, Float> yAxisScaleMap;
 
-    public float leftTxtWidth;
-
-    public float rightTxtWidth;
-
     public YAxis(BarChartAttrs barChartAttrs) {
         this.attrs = barChartAttrs;
 

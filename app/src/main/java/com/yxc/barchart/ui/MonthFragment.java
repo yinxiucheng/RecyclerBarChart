@@ -4,9 +4,9 @@ package com.yxc.barchart.ui;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
-import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.text.SpannableStringBuilder;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -34,6 +34,7 @@ import com.yxc.barchartlib.view.SpeedRatioLinearLayoutManager;
 
 import org.joda.time.LocalDate;
 
+import java.sql.Time;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -46,8 +47,6 @@ public class MonthFragment extends BaseFragment {
     TextView txtRightLocalDate;
     TextView textTitle;
     TextView txtCountStep;
-    ImageView imgLast;
-    ImageView imgNext;
 
     BarChartAdapter mBarChartAdapter;
     List<BarEntry> mEntries;
@@ -77,19 +76,18 @@ public class MonthFragment extends BaseFragment {
         View view = View.inflate(getActivity(), R.layout.fragment_day_step, null);
         initView(view);
 
-        displayNumber = 20;
+        displayNumber = 31;
         mType = TestData.VIEW_MONTH;
         valueFormatter = new XAxisMonthFormatter(getActivity());
-
         initData(displayNumber, valueFormatter);
-        currentLocalDate = LocalDate.now();
 
-        bindBarChartList(TestData.getMonthEntries(currentLocalDate, 5 * displayNumber, mEntries.size()));
-        currentLocalDate = currentLocalDate.minusDays(5 * displayNumber);
+        currentLocalDate = TimeUtil.getLastDayOfThisMonth(LocalDate.now());
+        bindBarChartList(TestData.getMonthEntries(currentLocalDate, 3 * displayNumber, mEntries.size()));
+        currentLocalDate = currentLocalDate.minusDays(3 * displayNumber);
 
         setXAxis(displayNumber);
         reSizeYAxis();
-        setListener(mType, displayNumber);
+        setListener(displayNumber);
         return view;
     }
 
@@ -99,26 +97,9 @@ public class MonthFragment extends BaseFragment {
         txtRightLocalDate = view.findViewById(R.id.txt_right_local_date);
         textTitle = view.findViewById(R.id.txt_layout);
         txtCountStep = view.findViewById(R.id.txt_count_Step);
-        imgLast = view.findViewById(R.id.img_left);
-        imgNext = view.findViewById(R.id.img_right);
         recyclerView = view.findViewById(R.id.recycler);
 
         mBarChartAttrs = recyclerView.mAttrs;
-    }
-
-    //滑动监听
-    private void setListener() {
-        imgNext.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-            }
-        });
-
-        imgLast.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-            }
-        });
     }
 
     private void initData(int displayNumber, ValueFormatter valueFormatter) {
@@ -127,7 +108,7 @@ public class MonthFragment extends BaseFragment {
         mYAxis = new YAxis(mBarChartAttrs);
         mXAxis = new XAxis(mBarChartAttrs, displayNumber);
         mXAxis.setValueFormatter(valueFormatter);
-        mItemDecoration = new BarChartItemDecoration(getActivity(), mYAxis, mXAxis, mBarChartAttrs);
+        mItemDecoration = new BarChartItemDecoration( mYAxis, mXAxis, mBarChartAttrs);
         recyclerView.addItemDecoration(mItemDecoration);
         mBarChartAdapter = new BarChartAdapter(getActivity(), mEntries, recyclerView, mXAxis);
         recyclerView.setAdapter(mBarChartAdapter);
@@ -146,7 +127,7 @@ public class MonthFragment extends BaseFragment {
 
 
     //滑动监听
-    private void setListener(final int type, final int displayNumber) {
+    private void setListener(final int displayNumber) {
         recyclerView.addOnScrollListener(new RecyclerView.OnScrollListener() {
             private boolean isRightScroll;
             @Override
@@ -154,7 +135,6 @@ public class MonthFragment extends BaseFragment {
                 super.onScrollStateChanged(recyclerView, newState);
                 // 当不滚动时
                 if (newState == RecyclerView.SCROLL_STATE_IDLE) {
-
                     if (recyclerView.canScrollHorizontally(1) && isRightScroll) {
                         List<BarEntry> entries = TestData.getMonthEntries(currentLocalDate, displayNumber, mEntries.size());
                         currentLocalDate = currentLocalDate.minusDays(displayNumber);
@@ -162,14 +142,23 @@ public class MonthFragment extends BaseFragment {
                         mBarChartAdapter.notifyDataSetChanged();
                     }
 
-                    resetYAxis(recyclerView, type, displayNumber);
+                    if (mBarChartAttrs.enableScrollToScale) {
+                        DistanceCompare distanceCompare = ReLocationUtil.findNearFirstType(recyclerView,
+                                displayNumber, TestData.VIEW_MONTH);
+                        recyclerView.scrollToPosition(distanceCompare.position);
+                    } else {
+                         ReLocationUtil.microRelation(recyclerView);
+                    }
+                    Log.d("ScrollListener" , "Month idle resizeYAxis" + " time: " +
+                            TimeUtil.getDateStr(System.currentTimeMillis()/1000, "mm-ss"));
+                    resetYAxis(recyclerView);
                 }
             }
             @Override
             public void onScrolled(RecyclerView recyclerView, int dx, int dy) {
                 super.onScrolled(recyclerView, dx, dy);
                 //判断左滑，右滑时，ScrollView的位置不一样。
-                if (dx < -5) {
+                if (dx < 0) {
                     isRightScroll = true;
                 } else {
                     isRightScroll = false;
@@ -179,19 +168,11 @@ public class MonthFragment extends BaseFragment {
     }
 
     //重新设置Y坐标
-    private void resetYAxis(RecyclerView recyclerView, int type, int displayNumber) {
+    private void resetYAxis(RecyclerView recyclerView) {
 
         float yAxisMaximum = 0;
-        HashMap<Float, List<BarEntry>> map;
-        if (mBarChartAttrs.enableScrollToScale) {
-            //int scrollByDx = ReLocationUtil.computeScrollByXOffset(recyclerView, displayNumber);
-            //recyclerView.scrollBy(scrollByDx, 0);
-            DistanceCompare distanceCompare = ReLocationUtil.findNearFirstType(recyclerView, displayNumber, TestData.VIEW_MONTH);
-            recyclerView.scrollToPosition(distanceCompare.position);
-            map = ReLocationUtil.getVisibleEntries(recyclerView);
-        } else {
-            map = ReLocationUtil.microRelation(recyclerView);
-        }
+        HashMap<Float, List<BarEntry>> map = ReLocationUtil.getVisibleEntries(recyclerView);
+
         for (Map.Entry<Float, List<BarEntry>> entry : map.entrySet()) {
             yAxisMaximum = entry.getKey();
             displayDateAndStep(entry.getValue());
@@ -199,7 +180,6 @@ public class MonthFragment extends BaseFragment {
         }
         mYAxis = YAxis.getYAxis(mBarChartAttrs, yAxisMaximum);
         mItemDecoration.setYAxis(mYAxis);
-
     }
 
 
@@ -216,7 +196,6 @@ public class MonthFragment extends BaseFragment {
         mXAxis = new XAxis(mBarChartAttrs, displayNumber);
         mBarChartAdapter.setXAxis(mXAxis);
     }
-
 
     private void displayDateAndStep(List<BarEntry> displayEntries) {
         BarEntry rightBarEntry = displayEntries.get(0);
@@ -250,7 +229,5 @@ public class MonthFragment extends BaseFragment {
         SpannableStringBuilder spannable = TextUtil.getSpannableStr(getActivity(), parentStr, childStr, 24);
         txtCountStep.setText(spannable);
     }
-
-
 
 }

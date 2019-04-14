@@ -1,5 +1,6 @@
 package com.yxc.barchartlib.component;
 
+import com.yxc.barchartlib.formatter.ValueFormatter;
 import com.yxc.barchartlib.util.BarChartAttrs;
 
 /**
@@ -18,8 +19,13 @@ public class XAxis extends AxisBase {
     public int lastVisiblePosition = -1;
     public int firstVisiblePosition = -1;
 
-    public XAxis(BarChartAttrs attrs, int displayNumbers) {
 
+    public XAxis(BarChartAttrs attrs, int displayNumbers, ValueFormatter valueFormatter) {
+        this(attrs, displayNumbers);
+        setValueFormatter(valueFormatter);
+    }
+
+    public XAxis(BarChartAttrs attrs, int displayNumbers) {
         this.displayNumbers = displayNumbers;
         setTextColor(attrs.xAxisTxtColor);
         setTextSize(attrs.xAxisTxtSize);

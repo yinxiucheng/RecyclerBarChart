@@ -6,10 +6,10 @@ import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v7.widget.RecyclerView;
 import android.text.SpannableStringBuilder;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.yxc.barchart.BaseFragment;
@@ -45,8 +45,6 @@ public class DayFragment extends BaseFragment {
     TextView txtRightLocalDate;
     TextView textTitle;
     TextView txtCountStep;
-    ImageView imgLast;
-    ImageView imgNext;
 
     BarChartAdapter mBarChartAdapter;
     List<BarEntry> mEntries;
@@ -94,35 +92,17 @@ public class DayFragment extends BaseFragment {
         txtRightLocalDate = view.findViewById(R.id.txt_right_local_date);
         textTitle = view.findViewById(R.id.txt_layout);
         txtCountStep = view.findViewById(R.id.txt_count_Step);
-        imgLast = view.findViewById(R.id.img_left);
-        imgNext = view.findViewById(R.id.img_right);
         recyclerView = view.findViewById(R.id.recycler);
 
         mBarChartAttrs = recyclerView.mAttrs;
-    }
-
-    //滑动监听
-    private void setListener() {
-        imgNext.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-            }
-        });
-
-        imgLast.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-            }
-        });
     }
 
     private void initData(int displayNumber, ValueFormatter valueFormatter) {
         mEntries = new ArrayList<>();
         SpeedRatioLinearLayoutManager layoutManager = new SpeedRatioLinearLayoutManager(getActivity(), mBarChartAttrs);
         mYAxis = new YAxis(mBarChartAttrs);
-        mXAxis = new XAxis(mBarChartAttrs, displayNumber);
-        mXAxis.setValueFormatter(valueFormatter);
-        mItemDecoration = new BarChartItemDecoration(getActivity(), mYAxis, mXAxis, mBarChartAttrs);
+        mXAxis = new XAxis(mBarChartAttrs, displayNumber, valueFormatter);
+        mItemDecoration = new BarChartItemDecoration(mYAxis, mXAxis, mBarChartAttrs);
         recyclerView.addItemDecoration(mItemDecoration);
         mBarChartAdapter = new BarChartAdapter(getActivity(), mEntries, recyclerView, mXAxis);
         recyclerView.setAdapter(mBarChartAdapter);
@@ -135,7 +115,7 @@ public class DayFragment extends BaseFragment {
         mYAxis = YAxis.getYAxis(mBarChartAttrs, DecimalUtil.getTheMaxNumber(visibleEntries));
         mBarChartAdapter.notifyDataSetChanged();
         mItemDecoration.setYAxis(mYAxis);
-        displayDateAndStep(visibleEntries, mType);
+        displayDateAndStep(visibleEntries);
     }
 
 
@@ -148,13 +128,27 @@ public class DayFragment extends BaseFragment {
                 super.onScrollStateChanged(recyclerView, newState);
                 // 当不滚动时
                 if (newState == RecyclerView.SCROLL_STATE_IDLE) {
+                    //加载更多
                     if (recyclerView.canScrollHorizontally(1) && isRightScroll) {
                         List<BarEntry> entries = TestData.createDayEntries(currentTimestamp, displayNumber, mEntries.size());
                         currentTimestamp = currentTimestamp - displayNumber * TimeUtil.TIME_HOUR;
                         mEntries.addAll(entries);
                         mBarChartAdapter.notifyDataSetChanged();
                     }
-                    resetYAxis(recyclerView, type, displayNumber);
+                    Log.d("ScrollListener" , "Day idle resizeYAxis" + " time: " +
+                            TimeUtil.getDateStr(System.currentTimeMillis()/1000, "mm-ss"));
+                    //回溯
+                    if (mBarChartAttrs.enableScrollToScale) {
+                        DistanceCompare distanceCompare = ReLocationUtil.findNearFirstType(recyclerView, displayNumber, TestData.VIEW_DAY);
+                        recyclerView.scrollToPosition(distanceCompare.position);
+                        Log.d("ScrollListener" , "scrollToPosition " + " time: " +
+                                TimeUtil.getDateStr(System.currentTimeMillis()/1000, "mm-ss"));
+                    } else {
+                        ReLocationUtil.microRelation(recyclerView);
+                    }
+
+                    //重绘Y轴
+                    resetYAxis(recyclerView);
                 }
             }
 
@@ -172,21 +166,12 @@ public class DayFragment extends BaseFragment {
     }
 
     //重新设置Y坐标
-    private void resetYAxis(RecyclerView recyclerView, int type, int displayNumber) {
+    private void resetYAxis(RecyclerView recyclerView) {
         float yAxisMaximum = 0;
-        HashMap<Float, List<BarEntry>> map;
-        if (mBarChartAttrs.enableScrollToScale) {
-            DistanceCompare distanceCompare = ReLocationUtil.findNearFirstType(recyclerView, displayNumber, TestData.VIEW_DAY);
-            recyclerView.scrollToPosition(distanceCompare.position);
-            //int scrollDx = ReLocationUtil.computeScrollByXOffset( recyclerView, displayNumber);
-            //recyclerView.scrollBy(scrollDx, 0);
-            map = ReLocationUtil.getVisibleEntries(recyclerView);
-        } else {
-            map = ReLocationUtil.microRelation(recyclerView);
-        }
+        HashMap<Float, List<BarEntry>> map = ReLocationUtil.getVisibleEntries(recyclerView);
         for (Map.Entry<Float, List<BarEntry>> entry : map.entrySet()) {
             yAxisMaximum = entry.getKey();
-            displayDateAndStep(entry.getValue(), mType);
+            displayDateAndStep(entry.getValue());
             break;
         }
         mYAxis = YAxis.getYAxis(mBarChartAttrs, yAxisMaximum);
@@ -208,9 +193,8 @@ public class DayFragment extends BaseFragment {
     }
 
 
-    private void displayDateAndStep(List<BarEntry> displayEntries, int mType) {
+    private void displayDateAndStep(List<BarEntry> displayEntries) {
         mBarChartAdapter.setYAxis(mYAxis);
-        //todo 调试显示用的
         BarEntry rightBarEntry = displayEntries.get(0);
         BarEntry leftBarEntry = displayEntries.get(displayEntries.size() - 1);
         txtLeftLocalDate.setText(TimeUtil.getDateStr(leftBarEntry.timestamp, "yyyy-MM-dd HH:mm:ss"));

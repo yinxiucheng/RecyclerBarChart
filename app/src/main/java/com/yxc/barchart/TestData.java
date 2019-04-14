@@ -23,12 +23,11 @@ public class TestData {
     public static final int VIEW_YEAR = 3;
 
     // 创建 月视图的数据
-    public static List<BarEntry> getMonthEntries(LocalDate localDateParams, int length, int originEntrySize) {
-        LocalDate firstDayOfNextMonth = TimeUtil.getFirstDayOfNextMonth(localDateParams);
-        long timestamp = TimeUtil.changZeroOfTheDay(firstDayOfNextMonth);
+    public static List<BarEntry> getMonthEntries(LocalDate localDate, int length, int originEntrySize) {
         List<BarEntry> entries = new ArrayList<>();
-        for (int i = originEntrySize; i < length + originEntrySize; i++) {
-            if ( i > originEntrySize){
+        long timestamp = TimeUtil.changZeroOfTheDay(localDate);
+        for (int i = originEntrySize; i < originEntrySize + length; i++) {
+            if (i > originEntrySize) {
                 timestamp = timestamp - TimeUtil.TIME_DAY;
             }
             float mult = 10;
@@ -52,11 +51,11 @@ public class TestData {
             boolean isLastDayOfMonth = TimeUtil.isLastDayOfMonth(localDateEntry);
             int dayOfYear = localDateEntry.getDayOfYear();
             Log.d("TestData", "dayOfYear:" + dayOfYear + " localDate:" + localDateEntry);
-            if (isLastDayOfMonth && (dayOfYear+1) % 6 == 0) {
+            if (isLastDayOfMonth && (dayOfYear+1) % 7 == 0) {
                 type = BarEntry.TYPE_XAXIS_SPECIAL;
             } else if (isLastDayOfMonth) {
                 type = BarEntry.TYPE_XAXIS_FIRST;
-            } else if ((dayOfYear+1) % 6 == 0) {
+            } else if ((dayOfYear+1) % 7 == 0) {
                 type = BarEntry.TYPE_XAXIS_SECOND;
             }
 
@@ -73,8 +72,8 @@ public class TestData {
 
     //创建Week视图的数据
     public static List<BarEntry> createWeekEntries(LocalDate localDate, int length, int originEntrySize) {
-        long timestamp = TimeUtil.changZeroOfTheDay(localDate);
         List<BarEntry> entries = new ArrayList<>();
+        long timestamp = TimeUtil.changZeroOfTheDay(localDate);
         for (int i = originEntrySize; i < originEntrySize + length; i++) {
             if (i > originEntrySize) {
                 timestamp = timestamp - TimeUtil.TIME_DAY;
@@ -113,7 +112,6 @@ public class TestData {
     //创建 Day视图的数据
     public static List<BarEntry> createDayEntries(long timestamp, int length, int originEntrySize) {
         List<BarEntry> entries = new ArrayList<>();
-
         for (int i = originEntrySize; i < length + originEntrySize; i++) {
             timestamp = timestamp - TimeUtil.TIME_HOUR;
             float mult = 10;
@@ -152,13 +150,9 @@ public class TestData {
     }
 
 
-    //创建 Day视图的数据
+    //创建 year视图的数据
     public static List<BarEntry> createYearEntries(LocalDate localDateParams, int length, int originEntrySize) {
-        int monthOfTheYear = localDateParams.getMonthOfYear();
-        int distance = TimeUtil.NUM_MONTH_OF_YEAR - monthOfTheYear;
-        LocalDate lastMonthOfTheYear = TimeUtil.getFirstDayOfMonth(localDateParams.plusMonths(distance));
-        //获取下个月1号
-        LocalDate localDate = lastMonthOfTheYear;
+        LocalDate localDate = localDateParams;
         List<BarEntry> entries = new ArrayList<>();
         for (int i = originEntrySize; i < length + originEntrySize; i++) {
             if (i > originEntrySize) {

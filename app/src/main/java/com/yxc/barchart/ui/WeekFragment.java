@@ -10,12 +10,12 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.yxc.barchart.BaseFragment;
 import com.yxc.barchart.R;
 import com.yxc.barchart.TestData;
+import com.yxc.barchart.formatter.BarChartValueFormatter;
 import com.yxc.barchart.formatter.XAxisWeekFormatter;
 import com.yxc.barchartlib.component.DistanceCompare;
 import com.yxc.barchartlib.component.XAxis;
@@ -46,8 +46,6 @@ public class WeekFragment extends BaseFragment {
     TextView txtRightLocalDate;
     TextView textTitle;
     TextView txtCountStep;
-    ImageView imgLast;
-    ImageView imgNext;
 
     BarChartAdapter mBarChartAdapter;
     List<BarEntry> mEntries;
@@ -87,7 +85,7 @@ public class WeekFragment extends BaseFragment {
 
         setXAxis(displayNumber);
         reSizeYAxis();
-        setListener(mType, displayNumber);
+        setListener(displayNumber);
         return view;
     }
 
@@ -97,8 +95,6 @@ public class WeekFragment extends BaseFragment {
         txtRightLocalDate = view.findViewById(R.id.txt_right_local_date);
         textTitle = view.findViewById(R.id.txt_layout);
         txtCountStep = view.findViewById(R.id.txt_count_Step);
-        imgLast = view.findViewById(R.id.img_left);
-        imgNext = view.findViewById(R.id.img_right);
         recyclerView = view.findViewById(R.id.recycler);
 
         mBarChartAttrs = recyclerView.mAttrs;
@@ -110,7 +106,8 @@ public class WeekFragment extends BaseFragment {
         mYAxis = new YAxis(mBarChartAttrs);
         mXAxis = new XAxis(mBarChartAttrs, displayNumber);
         mXAxis.setValueFormatter(valueFormatter);
-        mItemDecoration = new BarChartItemDecoration(getActivity(), mYAxis, mXAxis, mBarChartAttrs);
+        mItemDecoration = new BarChartItemDecoration(mYAxis, mXAxis, mBarChartAttrs);
+        mItemDecoration.setBarChartValueFormatter(new BarChartValueFormatter());
         recyclerView.addItemDecoration(mItemDecoration);
         mBarChartAdapter = new BarChartAdapter(getActivity(), mEntries, recyclerView, mXAxis);
         recyclerView.setAdapter(mBarChartAdapter);
@@ -128,14 +125,14 @@ public class WeekFragment extends BaseFragment {
     }
 
     //滑动监听
-    private void setListener(final int type, final int displayNumber) {
+    private void setListener(final int displayNumber) {
         recyclerView.addOnScrollListener(new RecyclerView.OnScrollListener() {
             boolean isRightScroll;
             @Override
             public void onScrollStateChanged(RecyclerView recyclerView, int newState) {
                 super.onScrollStateChanged(recyclerView, newState);
                 // 当不滚动时
-                Log.d("Scroll1", "  newState = " + newState + " time:" + TimeUtil.getDateStr(System.currentTimeMillis()/1000, "HH:mm:dd"));
+
                 if (newState == RecyclerView.SCROLL_STATE_IDLE) {
                     if (recyclerView.canScrollHorizontally(1) && isRightScroll) {//加载更多
                         List<BarEntry> entries = TestData.createWeekEntries(currentLocalDate, displayNumber, mEntries.size());
@@ -143,7 +140,20 @@ public class WeekFragment extends BaseFragment {
                         mEntries.addAll(entries);
                         mBarChartAdapter.setEntries(mEntries);
                     }
-                    resetYAxis(recyclerView, displayNumber);
+
+                    if (mBarChartAttrs.enableScrollToScale) {
+                        DistanceCompare distanceCompare = ReLocationUtil.findNearFirstType(recyclerView, displayNumber, TestData.VIEW_WEEK);
+                        recyclerView.scrollToPosition(distanceCompare.position);
+                        Log.d("ScrollListener", " LocalDate:" + distanceCompare.barEntry.localDate +
+                                TimeUtil.getDateStr(System.currentTimeMillis()/1000, "mm-ss"));
+                    } else {
+                        ReLocationUtil.microRelation(recyclerView);
+                    }
+
+                    Log.d("ScrollListener" , "Week idle resizeYAxis" + " time: " +
+                            TimeUtil.getDateStr(System.currentTimeMillis()/1000, "mm-ss"));
+
+                    resetYAxis(recyclerView);
                 }
             }
             @Override
@@ -160,26 +170,9 @@ public class WeekFragment extends BaseFragment {
     }
 
     //重新设置Y坐标
-    private void resetYAxis(RecyclerView recyclerView, int displayNumber) {
-
+    private void resetYAxis(RecyclerView recyclerView) {
         float yAxisMaximum = 0;
-
-        HashMap<Float, List<BarEntry>> map;
-        if (mBarChartAttrs.enableScrollToScale) {
-            Log.d("Scroll1",  "scroll to monday!");
-            BarChartAdapter adapter = (BarChartAdapter) recyclerView.getAdapter();
-            List<BarEntry> barEntries = adapter.getEntries();
-
-            DistanceCompare distanceCompare = ReLocationUtil.findNearFirstType(recyclerView, displayNumber, TestData.VIEW_WEEK);
-            recyclerView.scrollToPosition(distanceCompare.position);
-
-            Log.d("Scroll1", "LocalDate:" + distanceCompare.barEntry.localDate + " Position:" + distanceCompare.position + " size:" + barEntries.size());
-//            int scrollByDx = ReLocationUtil.computeScrollByXOffset(recyclerView, displayNumber);
-//            recyclerView.scrollBy(scrollByDx, 0);
-            map = ReLocationUtil.getVisibleEntries( recyclerView);
-        } else {
-            map = ReLocationUtil.microRelation(recyclerView);
-        }
+        HashMap<Float, List<BarEntry>> map = ReLocationUtil.getVisibleEntries( recyclerView);
 
         for (Map.Entry<Float, List<BarEntry>> entry : map.entrySet()) {
             yAxisMaximum = entry.getKey();
@@ -205,8 +198,10 @@ public class WeekFragment extends BaseFragment {
     }
 
     private void displayDateAndStep(List<BarEntry> displayEntries) {
+
         BarEntry rightBarEntry = displayEntries.get(0);
         BarEntry leftBarEntry = displayEntries.get(displayEntries.size() - 1);
+
         txtLeftLocalDate.setText(TimeUtil.getDateStr(leftBarEntry.timestamp, "yyyy-MM-dd HH:mm:ss"));
         txtRightLocalDate.setText(TimeUtil.getDateStr(rightBarEntry.timestamp, "yyyy-MM-dd HH:mm:ss"));
 

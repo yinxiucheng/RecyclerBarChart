@@ -1,7 +1,9 @@
 package com.yxc.barchartlib.view;
 
 import android.content.Context;
+import android.graphics.PointF;
 import android.support.v7.widget.LinearLayoutManager;
+import android.support.v7.widget.LinearSmoothScroller;
 import android.support.v7.widget.RecyclerView;
 import android.util.AttributeSet;
 

@@ -547,4 +547,22 @@ public class TimeUtil {
     public static boolean isSunday(LocalDate localDateEntry) {
         return localDateEntry.getDayOfWeek() == 7;
     }
+
+    //get the firstDay of the lastMonth of zhe Year (yyyy-12-01)
+    public static LocalDate getLastMonthOfTheYear(LocalDate localDate){
+        int monthOfTheYear = localDate.getMonthOfYear();
+        int distance = TimeUtil.NUM_MONTH_OF_YEAR - monthOfTheYear;
+        LocalDate lastMonthOfYear = localDate.plusMonths(distance);
+        LocalDate firstDayOfLastMonthYear = TimeUtil.getFirstDayOfMonth(lastMonthOfYear);
+        return firstDayOfLastMonthYear;
+    }
+
+
+    public static LocalDate getLastDayOfThisMonth(LocalDate localDate){
+        LocalDate lastDayOfMonth = TimeUtil.getFirstDayOfNextMonth(localDate).minusDays(1);
+        long timestamp = TimeUtil.changZeroOfTheDay(lastDayOfMonth);
+        LocalDate lastDayOfMonthZero = TimeUtil.timestampToLocalDate(timestamp);
+        return lastDayOfMonthZero;
+    }
+
 }

@@ -29,9 +29,7 @@ import com.yxc.barchartlib.view.BarChartAdapter;
 import com.yxc.barchartlib.view.BarChartItemDecoration;
 import com.yxc.barchartlib.view.BarChartRecyclerView;
 import com.yxc.barchartlib.view.SpeedRatioLinearLayoutManager;
-
 import org.joda.time.LocalDate;
-
 import java.util.ArrayList;
 import java.util.List;
 
@@ -68,7 +66,8 @@ public class BarChartActivity extends AppCompatActivity {
         initView();
         initTableLayout();
         initData();
-        bindBarChartList(25, TestData.createDayEntries(TimeUtil.changZeroOfTheDay(LocalDate.now()), 25, mEntries.size()), VIEW_DAY);
+        bindBarChartList(25, TestData.createDayEntries(TimeUtil.changZeroOfTheDay(LocalDate.now()),
+                25, mEntries.size()), VIEW_DAY);
         reSizeYAxis();
         setListener();
     }
@@ -93,7 +92,7 @@ public class BarChartActivity extends AppCompatActivity {
         mYAxis = new YAxis(mBarChartAttrs);
         mXAxis = new XAxis(mBarChartAttrs, displayNumber);
         mXAxis.setValueFormatter(new XAxisDayFormatter());
-        mItemDecoration = new BarChartItemDecoration(this, mYAxis, mXAxis, mBarChartAttrs);
+        mItemDecoration = new BarChartItemDecoration(mYAxis, mXAxis, mBarChartAttrs);
         recyclerView.addItemDecoration(mItemDecoration);
         mBarChartAdapter = new BarChartAdapter(this, mEntries, recyclerView, mXAxis);
         recyclerView.setAdapter(mBarChartAdapter);

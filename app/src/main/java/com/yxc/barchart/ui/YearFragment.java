@@ -5,24 +5,24 @@ import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v7.widget.RecyclerView;
 import android.text.SpannableStringBuilder;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.yxc.barchart.BaseFragment;
 import com.yxc.barchart.R;
-import com.yxc.barchartlib.component.DistanceCompare;
-import com.yxc.barchartlib.util.ReLocationUtil;
 import com.yxc.barchart.TestData;
 import com.yxc.barchart.formatter.XAxisYearFormatter;
+import com.yxc.barchartlib.component.DistanceCompare;
 import com.yxc.barchartlib.component.XAxis;
 import com.yxc.barchartlib.component.YAxis;
 import com.yxc.barchartlib.entrys.BarEntry;
 import com.yxc.barchartlib.formatter.ValueFormatter;
 import com.yxc.barchartlib.util.BarChartAttrs;
 import com.yxc.barchartlib.util.DecimalUtil;
+import com.yxc.barchartlib.util.ReLocationUtil;
 import com.yxc.barchartlib.util.TextUtil;
 import com.yxc.barchartlib.util.TimeUtil;
 import com.yxc.barchartlib.view.BarChartAdapter;
@@ -44,8 +44,6 @@ public class YearFragment extends BaseFragment {
     TextView txtRightLocalDate;
     TextView textTitle;
     TextView txtCountStep;
-    ImageView imgLast;
-    ImageView imgNext;
 
     BarChartAdapter mBarChartAdapter;
     List<BarEntry> mEntries;
@@ -77,11 +75,12 @@ public class YearFragment extends BaseFragment {
         displayNumber = 12;
         mType = TestData.VIEW_YEAR;
         valueFormatter = new XAxisYearFormatter();
-
         initData(displayNumber, valueFormatter);
-        currentLocalDate = LocalDate.now();
+
+        currentLocalDate = TimeUtil.getLastMonthOfTheYear(LocalDate.now());
         bindBarChartList(TestData.createYearEntries(currentLocalDate, 5 * displayNumber, mEntries.size()));
         currentLocalDate = currentLocalDate.minusMonths(displayNumber * 5);
+
         setXAxis(displayNumber);
         reSizeYAxis();
         setListener(mType, displayNumber);
@@ -94,8 +93,6 @@ public class YearFragment extends BaseFragment {
         txtRightLocalDate = view.findViewById(R.id.txt_right_local_date);
         textTitle = view.findViewById(R.id.txt_layout);
         txtCountStep = view.findViewById(R.id.txt_count_Step);
-        imgLast = view.findViewById(R.id.img_left);
-        imgNext = view.findViewById(R.id.img_right);
         recyclerView = view.findViewById(R.id.recycler);
 
         mBarChartAttrs = recyclerView.mAttrs;
@@ -107,7 +104,7 @@ public class YearFragment extends BaseFragment {
         mYAxis = new YAxis(mBarChartAttrs);
         mXAxis = new XAxis(mBarChartAttrs, displayNumber);
         mXAxis.setValueFormatter(valueFormatter);
-        mItemDecoration = new BarChartItemDecoration(getActivity(), mYAxis, mXAxis, mBarChartAttrs);
+        mItemDecoration = new BarChartItemDecoration(mYAxis, mXAxis, mBarChartAttrs);
         recyclerView.addItemDecoration(mItemDecoration);
         mBarChartAdapter = new BarChartAdapter(getActivity(), mEntries, recyclerView, mXAxis);
         recyclerView.setAdapter(mBarChartAdapter);
@@ -120,7 +117,7 @@ public class YearFragment extends BaseFragment {
         mYAxis = YAxis.getYAxis(mBarChartAttrs, DecimalUtil.getTheMaxNumber(visibleEntries));
         mBarChartAdapter.notifyDataSetChanged();
         mItemDecoration.setYAxis(mYAxis);
-        displayDateAndStep(visibleEntries, mType);
+        displayDateAndStep(visibleEntries);
     }
 
 
@@ -138,12 +135,20 @@ public class YearFragment extends BaseFragment {
                     if (recyclerView.canScrollHorizontally(1) && isRightScroll) {
                         List<BarEntry> entries = TestData.createYearEntries(currentLocalDate, displayNumber, mEntries.size());
                         currentLocalDate = currentLocalDate.minusMonths(displayNumber);
-
                         mEntries.addAll(entries);
                         mBarChartAdapter.notifyDataSetChanged();
                     }
 
-                    resetYAxis(recyclerView, type, displayNumber);
+                    if (mBarChartAttrs.enableScrollToScale) {
+                        DistanceCompare distanceCompare = ReLocationUtil.findNearFirstType(recyclerView, displayNumber, TestData.VIEW_YEAR);
+                        recyclerView.scrollToPosition(distanceCompare.position);
+                    } else {
+                        ReLocationUtil.microRelation(recyclerView);
+                    }
+
+                    Log.d("ScrollListener" , "Year idle resizeYAxis" + " time: " +
+                            TimeUtil.getDateStr(System.currentTimeMillis()/1000, "mm-ss"));
+                    resetYAxis(recyclerView);
                 }
             }
 
@@ -161,21 +166,12 @@ public class YearFragment extends BaseFragment {
     }
 
     //重新设置Y坐标
-    private void resetYAxis(RecyclerView recyclerView, int type, int displayNumber) {
+    private void resetYAxis(RecyclerView recyclerView) {
         float yAxisMaximum = 0;
-        HashMap<Float, List<BarEntry>> map;
-        if (mBarChartAttrs.enableScrollToScale) {
-            DistanceCompare distanceCompare = ReLocationUtil.findNearFirstType(recyclerView, displayNumber, TestData.VIEW_YEAR);
-            recyclerView.scrollToPosition(distanceCompare.position);
-            //int scrollByDx = ReLocationUtil.computeScrollByXOffset(recyclerView, displayNumber);
-            //recyclerView.scrollBy(scrollByDx, 0);
-            map = ReLocationUtil.getVisibleEntries(recyclerView);
-        } else {
-            map = ReLocationUtil.microRelation(recyclerView);
-        }
+        HashMap<Float, List<BarEntry>> map = ReLocationUtil.getVisibleEntries(recyclerView);
         for (Map.Entry<Float, List<BarEntry>> entry : map.entrySet()) {
             yAxisMaximum = entry.getKey();
-            displayDateAndStep(entry.getValue(), mType);
+            displayDateAndStep(entry.getValue());
             break;
         }
         mYAxis = YAxis.getYAxis(mBarChartAttrs, yAxisMaximum);
@@ -196,7 +192,7 @@ public class YearFragment extends BaseFragment {
         mBarChartAdapter.setXAxis(mXAxis);
     }
 
-    private void displayDateAndStep(List<BarEntry> displayEntries, int mType) {
+    private void displayDateAndStep(List<BarEntry> displayEntries) {
         BarEntry  rightBarEntry = displayEntries.get(0);
         BarEntry  leftBarEntry = displayEntries.get(displayEntries.size() - 1);
         txtLeftLocalDate.setText(TimeUtil.getDateStr(leftBarEntry.timestamp, "yyyy-MM-dd HH:mm:ss"));

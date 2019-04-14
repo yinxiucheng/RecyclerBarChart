@@ -35,7 +35,10 @@ public class ReLocationUtil {
 
         lastVisibleItemPosition = manager.findLastCompletelyVisibleItemPosition();
         int firstVisibleItemPosition = manager.findFirstCompletelyVisibleItemPosition();
-        Log.d("VisiblePosition", "begin:" + entries.get(firstVisibleItemPosition).localDate + ": end" + entries.get(lastVisibleItemPosition).localDate);
+
+        Log.d("VisiblePosition", "begin:" + entries.get(firstVisibleItemPosition).localDate +
+                ": end" + entries.get(lastVisibleItemPosition).localDate);
+
         List<BarEntry> visibleEntries = entries.subList(firstVisibleItemPosition, lastVisibleItemPosition + 1);
         float yAxisMaximum = DecimalUtil.getTheMaxNumber(visibleEntries);
         HashMap<Float, List<BarEntry>> map = new HashMap<>();
@@ -83,17 +86,20 @@ public class ReLocationUtil {
                     distanceCompare.distanceRight = parentRight - viewLeft;
                     distanceCompare.distanceLeft = viewLeft - parentLeft;
                     distanceCompare.setBarEntry(barEntry);
+
                     if (distanceCompare.isNearLeft()) {//靠近左边回到上一个月。
                         int lastPosition = distanceCompare.position - getNumbersUnitType(distanceCompare.barEntry, type);
                         Log.d("ReLocation", "lastPosition:" + lastPosition + " entries' size" + entries.size());
                         if (lastPosition > 0) {
-                            distanceCompare.position = lastPosition ;
-                            distanceCompare.barEntry = entries.get(lastPosition );
+                            distanceCompare.position = lastPosition;
+                            distanceCompare.barEntry = entries.get(lastPosition);
                         } else {
                             distanceCompare.position = 0;
                             distanceCompare.barEntry = entries.get(0);
                         }
                         distanceCompare.position = lastPosition;
+                    } else {//靠近右边，直接返回当月的。
+
                     }
                     break;
                 }
@@ -110,8 +116,10 @@ public class ReLocationUtil {
             return TimeUtil.NUM_DAY_OF_WEEK;
         } else if (type == VIEW_MONTH) {
             LocalDate localDate = currentBarEntry.localDate;
-            LocalDate lastMonthFirstDay = TimeUtil.getFirstDayOfMonth(localDate.minusMonths(1));
-            return TimeUtil.getIntervalDay(localDate, lastMonthFirstDay);
+            LocalDate lastMonthEndLocalDate = TimeUtil.getFirstDayOfMonth(localDate).minusDays(1);//上个月末的最后一天
+            int distance = TimeUtil.getIntervalDay(lastMonthEndLocalDate, localDate);
+            Log.d("Tag", "localDate:" + localDate + " lastMonthDay:" + lastMonthEndLocalDate + " distance:" + distance);
+            return distance;
         } else if (type == VIEW_YEAR) {
             return TimeUtil.NUM_MONTH_OF_YEAR;
         }

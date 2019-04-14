@@ -71,10 +71,12 @@ public class BarChartAdapter extends RecyclerView.Adapter<BarChartAdapter.BarCha
         int itemWidth = (int) (contentWidth / mXAxis.displayNumbers);
         int reminderWidth = (int) (contentWidth % mXAxis.displayNumbers);
 
-        mRecyclerView.setPadding(mRecyclerView.getPaddingLeft() + reminderWidth/2 , mRecyclerView.getPaddingTop(),
-                mRecyclerView.getPaddingRight() + reminderWidth/2, mRecyclerView.getPaddingBottom());
+        //这里只画右边，所以调整多余的只加在右边。 会造成重绘时，月的抖动，因为来回变动。
+        if (position > mEntries.size() - 2){//最后两次绘制item时 再改RecyclerView的padding
+            mRecyclerView.setPadding(mRecyclerView.getPaddingLeft() , mRecyclerView.getPaddingTop(),
+                    mRecyclerView.getPaddingRight() + reminderWidth, mRecyclerView.getPaddingBottom());
+        }
         setLinearLayout(viewHolder.contentView, itemWidth);
-
         Log.d("XAxisRender",  "itemWidth:" + itemWidth + " time:" + TimeUtil.getDateStr(System.currentTimeMillis()/1000, "HH:mm:ss"));
         BarEntry barEntry = mEntries.get(position);
 
