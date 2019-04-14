@@ -74,13 +74,13 @@ public class YearFragment extends BaseFragment {
                              @Nullable Bundle savedInstanceState) {
         View view = View.inflate(getActivity(), R.layout.fragment_day_step, null);
         initView(view);
-        displayNumber = 13;
+        displayNumber = 12;
         mType = TestData.VIEW_YEAR;
         valueFormatter = new XAxisYearFormatter();
 
         initData(displayNumber, valueFormatter);
         currentLocalDate = LocalDate.now();
-        bindBarChartList(TestData.createYearEntries(currentLocalDate, 5 * displayNumber));
+        bindBarChartList(TestData.createYearEntries(currentLocalDate, 5 * displayNumber, mEntries.size()));
         currentLocalDate = currentLocalDate.minusMonths(displayNumber * 5);
         setXAxis(displayNumber);
         reSizeYAxis();
@@ -136,10 +136,10 @@ public class YearFragment extends BaseFragment {
                 if (newState == RecyclerView.SCROLL_STATE_IDLE) {
                     //左滑
                     if (recyclerView.canScrollHorizontally(1) && isRightScroll) {
-                        List<BarEntry> entries = TestData.createYearEntries(currentLocalDate, displayNumber);
+                        List<BarEntry> entries = TestData.createYearEntries(currentLocalDate, displayNumber, mEntries.size());
                         currentLocalDate = currentLocalDate.minusMonths(displayNumber);
 
-                        mEntries.addAll(0, entries);
+                        mEntries.addAll(entries);
                         mBarChartAdapter.notifyDataSetChanged();
                     }
 
@@ -165,6 +165,8 @@ public class YearFragment extends BaseFragment {
         float yAxisMaximum = 0;
         HashMap<Float, List<BarEntry>> map;
         if (mBarChartAttrs.enableScrollToScale) {
+            DistanceCompare distanceCompare = ReLocationUtil.findNearFirstType(recyclerView, displayNumber, TestData.VIEW_YEAR);
+            recyclerView.scrollToPosition(distanceCompare.position);
             //int scrollByDx = ReLocationUtil.computeScrollByXOffset(recyclerView, displayNumber);
             //recyclerView.scrollBy(scrollByDx, 0);
             map = ReLocationUtil.getVisibleEntries(recyclerView);
@@ -176,11 +178,8 @@ public class YearFragment extends BaseFragment {
             displayDateAndStep(entry.getValue(), mType);
             break;
         }
-        YAxis yAxis = mYAxis.resetYAxis(mYAxis, yAxisMaximum);
-        if (null != yAxis) {
-            mYAxis = yAxis;
-            mItemDecoration.setYAxis(mYAxis);
-        }
+        mYAxis = YAxis.getYAxis(mBarChartAttrs, yAxisMaximum);
+        mItemDecoration.setYAxis(mYAxis);
     }
 
     private void bindBarChartList(List<BarEntry> entries) {
@@ -198,8 +197,8 @@ public class YearFragment extends BaseFragment {
     }
 
     private void displayDateAndStep(List<BarEntry> displayEntries, int mType) {
-        BarEntry rightBarEntry  = displayEntries.get(0);
-        BarEntry leftBarEntry = displayEntries.get(displayEntries.size() - 1);
+        BarEntry  rightBarEntry = displayEntries.get(0);
+        BarEntry  leftBarEntry = displayEntries.get(displayEntries.size() - 1);
         txtLeftLocalDate.setText(TimeUtil.getDateStr(leftBarEntry.timestamp, "yyyy-MM-dd HH:mm:ss"));
         txtRightLocalDate.setText(TimeUtil.getDateStr(rightBarEntry.timestamp, "yyyy-MM-dd HH:mm:ss"));
         if (TimeUtil.isSameYear(leftBarEntry.timestamp, rightBarEntry.timestamp)) {

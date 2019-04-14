@@ -16,11 +16,11 @@ import com.yxc.barchartlib.component.XAxis;
 import com.yxc.barchartlib.component.YAxis;
 import com.yxc.barchartlib.entrys.BarEntry;
 import com.yxc.barchartlib.formatter.BarChartValueFormatter;
+import com.yxc.barchartlib.render.BarBoardRender;
 import com.yxc.barchartlib.render.XAxisRender;
 import com.yxc.barchartlib.render.YAxisRender;
 import com.yxc.barchartlib.util.BarChartAttrs;
 import com.yxc.barchartlib.util.DecimalUtil;
-import com.yxc.barchartlib.util.TimeUtil;
 
 /**
  * @author yxc
@@ -30,15 +30,10 @@ import com.yxc.barchartlib.util.TimeUtil;
  */
 public class BarChartItemDecoration extends RecyclerView.ItemDecoration {
 
-    private static final String TAG = "BarChartItemDecoration";
-
     private int mOrientation;
 
-    private Paint mDashPaint;
-    private Paint mLinePaint;
     private Paint mTextPaint;
     private Paint mBarChartPaint;
-    private Paint mBarBorderPaint;
 
     private YAxis mYAxis;
     private XAxis mXAxis;
@@ -46,6 +41,7 @@ public class BarChartItemDecoration extends RecyclerView.ItemDecoration {
     private BarChartAttrs mBarChartAttrs;
     private YAxisRender yAxisRenderer;
     private XAxisRender xAxisRenderer;
+    private BarBoardRender mBarBoardRender;
 
     private BarChartValueFormatter barChartValueFormatter;
 
@@ -60,13 +56,12 @@ public class BarChartItemDecoration extends RecyclerView.ItemDecoration {
 
         this.yAxisRenderer = new YAxisRender(mBarChartAttrs, mYAxis);
         this.xAxisRenderer = new XAxisRender(mBarChartAttrs, mXAxis);
+        this.mBarBoardRender = new BarBoardRender(mBarChartAttrs);
+
         this.barChartValueFormatter = new BarChartValueFormatter(0);
 
-        initPaint();
-        initDathPaint();
         initTextPaint();
         initBarChartPaint();
-        initBarBorderPaint();
     }
 
     @Override
@@ -82,9 +77,11 @@ public class BarChartItemDecoration extends RecyclerView.ItemDecoration {
             xAxisRenderer.drawVerticalLine(canvas, parent, mXAxis);//画竖的网格线
             xAxisRenderer.drawXAxis(canvas, parent, mXAxis);//画x轴坐标的刻度
 
-            drawBarChart(canvas, parent);//draw barchart
-            drawBarChartValue(canvas, parent);//draw barchart value
-            drawBarBorder(canvas, parent);//绘制边框
+            drawBarChart(canvas, parent);//draw BarChart
+            drawBarChartValue(canvas, parent);//draw BarChart value
+
+            mBarBoardRender.drawBarBorder(canvas, parent);//绘制边框
+
         } else if (mOrientation == VERTICAL_LIST) {
             //竖向list 画横线
 //            drawHorizontalLine(c, parent, mXAxis);
@@ -93,24 +90,6 @@ public class BarChartItemDecoration extends RecyclerView.ItemDecoration {
 
     @Override
     public void onDraw(@NonNull Canvas c, @NonNull RecyclerView parent, @NonNull RecyclerView.State state) {
-    }
-
-    private void initPaint() {
-        mLinePaint = new Paint();
-        mLinePaint.reset();
-        mLinePaint.setAntiAlias(true);
-        mLinePaint.setStyle(Paint.Style.STROKE);
-        mLinePaint.setStrokeWidth(1);
-        mLinePaint.setColor(Color.GRAY);
-    }
-
-    private void initDathPaint() {
-        mDashPaint = new Paint();
-        mDashPaint.reset();
-        mDashPaint.setAntiAlias(true);
-        mDashPaint.setStyle(Paint.Style.STROKE);
-        mDashPaint.setStrokeWidth(1);
-        mDashPaint.setColor(Color.GRAY);
     }
 
     private void initTextPaint() {
@@ -129,29 +108,6 @@ public class BarChartItemDecoration extends RecyclerView.ItemDecoration {
         mBarChartPaint.setAntiAlias(true);
         mBarChartPaint.setStyle(Paint.Style.FILL);
         mBarChartPaint.setColor(mBarChartAttrs.barChartColor);
-    }
-
-    private void initBarBorderPaint() {
-        mBarBorderPaint = new Paint();
-        mBarBorderPaint.reset();
-        mBarBorderPaint.setAntiAlias(true);
-        mBarBorderPaint.setStyle(Paint.Style.STROKE);
-        mBarBorderPaint.setStrokeWidth(mBarChartAttrs.barBorderWidth);
-        mBarBorderPaint.setColor(mBarChartAttrs.barBorderColor);
-    }
-
-    private void drawBarBorder(@NonNull Canvas canvas, @NonNull RecyclerView parent) {
-        if (mBarChartAttrs.enableBarBorder) {
-            RectF rectF = new RectF();
-            float start = parent.getPaddingLeft();
-            float top = parent.getPaddingTop();
-            float end = parent.getRight() - parent.getPaddingRight();
-            float bottom = parent.getHeight() - parent.getPaddingBottom() - mBarChartAttrs.contentPaddingBottom;//底部有0的刻度是不是不用画，就画折线了。
-
-            rectF.set(start, top, end, bottom);
-            mBarBorderPaint.setStrokeWidth(mBarChartAttrs.barBorderWidth);
-            canvas.drawRect(rectF, mBarBorderPaint);
-        }
     }
 
     //绘制柱状图
@@ -180,18 +136,13 @@ public class BarChartItemDecoration extends RecyclerView.ItemDecoration {
             // 浮点数的 == 比较需要注意
             if (DecimalUtil.smallOrEquals(end, parentLeft)) {//continue 会闪，原因是end == parentLeft 没有过滤掉，显示出来柱状图了。
                 continue;
-            } else if (start < parentLeft && end > parentLeft) {//左边部分滑入的时候，处理柱状图、文字的显示
+            } else if (start < parentLeft && end > parentLeft) {//左边部分滑入的时候，处理柱状图的显示
                 start = parentLeft;
                 rectF.set(start, top, end, bottom);
                 mBarChartPaint.setColor(mBarChartAttrs.barChartEdgeColor);
                 canvas.drawRect(rectF, mBarChartPaint);
             } else if (DecimalUtil.bigOrEquals(start, parentLeft) && DecimalUtil.smallOrEquals(end, parentRight)) {//中间的; 浮点数的 == 比较需要注意
-                if (child.getLeft() < parentLeft || child.getRight() > parentRight) {
-                    //为了配合 findLastCompletelyVisibleItemPosition，看着压线都到不了 CompletelyVisible
-                    mBarChartPaint.setColor(mBarChartAttrs.barChartEdgeColor);
-                } else {
-                    mBarChartPaint.setColor(mBarChartAttrs.barChartColor);
-                }
+                mBarChartPaint.setColor(mBarChartAttrs.barChartColor);
                 rectF.set(start, top, end, bottom);
                 canvas.drawRect(rectF, mBarChartPaint);
             } else if (DecimalUtil.smallOrEquals(start, parentRight) && end > parentRight) {//右边部分滑出的时候，处理柱状图，文字的显示
@@ -223,8 +174,7 @@ public class BarChartItemDecoration extends RecyclerView.ItemDecoration {
             float top = bottom - height;
 
             mTextPaint.setTextSize(mBarChartAttrs.barChartValueTxtSize);
-            String valueStr = barChartValueFormatter.getFormattedValue(barEntry.getY());
-
+            String valueStr = barEntry.getY() > 0 ? barChartValueFormatter.getFormattedValue(barEntry.getY()) : "";
             float widthText = mTextPaint.measureText(valueStr);
             float txtXLeft = getTxtX(child, width, valueStr);
             float txtXRight = txtXLeft + widthText;
@@ -252,7 +202,7 @@ public class BarChartItemDecoration extends RecyclerView.ItemDecoration {
 
     //文字宽度小于item的宽度时，获取文字显示的起始 X 坐标
     private float getTxtX(View child, float width, String valueStr) {
-        float txtX = child.getLeft() + width / 2 - mTextPaint.measureText(valueStr)/2;
+        float txtX = child.getLeft() + width / 2 - mTextPaint.measureText(valueStr) / 2;
         return txtX;
     }
 

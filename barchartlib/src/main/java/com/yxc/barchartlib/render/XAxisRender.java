@@ -87,7 +87,7 @@ public class XAxisRender {
             final View child = parent.getChildAt(i);
             int adapterPosition = parent.getChildAdapterPosition(child);
             int type = parent.getAdapter().getItemViewType(adapterPosition);
-            final int x = child.getLeft();
+            final int x = child.getRight();
             if (x > parentRight || x < parentLeft) {//超出的时候就不要画了
                 continue;
             }
@@ -126,10 +126,10 @@ public class XAxisRender {
 
     //画月线的时候，当邻近的靠左的存在需要写 X轴坐标的BarEntry，返回true, 柱体宽度大于文本宽度时除外。
     private boolean isNearEntrySecondType(List<BarEntry> entries, XAxis xAxis, int barWidth, int adapterPosition) {
-        int position1 = adapterPosition - 1;
-        int position2 = adapterPosition - 2;
+        int position1 = adapterPosition + 1;
+        int position2 = adapterPosition + 2;
         BarEntry barEntryNext;
-        if (position1 > 0 && entries.get(position1).type == BarEntry.TYPE_XAXIS_SECOND) {
+        if (position1 < entries.size() && entries.get(position1).type == BarEntry.TYPE_XAXIS_SECOND) {
             barEntryNext = entries.get(position1);
             mTextPaint.setTextSize(xAxis.getTextSize());
             String xAxisLabel = xAxis.getValueFormatter().getBarLabel(barEntryNext);
@@ -138,7 +138,7 @@ public class XAxisRender {
                 return false;
             }
             return true;
-        } else if (position2 > 0 && entries.get(position2).type == BarEntry.TYPE_XAXIS_SECOND) {
+        } else if (position2 < entries.size() && entries.get(position2).type == BarEntry.TYPE_XAXIS_SECOND) {
             barEntryNext = entries.get(position2);
             mTextPaint.setTextSize(xAxis.getTextSize());
             String xAxisLabel = xAxis.getValueFormatter().getBarLabel(barEntryNext);
@@ -161,7 +161,8 @@ public class XAxisRender {
 
         for (int i = 0; i < childCount; i++) {
             final View child = parent.getChildAt(i);
-            final int x = child.getLeft();
+            final int xLeft = child.getLeft();
+            final int xRight = child.getRight();
             BarEntry barEntry = (BarEntry) child.getTag();
 
             String dateStr = xAxis.getValueFormatter().getBarLabel(barEntry);
@@ -172,9 +173,9 @@ public class XAxisRender {
                 float txtY = parentBottom - DisplayUtil.dip2px(1);
                 if (childWidth > txtWidth) {//柱状图的宽度比较大的时候，文字居中
                     float distance = childWidth - txtWidth;
-                    txtXLeft = x + distance / 2;
+                    txtXLeft = xLeft + distance / 2;
                 } else {
-                    txtXLeft = x + xAxis.labelTxtPadding;
+                    txtXLeft = xRight - xAxis.labelTxtPadding - txtWidth;
                 }
                 float txtXRight = txtXLeft + txtWidth;
                 int length = dateStr.length();

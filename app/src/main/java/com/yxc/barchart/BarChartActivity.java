@@ -68,7 +68,7 @@ public class BarChartActivity extends AppCompatActivity {
         initView();
         initTableLayout();
         initData();
-        bindBarChartList(25, TestData.createDayEntries(TimeUtil.changZeroOfTheDay(LocalDate.now()), 25), VIEW_DAY);
+        bindBarChartList(25, TestData.createDayEntries(TimeUtil.changZeroOfTheDay(LocalDate.now()), 25, mEntries.size()), VIEW_DAY);
         reSizeYAxis();
         setListener();
     }
@@ -289,24 +289,24 @@ public class BarChartActivity extends AppCompatActivity {
             public void onTabSelect(int position) {
                 if (position == VIEW_DAY) {// 创建 月视图的数据
                     displayNumber = 25;
-                    bindBarChartList(displayNumber, TestData.createDayEntries(TimeUtil.changZeroOfTheDay(LocalDate.now()), displayNumber), VIEW_DAY);
+                    bindBarChartList(displayNumber, TestData.createDayEntries(TimeUtil.changZeroOfTheDay(LocalDate.now()), displayNumber, mEntries.size()), VIEW_DAY);
                     mXAxis.setValueFormatter(new XAxisDayFormatter());
                     mItemDecoration.setXAxis(mXAxis);
                 } else if (position == VIEW_WEEK) {//创建Week视图的数据
                     displayNumber = 8;
-                    bindBarChartList(displayNumber, TestData.createWeekEntries(LocalDate.now(), displayNumber), VIEW_WEEK);
+                    bindBarChartList(displayNumber, TestData.createWeekEntries(LocalDate.now(), displayNumber, mEntries.size()), VIEW_WEEK);
                     mXAxis.setValueFormatter(new XAxisWeekFormatter());
                     mItemDecoration.setXAxis(mXAxis);
 
                 } else if (position == VIEW_MONTH) {//创建Month视图的数据
                     displayNumber = 32;
-                    bindBarChartList(displayNumber, TestData.getMonthEntries(LocalDate.now(), displayNumber), VIEW_MONTH);
+                    bindBarChartList(displayNumber, TestData.getMonthEntries(LocalDate.now(), displayNumber, mEntries.size()), VIEW_MONTH);
                     mXAxis.setValueFormatter(new XAxisMonthFormatter(BarChartActivity.this));
                     mItemDecoration.setXAxis(mXAxis);
 
                 } else if (position == VIEW_YEAR) {//创建Year视图的数据
                     displayNumber = 13;
-                    bindBarChartList(displayNumber, TestData.createYearEntries(LocalDate.now(), displayNumber), VIEW_YEAR);
+                    bindBarChartList(displayNumber, TestData.createYearEntries(LocalDate.now(), displayNumber, mEntries.size()), VIEW_YEAR);
                     mXAxis.setValueFormatter(new XAxisYearFormatter());
                     mItemDecoration.setXAxis(mXAxis);
                 }

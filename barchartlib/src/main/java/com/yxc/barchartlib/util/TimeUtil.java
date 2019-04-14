@@ -59,6 +59,11 @@ public class TimeUtil {
     }
 
 
+    public static boolean isLastMonthOfTheYear(LocalDate localDate){
+        return localDate.getMonthOfYear() == 12;
+    }
+
+
     /**
      * 第一个是不是第二个的下一个月，只在此处有效
      *
@@ -422,6 +427,13 @@ public class TimeUtil {
         return localDate1.getDayOfWeek() != localDate2.getDayOfWeek();
     }
 
+    public static boolean isLastHourOfTheDay(long timestamp) {
+        long timestampPlusOneHour = timestamp + TIME_HOUR;
+        LocalDate localDate1 = timestampToLocalDate(timestamp);
+        LocalDate localDate2 = timestampToLocalDate(timestampPlusOneHour);
+        return localDate1.getDayOfWeek() != localDate2.getDayOfWeek();
+    }
+
     //是否是上一周
     public static boolean isLastWeek(LocalDate localDate, LocalDate lastLocalDate) {
         LocalDate currentLocalDate = lastLocalDate.plusWeeks(1);
@@ -527,6 +539,12 @@ public class TimeUtil {
         return new DistanceCompare(distanceLeft, distanceRight);
     }
 
+    public static boolean isFuture(LocalDate localDate){
+        return localDate.isAfter(LocalDate.now());
+    }
 
 
+    public static boolean isSunday(LocalDate localDateEntry) {
+        return localDateEntry.getDayOfWeek() == 7;
+    }
 }

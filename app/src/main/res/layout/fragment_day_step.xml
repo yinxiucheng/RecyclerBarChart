@@ -50,7 +50,7 @@
         android:paddingLeft="3dp"
         app:enableLeftYAxisLabel="false"
         app:enableCharValueDisplay="true"
-        app:recyclerPaddingRight="3dp"/>
+        app:recyclerPaddingRight="3dp" />
 
     <TextView
         android:id="@+id/txt_count_Step"

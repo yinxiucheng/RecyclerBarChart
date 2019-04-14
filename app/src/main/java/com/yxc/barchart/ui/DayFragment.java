@@ -16,6 +16,7 @@ import com.yxc.barchart.BaseFragment;
 import com.yxc.barchart.R;
 import com.yxc.barchart.TestData;
 import com.yxc.barchart.formatter.XAxisDayFormatter;
+import com.yxc.barchartlib.component.DistanceCompare;
 import com.yxc.barchartlib.component.XAxis;
 import com.yxc.barchartlib.component.YAxis;
 import com.yxc.barchartlib.entrys.BarEntry;
@@ -73,13 +74,13 @@ public class DayFragment extends BaseFragment {
                              @Nullable Bundle savedInstanceState) {
         View view = View.inflate(getActivity(), R.layout.fragment_day_step, null);
         initView(view);
-        displayNumber = 25;
+        displayNumber = 24;
         mType = TestData.VIEW_DAY;
         valueFormatter = new XAxisDayFormatter();
 
         initData(displayNumber, valueFormatter);
         currentTimestamp = TimeUtil.changZeroOfTheDay(LocalDate.now());
-        bindBarChartList(TestData.createDayEntries(currentTimestamp, 3* displayNumber));
+        bindBarChartList(TestData.createDayEntries(currentTimestamp, 3* displayNumber, mEntries.size()));
         currentTimestamp = currentTimestamp - TimeUtil.TIME_HOUR * displayNumber * 3;
         setXAxis(displayNumber);
         reSizeYAxis();
@@ -129,6 +130,7 @@ public class DayFragment extends BaseFragment {
     }
 
     private void reSizeYAxis() {
+        recyclerView.scrollToPosition(0);
         List<BarEntry> visibleEntries = mEntries.subList(0, displayNumber + 1);
         mYAxis = YAxis.getYAxis(mBarChartAttrs, DecimalUtil.getTheMaxNumber(visibleEntries));
         mBarChartAdapter.notifyDataSetChanged();
@@ -147,7 +149,7 @@ public class DayFragment extends BaseFragment {
                 // 当不滚动时
                 if (newState == RecyclerView.SCROLL_STATE_IDLE) {
                     if (recyclerView.canScrollHorizontally(1) && isRightScroll) {
-                        List<BarEntry> entries = TestData.createDayEntries(currentTimestamp, displayNumber);
+                        List<BarEntry> entries = TestData.createDayEntries(currentTimestamp, displayNumber, mEntries.size());
                         currentTimestamp = currentTimestamp - displayNumber * TimeUtil.TIME_HOUR;
                         mEntries.addAll(entries);
                         mBarChartAdapter.notifyDataSetChanged();
@@ -174,6 +176,8 @@ public class DayFragment extends BaseFragment {
         float yAxisMaximum = 0;
         HashMap<Float, List<BarEntry>> map;
         if (mBarChartAttrs.enableScrollToScale) {
+            DistanceCompare distanceCompare = ReLocationUtil.findNearFirstType(recyclerView, displayNumber, TestData.VIEW_DAY);
+            recyclerView.scrollToPosition(distanceCompare.position);
             //int scrollDx = ReLocationUtil.computeScrollByXOffset( recyclerView, displayNumber);
             //recyclerView.scrollBy(scrollDx, 0);
             map = ReLocationUtil.getVisibleEntries(recyclerView);
@@ -185,11 +189,8 @@ public class DayFragment extends BaseFragment {
             displayDateAndStep(entry.getValue(), mType);
             break;
         }
-        YAxis yAxis = mYAxis.resetYAxis(mYAxis, yAxisMaximum);
-        if (null != yAxis) {
-            mYAxis = yAxis;
-            mItemDecoration.setYAxis(mYAxis);
-        }
+        mYAxis = YAxis.getYAxis(mBarChartAttrs, yAxisMaximum);
+        mItemDecoration.setYAxis(mYAxis);
     }
 
     private void bindBarChartList(List<BarEntry> entries) {

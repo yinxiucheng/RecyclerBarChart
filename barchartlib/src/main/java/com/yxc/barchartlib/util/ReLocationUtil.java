@@ -44,30 +44,57 @@ public class ReLocationUtil {
         return map;
     }
 
+    public static HashMap<Float, List<BarEntry>> getVisibleEntries(RecyclerView recyclerView) {
+        LinearLayoutManager manager = (LinearLayoutManager) recyclerView.getLayoutManager();
+        BarChartAdapter adapter = (BarChartAdapter) recyclerView.getAdapter();
+        List<BarEntry> mEntries = adapter.getEntries();
+        //获取最后一个完全显示的ItemPosition
+        int lastVisibleItemPosition = manager.findLastCompletelyVisibleItemPosition();
+        int firstVisibleItemPosition = manager.findFirstCompletelyVisibleItemPosition();
+        List<BarEntry> visibleEntries = mEntries.subList(firstVisibleItemPosition, lastVisibleItemPosition + 1);
+        float yAxisMaximum = DecimalUtil.getTheMaxNumber(visibleEntries);
+        HashMap<Float, List<BarEntry>> map = new HashMap<>();
+        map.put(yAxisMaximum, visibleEntries);
+        return map;
+    }
 
-    public static DistanceCompare findNearFirstType(RecyclerView recyclerView, int displayNumbers, boolean isRightScroll) {
+
+    public static DistanceCompare findNearFirstType(RecyclerView recyclerView, int displayNumbers, int type) {
         LinearLayoutManager manager = (LinearLayoutManager) recyclerView.getLayoutManager();
         BarChartAdapter adapter = (BarChartAdapter) recyclerView.getAdapter();
         List<BarEntry> entries = adapter.getEntries();
-
         int firstVisibleItemPosition = manager.findFirstVisibleItemPosition();
         int position = firstVisibleItemPosition; //从右边的第一个View开始找
         int parentRight = recyclerView.getWidth() - recyclerView.getPaddingRight();
         int parentLeft = recyclerView.getPaddingLeft();
-
         DistanceCompare distanceCompare = new DistanceCompare(0, 0);
         for (int i = 0; i < displayNumbers; i++) {
             if (i > 0) {
                 position++;
             }
-            if (position > 0 && position < entries.size()) {
+            if (position >= 0 && position < entries.size()) {
                 BarEntry barEntry = entries.get(position);
                 if (barEntry.type == BarEntry.TYPE_XAXIS_FIRST || barEntry.type == BarEntry.TYPE_XAXIS_SPECIAL) {
                     distanceCompare.position = position;
+
+                    //这里最好不要去找这个view 容易 crash
                     View positionView = manager.findViewByPosition(position);
                     int viewLeft = positionView.getLeft();
                     distanceCompare.distanceRight = parentRight - viewLeft;
                     distanceCompare.distanceLeft = viewLeft - parentLeft;
+                    distanceCompare.setBarEntry(barEntry);
+                    if (distanceCompare.isNearLeft()) {//靠近左边回到上一个月。
+                        int lastPosition = distanceCompare.position - getNumbersUnitType(distanceCompare.barEntry, type);
+                        Log.d("ReLocation", "lastPosition:" + lastPosition + " entries' size" + entries.size());
+                        if (lastPosition > 0) {
+                            distanceCompare.position = lastPosition ;
+                            distanceCompare.barEntry = entries.get(lastPosition );
+                        } else {
+                            distanceCompare.position = 0;
+                            distanceCompare.barEntry = entries.get(0);
+                        }
+                        distanceCompare.position = lastPosition;
+                    }
                     break;
                 }
             }
@@ -75,9 +102,25 @@ public class ReLocationUtil {
         return distanceCompare;
     }
 
+
+    public static int getNumbersUnitType(BarEntry currentBarEntry, int type) {
+        if (type == VIEW_DAY) {
+            return TimeUtil.NUM_HOUR_OF_DAY;
+        } else if (type == VIEW_WEEK) {
+            return TimeUtil.NUM_DAY_OF_WEEK;
+        } else if (type == VIEW_MONTH) {
+            LocalDate localDate = currentBarEntry.localDate;
+            LocalDate lastMonthFirstDay = TimeUtil.getFirstDayOfMonth(localDate.minusMonths(1));
+            return TimeUtil.getIntervalDay(localDate, lastMonthFirstDay);
+        } else if (type == VIEW_YEAR) {
+            return TimeUtil.NUM_MONTH_OF_YEAR;
+        }
+        return TimeUtil.NUM_HOUR_OF_DAY;
+    }
+
     //compute the scrollByDx, the left is large position, right is small position.
-    public static int computeScrollByXOffset(RecyclerView recyclerView, int displayNumbers) {
-        DistanceCompare distanceCompare = findNearFirstType(recyclerView, displayNumbers, false);
+    public static int computeScrollByXOffset(RecyclerView recyclerView, int displayNumbers, int type) {
+        DistanceCompare distanceCompare = findNearFirstType(recyclerView, displayNumbers, type);
         LinearLayoutManager manager = (LinearLayoutManager) recyclerView.getLayoutManager();
         BarChartAdapter adapter = (BarChartAdapter) recyclerView.getAdapter();
         List<BarEntry> entries = adapter.getEntries();
@@ -86,36 +129,28 @@ public class ReLocationUtil {
         View compareView = manager.findViewByPosition(positionCompare);
         int compareViewLeft = compareView.getLeft();
         BarEntry barEntry = (BarEntry) compareView.getTag();
-        Log.d("Scroll1", " DistanceCompare's Position " + barEntry.localDate + " value:" + barEntry.getY());
-        Log.d("Scroll1", " compareView's left:" + compareViewLeft + " compareView's right:" + compareView.getRight());
+//        Log.d("Scroll1", " DistanceCompare's Position " + barEntry.localDate + " value:" + barEntry.getY());
+//        Log.d("Scroll1", " compareView's left:" + compareViewLeft + " compareView's right:" + compareView.getRight());
 
         int parentWidth = recyclerView.getWidth();
         int leftPadding = recyclerView.getPaddingLeft();
         int rightPadding = recyclerView.getPaddingRight();
         int parentContent = parentWidth - leftPadding - rightPadding;
 
-        int childWidthCompute = parentContent/ displayNumbers;
+        int childWidthCompute = parentContent / displayNumbers;
         int childWidth = compareView.getWidth();
 
-        Log.d("Scroll1", " /parentWidth: " + parentWidth +
-                " /leftPadding:" + leftPadding + " /rightPadding:" +
-                rightPadding + " /parentContentWidth:" + parentContent +
-                " /childWidthCompute:" + childWidthCompute +
-                " /childWidth:"+ childWidth);
+//        Log.d("Scroll1", " /parentWidth: " + parentWidth +
+//                " /leftPadding:" + leftPadding + " /rightPadding:" +
+//                rightPadding + " /parentContentWidth:" + parentContent +
+//                " /childWidthCompute:" + childWidthCompute +
+//                " /childWidth:"+ childWidth);
 
         int parentLeft = recyclerView.getPaddingLeft();
         int parentRight = recyclerView.getWidth() - recyclerView.getPaddingRight();
 
-        //这里拿到的 lastView为空，所以通过 CompareView的跨度来计算lastViewRight的值。
-//        View lastView = manager.getChildAt(entries.size() - 1);
-//        int lastViewRight = lastView.getRight();
-
         //todo int 会不会 越界
         int firstViewRight = compareViewLeft + positionCompare * childWidth;
-
-        //这里同样拿到的lastView为空
-//        View firstView = manager.getChildAt(0);
-//        int firstViewLeft = firstView.getLeft();
 
         //这个值会为 负的。
         int lastViewLeft = compareViewLeft - (entries.size() - 1 - positionCompare) * childWidth;
@@ -148,21 +183,6 @@ public class ReLocationUtil {
         return scrollByXOffset;
     }
 
-    public static HashMap<Float, List<BarEntry>> getVisibleEntries(RecyclerView recyclerView) {
-//        recyclerView.scrollToPosition(scrollToPosition);
-        LinearLayoutManager manager = (LinearLayoutManager) recyclerView.getLayoutManager();
-        BarChartAdapter adapter = (BarChartAdapter) recyclerView.getAdapter();
-        List<BarEntry> mEntries = adapter.getEntries();
-        //获取最后一个完全显示的ItemPosition
-        int lastVisibleItemPosition = manager.findLastCompletelyVisibleItemPosition();
-        int firstVisibleItemPosition = manager.findFirstCompletelyVisibleItemPosition();
-        List<BarEntry> visibleEntries = mEntries.subList(firstVisibleItemPosition, lastVisibleItemPosition + 1);
-
-        float yAxisMaximum = DecimalUtil.getTheMaxNumber(visibleEntries);
-        HashMap<Float, List<BarEntry>> map = new HashMap<>();
-        map.put(yAxisMaximum, visibleEntries);
-        return map;
-    }
 
     //todo 注意左右滑的到定的问题。
     @Deprecated

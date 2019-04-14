@@ -5,9 +5,11 @@ import android.graphics.Color;
 import android.graphics.Paint;
 import android.graphics.Path;
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 
 import com.yxc.barchartlib.component.YAxis;
 import com.yxc.barchartlib.util.BarChartAttrs;
+import com.yxc.barchartlib.util.DisplayUtil;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -23,7 +25,6 @@ public class YAxisRender {
     protected Paint mTextPaint;
 
     protected BarChartAttrs mBarChartAttrs;
-
 
 
     public YAxisRender(BarChartAttrs barChartAttrs, YAxis yAxis) {
@@ -64,7 +65,6 @@ public class YAxisRender {
         int lineNums = mYAxis.getLabelCount();
         float lineDistance = distance / lineNums;
         float gridLine = top + mBarChartAttrs.maxYAxisPaddingTop;
-
         for (int i = 0; i <= lineNums; i++) {
             if (i > 0) {
                 gridLine = gridLine + lineDistance;
@@ -97,8 +97,9 @@ public class YAxisRender {
             float yAxisWidth = mTextPaint.measureText(longestStr) + mBarChartAttrs.recyclerPaddingLeft;
             mYAxis.leftTxtWidth = mTextPaint.measureText(longestStr);
 
+            int paddingLeft = computeYAxisWidth(parent.getPaddingLeft(), yAxisWidth);
             //设置 recyclerView的 BarChart 内容区域
-            parent.setPadding((int) yAxisWidth, parent.getPaddingTop(), parent.getPaddingRight(), parent.getPaddingBottom());
+            parent.setPadding(paddingLeft, parent.getPaddingTop(), parent.getPaddingRight(), parent.getPaddingBottom());
 
             float topLocation = top + mBarChartAttrs.maxYAxisPaddingTop;
             float containerHeight = bottom - mBarChartAttrs.contentPaddingBottom - topLocation;
@@ -117,8 +118,6 @@ public class YAxisRender {
         }
     }
 
-
-
     //绘制右边的刻度
     public void drawRightYAxisLabel(Canvas canvas, RecyclerView parent) {
         if (mBarChartAttrs.enableRightYAxisLabel) {
@@ -131,8 +130,9 @@ public class YAxisRender {
             float yAxisWidth = mTextPaint.measureText(longestStr) + mBarChartAttrs.recyclerPaddingRight;
             mYAxis.rightTxtWidth = mTextPaint.measureText(longestStr);
 
+            int paddingRight = computeYAxisWidth(parent.getPaddingRight(), yAxisWidth);
             //设置 recyclerView的 BarChart 内容区域
-            parent.setPadding(parent.getPaddingLeft(), parent.getPaddingTop(), (int) yAxisWidth, parent.getPaddingBottom());
+            parent.setPadding(parent.getPaddingLeft(), parent.getPaddingTop(), paddingRight, parent.getPaddingBottom());
 
             float topLocation = top + mBarChartAttrs.maxYAxisPaddingTop;
             float containerHeight = bottom - mBarChartAttrs.contentPaddingBottom - topLocation;
@@ -149,5 +149,24 @@ public class YAxisRender {
                 canvas.drawText(labelStr, txtX, txtY, mTextPaint);
             }
         }
+    }
+
+    private int computeYAxisWidth(int originPadding, float yAxisWidth) {
+        float resultPadding;
+        Log.d("YAxis1", "originPadding:" + originPadding + " yAxisWidth:" + yAxisWidth);
+        if (originPadding > yAxisWidth) {
+            float distance = originPadding - yAxisWidth;
+            if (distance > DisplayUtil.dip2px(8)) {
+                Log.d("YAxis", "if control originPadding:" + originPadding + " yAxisWidth:" + yAxisWidth);
+                resultPadding = yAxisWidth;//实际需要的跟原来差8dp了就用，实际测量的，否则就用原来的
+            } else {
+                Log.d("YAxis", "else control originPadding:" + originPadding + " yAxisWidth:" + yAxisWidth);
+                resultPadding = originPadding;
+            }
+        } else {//原来设定的 padding 不够用
+            Log.d("YAxis", "control originPadding:" + originPadding + " yAxisWidth:" + yAxisWidth);
+            resultPadding = yAxisWidth;
+        }
+        return (int) resultPadding;
     }
 }

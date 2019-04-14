@@ -23,11 +23,12 @@ public class TestData {
     public static final int VIEW_YEAR = 3;
 
     // 创建 月视图的数据
-    public static List<BarEntry> getMonthEntries(LocalDate localDate, int length) {
-        long timestamp = TimeUtil.changZeroOfTheDay(localDate);
+    public static List<BarEntry> getMonthEntries(LocalDate localDateParams, int length, int originEntrySize) {
+        LocalDate firstDayOfNextMonth = TimeUtil.getFirstDayOfNextMonth(localDateParams);
+        long timestamp = TimeUtil.changZeroOfTheDay(firstDayOfNextMonth);
         List<BarEntry> entries = new ArrayList<>();
-        for (int i = 0; i < length; i++) {
-            if (i > 0) {
+        for (int i = originEntrySize; i < length + originEntrySize; i++) {
+            if ( i > originEntrySize){
                 timestamp = timestamp - TimeUtil.TIME_DAY;
             }
             float mult = 10;
@@ -48,15 +49,19 @@ public class TestData {
             value = Math.round(value);
             int type = BarEntry.TYPE_XAXIS_THIRD;
             LocalDate localDateEntry = TimeUtil.timestampToLocalDate(timestamp);
-            boolean isFirstDayOfMonth = TimeUtil.isFirstDayOfMonth(localDateEntry);
+            boolean isLastDayOfMonth = TimeUtil.isLastDayOfMonth(localDateEntry);
             int dayOfYear = localDateEntry.getDayOfYear();
             Log.d("TestData", "dayOfYear:" + dayOfYear + " localDate:" + localDateEntry);
-            if (isFirstDayOfMonth && (dayOfYear+1) % 6 == 0) {
+            if (isLastDayOfMonth && (dayOfYear+1) % 6 == 0) {
                 type = BarEntry.TYPE_XAXIS_SPECIAL;
-            } else if (isFirstDayOfMonth) {
+            } else if (isLastDayOfMonth) {
                 type = BarEntry.TYPE_XAXIS_FIRST;
             } else if ((dayOfYear+1) % 6 == 0) {
                 type = BarEntry.TYPE_XAXIS_SECOND;
+            }
+
+            if (TimeUtil.isFuture(localDateEntry)) {
+                value = 0;
             }
             BarEntry barEntry = new BarEntry(i, value, timestamp, type);
             barEntry.localDate = localDateEntry;
@@ -67,11 +72,11 @@ public class TestData {
     }
 
     //创建Week视图的数据
-    public static List<BarEntry> createWeekEntries(LocalDate localDate, int length) {
+    public static List<BarEntry> createWeekEntries(LocalDate localDate, int length, int originEntrySize) {
         long timestamp = TimeUtil.changZeroOfTheDay(localDate);
         List<BarEntry> entries = new ArrayList<>();
-        for (int i = 0; i < length; i++) {
-            if (i > 0) {
+        for (int i = originEntrySize; i < originEntrySize + length; i++) {
+            if (i > originEntrySize) {
                 timestamp = timestamp - TimeUtil.TIME_DAY;
             }
             float mult = 10;
@@ -92,8 +97,8 @@ public class TestData {
             value = Math.round(value);
             int type = BarEntry.TYPE_XAXIS_SECOND;
             LocalDate localDateEntry = TimeUtil.timestampToLocalDate(timestamp);
-            boolean isMonday = TimeUtil.isMonday(localDateEntry);
-            if (isMonday) {
+            boolean isSunday = TimeUtil.isSunday(localDateEntry);
+            if (isSunday) {
                 type = BarEntry.TYPE_XAXIS_FIRST;
             }
             BarEntry barEntry = new BarEntry(i, value, timestamp, type);
@@ -106,12 +111,11 @@ public class TestData {
 
 
     //创建 Day视图的数据
-    public static List<BarEntry> createDayEntries(long timestamp, int length) {
+    public static List<BarEntry> createDayEntries(long timestamp, int length, int originEntrySize) {
         List<BarEntry> entries = new ArrayList<>();
-        for (int i = 0; i < length; i++) {
-            if (i > 0) {
-                timestamp = timestamp - TimeUtil.TIME_HOUR;
-            }
+
+        for (int i = originEntrySize; i < length + originEntrySize; i++) {
+            timestamp = timestamp - TimeUtil.TIME_HOUR;
             float mult = 10;
             float value = 0;
             if (i > 500) {
@@ -129,12 +133,12 @@ public class TestData {
             }
             value = Math.round(value);
             int type = BarEntry.TYPE_XAXIS_THIRD;
-            boolean isNextDay = TimeUtil.isNextDay(timestamp);
+            boolean isLastHourOfTheDay = TimeUtil.isLastHourOfTheDay(timestamp);
             LocalDate localDateEntry = TimeUtil.timestampToLocalDate(timestamp);
             int hourOfTheDay = TimeUtil.getHourOfTheDay(timestamp);
-            if (isNextDay && (hourOfTheDay + 1) % 3 == 0) {
+            if (isLastHourOfTheDay && (hourOfTheDay + 1) % 3 == 0) {
                 type = BarEntry.TYPE_XAXIS_SPECIAL;
-            } else if (isNextDay) {
+            } else if (isLastHourOfTheDay) {
                 type = BarEntry.TYPE_XAXIS_FIRST;
             } else if ((hourOfTheDay + 1) % 3 == 0) {
                 type = BarEntry.TYPE_XAXIS_SECOND;
@@ -149,12 +153,15 @@ public class TestData {
 
 
     //创建 Day视图的数据
-    public static List<BarEntry> createYearEntries(LocalDate localDateParams, int length) {
+    public static List<BarEntry> createYearEntries(LocalDate localDateParams, int length, int originEntrySize) {
+        int monthOfTheYear = localDateParams.getMonthOfYear();
+        int distance = TimeUtil.NUM_MONTH_OF_YEAR - monthOfTheYear;
+        LocalDate lastMonthOfTheYear = TimeUtil.getFirstDayOfMonth(localDateParams.plusMonths(distance));
         //获取下个月1号
-        LocalDate localDate = TimeUtil.getFirstDayOfMonth(localDateParams);
+        LocalDate localDate = lastMonthOfTheYear;
         List<BarEntry> entries = new ArrayList<>();
-        for (int i = 0; i < length; i++) {
-            if (i > 0) {
+        for (int i = originEntrySize; i < length + originEntrySize; i++) {
+            if (i > originEntrySize) {
                 localDate = localDate.minusMonths(1);
             }
             float mult = 10;
@@ -173,13 +180,15 @@ public class TestData {
                 value = (float) (Math.random() * 6000) + mult;
             }
             value = Math.round(value);
-
             int type = BarEntry.TYPE_XAXIS_SECOND;
-            boolean isNextYear = TimeUtil.isAnotherYear(localDate);
-            if (isNextYear) {
+            boolean isLastMonthOfTheYear = TimeUtil.isLastMonthOfTheYear(localDate);
+            if (isLastMonthOfTheYear) {
                 type = BarEntry.TYPE_XAXIS_FIRST;
             }
             long timestamp = TimeUtil.changZeroOfTheDay(localDate);
+            if (TimeUtil.isFuture(localDate)){
+                value = 0;
+            }
             BarEntry barEntry = new BarEntry(i, value, timestamp, type);
             barEntry.localDate = localDate;
             entries.add(barEntry);

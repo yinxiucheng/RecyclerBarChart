@@ -10,6 +10,7 @@ import android.view.ViewConfiguration;
 
 import com.yxc.barchartlib.util.AttrsUtil;
 import com.yxc.barchartlib.util.BarChartAttrs;
+import com.yxc.barchartlib.util.DisplayUtil;
 
 /**
  * @author yxc
@@ -22,7 +23,15 @@ public class BarChartRecyclerView extends RecyclerView {
     public BarChartRecyclerView(@NonNull Context context, @Nullable AttributeSet attrs) {
         super(context, attrs);
         this.mAttrs = AttrsUtil.getCustomerRecyclerAttrs(context, attrs);
-        int slop = ViewConfigurationCompat.getScaledPagingTouchSlop(ViewConfiguration.get(context));
+        int paddingLeft = getPaddingLeft();
+        int paddingRight = getPaddingRight();
+        if (mAttrs.enableRightYAxisLabel){
+            paddingRight = DisplayUtil.dip2px(36);
+        }
+        if (mAttrs.enableLeftYAxisLabel){
+            paddingLeft = DisplayUtil.dip2px(36);
+        }
+        setPadding(paddingLeft, getPaddingTop(), paddingRight, getPaddingBottom());
     }
 
     @Override

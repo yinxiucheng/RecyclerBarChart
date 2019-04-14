@@ -69,7 +69,12 @@ public class BarChartAdapter extends RecyclerView.Adapter<BarChartAdapter.BarCha
         float contentWidth = (DisplayUtil.getScreenWidth(mContext) - mRecyclerView.getPaddingRight() - mRecyclerView.getPaddingLeft());
 
         int itemWidth = (int) (contentWidth / mXAxis.displayNumbers);
+        int reminderWidth = (int) (contentWidth % mXAxis.displayNumbers);
+
+        mRecyclerView.setPadding(mRecyclerView.getPaddingLeft() + reminderWidth/2 , mRecyclerView.getPaddingTop(),
+                mRecyclerView.getPaddingRight() + reminderWidth/2, mRecyclerView.getPaddingBottom());
         setLinearLayout(viewHolder.contentView, itemWidth);
+
         Log.d("XAxisRender",  "itemWidth:" + itemWidth + " time:" + TimeUtil.getDateStr(System.currentTimeMillis()/1000, "HH:mm:ss"));
         BarEntry barEntry = mEntries.get(position);
 
