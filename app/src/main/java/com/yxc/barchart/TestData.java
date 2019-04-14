@@ -3,6 +3,7 @@ package com.yxc.barchart;
 import android.util.Log;
 
 import com.yxc.barchartlib.entrys.BarEntry;
+import com.yxc.barchartlib.util.BarChartAttrs;
 import com.yxc.barchartlib.util.TimeUtil;
 
 import org.joda.time.LocalDate;
@@ -23,7 +24,7 @@ public class TestData {
     public static final int VIEW_YEAR = 3;
 
     // 创建 月视图的数据
-    public static List<BarEntry> getMonthEntries(LocalDate localDate, int length, int originEntrySize) {
+    public static List<BarEntry> getMonthEntries(BarChartAttrs attrs, LocalDate localDate, int length, int originEntrySize) {
         List<BarEntry> entries = new ArrayList<>();
         long timestamp = TimeUtil.changZeroOfTheDay(localDate);
         for (int i = originEntrySize; i < originEntrySize + length; i++) {
@@ -51,11 +52,11 @@ public class TestData {
             boolean isLastDayOfMonth = TimeUtil.isLastDayOfMonth(localDateEntry);
             int dayOfYear = localDateEntry.getDayOfYear();
             Log.d("TestData", "dayOfYear:" + dayOfYear + " localDate:" + localDateEntry);
-            if (isLastDayOfMonth && (dayOfYear+1) % 7 == 0) {
+            if (isLastDayOfMonth && (dayOfYear+1) % attrs.xAxisScaleDistance == 0) {
                 type = BarEntry.TYPE_XAXIS_SPECIAL;
             } else if (isLastDayOfMonth) {
                 type = BarEntry.TYPE_XAXIS_FIRST;
-            } else if ((dayOfYear+1) % 7 == 0) {
+            } else if ((dayOfYear+1) % attrs.xAxisScaleDistance == 0) {
                 type = BarEntry.TYPE_XAXIS_SECOND;
             }
 
@@ -110,7 +111,7 @@ public class TestData {
 
 
     //创建 Day视图的数据
-    public static List<BarEntry> createDayEntries(long timestamp, int length, int originEntrySize) {
+    public static List<BarEntry> createDayEntries(BarChartAttrs attrs, long timestamp, int length, int originEntrySize) {
         List<BarEntry> entries = new ArrayList<>();
         for (int i = originEntrySize; i < length + originEntrySize; i++) {
             timestamp = timestamp - TimeUtil.TIME_HOUR;
@@ -134,11 +135,11 @@ public class TestData {
             boolean isLastHourOfTheDay = TimeUtil.isLastHourOfTheDay(timestamp);
             LocalDate localDateEntry = TimeUtil.timestampToLocalDate(timestamp);
             int hourOfTheDay = TimeUtil.getHourOfTheDay(timestamp);
-            if (isLastHourOfTheDay && (hourOfTheDay + 1) % 3 == 0) {
+            if (isLastHourOfTheDay && (hourOfTheDay + 1) % attrs.xAxisScaleDistance == 0) {
                 type = BarEntry.TYPE_XAXIS_SPECIAL;
             } else if (isLastHourOfTheDay) {
                 type = BarEntry.TYPE_XAXIS_FIRST;
-            } else if ((hourOfTheDay + 1) % 3 == 0) {
+            } else if ((hourOfTheDay + 1) % attrs.xAxisScaleDistance == 0) {
                 type = BarEntry.TYPE_XAXIS_SECOND;
             }
             BarEntry barEntry = new BarEntry(i, value, timestamp, type);

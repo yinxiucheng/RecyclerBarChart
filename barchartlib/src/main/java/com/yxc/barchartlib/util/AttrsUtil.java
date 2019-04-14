@@ -63,6 +63,7 @@ public class AttrsUtil {
         attrs.xAxisTxtColor = ta.getColor(R.styleable.BarChartRecyclerView_xAxisTxtColor, ColorUtil.getResourcesColor(context, R.color.black));
         attrs.xAxisTxtSize = ta.getColor(R.styleable.BarChartRecyclerView_xAxisTxtSize, DisplayUtil.sp2px(context, 12));
         attrs.xAxisLabelTxtPadding = ta.getDimension(R.styleable.BarChartRecyclerView_xAxisLabelTxtPadding, DisplayUtil.dip2px(2));
+        attrs.xAxisScaleDistance = ta.getInteger(R.styleable.BarChartRecyclerView_xAxisScaleDistance, 5);
 
         ta.recycle();
         return attrs;

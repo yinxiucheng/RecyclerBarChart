@@ -27,6 +27,6 @@
         android:textColor="@color/red"
         android:textSize="14sp" />
 
-    <include layout="@layout/layout_step_date_title" />
+    <include layout="@layout/layout_step_bottom_desc" />
 
 </LinearLayout>

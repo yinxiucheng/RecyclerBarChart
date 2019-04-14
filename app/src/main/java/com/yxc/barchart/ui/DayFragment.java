@@ -78,7 +78,7 @@ public class DayFragment extends BaseFragment {
 
         initData(displayNumber, valueFormatter);
         currentTimestamp = TimeUtil.changZeroOfTheDay(LocalDate.now());
-        bindBarChartList(TestData.createDayEntries(currentTimestamp, 3 * displayNumber, mEntries.size()));
+        bindBarChartList(TestData.createDayEntries(mBarChartAttrs, currentTimestamp, 3 * displayNumber, mEntries.size()));
         currentTimestamp = currentTimestamp - TimeUtil.TIME_HOUR * displayNumber * 3;
         setXAxis(displayNumber);
         reSizeYAxis();
@@ -129,7 +129,7 @@ public class DayFragment extends BaseFragment {
                 if (newState == RecyclerView.SCROLL_STATE_IDLE) {
                     //加载更多
                     if (recyclerView.canScrollHorizontally(1) && isRightScroll) {
-                        List<BarEntry> entries = TestData.createDayEntries(currentTimestamp, displayNumber, mEntries.size());
+                        List<BarEntry> entries = TestData.createDayEntries(mBarChartAttrs, currentTimestamp, displayNumber, mEntries.size());
                         currentTimestamp = currentTimestamp - displayNumber * TimeUtil.TIME_HOUR;
                         mEntries.addAll(entries);
                         mBarChartAdapter.notifyDataSetChanged();

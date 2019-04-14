@@ -81,7 +81,7 @@ public class MonthFragment extends BaseFragment {
         initData(displayNumber, valueFormatter);
 
         currentLocalDate = TimeUtil.getLastDayOfThisMonth(LocalDate.now());
-        bindBarChartList(TestData.getMonthEntries(currentLocalDate, 3 * displayNumber, mEntries.size()));
+        bindBarChartList(TestData.getMonthEntries(mBarChartAttrs, currentLocalDate, 3 * displayNumber, mEntries.size()));
         currentLocalDate = currentLocalDate.minusDays(3 * displayNumber);
 
         setXAxis(displayNumber);
@@ -134,7 +134,7 @@ public class MonthFragment extends BaseFragment {
                 // 当不滚动时
                 if (newState == RecyclerView.SCROLL_STATE_IDLE) {
                     if (recyclerView.canScrollHorizontally(1) && isRightScroll) {
-                        List<BarEntry> entries = TestData.getMonthEntries(currentLocalDate, displayNumber, mEntries.size());
+                        List<BarEntry> entries = TestData.getMonthEntries(mBarChartAttrs, currentLocalDate, displayNumber, mEntries.size());
                         currentLocalDate = currentLocalDate.minusDays(displayNumber);
                         mEntries.addAll(entries);
                         mBarChartAdapter.notifyDataSetChanged();

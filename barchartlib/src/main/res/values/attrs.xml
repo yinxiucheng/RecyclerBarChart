@@ -54,6 +54,7 @@
         <attr name="xAxisSecondDividerColor" format="color"/>
         <attr name="xAxisThirdDividerColor" format="color"/>
         <attr name="xAxisLabelTxtPadding" format="dimension"/>
+        <attr name="xAxisScaleDistance" format="integer"/>
 
         <attr name="displayNumbers" format="integer"/>
 

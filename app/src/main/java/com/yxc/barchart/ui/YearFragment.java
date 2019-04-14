@@ -79,7 +79,6 @@ public class YearFragment extends BaseFragment {
         return view;
     }
 
-
     private void initView(View view) {
         txtLeftLocalDate = view.findViewById(R.id.txt_left_local_date);
         txtRightLocalDate = view.findViewById(R.id.txt_right_local_date);
