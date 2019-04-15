@@ -109,7 +109,7 @@ public class WeekFragment extends BaseFragment {
         mItemDecoration = new BarChartItemDecoration(mYAxis, mXAxis, mBarChartAttrs);
         mItemDecoration.setBarChartValueFormatter(new BarChartValueFormatter());
         recyclerView.addItemDecoration(mItemDecoration);
-        mBarChartAdapter = new BarChartAdapter(getActivity(), mEntries, recyclerView, mXAxis);
+        mBarChartAdapter = new BarChartAdapter(getActivity(), mEntries, recyclerView, mXAxis, mBarChartAttrs);
         recyclerView.setAdapter(mBarChartAdapter);
         recyclerView.setLayoutManager(layoutManager);
     }

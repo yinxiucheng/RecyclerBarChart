@@ -107,7 +107,7 @@ public class MonthFragment extends BaseFragment {
         mXAxis.setValueFormatter(valueFormatter);
         mItemDecoration = new BarChartItemDecoration(mYAxis, mXAxis, mBarChartAttrs);
         recyclerView.addItemDecoration(mItemDecoration);
-        mBarChartAdapter = new BarChartAdapter(getActivity(), mEntries, recyclerView, mXAxis);
+        mBarChartAdapter = new BarChartAdapter(getActivity(), mEntries, recyclerView, mXAxis, mBarChartAttrs);
         recyclerView.setAdapter(mBarChartAdapter);
         recyclerView.setLayoutManager(layoutManager);
     }

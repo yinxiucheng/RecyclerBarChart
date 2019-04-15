@@ -101,7 +101,7 @@ public class DayFragment extends BaseFragment {
         mXAxis = new XAxis(mBarChartAttrs, displayNumber, valueFormatter);
         mItemDecoration = new BarChartItemDecoration(mYAxis, mXAxis, mBarChartAttrs);
         recyclerView.addItemDecoration(mItemDecoration);
-        mBarChartAdapter = new BarChartAdapter(getActivity(), mEntries, recyclerView, mXAxis);
+        mBarChartAdapter = new BarChartAdapter(getActivity(), mEntries, recyclerView, mXAxis, mBarChartAttrs);
         recyclerView.setAdapter(mBarChartAdapter);
         recyclerView.setLayoutManager(layoutManager);
     }
