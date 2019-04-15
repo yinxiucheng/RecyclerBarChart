@@ -73,18 +73,9 @@ public class MonthFragment extends BaseFragment {
                              @Nullable Bundle savedInstanceState) {
         View view = View.inflate(getActivity(), R.layout.fragment_month_step, null);
         initView(view);
-        displayNumber = mBarChartAttrs.displayNumbers;
-        mType = TestData.VIEW_MONTH;
-        valueFormatter = new XAxisMonthFormatter(getActivity());
-        initData(displayNumber, valueFormatter);
-
-        currentLocalDate = TimeUtil.getLastDayOfThisMonth(LocalDate.now());
-        bindBarChartList(TestData.getMonthEntries(mBarChartAttrs, currentLocalDate, 3 * displayNumber, mEntries.size()));
-        currentLocalDate = currentLocalDate.minusDays(3 * displayNumber);
-
-        setXAxis(displayNumber);
+        initData();
         reSizeYAxis();
-        setListener(displayNumber);
+        setListener();
         return view;
     }
 
@@ -99,7 +90,10 @@ public class MonthFragment extends BaseFragment {
         mBarChartAttrs = recyclerView.mAttrs;
     }
 
-    private void initData(int displayNumber, ValueFormatter valueFormatter) {
+    private void initData() {
+        displayNumber = mBarChartAttrs.displayNumbers;
+        mType = TestData.VIEW_MONTH;
+        valueFormatter = new XAxisMonthFormatter(getActivity());
         mEntries = new ArrayList<>();
         SpeedRatioLinearLayoutManager layoutManager = new SpeedRatioLinearLayoutManager(getActivity(), mBarChartAttrs);
         mYAxis = new YAxis(mBarChartAttrs);
@@ -110,6 +104,11 @@ public class MonthFragment extends BaseFragment {
         mBarChartAdapter = new BarChartAdapter(getActivity(), mEntries, recyclerView, mXAxis, mBarChartAttrs);
         recyclerView.setAdapter(mBarChartAdapter);
         recyclerView.setLayoutManager(layoutManager);
+
+        currentLocalDate = TimeUtil.getLastDayOfThisMonth(LocalDate.now());
+        bindBarChartList(TestData.getMonthEntries(mBarChartAttrs, currentLocalDate, 3 * displayNumber, mEntries.size()));
+        currentLocalDate = currentLocalDate.minusDays(3 * displayNumber);
+        setXAxis(displayNumber);
     }
 
 
@@ -123,7 +122,7 @@ public class MonthFragment extends BaseFragment {
 
 
     //滑动监听
-    private void setListener(final int displayNumber) {
+    private void setListener() {
         recyclerView.addOnScrollListener(new RecyclerView.OnScrollListener() {
             private boolean isRightScroll;
 
@@ -138,13 +137,10 @@ public class MonthFragment extends BaseFragment {
                         mEntries.addAll(entries);
                         mBarChartAdapter.notifyDataSetChanged();
                     }
-
                     if (mBarChartAttrs.enableScrollToScale) {
                         int scrollByDx = ReLocationUtil.computeScrollByXOffset(recyclerView, displayNumber, TestData.VIEW_MONTH);
                         recyclerView.scrollBy(scrollByDx, 0);
                     }
-
-
                     resetYAxis(recyclerView);
                 }
             }

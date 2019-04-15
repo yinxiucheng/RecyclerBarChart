@@ -4,15 +4,11 @@ package com.yxc.barchart.ui;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
-import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.text.SpannableStringBuilder;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Button;
-import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import com.yxc.barchart.BaseFragment;
@@ -26,7 +22,6 @@ import com.yxc.barchartlib.entrys.BarEntry;
 import com.yxc.barchartlib.formatter.ValueFormatter;
 import com.yxc.barchartlib.util.BarChartAttrs;
 import com.yxc.barchartlib.util.DecimalUtil;
-import com.yxc.barchartlib.util.DisplayUtil;
 import com.yxc.barchartlib.util.ReLocationUtil;
 import com.yxc.barchartlib.util.TextUtil;
 import com.yxc.barchartlib.util.TimeUtil;
@@ -76,21 +71,14 @@ public class WeekFragment extends BaseFragment {
                              @Nullable Bundle savedInstanceState) {
         View view = View.inflate(getActivity(), R.layout.fragment_week_step, null);
         initView(view);
-        displayNumber = mBarChartAttrs.displayNumbers;
-        valueFormatter = new XAxisWeekFormatter();
-        initData(displayNumber, valueFormatter);
-        currentLocalDate = TimeUtil.getLastDayOfThisWeek(LocalDate.now());
-        bindBarChartList(TestData.createWeekEntries(currentLocalDate, 5 * displayNumber, mEntries.size()));
-        currentLocalDate = currentLocalDate.minusDays(5 * displayNumber);
-
-        setXAxis(displayNumber);
+        initData();
         reSizeYAxis();
-        setListener(displayNumber);
+        setListener();
         return view;
     }
 
 
-    private void initView(View view){
+    private void initView(View view) {
         txtLeftLocalDate = view.findViewById(R.id.txt_left_local_date);
         txtRightLocalDate = view.findViewById(R.id.txt_right_local_date);
         textTitle = view.findViewById(R.id.txt_layout);
@@ -100,7 +88,10 @@ public class WeekFragment extends BaseFragment {
         mBarChartAttrs = recyclerView.mAttrs;
     }
 
-    private void initData(int displayNumber, ValueFormatter valueFormatter){
+    private void initData() {
+        displayNumber = mBarChartAttrs.displayNumbers;
+        valueFormatter = new XAxisWeekFormatter();
+
         mEntries = new ArrayList<>();
         SpeedRatioLinearLayoutManager layoutManager = new SpeedRatioLinearLayoutManager(getActivity(), mBarChartAttrs);
         mYAxis = new YAxis(mBarChartAttrs);
@@ -112,11 +103,17 @@ public class WeekFragment extends BaseFragment {
         mBarChartAdapter = new BarChartAdapter(getActivity(), mEntries, recyclerView, mXAxis, mBarChartAttrs);
         recyclerView.setAdapter(mBarChartAdapter);
         recyclerView.setLayoutManager(layoutManager);
+
+        currentLocalDate = TimeUtil.getLastDayOfThisWeek(LocalDate.now());
+        bindBarChartList(TestData.createWeekEntries(currentLocalDate, 5 * displayNumber, mEntries.size()));
+        currentLocalDate = currentLocalDate.minusDays(5 * displayNumber);
+
+        setXAxis(displayNumber);
     }
 
 
     private void reSizeYAxis() {
-        List<BarEntry> visibleEntries = mEntries.subList(0, displayNumber+1);
+        List<BarEntry> visibleEntries = mEntries.subList(0, displayNumber + 1);
         mYAxis = YAxis.getYAxis(mBarChartAttrs, DecimalUtil.getTheMaxNumber(visibleEntries));
         mBarChartAdapter.notifyDataSetChanged();
         mItemDecoration.setYAxis(mYAxis);
@@ -124,10 +121,10 @@ public class WeekFragment extends BaseFragment {
     }
 
     //滑动监听
-    private void setListener(final int displayNumber) {
-
+    private void setListener() {
         recyclerView.addOnScrollListener(new RecyclerView.OnScrollListener() {
             boolean isRightScroll;
+
             @Override
             public void onScrollStateChanged(RecyclerView recyclerView, int newState) {
                 super.onScrollStateChanged(recyclerView, newState);
@@ -147,12 +144,13 @@ public class WeekFragment extends BaseFragment {
                     resetYAxis(recyclerView);
                 }
             }
+
             @Override
             public void onScrolled(RecyclerView recyclerView, int dx, int dy) {
                 super.onScrolled(recyclerView, dx, dy);
-                if (dx < 0){
+                if (dx < 0) {
                     isRightScroll = true;
-                }else {
+                } else {
                     isRightScroll = false;
                 }
             }
@@ -162,7 +160,7 @@ public class WeekFragment extends BaseFragment {
     //重新设置Y坐标
     private void resetYAxis(RecyclerView recyclerView) {
         float yAxisMaximum = 0;
-        HashMap<Float, List<BarEntry>> map = ReLocationUtil.getVisibleEntries( recyclerView);
+        HashMap<Float, List<BarEntry>> map = ReLocationUtil.getVisibleEntries(recyclerView);
 
         for (Map.Entry<Float, List<BarEntry>> entry : map.entrySet()) {
             yAxisMaximum = entry.getKey();
@@ -173,16 +171,16 @@ public class WeekFragment extends BaseFragment {
         mItemDecoration.setYAxis(mYAxis);
     }
 
-    private void bindBarChartList(List<BarEntry> entries){
-        if (null == mEntries){
+    private void bindBarChartList(List<BarEntry> entries) {
+        if (null == mEntries) {
             mEntries = new ArrayList<>();
-        }else {
+        } else {
             mEntries.clear();
         }
         mEntries.addAll(entries);
     }
 
-    private void setXAxis(int displayNumber){
+    private void setXAxis(int displayNumber) {
         mXAxis = new XAxis(mBarChartAttrs, displayNumber);
         mBarChartAdapter.setXAxis(mXAxis);
     }

@@ -70,17 +70,9 @@ public class DayFragment extends BaseFragment {
                              @Nullable Bundle savedInstanceState) {
         View view = View.inflate(getActivity(), R.layout.fragment_day_step, null);
         initView(view);
-        displayNumber = mBarChartAttrs.displayNumbers;
-        mType = TestData.VIEW_DAY;
-        valueFormatter = new XAxisDayFormatter();
-
-        initData(displayNumber, valueFormatter);
-        currentTimestamp = TimeUtil.changZeroOfTheDay(LocalDate.now());
-        bindBarChartList(TestData.createDayEntries(mBarChartAttrs, currentTimestamp, 3 * displayNumber, mEntries.size()));
-        currentTimestamp = currentTimestamp - TimeUtil.TIME_HOUR * displayNumber * 3;
-        setXAxis(displayNumber);
+        initData();
         reSizeYAxis();
-        setListener(mType, displayNumber);
+        setListener();
         return view;
     }
 
@@ -92,9 +84,13 @@ public class DayFragment extends BaseFragment {
         txtCountStep = view.findViewById(R.id.txt_count_Step);
         recyclerView = view.findViewById(R.id.recycler);
         mBarChartAttrs = recyclerView.mAttrs;
+        displayNumber = mBarChartAttrs.displayNumbers;
+        mType = TestData.VIEW_DAY;
+
     }
 
-    private void initData(int displayNumber, ValueFormatter valueFormatter) {
+    private void initData() {
+        valueFormatter = new XAxisDayFormatter();
         mEntries = new ArrayList<>();
         SpeedRatioLinearLayoutManager layoutManager = new SpeedRatioLinearLayoutManager(getActivity(), mBarChartAttrs);
         mYAxis = new YAxis(mBarChartAttrs);
@@ -104,6 +100,11 @@ public class DayFragment extends BaseFragment {
         mBarChartAdapter = new BarChartAdapter(getActivity(), mEntries, recyclerView, mXAxis, mBarChartAttrs);
         recyclerView.setAdapter(mBarChartAdapter);
         recyclerView.setLayoutManager(layoutManager);
+
+        currentTimestamp = TimeUtil.changZeroOfTheDay(LocalDate.now());
+        bindBarChartList(TestData.createDayEntries(mBarChartAttrs, currentTimestamp, 3 * displayNumber, mEntries.size()));
+        currentTimestamp = currentTimestamp - TimeUtil.TIME_HOUR * displayNumber * 3;
+        setXAxis(displayNumber);
     }
 
     private void reSizeYAxis() {
@@ -116,10 +117,9 @@ public class DayFragment extends BaseFragment {
 
 
     //滑动监听
-    private void setListener(final int type, final int displayNumber) {
+    private void setListener() {
         recyclerView.addOnScrollListener(new RecyclerView.OnScrollListener() {
             private boolean isRightScroll;
-
             @Override
             public void onScrollStateChanged(RecyclerView recyclerView, int newState) {
                 super.onScrollStateChanged(recyclerView, newState);
