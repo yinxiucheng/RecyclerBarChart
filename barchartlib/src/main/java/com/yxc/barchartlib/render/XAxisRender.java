@@ -8,6 +8,7 @@ import android.graphics.Path;
 import android.graphics.PathEffect;
 import android.support.v7.widget.RecyclerView;
 import android.text.TextUtils;
+import android.util.Log;
 import android.view.View;
 
 import com.yxc.barchartlib.component.XAxis;
@@ -64,10 +65,8 @@ final public class XAxisRender {
 
     //绘制网格 纵轴线
     final public void drawVerticalLine(Canvas canvas, RecyclerView parent, XAxis xAxis) {
-
         BarChartAdapter mAdapter = (BarChartAdapter) parent.getAdapter();
         List<BarEntry> entries = mAdapter.getEntries();
-
         int parentTop = parent.getPaddingTop();
         int parentBottom = parent.getHeight() - parent.getPaddingBottom();
         int parentLeft = parent.getPaddingLeft();
@@ -116,28 +115,23 @@ final public class XAxisRender {
     }
 
     //画月线的时候，当邻近的靠左的存在需要写 X轴坐标的BarEntry，返回true, 柱体宽度大于文本宽度时除外。
-    private boolean isNearEntrySecondType(List<BarEntry> entries, XAxis xAxis, int barWidth, int adapterPosition) {
-        int position1 = adapterPosition + 1;
-        int position2 = adapterPosition + 2;
+    private boolean isNearEntrySecondType(List<BarEntry> entries, XAxis xAxis, int itemWidth, int adapterPosition) {
+        if (adapterPosition == 0){
+            return false;
+        }
         BarEntry barEntryNext;
-        if (position1 < entries.size() && entries.get(position1).type == BarEntry.TYPE_XAXIS_SECOND) {
-            barEntryNext = entries.get(position1);
+        for (int nearPosition = adapterPosition - 1; nearPosition > 0; nearPosition--) {
+            barEntryNext = entries.get(nearPosition);
             mTextPaint.setTextSize(xAxis.getTextSize());
+            float distance = itemWidth * (adapterPosition - nearPosition);
             String xAxisLabel = xAxis.getValueFormatter().getBarLabel(barEntryNext);
-            if (null != barEntryNext && barWidth > mTextPaint.measureText(xAxisLabel)) {
-                //对于宽的柱状体，不缩短临近TYPE_SECOND的月线
-                return false;
+            if (!TextUtils.isEmpty(xAxisLabel)){
+                float txtWidth = mTextPaint.measureText(xAxisLabel) + xAxis.labelTxtPadding;
+                if (txtWidth > distance){
+                    return true;
+                }
+                break;
             }
-            return true;
-        } else if (position2 < entries.size() && entries.get(position2).type == BarEntry.TYPE_XAXIS_SECOND) {
-            barEntryNext = entries.get(position2);
-            mTextPaint.setTextSize(xAxis.getTextSize());
-            String xAxisLabel = xAxis.getValueFormatter().getBarLabel(barEntryNext);
-            if (null != barEntryNext && barWidth > mTextPaint.measureText(xAxisLabel)) {
-                //对于宽的柱状体，不缩短临近TYPE_SECOND的月线
-                return false;
-            }
-            return true;
         }
         return false;
     }
