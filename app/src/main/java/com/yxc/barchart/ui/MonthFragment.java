@@ -139,7 +139,7 @@ public class MonthFragment extends BaseFragment {
                     }
 
                     if (mBarChartAttrs.enableScrollToScale) {
-                        int scrollByDx = ReLocationUtil.computeScrollByXOffset(recyclerView, displayNumber);
+                        int scrollByDx = ReLocationUtil.computeScrollByXOffset(recyclerView, displayNumber, TestData.VIEW_MONTH);
                         recyclerView.scrollBy(scrollByDx, 0);
                     } else {
                          ReLocationUtil.microRelation(recyclerView);

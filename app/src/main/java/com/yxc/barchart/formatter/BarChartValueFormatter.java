@@ -1,21 +1,19 @@
 package com.yxc.barchart.formatter;
 
-import android.text.TextUtils;
-
 import com.yxc.barchartlib.entrys.BarEntry;
-import com.yxc.barchartlib.formatter.ValueFormatter;
-import com.yxc.barchartlib.util.TimeUtil;
+import com.yxc.barchartlib.formatter.DefaultBarChartValueFormatter;
 
 /**
  * @author yxc
  * @date 2019/4/14
  */
-public class BarChartValueFormatter extends ValueFormatter {
+public class BarChartValueFormatter extends DefaultBarChartValueFormatter {
     /**
      * Constructor that specifies to how many digits the value should be
      * formatted.
      */
     public BarChartValueFormatter() {
+        super(0);
     }
 
     @Override

@@ -130,7 +130,7 @@ public class YearFragment extends BaseFragment {
                     }
 
                     if (mBarChartAttrs.enableScrollToScale) {
-                        int scrollByXOffset = ReLocationUtil.computeScrollByXOffset(recyclerView, displayNumber);
+                        int scrollByXOffset = ReLocationUtil.computeScrollByXOffset(recyclerView, displayNumber, TestData.VIEW_YEAR);
                         recyclerView.scrollBy(scrollByXOffset, 0);
                     } else {
                         ReLocationUtil.microRelation(recyclerView);

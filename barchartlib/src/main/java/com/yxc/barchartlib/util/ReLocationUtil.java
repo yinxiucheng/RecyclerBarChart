@@ -35,10 +35,6 @@ public class ReLocationUtil {
 
         lastVisibleItemPosition = manager.findLastCompletelyVisibleItemPosition();
         int firstVisibleItemPosition = manager.findFirstCompletelyVisibleItemPosition();
-
-        Log.d("VisiblePosition", "begin:" + entries.get(firstVisibleItemPosition).localDate +
-                ": end" + entries.get(lastVisibleItemPosition).localDate);
-
         List<BarEntry> visibleEntries = entries.subList(firstVisibleItemPosition, lastVisibleItemPosition + 1);
         float yAxisMaximum = DecimalUtil.getTheMaxNumber(visibleEntries);
         HashMap<Float, List<BarEntry>> map = new HashMap<>();
@@ -62,9 +58,8 @@ public class ReLocationUtil {
     }
 
 
-
     //compute the scrollByDx, the left is large position, right is small position.
-    public static int computeScrollByXOffset(RecyclerView recyclerView, int displayNumbers) {
+    public static int computeScrollByXOffset(RecyclerView recyclerView, int displayNumbers, int type) {
         DistanceCompare distanceCompare = findDisplayFirstTypePosition(recyclerView, displayNumbers);
         LinearLayoutManager manager = (LinearLayoutManager) recyclerView.getLayoutManager();
         BarChartAdapter adapter = (BarChartAdapter) recyclerView.getAdapter();
@@ -79,31 +74,27 @@ public class ReLocationUtil {
         int parentLeft = recyclerView.getPaddingLeft();
         int parentRight = recyclerView.getWidth() - recyclerView.getPaddingRight();
 
-        //todo int 会不会 越界
-        int firstViewRight = compareViewRight + positionCompare * childWidth;
-
-        //这个值会为 负的。
-        int lastViewLeft = compareViewLeft - (entries.size() - 1 - positionCompare) * childWidth;
-
         int scrollByXOffset;
-
         if (distanceCompare.isNearLeft()) {//靠近左边，content左移，recyclerView右移，取正。
             //情况 1.
             int distance = compareViewRight - parentLeft;//原始调整距离
-            int distanceRightBoundary = Math.abs(firstViewRight - parentRight);//右边界
-
-            if (distanceRightBoundary < distance) { //content左移不够，顶到头，用 distanceRightBoundary
-                distance = distanceRightBoundary;
-            } else {//distance 不用修改
-
+            if (positionCompare < displayNumbers + 1){//防止 positionCompare过大，计算firstViewRight时，int越界
+                int firstViewRight = compareViewRight + positionCompare * childWidth;
+                int distanceRightBoundary = Math.abs(firstViewRight - parentRight);//右边界
+                if (distanceRightBoundary < distance) { //content左移不够，顶到头，用 distanceRightBoundary
+                    distance = distanceRightBoundary;
+                }
             }
             scrollByXOffset = distance;
         } else {//靠近右边，content右移，recyclerView左移，取负。
             int distance = parentRight - compareViewRight;//原始调整距离
-            int distanceLeftBoundary = Math.abs(parentLeft - lastViewLeft);//右边 - 左边，因为 lastViewLeft是负值，实际上是两值相加。
-
-            if (distanceLeftBoundary < distance) {//content右移不够，顶到头，distanceLeftBoundary
-                distance = distanceLeftBoundary;
+            if (entries.size() - positionCompare < displayNumbers ){
+                //这个值会为 负的。
+                int lastViewLeft = compareViewLeft - (entries.size() - 1 - positionCompare) * childWidth;
+                int distanceLeftBoundary = Math.abs(parentLeft - lastViewLeft);//右边 - 左边，因为 lastViewLeft是负值，实际上是两值相加。
+                if (distanceLeftBoundary < distance) {//content右移不够，顶到头，distanceLeftBoundary
+                    distance = distanceLeftBoundary;
+                }
             }
             //记得取负， scrollBy的话
             scrollByXOffset = distance - 2 * distance;
@@ -142,13 +133,29 @@ public class ReLocationUtil {
     }
 
 
+    private static int getNumbersUnitType(BarEntry currentBarEntry, int type) {
+        if (type == VIEW_DAY) {
+            return TimeUtil.NUM_HOUR_OF_DAY;
+        } else if (type == VIEW_WEEK) {
+            return TimeUtil.NUM_DAY_OF_WEEK;
+        } else if (type == VIEW_MONTH) {
+            LocalDate localDate = currentBarEntry.localDate;
+            LocalDate lastMonthEndLocalDate = TimeUtil.getFirstDayOfMonth(localDate).minusDays(1);//上个月末的最后一天
+            int distance = TimeUtil.getIntervalDay(lastMonthEndLocalDate, localDate);
+            Log.d("Tag", "localDate:" + localDate + " lastMonthDay:" + lastMonthEndLocalDate + " distance:" + distance);
+            return distance;
+        } else if (type == VIEW_YEAR) {
+            return TimeUtil.NUM_MONTH_OF_YEAR;
+        }
+        return TimeUtil.NUM_HOUR_OF_DAY;
+    }
+
+
     /**
      * @param recyclerView
      * @param displayNumbers
      * @param type
-     * @return
-     *
-     * the scrollToPosition Just let this position item display,
+     * @return the scrollToPosition Just let this position item display,
      * but don't consume the location in the edge of screen. so Deprecated and
      * use computeScrollByXOffset replace
      */
@@ -200,23 +207,6 @@ public class ReLocationUtil {
     }
 
 
-    @Deprecated
-    private static int getNumbersUnitType(BarEntry currentBarEntry, int type) {
-        if (type == VIEW_DAY) {
-            return TimeUtil.NUM_HOUR_OF_DAY;
-        } else if (type == VIEW_WEEK) {
-            return TimeUtil.NUM_DAY_OF_WEEK;
-        } else if (type == VIEW_MONTH) {
-            LocalDate localDate = currentBarEntry.localDate;
-            LocalDate lastMonthEndLocalDate = TimeUtil.getFirstDayOfMonth(localDate).minusDays(1);//上个月末的最后一天
-            int distance = TimeUtil.getIntervalDay(lastMonthEndLocalDate, localDate);
-            Log.d("Tag", "localDate:" + localDate + " lastMonthDay:" + lastMonthEndLocalDate + " distance:" + distance);
-            return distance;
-        } else if (type == VIEW_YEAR) {
-            return TimeUtil.NUM_MONTH_OF_YEAR;
-        }
-        return TimeUtil.NUM_HOUR_OF_DAY;
-    }
 
 
 

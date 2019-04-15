@@ -134,7 +134,7 @@ public class DayFragment extends BaseFragment {
                     }
                     //回溯
                     if (mBarChartAttrs.enableScrollToScale) {
-                        int scrollToByDx = ReLocationUtil.computeScrollByXOffset(recyclerView, displayNumber);
+                        int scrollToByDx = ReLocationUtil.computeScrollByXOffset(recyclerView, displayNumber, TestData.VIEW_DAY);
                         recyclerView.scrollBy(scrollToByDx, 0);
                     } else {
                         ReLocationUtil.microRelation(recyclerView);
