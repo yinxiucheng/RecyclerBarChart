@@ -1,14 +1,10 @@
 package com.yxc.barchartlib.view;
 
 import android.content.Context;
-import android.graphics.PointF;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
-import android.support.v4.view.ViewConfigurationCompat;
-import android.support.v7.widget.LinearSmoothScroller;
 import android.support.v7.widget.RecyclerView;
 import android.util.AttributeSet;
-import android.view.ViewConfiguration;
 
 import com.yxc.barchartlib.util.AttrsUtil;
 import com.yxc.barchartlib.util.BarChartAttrs;

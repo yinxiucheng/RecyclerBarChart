@@ -31,14 +31,14 @@ public class SpeedRatioLinearLayoutManager extends LinearLayoutManager {
     }
 
 
-    @Override
-    public int scrollHorizontallyBy(int dx, RecyclerView.Recycler recycler, RecyclerView.State state) {
-        //屏蔽之后无滑动效果，证明滑动的效果就是由这个函数实现
-        int a = super.scrollHorizontallyBy((int) (mAttrs.ratioSpeed * dx), recycler, state);
-        if (a == (int) (mAttrs.ratioSpeed * dx)) {
-            return dx;
-        }
-        return a;
-    }
+//    @Override
+//    public int scrollHorizontallyBy(int dx, RecyclerView.Recycler recycler, RecyclerView.State state) {
+//        //屏蔽之后无滑动效果，证明滑动的效果就是由这个函数实现
+//        int a = super.scrollHorizontallyBy((int) (mAttrs.ratioSpeed * dx), recycler, state);
+//        if (a == (int) (mAttrs.ratioSpeed * dx)) {
+//            return dx;
+//        }
+//        return a;
+//    }
 
 }

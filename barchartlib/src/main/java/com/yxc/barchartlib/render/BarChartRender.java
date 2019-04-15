@@ -5,6 +5,7 @@ import android.graphics.Color;
 import android.graphics.Paint;
 import android.support.annotation.NonNull;
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.view.View;
 
 import com.yxc.barchartlib.component.ChartRectF;
@@ -114,6 +115,7 @@ final public class BarChartRender {
 
             mTextPaint.setTextSize(mBarChartAttrs.barChartValueTxtSize);
             String valueStr = mBarChartValueFormatter.getBarLabel(barEntry);
+            Log.d("BarChartRender", " valueStr:" + valueStr);
             float widthText = mTextPaint.measureText(valueStr);
             float txtXLeft = getTxtX(child, width, valueStr);
             float txtXRight = txtXLeft + widthText;

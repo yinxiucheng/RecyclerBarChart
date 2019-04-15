@@ -61,7 +61,6 @@ public class ReLocationUtil {
         return map;
     }
 
-
     public static DistanceCompare findNearFirstType(RecyclerView recyclerView, int displayNumbers, int type) {
         LinearLayoutManager manager = (LinearLayoutManager) recyclerView.getLayoutManager();
         BarChartAdapter adapter = (BarChartAdapter) recyclerView.getAdapter();
@@ -127,38 +126,23 @@ public class ReLocationUtil {
     }
 
     //compute the scrollByDx, the left is large position, right is small position.
-    public static int computeScrollByXOffset(RecyclerView recyclerView, int displayNumbers, int type) {
-        DistanceCompare distanceCompare = findNearFirstType(recyclerView, displayNumbers, type);
+    public static int computeScrollByXOffset(RecyclerView recyclerView, int displayNumbers) {
+        DistanceCompare distanceCompare = findDisplayFirstTypePosition(recyclerView, displayNumbers);
         LinearLayoutManager manager = (LinearLayoutManager) recyclerView.getLayoutManager();
         BarChartAdapter adapter = (BarChartAdapter) recyclerView.getAdapter();
         List<BarEntry> entries = adapter.getEntries();
         int positionCompare = distanceCompare.position;
 
         View compareView = manager.findViewByPosition(positionCompare);
+        int compareViewRight = compareView.getRight();
         int compareViewLeft = compareView.getLeft();
-        BarEntry barEntry = (BarEntry) compareView.getTag();
-//        Log.d("Scroll1", " DistanceCompare's Position " + barEntry.localDate + " value:" + barEntry.getY());
-//        Log.d("Scroll1", " compareView's left:" + compareViewLeft + " compareView's right:" + compareView.getRight());
 
-        int parentWidth = recyclerView.getWidth();
-        int leftPadding = recyclerView.getPaddingLeft();
-        int rightPadding = recyclerView.getPaddingRight();
-        int parentContent = parentWidth - leftPadding - rightPadding;
-
-        int childWidthCompute = parentContent / displayNumbers;
         int childWidth = compareView.getWidth();
-
-//        Log.d("Scroll1", " /parentWidth: " + parentWidth +
-//                " /leftPadding:" + leftPadding + " /rightPadding:" +
-//                rightPadding + " /parentContentWidth:" + parentContent +
-//                " /childWidthCompute:" + childWidthCompute +
-//                " /childWidth:"+ childWidth);
-
         int parentLeft = recyclerView.getPaddingLeft();
         int parentRight = recyclerView.getWidth() - recyclerView.getPaddingRight();
 
         //todo int 会不会 越界
-        int firstViewRight = compareViewLeft + positionCompare * childWidth;
+        int firstViewRight = compareViewRight + positionCompare * childWidth;
 
         //这个值会为 负的。
         int lastViewLeft = compareViewLeft - (entries.size() - 1 - positionCompare) * childWidth;
@@ -167,8 +151,7 @@ public class ReLocationUtil {
 
         if (distanceCompare.isNearLeft()) {//靠近左边，content左移，recyclerView右移，取正。
             //情况 1.
-            int distanceOrigin = compareViewLeft - parentLeft;//原始调整距离
-            int distance = distanceOrigin - childWidth / 2;//原始 + 修正值（半个宽度的修正）
+            int distance = compareViewRight - parentLeft;//原始调整距离
             int distanceRightBoundary = Math.abs(firstViewRight - parentRight);//右边界
 
             if (distanceRightBoundary < distance) { //content左移不够，顶到头，用 distanceRightBoundary
@@ -178,9 +161,8 @@ public class ReLocationUtil {
             }
             scrollByXOffset = distance;
         } else {//靠近右边，content右移，recyclerView左移，取负。
-            int distanceOrigin = parentRight - compareViewLeft;//原始调整距离
-            int distance = distanceOrigin - childWidth / 2;//原始 + 修正值（半个宽度的修正）
-            int distanceLeftBoundary = Math.abs(lastViewLeft - parentLeft);//这里用 + 是因为 firstViewLeft为负的。
+            int distance = parentRight - compareViewRight;//原始调整距离
+            int distanceLeftBoundary = Math.abs(parentLeft - lastViewLeft);//右边 - 左边，因为 lastViewLeft是负值，实际上是两值相加。
 
             if (distanceLeftBoundary < distance) {//content右移不够，顶到头，distanceLeftBoundary
                 distance = distanceLeftBoundary;
@@ -189,6 +171,36 @@ public class ReLocationUtil {
             scrollByXOffset = distance - 2 * distance;
         }
         return scrollByXOffset;
+    }
+
+    //find the largest divider position ( ItemDecoration ).
+    public static DistanceCompare findDisplayFirstTypePosition(RecyclerView recyclerView, int displayNumbers) {
+        LinearLayoutManager manager = (LinearLayoutManager) recyclerView.getLayoutManager();
+        BarChartAdapter adapter = (BarChartAdapter) recyclerView.getAdapter();
+        List<BarEntry> entries = adapter.getEntries();
+        int firstVisibleItemPosition = manager.findFirstVisibleItemPosition();
+        int position = firstVisibleItemPosition; //从右边的第一个View开始找
+        int parentRight = recyclerView.getWidth() - recyclerView.getPaddingRight();
+        int parentLeft = recyclerView.getPaddingLeft();
+        DistanceCompare distanceCompare = new DistanceCompare(0, 0);
+        for (int i = 0; i < displayNumbers; i++) {
+            if (i > 0) {
+                position++;
+            }
+            if (position >= 0 && position < entries.size()) {
+                BarEntry barEntry = entries.get(position);
+                if (barEntry.type == BarEntry.TYPE_XAXIS_FIRST || barEntry.type == BarEntry.TYPE_XAXIS_SPECIAL) {
+                    distanceCompare.position = position;
+                    View positionView = manager.findViewByPosition(position);
+                    int viewLeft = positionView.getLeft();
+                    distanceCompare.distanceRight = parentRight - viewLeft;
+                    distanceCompare.distanceLeft = viewLeft - parentLeft;
+                    distanceCompare.setBarEntry(barEntry);
+                    break;
+                }
+            }
+        }
+        return distanceCompare;
     }
 
 

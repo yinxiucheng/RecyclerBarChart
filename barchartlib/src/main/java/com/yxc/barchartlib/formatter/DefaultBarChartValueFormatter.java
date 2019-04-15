@@ -1,6 +1,7 @@
 package com.yxc.barchartlib.formatter;
 
 import com.yxc.barchartlib.entrys.BarEntry;
+import com.yxc.barchartlib.util.TimeUtil;
 
 /**
  * @author yxc
@@ -28,7 +29,8 @@ public class DefaultBarChartValueFormatter extends DefaultValueFormatter {
 
     @Override
     public String getBarLabel(BarEntry barEntry) {
-        return barEntry.getY() > 0 ?getFormattedValue(barEntry.getY()):"";
+//        return barEntry.getY() > 0 ?getFormattedValue(barEntry.getY()):"";
+        return TimeUtil.getDateStr(barEntry.timestamp, "MM-dd");
     }
 
 }

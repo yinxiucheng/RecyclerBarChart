@@ -565,4 +565,11 @@ public class TimeUtil {
         return lastDayOfMonthZero;
     }
 
+    public static LocalDate getLastDayOfThisWeek(LocalDate localDate){
+        int dayOfWeek = localDate.getDayOfWeek();
+        int distance = TimeUtil.NUM_DAY_OF_WEEK - dayOfWeek;
+        LocalDate lastDayOfWeek = localDate.plusDays(distance);
+        return lastDayOfWeek;
+    }
+
 }

@@ -101,6 +101,9 @@ public class TestData {
             if (isSunday) {
                 type = BarEntry.TYPE_XAXIS_FIRST;
             }
+            if (TimeUtil.isFuture(localDateEntry)){
+                value = 0;
+            }
             BarEntry barEntry = new BarEntry(i, value, timestamp, type);
             barEntry.localDate = localDateEntry;
             entries.add(barEntry);
