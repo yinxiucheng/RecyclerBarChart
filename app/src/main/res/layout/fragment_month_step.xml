@@ -17,7 +17,8 @@
         app:enableCharValueDisplay="true"
         app:recyclerPaddingRight="3dp"
         app:displayNumbers="31"
-        app:xAxisScaleDistance="7"/>
+        app:xAxisScaleDistance="7"
+        app:enableScrollToScale="false"/>
 
     <TextView
         android:id="@+id/txt_count_Step"

@@ -130,11 +130,10 @@ public class YearFragment extends BaseFragment {
                     }
 
                     if (mBarChartAttrs.enableScrollToScale) {
-                        int scrollByXOffset = ReLocationUtil.computeScrollByXOffset(recyclerView, displayNumber, TestData.VIEW_YEAR);
-                        recyclerView.scrollBy(scrollByXOffset, 0);
-                    } else {
-                        ReLocationUtil.microRelation(recyclerView);
+                        int scrollByDx = ReLocationUtil.computeScrollByXOffset(recyclerView, displayNumber, TestData.VIEW_YEAR);
+                        recyclerView.scrollBy(scrollByDx, 0);
                     }
+
                     resetYAxis(recyclerView);
                 }
             }
@@ -180,8 +179,8 @@ public class YearFragment extends BaseFragment {
     }
 
     private void displayDateAndStep(List<BarEntry> displayEntries) {
-        BarEntry  rightBarEntry = displayEntries.get(0);
-        BarEntry  leftBarEntry = displayEntries.get(displayEntries.size() - 1);
+        BarEntry rightBarEntry = displayEntries.get(0);
+        BarEntry leftBarEntry = displayEntries.get(displayEntries.size() - 1);
         txtLeftLocalDate.setText(TimeUtil.getDateStr(leftBarEntry.timestamp, "yyyy-MM-dd HH:mm:ss"));
         txtRightLocalDate.setText(TimeUtil.getDateStr(rightBarEntry.timestamp, "yyyy-MM-dd HH:mm:ss"));
 

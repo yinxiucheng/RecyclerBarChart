@@ -26,22 +26,6 @@ public class ReLocationUtil {
     public static final int VIEW_YEAR = 3;
 
     //位置进行微调
-    public static HashMap<Float, List<BarEntry>> microRelation(RecyclerView recyclerView) {
-        LinearLayoutManager manager = (LinearLayoutManager) recyclerView.getLayoutManager();
-        BarChartAdapter adapter = (BarChartAdapter) recyclerView.getAdapter();
-        List<BarEntry> entries = adapter.getEntries();
-        //获取最后一个完全显示的ItemPosition
-        int lastVisibleItemPosition = manager.findLastCompletelyVisibleItemPosition();
-
-        lastVisibleItemPosition = manager.findLastCompletelyVisibleItemPosition();
-        int firstVisibleItemPosition = manager.findFirstCompletelyVisibleItemPosition();
-        List<BarEntry> visibleEntries = entries.subList(firstVisibleItemPosition, lastVisibleItemPosition + 1);
-        float yAxisMaximum = DecimalUtil.getTheMaxNumber(visibleEntries);
-        HashMap<Float, List<BarEntry>> map = new HashMap<>();
-        map.put(yAxisMaximum, visibleEntries);
-
-        return map;
-    }
 
     public static HashMap<Float, List<BarEntry>> getVisibleEntries(RecyclerView recyclerView) {
         LinearLayoutManager manager = (LinearLayoutManager) recyclerView.getLayoutManager();

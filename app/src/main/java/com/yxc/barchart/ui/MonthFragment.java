@@ -105,7 +105,7 @@ public class MonthFragment extends BaseFragment {
         mYAxis = new YAxis(mBarChartAttrs);
         mXAxis = new XAxis(mBarChartAttrs, displayNumber);
         mXAxis.setValueFormatter(valueFormatter);
-        mItemDecoration = new BarChartItemDecoration( mYAxis, mXAxis, mBarChartAttrs);
+        mItemDecoration = new BarChartItemDecoration(mYAxis, mXAxis, mBarChartAttrs);
         recyclerView.addItemDecoration(mItemDecoration);
         mBarChartAdapter = new BarChartAdapter(getActivity(), mEntries, recyclerView, mXAxis);
         recyclerView.setAdapter(mBarChartAdapter);
@@ -126,6 +126,7 @@ public class MonthFragment extends BaseFragment {
     private void setListener(final int displayNumber) {
         recyclerView.addOnScrollListener(new RecyclerView.OnScrollListener() {
             private boolean isRightScroll;
+
             @Override
             public void onScrollStateChanged(RecyclerView recyclerView, int newState) {
                 super.onScrollStateChanged(recyclerView, newState);
@@ -141,12 +142,13 @@ public class MonthFragment extends BaseFragment {
                     if (mBarChartAttrs.enableScrollToScale) {
                         int scrollByDx = ReLocationUtil.computeScrollByXOffset(recyclerView, displayNumber, TestData.VIEW_MONTH);
                         recyclerView.scrollBy(scrollByDx, 0);
-                    } else {
-                         ReLocationUtil.microRelation(recyclerView);
                     }
+
+
                     resetYAxis(recyclerView);
                 }
             }
+
             @Override
             public void onScrolled(RecyclerView recyclerView, int dx, int dy) {
                 super.onScrolled(recyclerView, dx, dy);

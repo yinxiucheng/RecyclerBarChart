@@ -138,12 +138,12 @@ public class WeekFragment extends BaseFragment {
                         mEntries.addAll(entries);
                         mBarChartAdapter.setEntries(mEntries);
                     }
+
                     if (mBarChartAttrs.enableScrollToScale) {
                         int scrollByDx = ReLocationUtil.computeScrollByXOffset(recyclerView, displayNumber, TestData.VIEW_WEEK);
                         recyclerView.scrollBy(scrollByDx, 0);
-                    } else {
-                        ReLocationUtil.microRelation(recyclerView);
                     }
+
                     resetYAxis(recyclerView);
                 }
             }
