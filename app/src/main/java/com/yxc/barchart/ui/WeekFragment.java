@@ -20,7 +20,6 @@ import com.yxc.barchart.R;
 import com.yxc.barchart.TestData;
 import com.yxc.barchart.formatter.BarChartValueFormatter;
 import com.yxc.barchart.formatter.XAxisWeekFormatter;
-import com.yxc.barchartlib.component.DistanceCompare;
 import com.yxc.barchartlib.component.XAxis;
 import com.yxc.barchartlib.component.YAxis;
 import com.yxc.barchartlib.entrys.BarEntry;
@@ -51,15 +50,6 @@ public class WeekFragment extends BaseFragment {
     TextView textTitle;
     TextView txtCountStep;
 
-    //todo 测试所用
-    Button scrollByButton;
-    Button scrollByButton2;
-    TextView textScrollBy;
-    TextView textWidth;
-    TextView textWidthDisplay;
-    TextView testViewGroup;
-    LinearLayout llScrollBy;
-
     BarChartAdapter mBarChartAdapter;
     List<BarEntry> mEntries;
     BarChartItemDecoration mItemDecoration;
@@ -88,7 +78,6 @@ public class WeekFragment extends BaseFragment {
         initView(view);
         displayNumber = mBarChartAttrs.displayNumbers;
         valueFormatter = new XAxisWeekFormatter();
-
         initData(displayNumber, valueFormatter);
         currentLocalDate = TimeUtil.getLastDayOfThisWeek(LocalDate.now());
         bindBarChartList(TestData.createWeekEntries(currentLocalDate, 5 * displayNumber, mEntries.size()));
@@ -102,13 +91,6 @@ public class WeekFragment extends BaseFragment {
 
 
     private void initView(View view){
-        scrollByButton = view.findViewById(R.id.btn_test);
-        scrollByButton2 = view.findViewById(R.id.btn_test2);
-        textScrollBy = view.findViewById(R.id.test_scrollBy);
-        textWidth = view.findViewById(R.id.test_width);
-        textWidthDisplay = view.findViewById(R.id.test_width_display);
-        llScrollBy = view.findViewById(R.id.ll_scrollBy);
-
         txtLeftLocalDate = view.findViewById(R.id.txt_left_local_date);
         txtRightLocalDate = view.findViewById(R.id.txt_right_local_date);
         textTitle = view.findViewById(R.id.txt_layout);
@@ -143,35 +125,12 @@ public class WeekFragment extends BaseFragment {
 
     //滑动监听
     private void setListener(final int displayNumber) {
-        scrollByButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                textWidthDisplay.setText( "textWidth:" + textWidth.getWidth() + "   DB:" + DisplayUtil.px2dp(getActivity(), textWidth.getWidth()));
-                textScrollBy.scrollBy(-DisplayUtil.dip2px(56), 0);
-                recyclerView.smoothScrollBy(-DisplayUtil.dip2px(56), 0);
-                LinearLayoutManager layoutManager = (LinearLayoutManager) recyclerView.getLayoutManager();
-                llScrollBy.scrollBy(-DisplayUtil.dip2px(56), 0);
-            }
-        });
-
-        scrollByButton2.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                textWidthDisplay.setText( "textWidth:" + textWidth.getWidth() + "   DB:" + DisplayUtil.px2dp(getActivity(), textWidth.getWidth()));
-                textScrollBy.scrollBy(DisplayUtil.dip2px(56), 0);
-                recyclerView.smoothScrollBy(DisplayUtil.dip2px(56), 0);
-                llScrollBy.scrollBy(DisplayUtil.dip2px(56), 0);
-            }
-        });
 
         recyclerView.addOnScrollListener(new RecyclerView.OnScrollListener() {
             boolean isRightScroll;
             @Override
             public void onScrollStateChanged(RecyclerView recyclerView, int newState) {
                 super.onScrollStateChanged(recyclerView, newState);
-                // 当不滚动时
-                Log.d("weekFragment", " onScrollStateChanged:" + newState);
-
                 if (newState == RecyclerView.SCROLL_STATE_IDLE) {
                     if (recyclerView.canScrollHorizontally(1) && isRightScroll) {//加载更多
                         List<BarEntry> entries = TestData.createWeekEntries(currentLocalDate, displayNumber, mEntries.size());
@@ -179,14 +138,9 @@ public class WeekFragment extends BaseFragment {
                         mEntries.addAll(entries);
                         mBarChartAdapter.setEntries(mEntries);
                     }
-
                     if (mBarChartAttrs.enableScrollToScale) {
-//                        DistanceCompare distanceCompare = ReLocationUtil.findNearFirstType(recyclerView, displayNumber, TestData.VIEW_WEEK);
                         int scrollByDx = ReLocationUtil.computeScrollByXOffset(recyclerView, displayNumber);
                         recyclerView.scrollBy(scrollByDx, 0);
-//                        recyclerView.scrollToPosition(distanceCompare.position);
-//                        Log.d("ScrollListener", " LocalDate:" + distanceCompare.barEntry.localDate +
-//                                TimeUtil.getDateStr(System.currentTimeMillis()/1000, "mm-ss"));
                     } else {
                         ReLocationUtil.microRelation(recyclerView);
                     }
@@ -196,7 +150,6 @@ public class WeekFragment extends BaseFragment {
             @Override
             public void onScrolled(RecyclerView recyclerView, int dx, int dy) {
                 super.onScrolled(recyclerView, dx, dy);
-                Log.d("weekFragment", "dx:" + dx);
                 if (dx < 0){
                     isRightScroll = true;
                 }else {

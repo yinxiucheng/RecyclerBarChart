@@ -6,7 +6,6 @@ import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v7.widget.RecyclerView;
 import android.text.SpannableStringBuilder;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -16,7 +15,6 @@ import com.yxc.barchart.BaseFragment;
 import com.yxc.barchart.R;
 import com.yxc.barchart.TestData;
 import com.yxc.barchart.formatter.XAxisDayFormatter;
-import com.yxc.barchartlib.component.DistanceCompare;
 import com.yxc.barchartlib.component.XAxis;
 import com.yxc.barchartlib.component.YAxis;
 import com.yxc.barchartlib.entrys.BarEntry;
@@ -134,18 +132,13 @@ public class DayFragment extends BaseFragment {
                         mEntries.addAll(entries);
                         mBarChartAdapter.notifyDataSetChanged();
                     }
-                    Log.d("ScrollListener", "Day idle resizeYAxis" + " time: " +
-                            TimeUtil.getDateStr(System.currentTimeMillis() / 1000, "mm-ss"));
                     //回溯
                     if (mBarChartAttrs.enableScrollToScale) {
-                        DistanceCompare distanceCompare = ReLocationUtil.findNearFirstType(recyclerView, displayNumber, TestData.VIEW_DAY);
-                        recyclerView.scrollToPosition(distanceCompare.position);
-                        Log.d("ScrollListener", "scrollToPosition " + " time: " +
-                                TimeUtil.getDateStr(System.currentTimeMillis() / 1000, "mm-ss"));
+                        int scrollToByDx = ReLocationUtil.computeScrollByXOffset(recyclerView, displayNumber);
+                        recyclerView.scrollBy(scrollToByDx, 0);
                     } else {
                         ReLocationUtil.microRelation(recyclerView);
                     }
-
                     //重绘Y轴
                     resetYAxis(recyclerView);
                 }

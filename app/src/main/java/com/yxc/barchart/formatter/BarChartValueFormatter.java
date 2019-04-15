@@ -1,31 +1,27 @@
 package com.yxc.barchart.formatter;
 
+import android.text.TextUtils;
+
 import com.yxc.barchartlib.entrys.BarEntry;
-import com.yxc.barchartlib.formatter.DefaultBarChartValueFormatter;
+import com.yxc.barchartlib.formatter.ValueFormatter;
 import com.yxc.barchartlib.util.TimeUtil;
 
 /**
  * @author yxc
  * @date 2019/4/14
  */
-public class BarChartValueFormatter extends DefaultBarChartValueFormatter {
+public class BarChartValueFormatter extends ValueFormatter {
     /**
      * Constructor that specifies to how many digits the value should be
      * formatted.
-     *
      */
-    public BarChartValueFormatter(){
-        super(0);
-
-    }
-    public BarChartValueFormatter(int digits) {
-        super(digits);
+    public BarChartValueFormatter() {
     }
 
     @Override
     public String getBarLabel(BarEntry barEntry) {
-//        return super.getBarLabel(barEntry);
-        return TimeUtil.getDateStr(barEntry.timestamp, "MM-dd");
+        return super.getBarLabel(barEntry);
+//        return barEntry.getY() > 0 ? TimeUtil.getDateStr(barEntry.timestamp, "MM-dd") : "";
     }
 
     @Override

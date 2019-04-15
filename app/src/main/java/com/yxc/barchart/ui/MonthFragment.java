@@ -139,14 +139,11 @@ public class MonthFragment extends BaseFragment {
                     }
 
                     if (mBarChartAttrs.enableScrollToScale) {
-                        DistanceCompare distanceCompare = ReLocationUtil.findNearFirstType(recyclerView,
-                                displayNumber, TestData.VIEW_MONTH);
-                        recyclerView.scrollToPosition(distanceCompare.position);
+                        int scrollByDx = ReLocationUtil.computeScrollByXOffset(recyclerView, displayNumber);
+                        recyclerView.scrollBy(scrollByDx, 0);
                     } else {
                          ReLocationUtil.microRelation(recyclerView);
                     }
-                    Log.d("ScrollListener" , "Month idle resizeYAxis" + " time: " +
-                            TimeUtil.getDateStr(System.currentTimeMillis()/1000, "mm-ss"));
                     resetYAxis(recyclerView);
                 }
             }

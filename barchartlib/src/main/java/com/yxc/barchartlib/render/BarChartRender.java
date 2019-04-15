@@ -24,6 +24,11 @@ final public class BarChartRender {
     private BarChartAttrs mBarChartAttrs;
     private Paint mBarChartPaint;
     private Paint mTextPaint;
+
+    public void setBarChartValueFormatter(ValueFormatter mBarChartValueFormatter) {
+        this.mBarChartValueFormatter = mBarChartValueFormatter;
+    }
+
     private ValueFormatter mBarChartValueFormatter;
 
     public BarChartRender(BarChartAttrs barChartAttrs, ValueFormatter barChartValueFormatter){

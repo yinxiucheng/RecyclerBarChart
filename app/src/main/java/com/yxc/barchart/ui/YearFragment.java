@@ -130,14 +130,11 @@ public class YearFragment extends BaseFragment {
                     }
 
                     if (mBarChartAttrs.enableScrollToScale) {
-                        DistanceCompare distanceCompare = ReLocationUtil.findNearFirstType(recyclerView, displayNumber, TestData.VIEW_YEAR);
-                        recyclerView.scrollToPosition(distanceCompare.position);
+                        int scrollByXOffset = ReLocationUtil.computeScrollByXOffset(recyclerView, displayNumber);
+                        recyclerView.scrollBy(scrollByXOffset, 0);
                     } else {
                         ReLocationUtil.microRelation(recyclerView);
                     }
-
-                    Log.d("ScrollListener" , "Year idle resizeYAxis" + " time: " +
-                            TimeUtil.getDateStr(System.currentTimeMillis()/1000, "mm-ss"));
                     resetYAxis(recyclerView);
                 }
             }

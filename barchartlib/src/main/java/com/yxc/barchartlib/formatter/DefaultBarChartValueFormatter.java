@@ -21,16 +21,12 @@ public class DefaultBarChartValueFormatter extends DefaultValueFormatter {
 
     @Override
     public String getFormattedValue(float value) {
-
-        // put more logic here ...
-        // avoid memory allocations here (for performance reasons)
         return super.getFormattedValue(value);
     }
 
     @Override
     public String getBarLabel(BarEntry barEntry) {
-//        return barEntry.getY() > 0 ?getFormattedValue(barEntry.getY()):"";
-        return TimeUtil.getDateStr(barEntry.timestamp, "MM-dd");
+        return barEntry.getY() > 0 ?getFormattedValue(barEntry.getY()):"";
     }
 
 }

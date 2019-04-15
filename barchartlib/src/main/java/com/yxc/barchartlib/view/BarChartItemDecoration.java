@@ -53,6 +53,7 @@ public class BarChartItemDecoration extends RecyclerView.ItemDecoration {
     //支持自定义 柱状图顶部 value的格式。
     public void setBarChartValueFormatter(ValueFormatter barChartValueFormatter) {
         this.mBarChartValueFormatter = barChartValueFormatter;
+        this.mBarChartRender.setBarChartValueFormatter(barChartValueFormatter);
     }
 
     @Override
