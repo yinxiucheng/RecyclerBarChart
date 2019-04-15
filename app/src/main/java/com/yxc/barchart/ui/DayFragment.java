@@ -84,12 +84,11 @@ public class DayFragment extends BaseFragment {
         txtCountStep = view.findViewById(R.id.txt_count_Step);
         recyclerView = view.findViewById(R.id.recycler);
         mBarChartAttrs = recyclerView.mAttrs;
-        displayNumber = mBarChartAttrs.displayNumbers;
-        mType = TestData.VIEW_DAY;
-
     }
 
     private void initData() {
+        displayNumber = mBarChartAttrs.displayNumbers;
+        mType = TestData.VIEW_DAY;
         valueFormatter = new XAxisDayFormatter();
         mEntries = new ArrayList<>();
         SpeedRatioLinearLayoutManager layoutManager = new SpeedRatioLinearLayoutManager(getActivity(), mBarChartAttrs);

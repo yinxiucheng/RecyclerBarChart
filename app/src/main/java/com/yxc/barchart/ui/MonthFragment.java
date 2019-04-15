@@ -6,7 +6,6 @@ import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v7.widget.RecyclerView;
 import android.text.SpannableStringBuilder;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -16,7 +15,6 @@ import com.yxc.barchart.BaseFragment;
 import com.yxc.barchart.R;
 import com.yxc.barchart.TestData;
 import com.yxc.barchart.formatter.XAxisMonthFormatter;
-import com.yxc.barchartlib.component.DistanceCompare;
 import com.yxc.barchartlib.component.XAxis;
 import com.yxc.barchartlib.component.YAxis;
 import com.yxc.barchartlib.entrys.BarEntry;
@@ -55,7 +53,6 @@ public class MonthFragment extends BaseFragment {
 
     private int displayNumber;
     private BarChartAttrs mBarChartAttrs;
-    private int mType;
     private LocalDate currentLocalDate;
 
     //防止 Fragment重叠
@@ -92,7 +89,6 @@ public class MonthFragment extends BaseFragment {
 
     private void initData() {
         displayNumber = mBarChartAttrs.displayNumbers;
-        mType = TestData.VIEW_MONTH;
         valueFormatter = new XAxisMonthFormatter(getActivity());
         mEntries = new ArrayList<>();
         SpeedRatioLinearLayoutManager layoutManager = new SpeedRatioLinearLayoutManager(getActivity(), mBarChartAttrs);
