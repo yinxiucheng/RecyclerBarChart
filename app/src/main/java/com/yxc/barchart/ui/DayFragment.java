@@ -31,6 +31,7 @@ import com.yxc.barchartlib.view.SpeedRatioLinearLayoutManager;
 
 import org.joda.time.LocalDate;
 
+import java.sql.Time;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -54,6 +55,7 @@ public class DayFragment extends BaseFragment {
     private int displayNumber;
     private BarChartAttrs mBarChartAttrs;
     long currentTimestamp;
+    int preEntrySize = 4;
 
     //防止 Fragment重叠
     @Override
@@ -91,6 +93,7 @@ public class DayFragment extends BaseFragment {
         mType = TestData.VIEW_DAY;
         valueFormatter = new XAxisDayFormatter();
         mEntries = new ArrayList<>();
+
         SpeedRatioLinearLayoutManager layoutManager = new SpeedRatioLinearLayoutManager(getActivity(), mBarChartAttrs);
         mYAxis = new YAxis(mBarChartAttrs);
         mXAxis = new XAxis(mBarChartAttrs, displayNumber, valueFormatter);
@@ -101,13 +104,19 @@ public class DayFragment extends BaseFragment {
         recyclerView.setLayoutManager(layoutManager);
 
         currentTimestamp = TimeUtil.changZeroOfTheDay(LocalDate.now());
-        bindBarChartList(TestData.createDayEntries(mBarChartAttrs, currentTimestamp, 3 * displayNumber, mEntries.size()));
+        List<BarEntry> preEntries = TestData.createDayEntries(mBarChartAttrs,
+                currentTimestamp + preEntrySize * TimeUtil.TIME_HOUR, preEntrySize, mEntries.size(), true);
+        List<BarEntry> barEntries = TestData.createDayEntries(mBarChartAttrs, currentTimestamp,
+                3 * displayNumber, mEntries.size(), false);
+        barEntries.addAll(0, preEntries);
+        bindBarChartList(barEntries);
         currentTimestamp = currentTimestamp - TimeUtil.TIME_HOUR * displayNumber * 3;
         setXAxis(displayNumber);
     }
 
     private void reSizeYAxis() {
-        List<BarEntry> visibleEntries = mEntries.subList(0, displayNumber + 1);
+        recyclerView.scrollToPosition(preEntrySize);
+        List<BarEntry> visibleEntries = mEntries.subList(preEntrySize, preEntrySize + displayNumber + 1);
         mYAxis = YAxis.getYAxis(mBarChartAttrs, DecimalUtil.getTheMaxNumber(visibleEntries));
         mBarChartAdapter.notifyDataSetChanged();
         mItemDecoration.setYAxis(mYAxis);
@@ -126,7 +135,7 @@ public class DayFragment extends BaseFragment {
                 if (newState == RecyclerView.SCROLL_STATE_IDLE) {
                     //加载更多
                     if (recyclerView.canScrollHorizontally(1) && isRightScroll) {
-                        List<BarEntry> entries = TestData.createDayEntries(mBarChartAttrs, currentTimestamp, displayNumber, mEntries.size());
+                        List<BarEntry> entries = TestData.createDayEntries(mBarChartAttrs, currentTimestamp, displayNumber, mEntries.size(), false);
                         currentTimestamp = currentTimestamp - displayNumber * TimeUtil.TIME_HOUR;
                         mEntries.addAll(entries);
                         mBarChartAdapter.notifyDataSetChanged();

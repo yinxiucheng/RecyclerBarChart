@@ -54,6 +54,7 @@ public class MonthFragment extends BaseFragment {
     private int displayNumber;
     private BarChartAttrs mBarChartAttrs;
     private LocalDate currentLocalDate;
+    private int preEntrySize = 5;
 
     //防止 Fragment重叠
     @Override
@@ -102,14 +103,16 @@ public class MonthFragment extends BaseFragment {
         recyclerView.setLayoutManager(layoutManager);
 
         currentLocalDate = TimeUtil.getLastDayOfThisMonth(LocalDate.now());
-        bindBarChartList(TestData.getMonthEntries(mBarChartAttrs, currentLocalDate, 3 * displayNumber, mEntries.size()));
+        List<BarEntry> barEntries = TestData.getMonthEntries(mBarChartAttrs, currentLocalDate.plusDays(preEntrySize),
+                preEntrySize + 3 * displayNumber, mEntries.size());
+        bindBarChartList(barEntries);
         currentLocalDate = currentLocalDate.minusDays(3 * displayNumber);
         setXAxis(displayNumber);
     }
 
-
     private void reSizeYAxis() {
-        List<BarEntry> visibleEntries = mEntries.subList(0, displayNumber + 1);
+        recyclerView.scrollToPosition(preEntrySize);
+        List<BarEntry> visibleEntries = mEntries.subList(preEntrySize, preEntrySize + displayNumber + 1);
         mYAxis = YAxis.getYAxis(mBarChartAttrs, DecimalUtil.getTheMaxNumber(visibleEntries));
         mBarChartAdapter.notifyDataSetChanged();
         mItemDecoration.setYAxis(mYAxis);

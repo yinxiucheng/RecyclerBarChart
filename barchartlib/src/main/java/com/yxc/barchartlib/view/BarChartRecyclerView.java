@@ -21,6 +21,10 @@ public class BarChartRecyclerView extends RecyclerView {
     public BarChartRecyclerView(@NonNull Context context, @Nullable AttributeSet attrs) {
         super(context, attrs);
         this.mAttrs = AttrsUtil.getCustomerRecyclerAttrs(context, attrs);
+        setRecyclerViewDefaultPadding();
+    }
+
+    private void setRecyclerViewDefaultPadding(){
         int paddingLeft = getPaddingLeft();
         int paddingRight = getPaddingRight();
         if (mAttrs.enableRightYAxisLabel){

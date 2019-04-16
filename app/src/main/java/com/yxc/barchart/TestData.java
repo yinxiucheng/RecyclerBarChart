@@ -114,7 +114,7 @@ public class TestData {
 
 
     //创建 Day视图的数据
-    public static List<BarEntry> createDayEntries(BarChartAttrs attrs, long timestamp, int length, int originEntrySize) {
+    public static List<BarEntry> createDayEntries(BarChartAttrs attrs, long timestamp, int length, int originEntrySize, boolean zeroValue) {
         List<BarEntry> entries = new ArrayList<>();
         for (int i = originEntrySize; i < length + originEntrySize; i++) {
             timestamp = timestamp - TimeUtil.TIME_HOUR;
@@ -144,6 +144,9 @@ public class TestData {
                 type = BarEntry.TYPE_XAXIS_FIRST;
             } else if ((hourOfTheDay + 1) % attrs.xAxisScaleDistance == 0) {
                 type = BarEntry.TYPE_XAXIS_SECOND;
+            }
+            if (zeroValue){
+                value = 0;
             }
             BarEntry barEntry = new BarEntry(i, value, timestamp, type);
             barEntry.localDate = localDateEntry;

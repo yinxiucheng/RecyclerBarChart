@@ -48,6 +48,7 @@ public class YearFragment extends BaseFragment {
     private int displayNumber;
     private BarChartAttrs mBarChartAttrs;
     private LocalDate currentLocalDate;
+    private int preEntrySize = 3;
 
     //防止 Fragment重叠
     @Override
@@ -92,14 +93,16 @@ public class YearFragment extends BaseFragment {
         recyclerView.setAdapter(mBarChartAdapter);
         recyclerView.setLayoutManager(layoutManager);
         currentLocalDate = TimeUtil.getLastMonthOfTheYear(LocalDate.now());
-        bindBarChartList(TestData.createYearEntries(currentLocalDate, 5 * displayNumber, mEntries.size()));
+        List<BarEntry> barEntries = TestData.createYearEntries(currentLocalDate.plusMonths(preEntrySize), preEntrySize + 5 * displayNumber, mEntries.size());
+        bindBarChartList(barEntries);
         currentLocalDate = currentLocalDate.minusMonths(displayNumber * 5);
         setXAxis(displayNumber);
     }
 
 
     private void reSizeYAxis() {
-        List<BarEntry> visibleEntries = mEntries.subList(0, displayNumber + 1);
+        recyclerView.scrollToPosition(preEntrySize);
+        List<BarEntry> visibleEntries = mEntries.subList(preEntrySize, preEntrySize + displayNumber + 1);
         mYAxis = YAxis.getYAxis(mBarChartAttrs, DecimalUtil.getTheMaxNumber(visibleEntries));
         mBarChartAdapter.notifyDataSetChanged();
         mItemDecoration.setYAxis(mYAxis);

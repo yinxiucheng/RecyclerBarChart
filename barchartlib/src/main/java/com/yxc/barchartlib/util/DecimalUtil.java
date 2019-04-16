@@ -78,4 +78,28 @@ public class DecimalUtil {
         return decimalFormat.format(Double.parseDouble(str));
     }
 
+
+    public static long getCountStepSum(List<BarEntry> displayEntries){
+        long count = 0;
+        for (int i = 0; i < displayEntries.size(); i++) {
+            BarEntry entry = displayEntries.get(i);
+            count += entry.getY();
+        }
+
+        return count;
+    }
+
+    public static long getAverageStep(List<BarEntry> displayEntries){
+        return getCountStepSum(displayEntries)/displayEntries.size();
+    }
+
+    public static String getAverageStepStr(List<BarEntry> displayEntries){
+        return addComma(Long.toString(getAverageStep(displayEntries)));
+    }
+
+
+    public static String getCountStepStr(List<BarEntry> displayEntries){
+        return addComma(Long.toString(getCountStepSum(displayEntries)));
+    }
+
 }

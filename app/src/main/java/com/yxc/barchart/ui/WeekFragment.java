@@ -56,6 +56,8 @@ public class WeekFragment extends BaseFragment {
     private BarChartAttrs mBarChartAttrs;
     private LocalDate currentLocalDate;
 
+    private int preEntries = 2;
+
     //防止 Fragment重叠
     @Override
     public void setMenuVisibility(boolean menuVisible) {
@@ -84,6 +86,7 @@ public class WeekFragment extends BaseFragment {
         textTitle = view.findViewById(R.id.txt_layout);
         txtCountStep = view.findViewById(R.id.txt_count_Step);
         recyclerView = view.findViewById(R.id.recycler);
+//        recyclerView.setScrollingTouchSlop(RecyclerView.TOUCH_SLOP_PAGING);
 
         mBarChartAttrs = recyclerView.mAttrs;
     }
@@ -105,7 +108,9 @@ public class WeekFragment extends BaseFragment {
         recyclerView.setLayoutManager(layoutManager);
 
         currentLocalDate = TimeUtil.getLastDayOfThisWeek(LocalDate.now());
-        bindBarChartList(TestData.createWeekEntries(currentLocalDate, 5 * displayNumber, mEntries.size()));
+        List<BarEntry> barEntries = TestData.createWeekEntries(currentLocalDate.plusDays(preEntries),
+                preEntries + 5 * displayNumber, mEntries.size());
+        bindBarChartList(barEntries);
         currentLocalDate = currentLocalDate.minusDays(5 * displayNumber);
 
         setXAxis(displayNumber);
@@ -113,7 +118,8 @@ public class WeekFragment extends BaseFragment {
 
 
     private void reSizeYAxis() {
-        List<BarEntry> visibleEntries = mEntries.subList(0, displayNumber + 1);
+        recyclerView.scrollToPosition(preEntries);
+        List<BarEntry> visibleEntries = mEntries.subList(preEntries, preEntries + displayNumber + 1);
         mYAxis = YAxis.getYAxis(mBarChartAttrs, DecimalUtil.getTheMaxNumber(visibleEntries));
         mBarChartAdapter.notifyDataSetChanged();
         mItemDecoration.setYAxis(mYAxis);
@@ -186,13 +192,10 @@ public class WeekFragment extends BaseFragment {
     }
 
     private void displayDateAndStep(List<BarEntry> displayEntries) {
-
         BarEntry rightBarEntry = displayEntries.get(0);
         BarEntry leftBarEntry = displayEntries.get(displayEntries.size() - 1);
-
         txtLeftLocalDate.setText(TimeUtil.getDateStr(leftBarEntry.timestamp, "yyyy-MM-dd HH:mm:ss"));
         txtRightLocalDate.setText(TimeUtil.getDateStr(rightBarEntry.timestamp, "yyyy-MM-dd HH:mm:ss"));
-
         String beginDateStr = TimeUtil.getDateStr(leftBarEntry.timestamp, "yyyy年MM月dd日");
         String patternStr = "yyyy年MM月dd日";
         if (TimeUtil.isSameMonth(leftBarEntry.timestamp, rightBarEntry.timestamp)) {
@@ -203,13 +206,7 @@ public class WeekFragment extends BaseFragment {
         String endDateStr = TimeUtil.getDateStr(rightBarEntry.timestamp, patternStr);
         String connectStr = "至";
         textTitle.setText(beginDateStr + connectStr + endDateStr);
-        long count = 0;
-        for (int i = 0; i < displayEntries.size(); i++) {
-            BarEntry entry = displayEntries.get(i);
-            count += entry.getY();
-        }
-        int averageStep = (int) (count / displayEntries.size());
-        String childStr = DecimalUtil.addComma(Integer.toString(averageStep));
+        String childStr = DecimalUtil.getAverageStepStr(displayEntries);
         String parentStr = String.format(getString(R.string.str_count_step), childStr);
         SpannableStringBuilder spannable = TextUtil.getSpannableStr(getActivity(), parentStr, childStr, 24);
         txtCountStep.setText(spannable);
