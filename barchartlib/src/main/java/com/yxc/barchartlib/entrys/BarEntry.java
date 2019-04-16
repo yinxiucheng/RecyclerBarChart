@@ -4,6 +4,8 @@ import android.support.annotation.NonNull;
 
 import org.joda.time.LocalDate;
 
+import java.util.Objects;
+
 /**
  * @author yxc
  * @date 2019/4/6
@@ -19,6 +21,8 @@ public class BarEntry extends Entry implements Comparable<BarEntry> {
     public static final int TYPE_XAXIS_SPECIAL = 4;//同时是月线以及7日分隔线
 
     public long timestamp;
+
+    public boolean isSelected;
 
     public int type;
 
@@ -38,4 +42,19 @@ public class BarEntry extends Entry implements Comparable<BarEntry> {
         return (int) (o.timestamp - timestamp);
     }
 
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        BarEntry barEntry = (BarEntry) o;
+        return timestamp == barEntry.timestamp &&
+                type == barEntry.type &&
+                Objects.equals(localDate, barEntry.localDate);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(timestamp, type, localDate);
+    }
 }

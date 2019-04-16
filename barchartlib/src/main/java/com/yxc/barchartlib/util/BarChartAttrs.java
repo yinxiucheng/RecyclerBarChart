@@ -1,5 +1,7 @@
 package com.yxc.barchartlib.util;
 
+import android.graphics.Color;
+
 /**
  * @author yxc
  * @date 2019/4/9
@@ -10,10 +12,13 @@ public class BarChartAttrs {
     public int barBorderColor;//边框颜色
     public int barChartEdgeColor;//边界 barChart 滑入时的过度颜色，这里以后需要用渐变动画来控制。
     public int barChartColor; //柱状图颜色
+
     public int barChartValueTxtColor;//柱状图顶部value文字的颜色
     public float barChartValueTxtSize;//柱状图顶部value文字的大小
     public float barChartValuePaddingBottom;//柱状图顶部value文字据柱状图的padding
     public float barChartValuePaddingLeft;//柱状图顶部value文字不居中时据左的padding
+    public float barChartValueTxtMaskSize;//value 顶部popup的文字大小
+    public int barChartValueTxtMaskColor;//value 顶部popup的文字颜色
 
     public float barSpace;//barchart item中 space 占比，能够控制barchart的宽度
     public float barBorderWidth;//边框的宽度
@@ -32,7 +37,8 @@ public class BarChartAttrs {
     public boolean enableRightYAxisLabel;//控制是否显示 Y轴右刻度
     public boolean enableLeftYAxisLabel;// 控制是否显示 Y轴左刻度
     public boolean enableBarBorder;//控制是否显示边框
-    public boolean enableScrollToScale;
+    public boolean enableScrollToScale;//控制是否回溯到分界线处
+    public boolean enableValueMark;//控制柱状图顶部markView的显示
 
     public float yAxisMaximum;//y轴刻度默认的最大刻度
     public float yAxisMinimum;//y轴刻度默认的最小刻度

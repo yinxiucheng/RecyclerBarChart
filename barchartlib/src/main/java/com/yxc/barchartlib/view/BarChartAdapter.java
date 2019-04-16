@@ -32,6 +32,8 @@ final public class BarChartAdapter extends RecyclerView.Adapter<BarChartAdapter.
     YAxis mYAxis;
     BarChartAttrs mBarChartAttrs;
 
+    BarEntry selectBarEntry;
+
     public BarChartAdapter(Context context, List<BarEntry> entries, RecyclerView recyclerView, XAxis xAxis, BarChartAttrs attrs) {
         this.mContext = context;
         this.mEntries = entries;
@@ -76,12 +78,29 @@ final public class BarChartAdapter extends RecyclerView.Adapter<BarChartAdapter.
             resetRecyclerPadding(reminderWidth);
         }
         setLinearLayout(viewHolder.contentView, itemWidth);
-        BarEntry barEntry = mEntries.get(position);
-        BarEntry viewBarEntry = (BarEntry) viewHolder.contentView.getTag();
-        viewBarEntry.setY(barEntry.getY());
-        viewBarEntry.type = barEntry.type;
-        viewBarEntry.timestamp = barEntry.timestamp;
-        viewBarEntry.localDate = barEntry.localDate;
+        bindBarEntryToView(viewHolder, position);
+    }
+
+    private void bindBarEntryToView(BarChartViewHolder viewHolder, final int position) {
+        final BarEntry barEntry = mEntries.get(position);
+        viewHolder.contentView.setTag(barEntry);
+
+        viewHolder.contentView.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if (selectBarEntry == barEntry) {
+                    selectBarEntry = null;
+                    barEntry.isSelected = false;
+                } else {
+                    if (null != selectBarEntry){
+                        selectBarEntry.isSelected = false;
+                    }
+                    selectBarEntry = barEntry;
+                    barEntry.isSelected = true;
+                }
+                notifyItemChanged(position, false);
+            }
+        });
     }
 
     private void resetRecyclerPadding(int reminderWidth) {
@@ -131,9 +150,6 @@ final public class BarChartAdapter extends RecyclerView.Adapter<BarChartAdapter.
         public BarChartViewHolder(@NonNull View itemView) {
             super(itemView);
             contentView = itemView;
-            BarEntry barEntry = new BarEntry();
-            //
-            contentView.setTag(barEntry);
         }
     }
 

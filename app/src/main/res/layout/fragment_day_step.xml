@@ -1,33 +1,55 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:layout="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:layout_marginTop="10dp"
     android:orientation="vertical">
 
-    <include layout="@layout/layout_step_date_title"/>
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="30dp"
+        android:layout_alignParentTop="true"
+        android:layout_marginLeft="15dp"
+        android:layout_marginRight="15dp">
+
+        <include layout="@layout/layout_step_date_title" />
+
+    </RelativeLayout>
 
     <com.yxc.barchartlib.view.BarChartRecyclerView
         android:id="@+id/recycler"
         android:layout_width="match_parent"
-        android:layout_height="300dp"
+        android:layout_height="330dp"
+        android:layout_alignParentTop="true"
+        android:layout_marginTop="20dp"
         android:paddingLeft="3dp"
-        app:enableLeftYAxisLabel="false"
-        app:enableCharValueDisplay="true"
-        app:recyclerPaddingRight="3dp"
+        android:paddingTop="15dp"
         app:displayNumbers="24"
-        app:xAxisScaleDistance="3"/>
+        app:enableCharValueDisplay="true"
+        app:enableLeftYAxisLabel="false"
+        app:recyclerPaddingRight="3dp"
+        app:xAxisScaleDistance="3" />
 
     <TextView
         android:id="@+id/txt_count_Step"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:paddingLeft="10dp"
+        android:layout_below="@+id/recycler"
         android:layout_marginTop="20dp"
-        android:textSize="14sp"
-        android:textColor="@color/red"/>
+        android:paddingLeft="10dp"
+        android:textColor="@color/red"
+        android:textSize="14sp" />
 
-    <include layout="@layout/layout_step_bottom_desc"/>
-
-</LinearLayout>
+    <RelativeLayout
+        android:layout_below="@+id/txt_count_Step"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginLeft="10dp"
+        android:layout_marginTop="10dp"
+        android:layout_marginRight="10dp"
+        android:layout_marginBottom="15dp">
+        <include layout="@layout/layout_step_bottom_desc"/>
+    </RelativeLayout>
+</RelativeLayout>

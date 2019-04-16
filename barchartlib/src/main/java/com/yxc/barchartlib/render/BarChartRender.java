@@ -3,27 +3,30 @@ package com.yxc.barchartlib.render;
 import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
+import android.graphics.drawable.Drawable;
 import android.support.annotation.NonNull;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import android.view.View;
 
+import com.yxc.barchartlib.R;
 import com.yxc.barchartlib.component.ChartRectF;
 import com.yxc.barchartlib.component.YAxis;
 import com.yxc.barchartlib.entrys.BarEntry;
 import com.yxc.barchartlib.formatter.ValueFormatter;
 import com.yxc.barchartlib.util.BarChartAttrs;
 import com.yxc.barchartlib.util.DecimalUtil;
+import com.yxc.barchartlib.util.DisplayUtil;
 
 /**
  * @author yxc
  * @date 2019/4/14
- *
  */
 final public class BarChartRender {
     private BarChartAttrs mBarChartAttrs;
     private Paint mBarChartPaint;
     private Paint mTextPaint;
+    private Paint mTextMarkPaint;
 
     public void setBarChartValueFormatter(ValueFormatter mBarChartValueFormatter) {
         this.mBarChartValueFormatter = mBarChartValueFormatter;
@@ -31,10 +34,11 @@ final public class BarChartRender {
 
     private ValueFormatter mBarChartValueFormatter;
 
-    public BarChartRender(BarChartAttrs barChartAttrs, ValueFormatter barChartValueFormatter){
+    public BarChartRender(BarChartAttrs barChartAttrs, ValueFormatter barChartValueFormatter) {
         this.mBarChartAttrs = barChartAttrs;
         initBarChartPaint();
         initTextPaint();
+        initTextMarkPaint();
         this.mBarChartValueFormatter = barChartValueFormatter;
     }
 
@@ -44,8 +48,18 @@ final public class BarChartRender {
         mTextPaint.setAntiAlias(true);
         mTextPaint.setStyle(Paint.Style.FILL);
         mTextPaint.setStrokeWidth(1);
-        mTextPaint.setColor(Color.GRAY);
-        mTextPaint.setTextSize(mBarChartAttrs.yAxisLabelSize);
+        mTextPaint.setColor(mBarChartAttrs.barChartValueTxtColor);
+        mTextPaint.setTextSize(DisplayUtil.dip2px(12));
+    }
+
+    private void initTextMarkPaint() {
+        mTextMarkPaint = new Paint();
+        mTextMarkPaint.reset();
+        mTextMarkPaint.setAntiAlias(true);
+        mTextMarkPaint.setStyle(Paint.Style.FILL);
+        mTextMarkPaint.setStrokeWidth(1);
+        mTextMarkPaint.setColor(Color.WHITE);
+        mTextMarkPaint.setTextSize(DisplayUtil.dip2px(12));
     }
 
     private void initBarChartPaint() {
@@ -62,7 +76,7 @@ final public class BarChartRender {
         float parentRight = parent.getWidth() - parent.getPaddingRight();
         float parentLeft = parent.getPaddingLeft();
 
-        float realYAxisLabelHeight = bottom - mBarChartAttrs.maxYAxisPaddingTop;
+        float realYAxisLabelHeight = bottom - mBarChartAttrs.maxYAxisPaddingTop - parent.getPaddingTop();
         final int childCount = parent.getChildCount();
 
         View child;
@@ -76,7 +90,7 @@ final public class BarChartRender {
             float start = child.getLeft() + barSpaceWidth / 2;
             float end = start + barChartWidth;
             float height = barEntry.getY() / mYAxis.getAxisMaximum() * realYAxisLabelHeight;
-            float top = bottom - height;
+            float top = Math.max(bottom - height, parent.getPaddingTop());
 
             // 浮点数的 == 比较需要注意
             if (DecimalUtil.smallOrEquals(end, parentLeft)) {//continue 会闪，原因是end == parentLeft 没有过滤掉，显示出来柱状图了。
@@ -103,59 +117,99 @@ final public class BarChartRender {
 
     //绘制柱状图顶部value文字
     final public void drawBarChartValue(Canvas canvas, @NonNull RecyclerView parent, YAxis mYAxis) {
-        float bottom = parent.getHeight() - parent.getPaddingBottom() - mBarChartAttrs.contentPaddingBottom;
-        float parentRight = parent.getWidth() - parent.getPaddingRight();
-        float parentLeft = parent.getPaddingLeft();
+        if (mBarChartAttrs.enableCharValueDisplay) {
+            float bottom = parent.getHeight() - parent.getPaddingBottom() - mBarChartAttrs.contentPaddingBottom;
+            float parentRight = parent.getWidth() - parent.getPaddingRight();
+            float parentLeft = parent.getPaddingLeft();
+            float realYAxisLabelHeight = bottom - mBarChartAttrs.maxYAxisPaddingTop - parent.getPaddingTop();
+            int childCount = parent.getChildCount();
 
-        float realYAxisLabelHeight = bottom - mBarChartAttrs.maxYAxisPaddingTop;
-        int childCount = parent.getChildCount();
+            View child;
+            for (int i = 0; i < childCount; i++) {
+                child = parent.getChildAt(i);
+                BarEntry barEntry = (BarEntry) child.getTag();
+                float width = child.getWidth();
+                float childCenter = child.getLeft() + width / 2;
+                int height = (int) (barEntry.getY() / mYAxis.getAxisMaximum() * realYAxisLabelHeight);
+                float top = bottom - height;
+                String valueStr = mBarChartValueFormatter.getBarLabel(barEntry);
+                float txtY = top - mBarChartAttrs.barChartValuePaddingBottom;
 
-        View child;
-        for (int i = 0; i < childCount; i++) {
-            child = parent.getChildAt(i);
-            BarEntry barEntry = (BarEntry) child.getTag();
-            float width = child.getWidth();
-            int height = (int) (barEntry.getY() / mYAxis.getAxisMaximum() * realYAxisLabelHeight);
-            float top = bottom - height;
-
-            mTextPaint.setTextSize(mBarChartAttrs.barChartValueTxtSize);
-            String valueStr = mBarChartValueFormatter.getBarLabel(barEntry);
-            Log.d("BarChartRender", " valueStr:" + valueStr);
-            float widthText = mTextPaint.measureText(valueStr);
-            float txtXLeft = getTxtX(child, width, valueStr);
-            float txtXRight = txtXLeft + widthText;
-            float txtY = top - mBarChartAttrs.barChartValuePaddingBottom;
-
-            int txtStart = 0;
-            int txtEnd = valueStr.length();
-
-            if (txtXRight <= parentLeft) {//continue 会闪，原因是end == parentLeft 没有过滤掉，显示出来柱状图了。
-                continue;
-            } else if (txtXLeft < parentLeft && txtXRight > parentLeft) {//左边部分滑入的时候，处理柱状图、文字的显示
-                int displaySize = (int) (valueStr.length() * (txtXRight - parentLeft) / widthText);//比如要显示  "123456"的末两位，需要从 length - displaySize的位置开始显示。
-                txtStart = valueStr.length() - displaySize;
-                txtXLeft = Math.max(txtXLeft, parentLeft);
-                displayCharValue(mBarChartAttrs.enableCharValueDisplay, canvas, valueStr, txtStart, txtEnd, txtXLeft, txtY);
-            } else if (DecimalUtil.bigOrEquals(txtXLeft, parentLeft) && DecimalUtil.smallOrEquals(txtXRight, parentRight)) {//中间的
-                displayCharValue(mBarChartAttrs.enableCharValueDisplay, canvas, valueStr, txtStart, txtEnd, txtXLeft, txtY);
-            } else if (txtXLeft <= parentRight && txtXRight > parentRight) {//右边部分滑出的时候，处理柱状图，文字的显示
-                txtXLeft = getTxtX(child, width, valueStr);
-                txtEnd = (int) (valueStr.length() * (parentRight - txtXLeft) / widthText);
-                displayCharValue(mBarChartAttrs.enableCharValueDisplay, canvas, valueStr, txtStart, txtEnd, txtXLeft, txtY);
+                if (drawText(canvas, parentLeft, parentRight, valueStr, childCenter, txtY, mTextPaint)) {
+                    continue;
+                }
             }
         }
     }
 
+
+    public void drawValueMark(Canvas canvas, @NonNull RecyclerView parent, YAxis mYAxis) {
+        if (mBarChartAttrs.enableValueMark) {
+            float bottom = parent.getHeight() - parent.getPaddingBottom() - mBarChartAttrs.contentPaddingBottom;
+            int childCount = parent.getChildCount();
+            float realYAxisLabelHeight = bottom - mBarChartAttrs.maxYAxisPaddingTop - parent.getPaddingTop();
+            float parentRight = parent.getWidth() - parent.getPaddingRight();
+            float parentLeft = parent.getPaddingLeft();
+            View child;
+            for (int i = 0; i < childCount; i++) {
+                child = parent.getChildAt(i);
+                BarEntry barEntry = (BarEntry) child.getTag();
+                float width = child.getWidth();
+                int height = (int) (barEntry.getY() / mYAxis.getAxisMaximum() * realYAxisLabelHeight);
+                float top = bottom - height;
+                float childCenter = child.getLeft() + width / 2;
+                String valueStr = mBarChartValueFormatter.getBarLabel(barEntry);
+                float txtY = top - mBarChartAttrs.barChartValuePaddingBottom - DisplayUtil.dip2px(15);
+                if (barEntry.isSelected) {
+                    Log.d("ChartRender1", "barEntry is Selected:" + barEntry.localDate);
+                    Drawable drawable = parent.getContext().getResources().getDrawable(R.drawable.marker2, null);
+                    int start = (int) (child.getLeft() + width / 2) - DisplayUtil.dip2px(30);
+                    int end = (int) (child.getLeft() + width / 2) + DisplayUtil.dip2px(30);
+                    int topMark = (int) (top - DisplayUtil.dip2px(35));
+                    int bottomMark = (int) top;
+                    drawable.setBounds(start, topMark, end, bottomMark);
+                    drawable.draw(canvas);
+
+                    if (drawText(canvas, parentLeft, parentRight, valueStr, childCenter, txtY, mTextMarkPaint)) {
+                        continue;
+                    }
+                }
+            }
+        }
+    }
+
+
+    private boolean drawText(Canvas canvas, float parentLeft, float parentRight,
+                             String valueStr, float childCenter, float txtY, Paint paint) {
+        Log.d("BarChartRender", " valueStr:" + valueStr);
+        float widthText = paint.measureText(valueStr);
+        float txtXLeft = getTxtX(childCenter, valueStr);
+        float txtXRight = txtXLeft + widthText;
+
+        int txtStart = 0;
+        int txtEnd = valueStr.length();
+
+        if (txtXRight <= parentLeft) {//continue 会闪，原因是end == parentLeft 没有过滤掉，显示出来柱状图了。
+            return true;
+        } else if (txtXLeft < parentLeft && txtXRight > parentLeft) {//左边部分滑入的时候，处理柱状图、文字的显示
+            int displaySize = (int) (valueStr.length() * (txtXRight - parentLeft) / widthText);//比如要显示  "123456"的末两位，需要从 length - displaySize的位置开始显示。
+            txtStart = valueStr.length() - displaySize;
+            txtXLeft = Math.max(txtXLeft, parentLeft);
+            canvas.drawText(valueStr, txtStart, txtEnd, txtXLeft, txtY, paint);
+        } else if (DecimalUtil.bigOrEquals(txtXLeft, parentLeft) && DecimalUtil.smallOrEquals(txtXRight, parentRight)) {//中间的
+            canvas.drawText(valueStr, txtStart, txtEnd, txtXLeft, txtY, paint);
+        } else if (txtXLeft <= parentRight && txtXRight > parentRight) {//右边部分滑出的时候，处理柱状图，文字的显示
+            txtXLeft = getTxtX(childCenter, valueStr);
+            txtEnd = (int) (valueStr.length() * (parentRight - txtXLeft) / widthText);
+            canvas.drawText(valueStr, txtStart, txtEnd, txtXLeft, txtY, paint);
+        }
+        return false;
+    }
+
     //获取文字显示的起始 X 坐标
-    private float getTxtX(View child, float width, String valueStr) {
-        float txtX = child.getLeft() + width / 2 - mTextPaint.measureText(valueStr) / 2;
+    private float getTxtX(float center, String valueStr) {
+        float txtX = center - mTextPaint.measureText(valueStr) / 2;
         return txtX;
     }
 
-    //控制char上的value是否显示
-    private void displayCharValue(boolean enableCharValueDisplay, Canvas canvas, String valueStr, int start, int end, float x, float y) {
-        if (enableCharValueDisplay) {
-            canvas.drawText(valueStr, start, end, x, y, mTextPaint);
-        }
-    }
 }

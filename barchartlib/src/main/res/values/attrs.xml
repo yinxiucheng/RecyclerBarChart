@@ -11,6 +11,8 @@
         <!-- 顶部文字属性 -->
         <attr name="barChartValueTxtSize" format="dimension"/>
         <attr name="barChartValueTxtColor" format="color"/>
+        <attr name="barChartValueTxtMaskSize" format="dimension"/>
+        <attr name="barChartValueTxtMaskColor" format="color"/>
         <attr name="barChartValuePaddingBottom" format="dimension"/>
         <attr name="barChartValuePaddingLeft" format="dimension"/>
 
@@ -31,6 +33,7 @@
         <attr name="enableLeftYAxisLabel" format="boolean" />
         <attr name="enableBarBorder" format="boolean" />
         <attr name="enableScrollToScale" format="boolean"/>
+        <attr name="enableValueMark" format="boolean"/>
         
         <attr name="barSpace" format="float"/>
         <attr name="ratioVelocity" format="float"/>

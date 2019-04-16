@@ -68,17 +68,23 @@ public class BarChartItemDecoration extends RecyclerView.ItemDecoration {
             xAxisRenderer.drawVerticalLine(canvas, parent, mXAxis);//画竖的网格线
             xAxisRenderer.drawXAxis(canvas, parent, mXAxis);//画x轴坐标的刻度
 
-            mBarChartRender.drawBarChart(canvas, parent, mYAxis);//draw BarChart
-            mBarChartRender.drawBarChartValue(canvas, parent, mYAxis);//draw BarChart value
             mBarBoardRender.drawBarBorder(canvas, parent);//绘制边框
+
+            mBarChartRender.drawBarChart(canvas, parent, mYAxis);//draw BarChart
+            mBarChartRender.drawValueMark(canvas, parent, mYAxis);
+            mBarChartRender.drawBarChartValue(canvas, parent, mYAxis);//draw BarChart value
+
         } else if (mOrientation == VERTICAL_LIST) {//暂时不支持
             //竖向list 画横线
             //drawHorizontalLine(c, parent, mXAxis);
         }
     }
 
+
+
     @Override
-    public void onDraw(@NonNull Canvas c, @NonNull RecyclerView parent, @NonNull RecyclerView.State state) {
+    public void onDraw(@NonNull Canvas canvas, @NonNull RecyclerView parent, @NonNull RecyclerView.State state) {
+
     }
 
     public void setXAxis(XAxis mXAxis) {
