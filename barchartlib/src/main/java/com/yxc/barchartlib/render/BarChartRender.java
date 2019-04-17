@@ -1,5 +1,6 @@
 package com.yxc.barchartlib.render;
 
+import android.animation.ValueAnimator;
 import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
@@ -78,47 +79,68 @@ final public class BarChartRender {
     }
 
     //绘制柱状图, mYAxis这个坐标会实时变动，所以通过 BarChartItemDecoration 传过来的精确值。
-    final public void drawBarChart(Canvas canvas, @NonNull RecyclerView parent, YAxis mYAxis) {
-        float bottom = parent.getHeight() - parent.getPaddingBottom() - mBarChartAttrs.contentPaddingBottom;
-        float parentRight = parent.getWidth() - parent.getPaddingRight();
-        float parentLeft = parent.getPaddingLeft();
+    final public void drawBarChart(final Canvas canvas, @NonNull final RecyclerView parent, final YAxis mYAxis) {
+        final float bottom = parent.getHeight() - parent.getPaddingBottom() - mBarChartAttrs.contentPaddingBottom;
+        final float parentRight = parent.getWidth() - parent.getPaddingRight();
+        final float parentLeft = parent.getPaddingLeft();
 
         float realYAxisLabelHeight = bottom - mBarChartAttrs.maxYAxisPaddingTop - parent.getPaddingTop();
         final int childCount = parent.getChildCount();
-
         View child;
         for (int i = 0; i < childCount; i++) {
             child = parent.getChildAt(i);
             BarEntry barEntry = (BarEntry) child.getTag();
-            ChartRectF rectF = new ChartRectF();
+            final ChartRectF rectF = new ChartRectF();
             float width = child.getWidth();
             float barSpaceWidth = width * mBarChartAttrs.barSpace;
             float barChartWidth = width - barSpaceWidth;//柱子的宽度
-            float start = child.getLeft() + barSpaceWidth / 2;
-            float end = start + barChartWidth;
+            final float start = child.getLeft() + barSpaceWidth / 2;
+            final float end = start + barChartWidth;
             float height = barEntry.getY() / mYAxis.getAxisMaximum() * realYAxisLabelHeight;
-            float top = Math.max(bottom - height, parent.getPaddingTop());
 
-            // 浮点数的 == 比较需要注意
-            if (DecimalUtil.smallOrEquals(end, parentLeft)) {//continue 会闪，原因是end == parentLeft 没有过滤掉，显示出来柱状图了。
+            final float top = Math.max(bottom - height, parent.getPaddingTop());
+
+            if (drawChart(canvas, rectF, start, end, top, bottom, parentLeft, parentRight)){
                 continue;
-            } else if (start < parentLeft && end > parentLeft) {//左边部分滑入的时候，处理柱状图的显示
-                start = parentLeft;
-                rectF.set(start, top, end, bottom);
-                mBarChartPaint.setColor(mBarChartAttrs.barChartEdgeColor);
-                canvas.drawRect(rectF, mBarChartPaint);
-            } else if (DecimalUtil.bigOrEquals(start, parentLeft) && DecimalUtil.smallOrEquals(end, parentRight)) {//中间的; 浮点数的 == 比较需要注意
-                mBarChartPaint.setColor(mBarChartAttrs.barChartColor);
-                rectF.set(start, top, end, bottom);
-                canvas.drawRect(rectF, mBarChartPaint);
-            } else if (DecimalUtil.smallOrEquals(start, parentRight) && end > parentRight) {//右边部分滑出的时候，处理柱状图，文字的显示
-                float distance = (parentRight - start);
-                end = start + distance;
-                rectF.set(start, top, end, bottom);
-                mBarChartPaint.setColor(mBarChartAttrs.barChartEdgeColor);
-                canvas.drawRect(rectF, mBarChartPaint);
             }
+
+//            ValueAnimator valueAnimator = ValueAnimator.ofFloat(0, 1);
+//            valueAnimator.setDuration(100);
+//
+//            valueAnimator.addUpdateListener(new ValueAnimator.AnimatorUpdateListener() {
+//                @Override
+//                public void onAnimationUpdate(ValueAnimator animation) {
+//                    float curValue = (float) animation.getAnimatedValue();
+//                    float height = bottom - distance * curValue;
+//
+//                }
+//            });
+//            valueAnimator.start();
         }
+    }
+
+    private boolean drawChart(Canvas canvas, ChartRectF rectF, float start, float end, float top,
+                              float bottom, float parentLeft, float parentRight) {
+        // 浮点数的 == 比较需要注意
+        if (DecimalUtil.smallOrEquals(end, parentLeft)) {//continue 会闪，原因是end == parentLeft 没有过滤掉，显示出来柱状图了。
+            return true;
+        } else if (start < parentLeft && end > parentLeft) {//左边部分滑入的时候，处理柱状图的显示
+            start = parentLeft;
+            rectF.set(start, top, end, bottom);
+            mBarChartPaint.setColor(mBarChartAttrs.barChartEdgeColor);
+            canvas.drawRect(rectF, mBarChartPaint);
+        } else if (DecimalUtil.bigOrEquals(start, parentLeft) && DecimalUtil.smallOrEquals(end, parentRight)) {//中间的; 浮点数的 == 比较需要注意
+            mBarChartPaint.setColor(mBarChartAttrs.barChartColor);
+            rectF.set(start, top, end, bottom);
+            canvas.drawRect(rectF, mBarChartPaint);
+        } else if (DecimalUtil.smallOrEquals(start, parentRight) && end > parentRight) {//右边部分滑出的时候，处理柱状图，文字的显示
+            float distance = (parentRight - start);
+            end = start + distance;
+            rectF.set(start, top, end, bottom);
+            mBarChartPaint.setColor(mBarChartAttrs.barChartEdgeColor);
+            canvas.drawRect(rectF, mBarChartPaint);
+        }
+        return false;
     }
 
 
