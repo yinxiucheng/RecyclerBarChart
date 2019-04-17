@@ -94,7 +94,7 @@ public class BarChartItemDecoration extends RecyclerView.ItemDecoration {
 
             mBarBoardRender.drawBarBorder(canvas, parent);//绘制边框
 
-            drawBarChart(canvas, parent, mYAxis);//draw BarChart
+            drawBarChart(canvas, parent);//draw BarChart
             mBarChartRender.drawValueMark(canvas, parent, mYAxis);
             mBarChartRender.drawBarChartValue(canvas, parent, mYAxis);//draw BarChart value
 
@@ -105,7 +105,7 @@ public class BarChartItemDecoration extends RecyclerView.ItemDecoration {
     }
 
     //绘制柱状图, mYAxis这个坐标会实时变动，所以通过 BarChartItemDecoration 传过来的精确值。
-    final public void drawBarChart(final Canvas canvas, @NonNull final RecyclerView parent, final YAxis mYAxis) {
+    final public void drawBarChart(final Canvas canvas, @NonNull final RecyclerView parent) {
         final float bottom = parent.getHeight() - parent.getPaddingBottom() - mBarChartAttrs.contentPaddingBottom;
         final float parentRight = parent.getWidth() - parent.getPaddingRight();
         final float parentLeft = parent.getPaddingLeft();

@@ -119,6 +119,7 @@ public class MonthFragment extends BaseFragment {
             mYAxis = yAxis;
             mItemDecoration.setYAxis(mYAxis);
         }
+
         displayDateAndStep(visibleEntries);
     }
 
