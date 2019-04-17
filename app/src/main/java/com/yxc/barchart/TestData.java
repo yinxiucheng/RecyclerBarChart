@@ -117,7 +117,9 @@ public class TestData {
     public static List<BarEntry> createDayEntries(BarChartAttrs attrs, long timestamp, int length, int originEntrySize, boolean zeroValue) {
         List<BarEntry> entries = new ArrayList<>();
         for (int i = originEntrySize; i < length + originEntrySize; i++) {
-            timestamp = timestamp - TimeUtil.TIME_HOUR;
+            if (i > originEntrySize){
+                timestamp = timestamp - TimeUtil.TIME_HOUR;
+            }
             float mult = 10;
             float value = 0;
             if (i > 500) {

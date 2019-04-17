@@ -15,6 +15,7 @@ import com.yxc.barchart.BaseFragment;
 import com.yxc.barchart.R;
 import com.yxc.barchart.TestData;
 import com.yxc.barchart.formatter.BarChartValueFormatter;
+import com.yxc.barchart.formatter.ChartValueMarkFormatter;
 import com.yxc.barchart.formatter.XAxisWeekFormatter;
 import com.yxc.barchartlib.component.XAxis;
 import com.yxc.barchartlib.component.YAxis;
@@ -22,6 +23,7 @@ import com.yxc.barchartlib.entrys.BarEntry;
 import com.yxc.barchartlib.formatter.ValueFormatter;
 import com.yxc.barchartlib.util.BarChartAttrs;
 import com.yxc.barchartlib.util.DecimalUtil;
+import com.yxc.barchartlib.util.DisplayUtil;
 import com.yxc.barchartlib.util.ReLocationUtil;
 import com.yxc.barchartlib.util.TextUtil;
 import com.yxc.barchartlib.util.TimeUtil;
@@ -102,6 +104,14 @@ public class WeekFragment extends BaseFragment {
         mXAxis.setValueFormatter(valueFormatter);
         mItemDecoration = new BarChartItemDecoration(mYAxis, mXAxis, mBarChartAttrs);
         mItemDecoration.setBarChartValueFormatter(new BarChartValueFormatter());
+        mItemDecoration.setChartValueMarkFormatter(new ChartValueMarkFormatter() {
+            @Override
+            public String getBarLabel(BarEntry barEntry) {
+                String childStr = super.getBarLabel(barEntry);
+                String resultStr = TimeUtil.getDateStr(barEntry.timestamp, "yyyy/MM/dd") + " | " + childStr;
+                return barEntry.getY() > 0 ? resultStr : "";
+            }
+        });
         recyclerView.addItemDecoration(mItemDecoration);
         mBarChartAdapter = new BarChartAdapter(getActivity(), mEntries, recyclerView, mXAxis, mBarChartAttrs);
         recyclerView.setAdapter(mBarChartAdapter);
@@ -120,9 +130,12 @@ public class WeekFragment extends BaseFragment {
     private void reSizeYAxis() {
         recyclerView.scrollToPosition(preEntries);
         List<BarEntry> visibleEntries = mEntries.subList(preEntries, preEntries + displayNumber + 1);
-        mYAxis = YAxis.getYAxis(mBarChartAttrs, DecimalUtil.getTheMaxNumber(visibleEntries));
+        YAxis yAxis = mYAxis.resetYAxis(mYAxis, DecimalUtil.getTheMaxNumber(visibleEntries));
         mBarChartAdapter.notifyDataSetChanged();
-        mItemDecoration.setYAxis(mYAxis);
+        if (yAxis != null){
+            mYAxis = yAxis;
+            mItemDecoration.setYAxis(mYAxis);
+        }
         displayDateAndStep(visibleEntries);
     }
 

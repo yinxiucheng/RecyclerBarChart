@@ -113,9 +113,12 @@ public class MonthFragment extends BaseFragment {
     private void reSizeYAxis() {
         recyclerView.scrollToPosition(preEntrySize);
         List<BarEntry> visibleEntries = mEntries.subList(preEntrySize, preEntrySize + displayNumber + 1);
-        mYAxis = YAxis.getYAxis(mBarChartAttrs, DecimalUtil.getTheMaxNumber(visibleEntries));
+        YAxis yAxis = mYAxis.resetYAxis(mYAxis, DecimalUtil.getTheMaxNumber(visibleEntries));
         mBarChartAdapter.notifyDataSetChanged();
-        mItemDecoration.setYAxis(mYAxis);
+        if (null != mYAxis){
+            mYAxis = yAxis;
+            mItemDecoration.setYAxis(mYAxis);
+        }
         displayDateAndStep(visibleEntries);
     }
 

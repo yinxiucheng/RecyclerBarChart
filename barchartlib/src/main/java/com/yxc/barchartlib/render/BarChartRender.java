@@ -6,6 +6,7 @@ import android.graphics.Paint;
 import android.graphics.drawable.Drawable;
 import android.support.annotation.NonNull;
 import android.support.v7.widget.RecyclerView;
+import android.text.TextUtils;
 import android.util.Log;
 import android.view.View;
 
@@ -27,19 +28,25 @@ final public class BarChartRender {
     private Paint mBarChartPaint;
     private Paint mTextPaint;
     private Paint mTextMarkPaint;
+    private ValueFormatter mBarChartValueFormatter;
+    private ValueFormatter mChartValueMarkFormatter;
+
+
+    public void setChartValueMarkFormatter(ValueFormatter mChartValueMarkFormatter) {
+        this.mChartValueMarkFormatter = mChartValueMarkFormatter;
+    }
 
     public void setBarChartValueFormatter(ValueFormatter mBarChartValueFormatter) {
         this.mBarChartValueFormatter = mBarChartValueFormatter;
     }
 
-    private ValueFormatter mBarChartValueFormatter;
-
-    public BarChartRender(BarChartAttrs barChartAttrs, ValueFormatter barChartValueFormatter) {
+    public BarChartRender(BarChartAttrs barChartAttrs, ValueFormatter barChartValueFormatter, ValueFormatter chartValueMarkFormatter) {
         this.mBarChartAttrs = barChartAttrs;
         initBarChartPaint();
         initTextPaint();
         initTextMarkPaint();
         this.mBarChartValueFormatter = barChartValueFormatter;
+        this.mChartValueMarkFormatter = chartValueMarkFormatter;
     }
 
     private void initTextPaint() {
@@ -158,17 +165,36 @@ final public class BarChartRender {
                 int height = (int) (barEntry.getY() / mYAxis.getAxisMaximum() * realYAxisLabelHeight);
                 float top = bottom - height;
                 float childCenter = child.getLeft() + width / 2;
-                String valueStr = mBarChartValueFormatter.getBarLabel(barEntry);
+                String valueStr = mChartValueMarkFormatter.getBarLabel(barEntry);
+                float txtWidth = mTextMarkPaint.measureText(valueStr);
+                float distance = txtWidth / 2 + DisplayUtil.dip2px(10);
                 float txtY = top - mBarChartAttrs.barChartValuePaddingBottom - DisplayUtil.dip2px(15);
-                if (barEntry.isSelected) {
+
+                if (barEntry.isSelected && !TextUtils.isEmpty(valueStr)) {
                     Log.d("ChartRender1", "barEntry is Selected:" + barEntry.localDate);
                     Drawable drawable = parent.getContext().getResources().getDrawable(R.drawable.marker2, null);
-                    int start = (int) (child.getLeft() + width / 2) - DisplayUtil.dip2px(30);
-                    int end = (int) (child.getLeft() + width / 2) + DisplayUtil.dip2px(30);
+                    int start = (int) (childCenter - distance);
+                    int end = (int) (childCenter + distance);
                     int topMark = (int) (top - DisplayUtil.dip2px(35));
                     int bottomMark = (int) top;
                     drawable.setBounds(start, topMark, end, bottomMark);
                     drawable.draw(canvas);
+
+                    // 浮点数的 == 比较需要注意
+                    if (DecimalUtil.smallOrEquals(end, parentLeft)) {//continue 会闪，原因是end == parentLeft 没有过滤掉，显示出来柱状图了。
+                        continue;
+                    } else if (start < parentLeft && end > parentLeft) {//左边部分滑入的时候
+                        start = (int) parentLeft;
+                        drawable.setBounds(start, topMark, end, bottomMark);
+                        drawable.draw(canvas);
+                    } else if (DecimalUtil.bigOrEquals(start, parentLeft) && DecimalUtil.smallOrEquals(end, parentRight)) {//中间的; 浮点数的 == 比较需要注意
+                        drawable.setBounds(start, topMark, end, bottomMark);
+                        drawable.draw(canvas);
+                    } else if (DecimalUtil.smallOrEquals(start, parentRight) && end > parentRight) {//右边部分滑出的时候
+                        end = (int) (start + (parentRight - start));
+                        drawable.setBounds(start, topMark, end, bottomMark);
+                        drawable.draw(canvas);
+                    }
 
                     if (drawText(canvas, parentLeft, parentRight, valueStr, childCenter, txtY, mTextMarkPaint)) {
                         continue;
@@ -189,7 +215,7 @@ final public class BarChartRender {
         int txtStart = 0;
         int txtEnd = valueStr.length();
 
-        if (txtXRight <= parentLeft) {//continue 会闪，原因是end == parentLeft 没有过滤掉，显示出来柱状图了。
+        if (DecimalUtil.smallOrEquals(txtXRight, parentLeft)) {//continue 会闪，原因是end == parentLeft 没有过滤掉，显示出来柱状图了。
             return true;
         } else if (txtXLeft < parentLeft && txtXRight > parentLeft) {//左边部分滑入的时候，处理柱状图、文字的显示
             int displaySize = (int) (valueStr.length() * (txtXRight - parentLeft) / widthText);//比如要显示  "123456"的末两位，需要从 length - displaySize的位置开始显示。

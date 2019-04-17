@@ -34,6 +34,7 @@ public class BarChartItemDecoration extends RecyclerView.ItemDecoration {
     private BarBoardRender mBarBoardRender;
     private BarChartRender mBarChartRender;
     private ValueFormatter mBarChartValueFormatter;
+    private ValueFormatter mChartValueMarkFormatter;
 
     public static final int HORIZONTAL_LIST = LinearLayoutManager.HORIZONTAL;
     public static final int VERTICAL_LIST = LinearLayoutManager.VERTICAL;
@@ -47,7 +48,8 @@ public class BarChartItemDecoration extends RecyclerView.ItemDecoration {
         this.xAxisRenderer = new XAxisRender(mBarChartAttrs);
         this.mBarBoardRender = new BarBoardRender(mBarChartAttrs);
         this.mBarChartValueFormatter = new DefaultBarChartValueFormatter(0);
-        this.mBarChartRender = new BarChartRender(mBarChartAttrs, mBarChartValueFormatter);
+        this.mChartValueMarkFormatter = new DefaultBarChartValueFormatter(0);
+        this.mBarChartRender = new BarChartRender(mBarChartAttrs, mBarChartValueFormatter, mChartValueMarkFormatter);
     }
 
     //支持自定义 柱状图顶部 value的格式。
@@ -55,6 +57,12 @@ public class BarChartItemDecoration extends RecyclerView.ItemDecoration {
         this.mBarChartValueFormatter = barChartValueFormatter;
         this.mBarChartRender.setBarChartValueFormatter(barChartValueFormatter);
     }
+
+    public void setChartValueMarkFormatter(ValueFormatter chartValueFormatter) {
+        this.mChartValueMarkFormatter = chartValueFormatter;
+        this.mBarChartRender.setChartValueMarkFormatter(chartValueFormatter);
+    }
+
 
     @Override
     public void onDrawOver(Canvas canvas, RecyclerView parent, RecyclerView.State state) {
