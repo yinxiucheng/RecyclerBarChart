@@ -154,7 +154,7 @@ public class BarChartItemDecoration extends RecyclerView.ItemDecoration {
         RecyclerView.LayoutParams params = (RecyclerView.LayoutParams) child.getLayoutParams();
         canvas.save();
         canvas.translate(child.getLeft(), child.getBottom() + params.bottomMargin);
-        drawable.draw(canvas);
+        drawable.draw(canvas, mBarChartPaint);
         canvas.restore();
     }
 

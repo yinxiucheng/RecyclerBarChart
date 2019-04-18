@@ -1,6 +1,7 @@
 package com.yxc.barchartlib.view;
 
 import android.graphics.Canvas;
+import android.graphics.Paint;
 
 /**
  * @author yxc
@@ -8,7 +9,7 @@ import android.graphics.Canvas;
  */
 abstract public class AnimatedDecoratorDrawable {
 
-    abstract public void draw(Canvas canvas);
+    abstract public void draw(Canvas canvas, Paint paint);
 
     public int height = 0;
     public int width = 0;
