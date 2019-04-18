@@ -14,18 +14,12 @@ public class CustomAnimatedDecorator extends AnimatedDecoratorDrawable {
     RectF rect;
     public MovingNumber movingNumber;
 
-    public CustomAnimatedDecorator(int height, int start, int end, int width) {
+    public CustomAnimatedDecorator(float width, float height, float start, float end) {
         super(width, height);
         rect = new RectF(0, height, width, height);
         movingNumber = new MovingNumber(start, end, height);
     }
 
-    public CustomAnimatedDecorator(RectF rect) {
-        super(rect.right, rect.bottom);
-        this.rect = rect;
-        rect.set(rect.left, rect.bottom, rect.right, rect.bottom);
-        movingNumber = new MovingNumber(rect.bottom, rect.top, rect.bottom);
-    }
 
     @Override
     public void draw(Canvas canvas, Paint paint) {
@@ -41,7 +35,7 @@ public class CustomAnimatedDecorator extends AnimatedDecoratorDrawable {
         public float start;
         public float end;
         public float current;
-        public int changeNumber = 100;
+        public int changeNumber = 30;
         private float distance;
         private float itemDistance;
 

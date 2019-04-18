@@ -143,18 +143,18 @@ public class YAxisRender {
 
     private int computeYAxisWidth(int originPadding, float yAxisWidth) {
         float resultPadding;
-        Log.d("YAxis1", "originPadding:" + originPadding + " yAxisWidth:" + yAxisWidth);
+//        Log.d("YAxis1", "originPadding:" + originPadding + " yAxisWidth:" + yAxisWidth);
         if (originPadding > yAxisWidth) {
             float distance = originPadding - yAxisWidth;
             if (distance > DisplayUtil.dip2px(8)) {
-                Log.d("YAxis", "if control originPadding:" + originPadding + " yAxisWidth:" + yAxisWidth);
+//                Log.d("YAxis", "if control originPadding:" + originPadding + " yAxisWidth:" + yAxisWidth);
                 resultPadding = yAxisWidth;//实际需要的跟原来差8dp了就用，实际测量的，否则就用原来的
             } else {
-                Log.d("YAxis", "else control originPadding:" + originPadding + " yAxisWidth:" + yAxisWidth);
+//                Log.d("YAxis", "else control originPadding:" + originPadding + " yAxisWidth:" + yAxisWidth);
                 resultPadding = originPadding;
             }
         } else {//原来设定的 padding 不够用
-            Log.d("YAxis", "control originPadding:" + originPadding + " yAxisWidth:" + yAxisWidth);
+//            Log.d("YAxis", "control originPadding:" + originPadding + " yAxisWidth:" + yAxisWidth);
             resultPadding = yAxisWidth;
         }
         return (int) resultPadding;

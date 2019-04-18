@@ -76,8 +76,8 @@ public class BarAnimatorActivity extends AppCompatActivity implements ViewTreeOb
             View child = recycler_view.getChildAt(i);
             int position = recycler_view.getChildAdapterPosition(child);
             int height = recycler_view.getHeight() * i/recycler_view.getChildCount();
-            CustomAnimatedDecorator drawable = new CustomAnimatedDecorator(recycler_view.getHeight(), DisplayUtil.dip2px(10),
-                    height, DisplayUtil.dip2px(15));
+            CustomAnimatedDecorator drawable = new CustomAnimatedDecorator(DisplayUtil.dip2px(15), recycler_view.getHeight(), DisplayUtil.dip2px(10),
+                    height);
             map.put(position, drawable);
         }
 

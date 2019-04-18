@@ -6,9 +6,11 @@ import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v7.widget.RecyclerView;
 import android.text.SpannableStringBuilder;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.ViewTreeObserver;
 import android.widget.TextView;
 
 import com.yxc.barchart.BaseFragment;
@@ -22,11 +24,14 @@ import com.yxc.barchartlib.formatter.ValueFormatter;
 import com.yxc.barchartlib.util.BarChartAttrs;
 import com.yxc.barchartlib.util.DecimalUtil;
 import com.yxc.barchartlib.util.ChartComputeUtil;
+import com.yxc.barchartlib.util.DisplayUtil;
 import com.yxc.barchartlib.util.TextUtil;
 import com.yxc.barchartlib.util.TimeUtil;
+import com.yxc.barchartlib.view.AnimatedDecorator;
 import com.yxc.barchartlib.view.BarChartAdapter;
 import com.yxc.barchartlib.view.BarChartItemDecoration;
 import com.yxc.barchartlib.view.BarChartRecyclerView;
+import com.yxc.barchartlib.view.CustomAnimatedDecorator;
 import com.yxc.barchartlib.view.SpeedRatioLinearLayoutManager;
 
 import org.joda.time.LocalDate;
@@ -36,7 +41,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-public class DayFragment extends BaseFragment {
+public class DayFragment extends BaseFragment implements ViewTreeObserver.OnGlobalLayoutListener{
 
     BarChartRecyclerView recyclerView;
     TextView txtLeftLocalDate;
@@ -166,6 +171,8 @@ public class DayFragment extends BaseFragment {
                 }
             }
         });
+
+        recyclerView.getViewTreeObserver().addOnGlobalLayoutListener(this);
     }
 
     //重新设置Y坐标
@@ -230,4 +237,28 @@ public class DayFragment extends BaseFragment {
         txtCountStep.setText(spannable);
     }
 
+    @Override
+    public void onGlobalLayout() {
+        HashMap<Integer, CustomAnimatedDecorator> map = new HashMap<>();
+        for (int i = 0; i< recyclerView.getChildCount(); i++){
+            Log.d("DayFragment", " count" + recyclerView.getChildCount() + " entry'size + " + mEntries.size());
+            View child = recyclerView.getChildAt(i);
+            int position = recyclerView.getChildAdapterPosition(child);
+            BarEntry barEntry = mEntries.get(position);
+            float realBottomPadding = recyclerView.getPaddingBottom() + mBarChartAttrs.contentPaddingBottom;
+            float realTopPadding = recyclerView.getPaddingTop() + mBarChartAttrs.maxYAxisPaddingTop;
+            float realContentHeight = recyclerView.getHeight() - realBottomPadding - realTopPadding;
+
+            float width = child.getWidth();
+            float barSpaceWidth = width * mBarChartAttrs.barSpace;
+            float barChartWidth = width - barSpaceWidth;//柱子的宽度
+            float height = barEntry.getY() / mYAxis.getAxisMaximum() * realContentHeight;
+
+            CustomAnimatedDecorator drawable = new CustomAnimatedDecorator(barChartWidth, realContentHeight,
+                    0, realContentHeight - height);
+            map.put(position, drawable);
+        }
+        mItemDecoration.setAnimatorMap(map);
+        recyclerView.getViewTreeObserver().removeOnGlobalLayoutListener(this);
+    }
 }

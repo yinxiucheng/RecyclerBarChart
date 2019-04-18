@@ -7,11 +7,12 @@ import android.graphics.RectF;
 import android.support.annotation.NonNull;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.view.View;
 
 import com.yxc.barchartlib.component.XAxis;
 import com.yxc.barchartlib.component.YAxis;
-import com.yxc.barchartlib.entrys.BarChart;
+import com.yxc.barchartlib.entrys.BarEntry;
 import com.yxc.barchartlib.formatter.DefaultBarChartValueFormatter;
 import com.yxc.barchartlib.formatter.ValueFormatter;
 import com.yxc.barchartlib.render.BarBoardRender;
@@ -19,7 +20,8 @@ import com.yxc.barchartlib.render.BarChartRender;
 import com.yxc.barchartlib.render.XAxisRender;
 import com.yxc.barchartlib.render.YAxisRender;
 import com.yxc.barchartlib.util.BarChartAttrs;
-import com.yxc.barchartlib.util.ChartComputeUtil;
+
+import java.util.HashMap;
 
 /**
  * @author yxc
@@ -41,6 +43,7 @@ public class BarChartItemDecoration extends RecyclerView.ItemDecoration {
     private ValueFormatter mChartValueMarkFormatter;
 
     private Paint mBarChartPaint;
+    private HashMap<Integer, CustomAnimatedDecorator> mAnimatorMap;
 
     public static final int HORIZONTAL_LIST = LinearLayoutManager.HORIZONTAL;
     public static final int VERTICAL_LIST = LinearLayoutManager.VERTICAL;
@@ -57,6 +60,10 @@ public class BarChartItemDecoration extends RecyclerView.ItemDecoration {
         this.mChartValueMarkFormatter = new DefaultBarChartValueFormatter(0);
         this.mBarChartRender = new BarChartRender(mBarChartAttrs, mBarChartValueFormatter, mChartValueMarkFormatter);
         initBarChartPaint();
+    }
+
+    public void setAnimatorMap(HashMap<Integer, CustomAnimatedDecorator> map) {
+        this.mAnimatorMap = map;
     }
 
 
@@ -84,6 +91,7 @@ public class BarChartItemDecoration extends RecyclerView.ItemDecoration {
     public void onDrawOver(Canvas canvas, RecyclerView parent, RecyclerView.State state) {
         super.onDraw(canvas, parent, state);
         if (mOrientation == HORIZONTAL_LIST) {
+            Log.d("ItemDecoration", " itemdecoration invoke!");
             //横向 list 画竖线
             yAxisRenderer.drawLeftYAxisLabel(canvas, parent, mYAxis);//画左边y坐标的刻度，会设定RecyclerView的 leftPadding
             yAxisRenderer.drawRightYAxisLabel(canvas, parent, mYAxis);//画右边y坐标的刻度，会设定RecyclerView的 rightPadding
@@ -94,8 +102,8 @@ public class BarChartItemDecoration extends RecyclerView.ItemDecoration {
 
             mBarBoardRender.drawBarBorder(canvas, parent);//绘制边框
 
-            mBarChartRender.drawBarChart(canvas, parent, mYAxis);//draw BarChart
-//            drawChart(canvas, parent);
+//            mBarChartRender.drawBarChart(canvas, parent, mYAxis);//draw BarChart
+            drawChart(canvas, parent);
             mBarChartRender.drawValueMark(canvas, parent, mYAxis);
             mBarChartRender.drawBarChartValue(canvas, parent, mYAxis);//draw BarChart value
 
@@ -106,29 +114,29 @@ public class BarChartItemDecoration extends RecyclerView.ItemDecoration {
     }
 
 
-    final public void drawChart(final Canvas canvas, @NonNull final RecyclerView parent){
+    final public void drawChart(final Canvas canvas, @NonNull final RecyclerView parent) {
         boolean mustInvalidate = false;
         if (parent != null && parent.getChildCount() > 0) {
-                for (int i = 0; i < parent.getChildCount(); i++) {
-                    View child = parent.getChildAt(i);
-                    int position = parent.getChildAdapterPosition(child);
-                    BarChart barChart = (BarChart) child.getTag();
-                    RectF rectF = ChartComputeUtil.getBarChartRectF(child, parent, mYAxis, mBarChartAttrs, barChart.mBayEntry);
-                    CustomAnimatedDecorator customAnimatedDecorator = new CustomAnimatedDecorator(rectF);
-                    barChart.setCustomAnimatedDecorator(customAnimatedDecorator);
+            for (int i = 0; i < parent.getChildCount(); i++) {
+                View child = parent.getChildAt(i);
+                int position = parent.getChildAdapterPosition(child);
+                float width = child.getWidth();
+                float barSpaceWidth = width * mBarChartAttrs.barSpace;
+                final float left = child.getLeft() + barSpaceWidth / 2;
 
-                    if (position != RecyclerView.NO_POSITION) {
-                        mustInvalidate = true;
-                        drawView(canvas, customAnimatedDecorator, child);
-                    }
+                CustomAnimatedDecorator customAnimatedDecorator = mAnimatorMap.get(position);
+                if (position != RecyclerView.NO_POSITION && null != customAnimatedDecorator) {
+                    mustInvalidate = true;
+                    drawView(canvas, customAnimatedDecorator,  left, child.getTop() + mBarChartAttrs.maxYAxisPaddingTop);
                 }
-                if (mustInvalidate) parent.invalidate();
+            }
+            if (mustInvalidate) parent.invalidate();
         }
     }
 
-    private void drawView(Canvas canvas, AnimatedDecoratorDrawable drawable, View child) {
+    private void drawView(Canvas canvas, AnimatedDecoratorDrawable drawable, float dx, float dy) {
         canvas.save();
-//        canvas.translate(child.getLeft(), child.getTop());
+        canvas.translate(dx, dy);
         drawable.draw(canvas, mBarChartPaint);
         canvas.restore();
     }

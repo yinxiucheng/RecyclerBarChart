@@ -204,7 +204,7 @@ final public class BarChartRender {
 
     private boolean drawText(Canvas canvas, float parentLeft, float parentRight,
                              String valueStr, float childCenter, float txtY, Paint paint) {
-        Log.d("BarChartRender", " valueStr:" + valueStr);
+//        Log.d("BarChartRender", " valueStr:" + valueStr);
         float widthText = paint.measureText(valueStr);
         float txtXLeft = getTxtX(childCenter, valueStr);
         float txtXRight = txtXLeft + widthText;
