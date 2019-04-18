@@ -144,7 +144,7 @@ public class ReLocationUtil {
      * use computeScrollByXOffset replace
      */
     @Deprecated
-    public static DistanceCompare findScrollToPostion(RecyclerView recyclerView, int displayNumbers, int type) {
+    public static DistanceCompare findScrollToPosition(RecyclerView recyclerView, int displayNumbers, int type) {
         LinearLayoutManager manager = (LinearLayoutManager) recyclerView.getLayoutManager();
         BarChartAdapter adapter = (BarChartAdapter) recyclerView.getAdapter();
         List<BarEntry> entries = adapter.getEntries();
