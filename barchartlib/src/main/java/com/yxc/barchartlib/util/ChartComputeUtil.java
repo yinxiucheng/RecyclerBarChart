@@ -18,7 +18,7 @@ import java.util.List;
  * @author yxc
  * @date 2019/4/12
  */
-public class ReLocationUtil {
+public class ChartComputeUtil {
 
     public static final int VIEW_DAY = 0;
     public static final int VIEW_WEEK = 1;

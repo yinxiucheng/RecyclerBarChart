@@ -1,5 +1,7 @@
 package com.yxc.barchartlib.entrys;
 
+import android.graphics.RectF;
+
 import com.yxc.barchartlib.view.CustomAnimatedDecorator;
 
 /**
@@ -10,6 +12,8 @@ import com.yxc.barchartlib.view.CustomAnimatedDecorator;
 public class BarChart {
 
     BarEntry mBayEntry;
+
+    RectF rectF;
 
     CustomAnimatedDecorator customAnimatedDecorator;
 
@@ -33,5 +37,15 @@ public class BarChart {
     public void setCustomAnimatedDecorator(CustomAnimatedDecorator customAnimatedDecorator) {
         this.customAnimatedDecorator = customAnimatedDecorator;
     }
+
+    public RectF getRectF() {
+        return rectF;
+    }
+
+    public void setRectF(RectF rectF) {
+        this.rectF = rectF;
+    }
+
+
 
 }

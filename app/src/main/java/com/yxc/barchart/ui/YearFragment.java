@@ -18,14 +18,12 @@ import com.yxc.barchartlib.component.YAxis;
 import com.yxc.barchartlib.entrys.BarEntry;
 import com.yxc.barchartlib.util.BarChartAttrs;
 import com.yxc.barchartlib.util.DecimalUtil;
-import com.yxc.barchartlib.util.DisplayUtil;
-import com.yxc.barchartlib.util.ReLocationUtil;
+import com.yxc.barchartlib.util.ChartComputeUtil;
 import com.yxc.barchartlib.util.TextUtil;
 import com.yxc.barchartlib.util.TimeUtil;
 import com.yxc.barchartlib.view.BarChartAdapter;
 import com.yxc.barchartlib.view.BarChartItemDecoration;
 import com.yxc.barchartlib.view.BarChartRecyclerView;
-import com.yxc.barchartlib.view.CustomAnimatedDecorator;
 import com.yxc.barchartlib.view.SpeedRatioLinearLayoutManager;
 import org.joda.time.LocalDate;
 
@@ -134,7 +132,7 @@ public class YearFragment extends BaseFragment {
                     }
 
                     if (mBarChartAttrs.enableScrollToScale) {
-                        int scrollByDx = ReLocationUtil.computeScrollByXOffset(recyclerView, displayNumber, TestData.VIEW_YEAR);
+                        int scrollByDx = ChartComputeUtil.computeScrollByXOffset(recyclerView, displayNumber, TestData.VIEW_YEAR);
                         recyclerView.scrollBy(scrollByDx, 0);
                     }
 
@@ -158,7 +156,7 @@ public class YearFragment extends BaseFragment {
     //重新设置Y坐标
     private void resetYAxis(RecyclerView recyclerView) {
         float yAxisMaximum = 0;
-        HashMap<Float, List<BarEntry>> map = ReLocationUtil.getVisibleEntries(recyclerView);
+        HashMap<Float, List<BarEntry>> map = ChartComputeUtil.getVisibleEntries(recyclerView);
         for (Map.Entry<Float, List<BarEntry>> entry : map.entrySet()) {
             yAxisMaximum = entry.getKey();
             displayDateAndStep(entry.getValue());
