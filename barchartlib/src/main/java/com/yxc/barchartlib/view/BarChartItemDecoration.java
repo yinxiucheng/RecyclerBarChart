@@ -40,12 +40,14 @@ public class BarChartItemDecoration extends RecyclerView.ItemDecoration {
     private ValueFormatter mBarChartValueFormatter;
     private ValueFormatter mChartValueMarkFormatter;
 
+    private AnimatedDecoratorDrawable drawable;
+
     private Paint mBarChartPaint;
 
     public static final int HORIZONTAL_LIST = LinearLayoutManager.HORIZONTAL;
     public static final int VERTICAL_LIST = LinearLayoutManager.VERTICAL;
 
-    public BarChartItemDecoration(YAxis yAxis, XAxis xAxis, BarChartAttrs barChartAttrs) {
+    public BarChartItemDecoration(YAxis yAxis, XAxis xAxis, BarChartAttrs barChartAttrs, AnimatedDecoratorDrawable drawable) {
         this.mOrientation = barChartAttrs.layoutManagerOrientation;
         this.mYAxis = yAxis;
         this.mXAxis = xAxis;
@@ -56,6 +58,7 @@ public class BarChartItemDecoration extends RecyclerView.ItemDecoration {
         this.mBarChartValueFormatter = new DefaultBarChartValueFormatter(0);
         this.mChartValueMarkFormatter = new DefaultBarChartValueFormatter(0);
         this.mBarChartRender = new BarChartRender(mBarChartAttrs, mBarChartValueFormatter, mChartValueMarkFormatter);
+        this.drawable = drawable;
         initBarChartPaint();
     }
 
@@ -132,6 +135,29 @@ public class BarChartItemDecoration extends RecyclerView.ItemDecoration {
         }
     }
 
+    final public void drawChart(final Canvas canvas, @NonNull final RecyclerView parent){
+        boolean mustInvalidate = false;
+        if (parent != null && parent.getChildCount() > 0) {
+                for (int i = 0; i < parent.getChildCount(); i++) {
+                    View child = parent.getChildAt(i);
+                    int position = parent.getChildAdapterPosition(child);
+                    if (position != RecyclerView.NO_POSITION) {
+                        mustInvalidate = true;
+                        drawView(canvas, drawable, child);
+                    }
+                }
+                if (mustInvalidate) parent.invalidate();
+        }
+    }
+
+    private void drawView(Canvas canvas, AnimatedDecoratorDrawable drawable, View child) {
+        RecyclerView.LayoutParams params = (RecyclerView.LayoutParams) child.getLayoutParams();
+        canvas.save();
+        canvas.translate(child.getLeft(), child.getBottom() + params.bottomMargin);
+        drawable.draw(canvas);
+        canvas.restore();
+    }
+
     private boolean drawChart(Canvas canvas, ChartRectF rectF, float start, float end, float top,
                               float bottom, float parentLeft, float parentRight) {
         // 浮点数的 == 比较需要注意
@@ -176,13 +202,6 @@ public class BarChartItemDecoration extends RecyclerView.ItemDecoration {
     @Override
     public void getItemOffsets(Rect outRect, View view, RecyclerView parent, RecyclerView.State state) {
         outRect.set(0, 0, 0, 0);
-    }
-
-
-    interface AnimatedDecoratorDrawable {
-        void draw(Canvas canvas);
-        int height = 0;
-        int width = 0;
     }
 
 }

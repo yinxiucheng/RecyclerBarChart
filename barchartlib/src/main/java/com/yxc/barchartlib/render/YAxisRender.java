@@ -53,7 +53,7 @@ public class YAxisRender {
         mLinePaint.setColor(yAxis.getGridColor());
         int top = parent.getPaddingTop();
         int bottom = parent.getHeight() - parent.getPaddingBottom();
-        float distance = bottom - mBarChartAttrs.contentPaddingBottom - mBarChartAttrs.maxYAxisPaddingTop;
+        float distance = bottom - mBarChartAttrs.contentPaddingBottom - mBarChartAttrs.maxYAxisPaddingTop - top;
         int lineNums = yAxis.getLabelCount();
         float lineDistance = distance / lineNums;
         float gridLine = top + mBarChartAttrs.maxYAxisPaddingTop;

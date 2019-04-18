@@ -147,7 +147,7 @@ public class TestData {
             } else if ((hourOfTheDay + 1) % attrs.xAxisScaleDistance == 0) {
                 type = BarEntry.TYPE_XAXIS_SECOND;
             }
-            if (zeroValue){
+            if (TimeUtil.isFuture(timestamp)){
                 value = 0;
             }
             BarEntry barEntry = new BarEntry(i, value, timestamp, type);

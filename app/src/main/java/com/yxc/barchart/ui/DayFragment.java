@@ -21,17 +21,18 @@ import com.yxc.barchartlib.entrys.BarEntry;
 import com.yxc.barchartlib.formatter.ValueFormatter;
 import com.yxc.barchartlib.util.BarChartAttrs;
 import com.yxc.barchartlib.util.DecimalUtil;
+import com.yxc.barchartlib.util.DisplayUtil;
 import com.yxc.barchartlib.util.ReLocationUtil;
 import com.yxc.barchartlib.util.TextUtil;
 import com.yxc.barchartlib.util.TimeUtil;
 import com.yxc.barchartlib.view.BarChartAdapter;
 import com.yxc.barchartlib.view.BarChartItemDecoration;
 import com.yxc.barchartlib.view.BarChartRecyclerView;
+import com.yxc.barchartlib.view.CustomAnimatedDecorator;
 import com.yxc.barchartlib.view.SpeedRatioLinearLayoutManager;
 
 import org.joda.time.LocalDate;
 
-import java.sql.Time;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -97,15 +98,19 @@ public class DayFragment extends BaseFragment {
         SpeedRatioLinearLayoutManager layoutManager = new SpeedRatioLinearLayoutManager(getActivity(), mBarChartAttrs);
         mYAxis = new YAxis(mBarChartAttrs);
         mXAxis = new XAxis(mBarChartAttrs, displayNumber, valueFormatter);
-        mItemDecoration = new BarChartItemDecoration(mYAxis, mXAxis, mBarChartAttrs);
+
+        mItemDecoration = new BarChartItemDecoration(mYAxis, mXAxis, mBarChartAttrs,
+                new CustomAnimatedDecorator(DisplayUtil.dip2px(15), recyclerView.getMeasuredWidth()));
         recyclerView.addItemDecoration(mItemDecoration);
         mBarChartAdapter = new BarChartAdapter(getActivity(), mEntries, recyclerView, mXAxis, mBarChartAttrs);
         recyclerView.setAdapter(mBarChartAdapter);
         recyclerView.setLayoutManager(layoutManager);
 
-        currentTimestamp = TimeUtil.changZeroOfTheDay(LocalDate.now());
+        currentTimestamp = TimeUtil.changZeroOfTheDay(LocalDate.now().plusDays(1));
+
         List<BarEntry> preEntries = TestData.createDayEntries(mBarChartAttrs,
                 currentTimestamp + preEntrySize * TimeUtil.TIME_HOUR, preEntrySize, mEntries.size(), true);
+
         List<BarEntry> barEntries = TestData.createDayEntries(mBarChartAttrs, currentTimestamp,
                 3 * displayNumber, mEntries.size(), false);
         barEntries.addAll(0, preEntries);

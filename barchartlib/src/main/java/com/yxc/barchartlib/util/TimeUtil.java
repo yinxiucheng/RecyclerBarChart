@@ -543,6 +543,10 @@ public class TimeUtil {
         return localDate.isAfter(LocalDate.now());
     }
 
+    public static boolean isFuture(long timestamp){
+        return timestamp > System.currentTimeMillis()/1000;
+    }
+
 
     public static boolean isSunday(LocalDate localDateEntry) {
         return localDateEntry.getDayOfWeek() == 7;
