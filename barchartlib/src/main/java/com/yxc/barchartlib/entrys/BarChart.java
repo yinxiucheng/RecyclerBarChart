@@ -4,6 +4,8 @@ import android.graphics.RectF;
 
 import com.yxc.barchartlib.view.CustomAnimatedDecorator;
 
+import java.util.Objects;
+
 /**
  * @author yxc
  * @date 2019/4/18
@@ -11,16 +13,18 @@ import com.yxc.barchartlib.view.CustomAnimatedDecorator;
  */
 public class BarChart {
 
-    BarEntry mBayEntry;
+    public BarEntry mBayEntry;
 
-    RectF rectF;
+    public RectF rectF;
 
-    CustomAnimatedDecorator customAnimatedDecorator;
+    public boolean isSelected;
 
-    public BarChart(BarEntry barEntry, CustomAnimatedDecorator customAnimatedDecorator){
+    public CustomAnimatedDecorator customAnimatedDecorator;
+
+    public BarChart(BarEntry barEntry){
         this.mBayEntry = barEntry;
-        this.customAnimatedDecorator = customAnimatedDecorator;
     }
+
 
     public BarEntry getBayEntry() {
         return mBayEntry;
@@ -30,13 +34,6 @@ public class BarChart {
         this.mBayEntry = mBayEntry;
     }
 
-    public CustomAnimatedDecorator getCustomAnimatedDecorator() {
-        return customAnimatedDecorator;
-    }
-
-    public void setCustomAnimatedDecorator(CustomAnimatedDecorator customAnimatedDecorator) {
-        this.customAnimatedDecorator = customAnimatedDecorator;
-    }
 
     public RectF getRectF() {
         return rectF;
@@ -46,6 +43,27 @@ public class BarChart {
         this.rectF = rectF;
     }
 
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        BarChart barChart = (BarChart) o;
+        return isSelected == barChart.isSelected &&
+                Objects.equals(mBayEntry, barChart.mBayEntry) &&
+                Objects.equals(rectF, barChart.rectF);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(mBayEntry, rectF, isSelected);
+    }
 
 
+    public CustomAnimatedDecorator getCustomAnimatedDecorator() {
+        return customAnimatedDecorator;
+    }
+
+    public void setCustomAnimatedDecorator(CustomAnimatedDecorator customAnimatedDecorator) {
+        this.customAnimatedDecorator = customAnimatedDecorator;
+    }
 }

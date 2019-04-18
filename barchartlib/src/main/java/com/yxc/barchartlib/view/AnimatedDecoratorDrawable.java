@@ -11,10 +11,10 @@ abstract public class AnimatedDecoratorDrawable {
 
     abstract public void draw(Canvas canvas, Paint paint);
 
-    public int height = 0;
-    public int width = 0;
+    public float height = 0;
+    public float width = 0;
 
-    public AnimatedDecoratorDrawable(int width, int height) {
+    public AnimatedDecoratorDrawable(float width, float height) {
         this.width = width;
         this.height = height;
     }

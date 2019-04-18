@@ -1,6 +1,5 @@
 package com.yxc.barchartlib.render;
 
-import android.animation.ValueAnimator;
 import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
@@ -13,11 +12,11 @@ import android.util.Log;
 import android.view.View;
 
 import com.yxc.barchartlib.R;
-import com.yxc.barchartlib.component.ChartRectF;
 import com.yxc.barchartlib.component.YAxis;
 import com.yxc.barchartlib.entrys.BarEntry;
 import com.yxc.barchartlib.formatter.ValueFormatter;
 import com.yxc.barchartlib.util.BarChartAttrs;
+import com.yxc.barchartlib.util.ChartComputeUtil;
 import com.yxc.barchartlib.util.DecimalUtil;
 import com.yxc.barchartlib.util.DisplayUtil;
 
@@ -84,33 +83,15 @@ final public class BarChartRender {
         final float parentRight = parent.getWidth() - parent.getPaddingRight();
         final float parentLeft = parent.getPaddingLeft();
 
-
         final int childCount = parent.getChildCount();
-        RectF rectF;
-
         for (int i = 0; i < childCount; i++) {
             View child = parent.getChildAt(i);
-            rectF = getBarChartRectF(child, parent, mYAxis);
+            BarEntry barChart = (BarEntry) child.getTag();
+            RectF rectF = ChartComputeUtil.getBarChartRectF(child, parent, mYAxis, mBarChartAttrs, barChart);
             if (drawChart(canvas, rectF, parentLeft, parentRight)){
                 continue;
             }
         }
-    }
-
-    private RectF getBarChartRectF(View child,final RecyclerView parent, YAxis mYAxis){
-        final RectF rectF = new RectF();
-        float contentBottom = parent.getHeight() - parent.getPaddingBottom() - mBarChartAttrs.contentPaddingBottom;
-        float realYAxisLabelHeight = contentBottom - mBarChartAttrs.maxYAxisPaddingTop - parent.getPaddingTop();
-        BarEntry barEntry = (BarEntry) child.getTag();
-        float width = child.getWidth();
-        float barSpaceWidth = width * mBarChartAttrs.barSpace;
-        float barChartWidth = width - barSpaceWidth;//柱子的宽度
-        final float left = child.getLeft() + barSpaceWidth / 2;
-        final float right = left + barChartWidth;
-        float height = barEntry.getY() / mYAxis.getAxisMaximum() * realYAxisLabelHeight;
-        final float top = Math.max(contentBottom - height, parent.getPaddingTop());
-        rectF.set(left, top, right, contentBottom);
-        return rectF;
     }
 
     private boolean drawChart(Canvas canvas, RectF rectF, float parentLeft, float parentRight) {

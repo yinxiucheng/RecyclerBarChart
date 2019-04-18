@@ -124,6 +124,7 @@ public class DayFragment extends BaseFragment {
         if (yAxis != null){
             mYAxis = yAxis;
             mItemDecoration.setYAxis(mYAxis);
+            mBarChartAdapter.setYAxis(mYAxis);
         }
         displayDateAndStep(visibleEntries);
     }
@@ -176,8 +177,13 @@ public class DayFragment extends BaseFragment {
             displayDateAndStep(entry.getValue());
             break;
         }
-        mYAxis = YAxis.getYAxis(mBarChartAttrs, yAxisMaximum);
-        mItemDecoration.setYAxis(mYAxis);
+        YAxis yAxis = YAxis.getYAxis(mBarChartAttrs, yAxisMaximum);
+        if (yAxis != null){
+            mYAxis = yAxis;
+            mBarChartAdapter.setYAxis(mYAxis);
+            mItemDecoration.setYAxis(mYAxis);
+        }
+
     }
 
     private void bindBarChartList(List<BarEntry> entries) {

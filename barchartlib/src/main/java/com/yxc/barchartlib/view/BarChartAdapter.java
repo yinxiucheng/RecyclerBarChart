@@ -1,9 +1,9 @@
 package com.yxc.barchartlib.view;
 
 import android.content.Context;
+import android.graphics.RectF;
 import android.support.annotation.NonNull;
 import android.support.v7.widget.RecyclerView;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -11,11 +11,12 @@ import android.view.ViewGroup;
 
 import com.yxc.barchartlib.R;
 import com.yxc.barchartlib.component.YAxis;
+import com.yxc.barchartlib.entrys.BarChart;
 import com.yxc.barchartlib.entrys.BarEntry;
 import com.yxc.barchartlib.component.XAxis;
 import com.yxc.barchartlib.util.BarChartAttrs;
+import com.yxc.barchartlib.util.ChartComputeUtil;
 import com.yxc.barchartlib.util.DisplayUtil;
-import com.yxc.barchartlib.util.TimeUtil;
 
 import java.util.List;
 
@@ -69,8 +70,8 @@ final public class BarChartAdapter extends RecyclerView.Adapter<BarChartAdapter.
     public void onBindViewHolder(@NonNull BarChartViewHolder viewHolder, int position) {
         float contentWidth = (DisplayUtil.getScreenWidth(mContext) - mRecyclerView.getPaddingRight() - mRecyclerView.getPaddingLeft());
 
-        int itemWidth = (int) (contentWidth / mXAxis.displayNumbers);
-        int reminderWidth = (int) (contentWidth % mXAxis.displayNumbers);
+        int itemWidth = (int) (contentWidth / mBarChartAttrs.displayNumbers);
+        int reminderWidth = (int) (contentWidth % mBarChartAttrs.displayNumbers);
 
         //todo 这里只画右边，所以调整多余的只加在右边。 会造成重绘时，月的抖动，因为来回变动,
         // todo没有限定一定要显示一周，一天、一年、一月的数据是，不用重新设定这个padding，多显示一点没事。

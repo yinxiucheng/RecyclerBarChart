@@ -137,17 +137,22 @@ final public class XAxisRender {
 
     //绘制X坐标
     final public void drawXAxis(Canvas canvas, RecyclerView parent, XAxis xAxis) {
+        BarChartAdapter mAdapter = (BarChartAdapter) parent.getAdapter();
+        List<BarEntry> entries = mAdapter.getEntries();
         int parentBottom = parent.getHeight() - parent.getPaddingBottom();
         int parentLeft = parent.getPaddingLeft();
         final int childCount = parent.getChildCount();
         mTextPaint.setTextSize(xAxis.getTextSize());
         int parentRight = parent.getWidth() - parent.getPaddingRight();
 
+
         for (int i = 0; i < childCount; i++) {
             final View child = parent.getChildAt(i);
+            int adapterPosition = parent.getChildAdapterPosition(child);
+
             final int xLeft = child.getLeft();
             final int xRight = child.getRight();
-            BarEntry barEntry = (BarEntry) child.getTag();
+            BarEntry barEntry = entries.get(adapterPosition);
 
             String dateStr = xAxis.getValueFormatter().getBarLabel(barEntry);
             if (!TextUtils.isEmpty(dateStr)) {

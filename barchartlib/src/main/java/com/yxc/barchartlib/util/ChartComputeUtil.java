@@ -1,11 +1,14 @@
 package com.yxc.barchartlib.util;
 
+import android.graphics.RectF;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import android.view.View;
 
 import com.yxc.barchartlib.component.DistanceCompare;
+import com.yxc.barchartlib.component.YAxis;
+import com.yxc.barchartlib.entrys.BarChart;
 import com.yxc.barchartlib.entrys.BarEntry;
 import com.yxc.barchartlib.view.BarChartAdapter;
 
@@ -188,6 +191,41 @@ public class ChartComputeUtil {
             }
         }
         return distanceCompare;
+    }
+
+    public static RectF getBarChartRectF(View child, final RecyclerView parent, YAxis mYAxis,
+                                         BarChartAttrs mBarChartAttrs, BarEntry barEntry){
+        final RectF rectF = new RectF();
+        float contentBottom = parent.getHeight() - parent.getPaddingBottom() - mBarChartAttrs.contentPaddingBottom;
+        float realYAxisLabelHeight = contentBottom - mBarChartAttrs.maxYAxisPaddingTop - parent.getPaddingTop();
+        float width = child.getWidth();
+        float barSpaceWidth = width * mBarChartAttrs.barSpace;
+        float barChartWidth = width - barSpaceWidth;//柱子的宽度
+        final float left = child.getLeft() + barSpaceWidth / 2;
+        final float right = left + barChartWidth;
+        float height = barEntry.getY() / mYAxis.getAxisMaximum() * realYAxisLabelHeight;
+        final float top = Math.max(contentBottom - height, parent.getPaddingTop());
+        rectF.set(left, top, right, contentBottom);
+        return rectF;
+    }
+
+
+    public static RectF getBarChartRectF2(View child, final RecyclerView parent, YAxis mYAxis,
+                                         BarChartAttrs mBarChartAttrs, BarEntry barEntry){
+        final RectF rectF = new RectF();
+        float contentBottom = parent.getHeight() - parent.getPaddingBottom() - mBarChartAttrs.contentPaddingBottom;
+        float realYAxisLabelHeight = contentBottom - mBarChartAttrs.maxYAxisPaddingTop - parent.getPaddingTop();
+        float width = child.getWidth();
+        float barSpaceWidth = width * mBarChartAttrs.barSpace;
+        float barChartWidth = width - barSpaceWidth;//柱子的宽度
+        final float left = child.getLeft() + barSpaceWidth / 2;
+        final float right = left + barChartWidth;
+
+        float height = barEntry.getY() / mYAxis.getAxisMaximum() * realYAxisLabelHeight;
+        final float top = Math.max(contentBottom - height, parent.getPaddingTop());
+
+        rectF.set(0, 0, right - left, contentBottom - top);
+        return rectF;
     }
 
 
