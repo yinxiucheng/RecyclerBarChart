@@ -14,7 +14,6 @@ import android.util.Log;
 public class CustomAnimatedDecorator extends AnimatedDecoratorDrawable {
 
     long lastTimeAnimated = 0L;
-    long deltaTime = 0L;
     Rect rect;
     Paint paint = new Paint();
 
@@ -41,7 +40,6 @@ public class CustomAnimatedDecorator extends AnimatedDecoratorDrawable {
         public int start;
         public int end;
         public int current;
-        public int value;
 
         public int getValue() {
             if (current > 0) {
@@ -55,11 +53,9 @@ public class CustomAnimatedDecorator extends AnimatedDecoratorDrawable {
             this.start = start;
             this.end = end;
             this.current = current;
-            this.value = current;
         }
 
         public void setValue(int value) {
-            this.value = value;
             this.current = value;
         }
     }

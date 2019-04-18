@@ -8,7 +8,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
 
-import java.util.ArrayList;
+import java.util.List;
 
 /**
  * @author yxc
@@ -16,23 +16,12 @@ import java.util.ArrayList;
  */
 public class MyViewAdapter extends RecyclerView.Adapter<MyViewAdapter.MyViewHolder> {
 
-    private ArrayList<String> dataList = new ArrayList();
-
+    List<String> dataList;
     Context context;
 
-    public MyViewAdapter(Context context){
+    public MyViewAdapter(Context context, List<String> dataList){
         this.context = context;
-        dataList.add("a");
-        dataList.add("b");
-        dataList.add("c");
-        dataList.add("d");
-        dataList.add("e");
-        dataList.add("f");
-        dataList.add("g");
-        dataList.add("h");
-        dataList.add("i");
-        dataList.add("j");
-        dataList.add("k");
+        this.dataList = dataList;
     }
 
     @NonNull
