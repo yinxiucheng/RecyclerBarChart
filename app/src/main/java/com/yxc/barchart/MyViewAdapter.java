@@ -33,10 +33,6 @@ public class MyViewAdapter extends RecyclerView.Adapter<MyViewAdapter.MyViewHold
         dataList.add("i");
         dataList.add("j");
         dataList.add("k");
-        dataList.add("l");
-        dataList.add("m");
-        dataList.add("n");
-        dataList.add("o");
     }
 
     @NonNull

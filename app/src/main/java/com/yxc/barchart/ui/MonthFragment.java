@@ -21,6 +21,7 @@ import com.yxc.barchartlib.entrys.BarEntry;
 import com.yxc.barchartlib.formatter.ValueFormatter;
 import com.yxc.barchartlib.util.BarChartAttrs;
 import com.yxc.barchartlib.util.DecimalUtil;
+import com.yxc.barchartlib.util.DisplayUtil;
 import com.yxc.barchartlib.util.ReLocationUtil;
 import com.yxc.barchartlib.util.TextUtil;
 import com.yxc.barchartlib.util.TimeUtil;
@@ -97,7 +98,8 @@ public class MonthFragment extends BaseFragment {
         mYAxis = new YAxis(mBarChartAttrs);
         mXAxis = new XAxis(mBarChartAttrs, displayNumber);
         mXAxis.setValueFormatter(valueFormatter);
-        mItemDecoration = new BarChartItemDecoration(mYAxis, mXAxis, mBarChartAttrs, new CustomAnimatedDecorator(recyclerView.getMeasuredHeight(), recyclerView.getMeasuredWidth()));
+        mItemDecoration = new BarChartItemDecoration(mYAxis, mXAxis, mBarChartAttrs,
+                new CustomAnimatedDecorator(recyclerView.getMeasuredHeight(), DisplayUtil.dip2px(15), recyclerView.getMeasuredWidth()));
         recyclerView.addItemDecoration(mItemDecoration);
         mBarChartAdapter = new BarChartAdapter(getActivity(), mEntries, recyclerView, mXAxis, mBarChartAttrs);
         recyclerView.setAdapter(mBarChartAdapter);

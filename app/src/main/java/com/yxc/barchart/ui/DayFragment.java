@@ -100,7 +100,7 @@ public class DayFragment extends BaseFragment {
         mXAxis = new XAxis(mBarChartAttrs, displayNumber, valueFormatter);
 
         mItemDecoration = new BarChartItemDecoration(mYAxis, mXAxis, mBarChartAttrs,
-                new CustomAnimatedDecorator(DisplayUtil.dip2px(15), recyclerView.getMeasuredWidth()));
+                new CustomAnimatedDecorator(DisplayUtil.dip2px(15), DisplayUtil.dip2px(15), recyclerView.getMeasuredWidth()));
         recyclerView.addItemDecoration(mItemDecoration);
         mBarChartAdapter = new BarChartAdapter(getActivity(), mEntries, recyclerView, mXAxis, mBarChartAttrs);
         recyclerView.setAdapter(mBarChartAdapter);

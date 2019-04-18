@@ -104,7 +104,7 @@ public class WeekFragment extends BaseFragment {
         mXAxis = new XAxis(mBarChartAttrs, displayNumber);
         mXAxis.setValueFormatter(valueFormatter);
         mItemDecoration = new BarChartItemDecoration(mYAxis, mXAxis, mBarChartAttrs,
-                new CustomAnimatedDecorator(recyclerView.getMeasuredHeight(), recyclerView.getMeasuredWidth()));
+                new CustomAnimatedDecorator(recyclerView.getMeasuredHeight(),DisplayUtil.dip2px(15), recyclerView.getMeasuredWidth()));
         mItemDecoration.setBarChartValueFormatter(new BarChartValueFormatter());
         mItemDecoration.setChartValueMarkFormatter(new ChartValueMarkFormatter() {
             @Override

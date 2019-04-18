@@ -13,49 +13,40 @@ import android.util.Log;
  */
 public class CustomAnimatedDecorator extends AnimatedDecoratorDrawable {
 
-    public static final long ANIMATE_DELAY = 1L;
-
     long lastTimeAnimated = 0L;
     long deltaTime = 0L;
-
-    Rect rect = new Rect(0, 0, width, height);
+    Rect rect;
     Paint paint = new Paint();
 
-    MovingNumber currentTop = new MovingNumber(0, height, height);
+    public MovingNumber movingNumber;
 
-    public CustomAnimatedDecorator(int height, int width){
-        super(height, width);
+    public CustomAnimatedDecorator(int height, int end, int width) {
+        super(width, height);
+        movingNumber = new MovingNumber(0, end, height);
+        rect = new Rect(0, height, width, height);
         paint.setColor(Color.BLACK);
     }
 
     @Override
     public void draw(Canvas canvas) {
         lastTimeAnimated = SystemClock.uptimeMillis();
-        if (currentTop.current < currentTop.end + 1) {
-            deltaTime = lastTimeAnimated;
-            rect.set(0, currentTop.getValue(), width/2, height);
+        if (movingNumber.current > movingNumber.end + 1) {
+            Log.d("Tag", "currentTop.end:" + movingNumber.end + " currentTop.current:" + movingNumber.current);
+            rect.set(0, movingNumber.getValue(), width / 2, height);
         }
         canvas.drawRect(rect, paint);
     }
 
-
     public class MovingNumber {
-
         public int start;
         public int end;
         public int current;
-        public Direction direction;
         public int value;
 
         public int getValue() {
-            if (direction == Direction.FORWARD) {
-                if (current > 0){
-                    Log.d("Decorator", "FORWARD");
-                    current--;
-                }
-            } else {
-                Log.d("Decorator", "BACKWARD");
-                current++;
+            if (current > 0) {
+                Log.d("Decorator", "FORWARD , current:" + current);
+                current = current - 30;
             }
             return current;
         }
@@ -65,12 +56,11 @@ public class CustomAnimatedDecorator extends AnimatedDecoratorDrawable {
             this.end = end;
             this.current = current;
             this.value = current;
+        }
 
-            if (Math.abs(current - start) > Math.abs(current - end)) {
-                direction = Direction.FORWARD;
-            } else {
-                direction = Direction.BACKWARD;
-            }
+        public void setValue(int value) {
+            this.value = value;
+            this.current = value;
         }
     }
 }
