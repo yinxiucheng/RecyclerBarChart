@@ -13,6 +13,25 @@ public class BarChart {
 
     CustomAnimatedDecorator customAnimatedDecorator;
 
+    public BarChart(BarEntry barEntry, CustomAnimatedDecorator customAnimatedDecorator){
+        this.mBayEntry = barEntry;
+        this.customAnimatedDecorator = customAnimatedDecorator;
+    }
 
+    public BarEntry getBayEntry() {
+        return mBayEntry;
+    }
+
+    public void setBayEntry(BarEntry mBayEntry) {
+        this.mBayEntry = mBayEntry;
+    }
+
+    public CustomAnimatedDecorator getCustomAnimatedDecorator() {
+        return customAnimatedDecorator;
+    }
+
+    public void setCustomAnimatedDecorator(CustomAnimatedDecorator customAnimatedDecorator) {
+        this.customAnimatedDecorator = customAnimatedDecorator;
+    }
 
 }

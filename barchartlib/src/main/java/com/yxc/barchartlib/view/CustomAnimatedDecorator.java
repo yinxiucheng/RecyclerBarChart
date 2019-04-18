@@ -18,7 +18,6 @@ public class CustomAnimatedDecorator extends AnimatedDecoratorDrawable {
         super(width, height);
         rect = new Rect(0, height, width, height);
         movingNumber = new MovingNumber(start, end, height);
-
     }
 
     @Override
@@ -34,10 +33,9 @@ public class CustomAnimatedDecorator extends AnimatedDecoratorDrawable {
         public float start;
         public float end;
         public float current;
-
-        public float distance;
-        public int changeNumber = 200;
-        public float itemDistance;
+        public int changeNumber = 100;
+        private float distance;
+        private float itemDistance;
 
         public float getValue() {
             if (current > 0) {
