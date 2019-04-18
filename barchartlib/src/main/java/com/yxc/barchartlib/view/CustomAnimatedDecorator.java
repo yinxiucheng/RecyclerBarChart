@@ -12,51 +12,41 @@ import android.util.Log;
 public class CustomAnimatedDecorator extends AnimatedDecoratorDrawable {
 
     RectF rect;
-    public MovingNumber movingNumber;
+    public float start;
+    public float end;
+    public float current;
+    public int changeNumber = 30;
+    private float distance;
+    private float itemDistance;
 
     public CustomAnimatedDecorator(float width, float height, float start, float end) {
         super(width, height);
-        rect = new RectF(0, height, width, height);
-        movingNumber = new MovingNumber(start, end, height);
+        bindData(width, height, start, end);
     }
 
+    public void bindData(float width, float height, float start, float end){
+        rect = new RectF(0, height, width, height);
+        this.start = start;
+        this.end = end;
+        this.current = height - start;
+        distance = height - end;
+        itemDistance = distance / changeNumber;
+    }
 
     @Override
     public void draw(Canvas canvas, Paint paint) {
-        if (movingNumber.current > movingNumber.end + 1) {
-            Log.d("Decorator", "currentTop.end:" + movingNumber.end + " currentTop.current:" + movingNumber.current);
-            rect.set(rect.left, (int) movingNumber.getValue(), rect.right, rect.bottom);
+        if (current > end + 1) {
+            Log.d("Decorator", "currentTop.end:" + end + " currentTop.current:" + current);
+            rect.set(rect.left, getValue(), rect.right, rect.bottom);
         }
         canvas.drawRect(rect, paint);
     }
 
-    public class MovingNumber {
-
-        public float start;
-        public float end;
-        public float current;
-        public int changeNumber = 30;
-        private float distance;
-        private float itemDistance;
-
-        public float getValue() {
-            if (current > 0) {
-                Log.d("Decorator", "FORWARD , current:" + current);
-                current = current - itemDistance;
-            }
-            return current;
+    private float getValue() {
+        if (current > 0) {
+            Log.d("Decorator", "FORWARD , current:" + current);
+            current = current - itemDistance;
         }
-
-        public MovingNumber(float start, float end, float current) {
-            this.start = start;
-            this.end = end;
-            this.current = current - start;
-            distance = current - end;
-            itemDistance = distance / changeNumber;
-        }
-
-        public void setValue(float value) {
-            this.current = value;
-        }
+        return current;
     }
 }
