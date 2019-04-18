@@ -103,8 +103,7 @@ public class WeekFragment extends BaseFragment {
         mYAxis = new YAxis(mBarChartAttrs);
         mXAxis = new XAxis(mBarChartAttrs, displayNumber);
         mXAxis.setValueFormatter(valueFormatter);
-        mItemDecoration = new BarChartItemDecoration(mYAxis, mXAxis, mBarChartAttrs,
-                new CustomAnimatedDecorator(recyclerView.getMeasuredHeight(),DisplayUtil.dip2px(15), recyclerView.getMeasuredWidth()));
+        mItemDecoration = new BarChartItemDecoration(mYAxis, mXAxis, mBarChartAttrs);
         mItemDecoration.setBarChartValueFormatter(new BarChartValueFormatter());
         mItemDecoration.setChartValueMarkFormatter(new ChartValueMarkFormatter() {
             @Override
@@ -226,5 +225,4 @@ public class WeekFragment extends BaseFragment {
         SpannableStringBuilder spannable = TextUtil.getSpannableStr(getActivity(), parentStr, childStr, 24);
         txtCountStep.setText(spannable);
     }
-
 }

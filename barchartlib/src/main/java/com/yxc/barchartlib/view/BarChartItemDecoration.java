@@ -40,14 +40,12 @@ public class BarChartItemDecoration extends RecyclerView.ItemDecoration {
     private ValueFormatter mBarChartValueFormatter;
     private ValueFormatter mChartValueMarkFormatter;
 
-    private AnimatedDecoratorDrawable drawable;
-
     private Paint mBarChartPaint;
 
     public static final int HORIZONTAL_LIST = LinearLayoutManager.HORIZONTAL;
     public static final int VERTICAL_LIST = LinearLayoutManager.VERTICAL;
 
-    public BarChartItemDecoration(YAxis yAxis, XAxis xAxis, BarChartAttrs barChartAttrs, AnimatedDecoratorDrawable drawable) {
+    public BarChartItemDecoration(YAxis yAxis, XAxis xAxis, BarChartAttrs barChartAttrs) {
         this.mOrientation = barChartAttrs.layoutManagerOrientation;
         this.mYAxis = yAxis;
         this.mXAxis = xAxis;
@@ -58,7 +56,6 @@ public class BarChartItemDecoration extends RecyclerView.ItemDecoration {
         this.mBarChartValueFormatter = new DefaultBarChartValueFormatter(0);
         this.mChartValueMarkFormatter = new DefaultBarChartValueFormatter(0);
         this.mBarChartRender = new BarChartRender(mBarChartAttrs, mBarChartValueFormatter, mChartValueMarkFormatter);
-        this.drawable = drawable;
         initBarChartPaint();
     }
 
@@ -124,7 +121,9 @@ public class BarChartItemDecoration extends RecyclerView.ItemDecoration {
             float barSpaceWidth = width * mBarChartAttrs.barSpace;
             float barChartWidth = width - barSpaceWidth;//柱子的宽度
             final float start = child.getLeft() + barSpaceWidth / 2;
+
             final float end = start + barChartWidth;
+
             float height = barEntry.getY() / mYAxis.getAxisMaximum() * realYAxisLabelHeight;
 
             final float top = Math.max(bottom - height, parent.getPaddingTop());
@@ -143,7 +142,7 @@ public class BarChartItemDecoration extends RecyclerView.ItemDecoration {
                     int position = parent.getChildAdapterPosition(child);
                     if (position != RecyclerView.NO_POSITION) {
                         mustInvalidate = true;
-                        drawView(canvas, drawable, child);
+//                        drawView(canvas, drawable, child);
                     }
                 }
                 if (mustInvalidate) parent.invalidate();
@@ -153,7 +152,7 @@ public class BarChartItemDecoration extends RecyclerView.ItemDecoration {
     private void drawView(Canvas canvas, AnimatedDecoratorDrawable drawable, View child) {
         RecyclerView.LayoutParams params = (RecyclerView.LayoutParams) child.getLayoutParams();
         canvas.save();
-        canvas.translate(child.getLeft(), child.getBottom() + params.bottomMargin);
+        canvas.translate(child.getLeft(), child.getTop());
         drawable.draw(canvas, mBarChartPaint);
         canvas.restore();
     }
@@ -167,7 +166,6 @@ public class BarChartItemDecoration extends RecyclerView.ItemDecoration {
             start = parentLeft;
             rectF.set(start, top, end, bottom);
             mBarChartPaint.setColor(mBarChartAttrs.barChartEdgeColor);
-
             canvas.drawRect(rectF, mBarChartPaint);
         } else if (DecimalUtil.bigOrEquals(start, parentLeft) && DecimalUtil.smallOrEquals(end, parentRight)) {//中间的; 浮点数的 == 比较需要注意
             mBarChartPaint.setColor(mBarChartAttrs.barChartColor);

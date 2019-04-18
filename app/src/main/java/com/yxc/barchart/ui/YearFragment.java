@@ -89,8 +89,7 @@ public class YearFragment extends BaseFragment {
         SpeedRatioLinearLayoutManager layoutManager = new SpeedRatioLinearLayoutManager(getActivity(), mBarChartAttrs);
         mYAxis = new YAxis(mBarChartAttrs);
         mXAxis = new XAxis(mBarChartAttrs, displayNumber, new XAxisYearFormatter());
-        mItemDecoration = new BarChartItemDecoration(mYAxis, mXAxis, mBarChartAttrs,
-                new CustomAnimatedDecorator(recyclerView.getMeasuredHeight(), DisplayUtil.dip2px(15),recyclerView.getMeasuredWidth()));
+        mItemDecoration = new BarChartItemDecoration(mYAxis, mXAxis, mBarChartAttrs);
         recyclerView.addItemDecoration(mItemDecoration);
         mBarChartAdapter = new BarChartAdapter(getActivity(), mEntries, recyclerView, mXAxis, mBarChartAttrs);
         recyclerView.setAdapter(mBarChartAdapter);

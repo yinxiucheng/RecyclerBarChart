@@ -14,10 +14,7 @@ import java.util.HashMap;
  * @date 2019/4/18
  */
 public class AnimatedDecorator extends RecyclerView.ItemDecoration {
-
-
     HashMap<Integer, CustomAnimatedDecorator> mAnimatorMap;
-
     Paint mBarChartPaint;
     public AnimatedDecorator(HashMap<Integer, CustomAnimatedDecorator> map) {
         this.mAnimatorMap = map;
@@ -31,8 +28,6 @@ public class AnimatedDecorator extends RecyclerView.ItemDecoration {
         mBarChartPaint.setStyle(Paint.Style.FILL);
         mBarChartPaint.setColor(Color.RED);
     }
-
-
 
     @Override
     public void onDrawOver(@NonNull Canvas canvas, @NonNull RecyclerView parent, @NonNull RecyclerView.State state) {

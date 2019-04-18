@@ -1,10 +1,8 @@
 package com.yxc.barchartlib.view;
 
 import android.graphics.Canvas;
-import android.graphics.Color;
 import android.graphics.Paint;
 import android.graphics.Rect;
-import android.os.SystemClock;
 import android.util.Log;
 
 /**
@@ -16,12 +14,11 @@ public class CustomAnimatedDecorator extends AnimatedDecoratorDrawable {
     Rect rect;
     public MovingNumber movingNumber;
 
-    int distance;
-
-    public CustomAnimatedDecorator(int height, int end, int width) {
+    public CustomAnimatedDecorator(int height, int start, int end, int width) {
         super(width, height);
-        movingNumber = new MovingNumber(0, end, height);
         rect = new Rect(0, height, width, height);
+        movingNumber = new MovingNumber(start, end, height);
+
     }
 
     @Override
@@ -39,7 +36,7 @@ public class CustomAnimatedDecorator extends AnimatedDecoratorDrawable {
         public float current;
 
         public float distance;
-        public int changeNumber = 100;
+        public int changeNumber = 200;
         public float itemDistance;
 
         public float getValue() {
@@ -53,9 +50,9 @@ public class CustomAnimatedDecorator extends AnimatedDecoratorDrawable {
         public MovingNumber(float start, float end, float current) {
             this.start = start;
             this.end = end;
-            this.current = current;
+            this.current = current - start;
             distance = current - end;
-            itemDistance = distance/changeNumber;
+            itemDistance = distance / changeNumber;
         }
 
         public void setValue(float value) {
