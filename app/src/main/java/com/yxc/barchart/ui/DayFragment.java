@@ -104,7 +104,7 @@ public class DayFragment extends BaseFragment implements ViewTreeObserver.OnGlob
 
         mItemDecoration = new BarChartItemDecoration(mYAxis, mXAxis, mBarChartAttrs);
         recyclerView.addItemDecoration(mItemDecoration);
-        mBarChartAdapter = new BarChartAdapter(getActivity(), mEntries, recyclerView, mXAxis, mBarChartAttrs);
+        mBarChartAdapter = new BarChartAdapter(getActivity(), mEntries, recyclerView, mYAxis, mBarChartAttrs);
         recyclerView.setAdapter(mBarChartAdapter);
         recyclerView.setLayoutManager(layoutManager);
 
@@ -114,10 +114,10 @@ public class DayFragment extends BaseFragment implements ViewTreeObserver.OnGlob
                 currentTimestamp + preEntrySize * TimeUtil.TIME_HOUR, preEntrySize, mEntries.size(), true);
 
         List<BarEntry> barEntries = TestData.createDayEntries(mBarChartAttrs, currentTimestamp,
-                3 * displayNumber, mEntries.size(), false);
+                10 * displayNumber, mEntries.size(), false);
         barEntries.addAll(0, preEntries);
         bindBarChartList(barEntries);
-        currentTimestamp = currentTimestamp - TimeUtil.TIME_HOUR * displayNumber * 3;
+        currentTimestamp = currentTimestamp - TimeUtil.TIME_HOUR * displayNumber * 10;
         setXAxis(displayNumber);
     }
 
@@ -172,7 +172,7 @@ public class DayFragment extends BaseFragment implements ViewTreeObserver.OnGlob
             }
         });
 
-        recyclerView.getViewTreeObserver().addOnGlobalLayoutListener(this);
+//        recyclerView.getViewTreeObserver().addOnGlobalLayoutListener(this);
     }
 
     //重新设置Y坐标
@@ -241,10 +241,10 @@ public class DayFragment extends BaseFragment implements ViewTreeObserver.OnGlob
     public void onGlobalLayout() {
         HashMap<Integer, CustomAnimatedDecorator> map = new HashMap<>();
         for (int i = 0; i< recyclerView.getChildCount(); i++){
-            Log.d("DayFragment", " count" + recyclerView.getChildCount() + " entry'size + " + mEntries.size());
             View child = recyclerView.getChildAt(i);
             int position = recyclerView.getChildAdapterPosition(child);
             BarEntry barEntry = mEntries.get(position);
+            Log.d("DayFragment", " barEntry, localDate" + barEntry.localDate);
             float realBottomPadding = recyclerView.getPaddingBottom() + mBarChartAttrs.contentPaddingBottom;
             float realTopPadding = recyclerView.getPaddingTop() + mBarChartAttrs.maxYAxisPaddingTop;
             float realContentHeight = recyclerView.getHeight() - realBottomPadding - realTopPadding;
@@ -259,6 +259,6 @@ public class DayFragment extends BaseFragment implements ViewTreeObserver.OnGlob
             map.put(position, drawable);
         }
         mItemDecoration.setAnimatorMap(map);
-        recyclerView.getViewTreeObserver().removeOnGlobalLayoutListener(this);
+//        recyclerView.getViewTreeObserver().removeOnGlobalLayoutListener(this);
     }
 }

@@ -89,7 +89,7 @@ public class YearFragment extends BaseFragment {
         mXAxis = new XAxis(mBarChartAttrs, displayNumber, new XAxisYearFormatter());
         mItemDecoration = new BarChartItemDecoration(mYAxis, mXAxis, mBarChartAttrs);
         recyclerView.addItemDecoration(mItemDecoration);
-        mBarChartAdapter = new BarChartAdapter(getActivity(), mEntries, recyclerView, mXAxis, mBarChartAttrs);
+        mBarChartAdapter = new BarChartAdapter(getActivity(), mEntries, recyclerView, mYAxis, mBarChartAttrs);
         recyclerView.setAdapter(mBarChartAdapter);
         recyclerView.setLayoutManager(layoutManager);
         currentLocalDate = TimeUtil.getLastMonthOfTheYear(LocalDate.now());

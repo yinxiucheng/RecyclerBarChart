@@ -4,6 +4,7 @@ import android.content.Context;
 import android.graphics.RectF;
 import android.support.annotation.NonNull;
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -35,11 +36,11 @@ final public class BarChartAdapter extends RecyclerView.Adapter<BarChartAdapter.
 
     BarEntry selectBarEntry;
 
-    public BarChartAdapter(Context context, List<BarEntry> entries, RecyclerView recyclerView, XAxis xAxis, BarChartAttrs attrs) {
+    public BarChartAdapter(Context context, List<BarEntry> entries, RecyclerView recyclerView, YAxis mYAxis, BarChartAttrs attrs) {
         this.mContext = context;
         this.mEntries = entries;
         this.mRecyclerView = recyclerView;
-        this.mXAxis = xAxis;
+        this.mYAxis = mYAxis;
         this.mBarChartAttrs = attrs;
     }
 
@@ -79,11 +80,24 @@ final public class BarChartAdapter extends RecyclerView.Adapter<BarChartAdapter.
             resetRecyclerPadding(reminderWidth);
         }
         setLinearLayout(viewHolder.contentView, itemWidth);
-        bindBarEntryToView(viewHolder, position);
+        bindBarEntryToView(viewHolder, position, contentWidth);
     }
 
-    private void bindBarEntryToView(BarChartViewHolder viewHolder, final int position) {
+    private void bindBarEntryToView(BarChartViewHolder viewHolder, final int position, float contentWidth) {
         final BarEntry barEntry = mEntries.get(position);
+        float itemWidth = contentWidth/mBarChartAttrs.displayNumbers;
+        Log.d("BarChartAdapter", " mYAxis:" + mYAxis.getAxisMaximum());
+//        float width = viewHolder.contentView.getWidth();
+        float barSpaceWidth = itemWidth * mBarChartAttrs.barSpace;
+        float realBottomPadding = mRecyclerView.getPaddingBottom() + mBarChartAttrs.contentPaddingBottom;
+        float realTopPadding = mRecyclerView.getPaddingTop() + mBarChartAttrs.maxYAxisPaddingTop;
+        float realContentHeight = mRecyclerView.getHeight() - realBottomPadding - realTopPadding;
+        float barChartWidth = itemWidth - barSpaceWidth;//柱子的宽度
+        float height = barEntry.getY() / mYAxis.getAxisMaximum() * realContentHeight;
+        CustomAnimatedDecorator drawable = new CustomAnimatedDecorator(barChartWidth, realContentHeight,
+                0, realContentHeight - height);
+        barEntry.setDrawable(drawable);
+
         viewHolder.contentView.setTag(barEntry);
 
         viewHolder.contentView.setOnClickListener(new View.OnClickListener() {

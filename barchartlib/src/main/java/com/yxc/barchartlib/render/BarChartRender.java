@@ -19,6 +19,7 @@ import com.yxc.barchartlib.util.BarChartAttrs;
 import com.yxc.barchartlib.util.ChartComputeUtil;
 import com.yxc.barchartlib.util.DecimalUtil;
 import com.yxc.barchartlib.util.DisplayUtil;
+import com.yxc.barchartlib.view.AnimatedDecoratorDrawable;
 
 /**
  * @author yxc
@@ -233,6 +234,33 @@ final public class BarChartRender {
     private float getTxtX(float center, String valueStr) {
         float txtX = center - mTextPaint.measureText(valueStr) / 2;
         return txtX;
+    }
+
+
+    final public void drawChart(final Canvas canvas, @NonNull final RecyclerView parent, YAxis mYAxis) {
+        boolean mustInvalidate = false;
+        if (parent != null && parent.getChildCount() > 0) {
+            for (int i = 0; i < parent.getChildCount(); i++) {
+                View child = parent.getChildAt(i);
+                int position = parent.getChildAdapterPosition(child);
+                BarEntry barEntry = (BarEntry) child.getTag();
+                float width = child.getWidth();
+                float barSpaceWidth = width * mBarChartAttrs.barSpace;
+                final float left = child.getLeft() + barSpaceWidth / 2;
+                if (position != RecyclerView.NO_POSITION && null != barEntry.drawable) {
+                    mustInvalidate = true;
+                    drawView(canvas, barEntry.drawable, left, child.getTop() + mBarChartAttrs.maxYAxisPaddingTop);
+                }
+            }
+            if (mustInvalidate) parent.invalidate();
+        }
+    }
+
+    private void drawView(Canvas canvas, AnimatedDecoratorDrawable drawable, float dx, float dy) {
+        canvas.save();
+        canvas.translate(dx, dy);
+        drawable.draw(canvas, mBarChartPaint);
+        canvas.restore();
     }
 
 }

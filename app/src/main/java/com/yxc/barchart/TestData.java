@@ -32,7 +32,7 @@ public class TestData {
                 timestamp = timestamp - TimeUtil.TIME_DAY;
             }
             float mult = 10;
-            float value = 0;
+            float value;
             if (i > 500) {
                 value = (float) (Math.random() * 30000) + mult;
             } else if (i > 400) {
@@ -70,6 +70,8 @@ public class TestData {
         Collections.sort(entries);
         return entries;
     }
+
+
 
     //创建Week视图的数据
     public static List<BarEntry> createWeekEntries(LocalDate localDate, int length, int originEntrySize) {

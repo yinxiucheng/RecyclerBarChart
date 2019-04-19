@@ -1,7 +1,7 @@
 package com.yxc.barchartlib.entrys;
 
 import android.support.annotation.NonNull;
-
+import com.yxc.barchartlib.view.CustomAnimatedDecorator;
 import org.joda.time.LocalDate;
 
 import java.util.Objects;
@@ -27,6 +27,16 @@ public class BarEntry extends Entry implements Comparable<BarEntry> {
     public int type;
 
     public LocalDate localDate;
+
+    public CustomAnimatedDecorator getDrawable() {
+        return drawable;
+    }
+
+    public void setDrawable(CustomAnimatedDecorator drawable) {
+        this.drawable = drawable;
+    }
+
+    public CustomAnimatedDecorator drawable;
 
     public BarEntry() {
     }

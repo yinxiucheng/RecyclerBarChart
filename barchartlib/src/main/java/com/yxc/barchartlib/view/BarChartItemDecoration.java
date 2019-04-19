@@ -3,7 +3,6 @@ package com.yxc.barchartlib.view;
 import android.graphics.Canvas;
 import android.graphics.Paint;
 import android.graphics.Rect;
-import android.graphics.RectF;
 import android.support.annotation.NonNull;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -12,7 +11,6 @@ import android.view.View;
 
 import com.yxc.barchartlib.component.XAxis;
 import com.yxc.barchartlib.component.YAxis;
-import com.yxc.barchartlib.entrys.BarEntry;
 import com.yxc.barchartlib.formatter.DefaultBarChartValueFormatter;
 import com.yxc.barchartlib.formatter.ValueFormatter;
 import com.yxc.barchartlib.render.BarBoardRender;
@@ -102,8 +100,8 @@ public class BarChartItemDecoration extends RecyclerView.ItemDecoration {
 
             mBarBoardRender.drawBarBorder(canvas, parent);//绘制边框
 
-//            mBarChartRender.drawBarChart(canvas, parent, mYAxis);//draw BarChart
-            drawChart(canvas, parent);
+            mBarChartRender.drawBarChart(canvas, parent, mYAxis);//draw BarChart
+//            mBarChartRender.drawChart(canvas, parent, mYAxis);
             mBarChartRender.drawValueMark(canvas, parent, mYAxis);
             mBarChartRender.drawBarChartValue(canvas, parent, mYAxis);//draw BarChart value
 
@@ -113,33 +111,6 @@ public class BarChartItemDecoration extends RecyclerView.ItemDecoration {
         }
     }
 
-
-    final public void drawChart(final Canvas canvas, @NonNull final RecyclerView parent) {
-        boolean mustInvalidate = false;
-        if (parent != null && parent.getChildCount() > 0) {
-            for (int i = 0; i < parent.getChildCount(); i++) {
-                View child = parent.getChildAt(i);
-                int position = parent.getChildAdapterPosition(child);
-                float width = child.getWidth();
-                float barSpaceWidth = width * mBarChartAttrs.barSpace;
-                final float left = child.getLeft() + barSpaceWidth / 2;
-
-                CustomAnimatedDecorator customAnimatedDecorator = mAnimatorMap.get(position);
-                if (position != RecyclerView.NO_POSITION && null != customAnimatedDecorator) {
-                    mustInvalidate = true;
-                    drawView(canvas, customAnimatedDecorator,  left, child.getTop() + mBarChartAttrs.maxYAxisPaddingTop);
-                }
-            }
-            if (mustInvalidate) parent.invalidate();
-        }
-    }
-
-    private void drawView(Canvas canvas, AnimatedDecoratorDrawable drawable, float dx, float dy) {
-        canvas.save();
-        canvas.translate(dx, dy);
-        drawable.draw(canvas, mBarChartPaint);
-        canvas.restore();
-    }
 
     @Override
     public void onDraw(@NonNull Canvas canvas, @NonNull RecyclerView parent, @NonNull RecyclerView.State state) {

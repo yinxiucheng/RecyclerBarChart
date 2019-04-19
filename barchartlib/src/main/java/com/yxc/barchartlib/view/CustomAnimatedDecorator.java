@@ -15,17 +15,24 @@ public class CustomAnimatedDecorator extends AnimatedDecoratorDrawable {
     public float start;
     public float end;
     public float current;
-    public int changeNumber = 30;
+    public int changeNumber = 20;
     private float distance;
     private float itemDistance;
 
+    public CustomAnimatedDecorator(float width, float height){
+        super(width, height);
+        rect = new RectF();
+    }
+
     public CustomAnimatedDecorator(float width, float height, float start, float end) {
         super(width, height);
+        rect = new RectF();
         bindData(width, height, start, end);
     }
 
     public void bindData(float width, float height, float start, float end){
-        rect = new RectF(0, height, width, height);
+//        rect = new RectF(0, height, width, height);
+        rect.set(0, height, width, height);
         this.start = start;
         this.end = end;
         this.current = height - start;

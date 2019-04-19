@@ -6,6 +6,7 @@ import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v7.widget.RecyclerView;
 import android.text.SpannableStringBuilder;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -104,7 +105,12 @@ public class WeekFragment extends BaseFragment implements ViewTreeObserver.OnGlo
         mXAxis = new XAxis(mBarChartAttrs, displayNumber);
         mXAxis.setValueFormatter(valueFormatter);
         mItemDecoration = new BarChartItemDecoration(mYAxis, mXAxis, mBarChartAttrs);
-        mItemDecoration.setBarChartValueFormatter(new BarChartValueFormatter());
+        mItemDecoration.setBarChartValueFormatter(new BarChartValueFormatter(){
+            @Override
+            public String getBarLabel(BarEntry barEntry) {
+                return TimeUtil.getDateStr(barEntry.timestamp, "MM-dd");
+            }
+        });
         mItemDecoration.setChartValueMarkFormatter(new ChartValueMarkFormatter() {
             @Override
             public String getBarLabel(BarEntry barEntry) {
@@ -114,7 +120,7 @@ public class WeekFragment extends BaseFragment implements ViewTreeObserver.OnGlo
             }
         });
         recyclerView.addItemDecoration(mItemDecoration);
-        mBarChartAdapter = new BarChartAdapter(getActivity(), mEntries, recyclerView, mXAxis, mBarChartAttrs);
+        mBarChartAdapter = new BarChartAdapter(getActivity(), mEntries, recyclerView, mYAxis, mBarChartAttrs);
         recyclerView.setAdapter(mBarChartAdapter);
         recyclerView.setLayoutManager(layoutManager);
 
@@ -136,6 +142,7 @@ public class WeekFragment extends BaseFragment implements ViewTreeObserver.OnGlo
         if (yAxis != null){
             mYAxis = yAxis;
             mItemDecoration.setYAxis(mYAxis);
+            mBarChartAdapter.setYAxis(mYAxis);
         }
         displayDateAndStep(visibleEntries);
     }
@@ -175,7 +182,7 @@ public class WeekFragment extends BaseFragment implements ViewTreeObserver.OnGlo
                 }
             }
         });
-        recyclerView.getViewTreeObserver().addOnGlobalLayoutListener(this);
+//        recyclerView.getViewTreeObserver().addOnGlobalLayoutListener(this);
     }
 
     //重新设置Y坐标
@@ -239,7 +246,7 @@ public class WeekFragment extends BaseFragment implements ViewTreeObserver.OnGlo
             float realBottomPadding = recyclerView.getPaddingBottom() + mBarChartAttrs.contentPaddingBottom;
             float realTopPadding = recyclerView.getPaddingTop() + mBarChartAttrs.maxYAxisPaddingTop;
             float realContentHeight = recyclerView.getHeight() - realBottomPadding - realTopPadding;
-
+            Log.d("WeekFragment", " barEntry, localDate" + barEntry.localDate);
             float width = child.getWidth();
             float barSpaceWidth = width * mBarChartAttrs.barSpace;
             float barChartWidth = width - barSpaceWidth;//柱子的宽度
