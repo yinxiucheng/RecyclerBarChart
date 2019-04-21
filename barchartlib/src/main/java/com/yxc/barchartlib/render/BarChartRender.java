@@ -3,6 +3,7 @@ package com.yxc.barchartlib.render;
 import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
+import android.graphics.Path;
 import android.graphics.RectF;
 import android.graphics.drawable.Drawable;
 import android.support.annotation.NonNull;
@@ -16,6 +17,7 @@ import com.yxc.barchartlib.component.YAxis;
 import com.yxc.barchartlib.entrys.BarEntry;
 import com.yxc.barchartlib.formatter.ValueFormatter;
 import com.yxc.barchartlib.util.BarChartAttrs;
+import com.yxc.barchartlib.util.CanvasUtil;
 import com.yxc.barchartlib.util.ChartComputeUtil;
 import com.yxc.barchartlib.util.DecimalUtil;
 import com.yxc.barchartlib.util.DisplayUtil;
@@ -96,6 +98,7 @@ final public class BarChartRender {
     }
 
     private boolean drawChart(Canvas canvas, RectF rectF, float parentLeft, float parentRight) {
+        float radius = (rectF.right - rectF.left)/8;
         // 浮点数的 == 比较需要注意
         if (DecimalUtil.smallOrEquals(rectF.right, parentLeft)) {
             //continue 会闪，原因是end == parentLeft 没有过滤掉，显示出来柱状图了。
@@ -103,18 +106,21 @@ final public class BarChartRender {
         } else if (rectF.left < parentLeft && rectF.right > parentLeft) {
             //左边部分滑入的时候，处理柱状图的显示
             rectF.left = parentLeft;
+            Path path = CanvasUtil.createRectRoundPathRight(rectF, radius);
             mBarChartPaint.setColor(mBarChartAttrs.barChartEdgeColor);
-            canvas.drawRect(rectF, mBarChartPaint);
+            canvas.drawPath(path, mBarChartPaint);
         } else if (DecimalUtil.bigOrEquals(rectF.left, parentLeft) && DecimalUtil.smallOrEquals(rectF.right, parentRight)) {
             //中间的; 浮点数的 == 比较需要注意
             mBarChartPaint.setColor(mBarChartAttrs.barChartColor);
-            canvas.drawRect(rectF, mBarChartPaint);
+            Path path = CanvasUtil.createRectRoundPath(rectF);
+            canvas.drawPath(path, mBarChartPaint);
         } else if (DecimalUtil.smallOrEquals(rectF.left, parentRight) && rectF.right > parentRight) {
             //右边部分滑出的时候，处理柱状图，文字的显示
             float distance = (parentRight - rectF.left);
             rectF.right = rectF.left + distance;
+            Path path = CanvasUtil.createRectRoundPathLeft(rectF, radius);
             mBarChartPaint.setColor(mBarChartAttrs.barChartEdgeColor);
-            canvas.drawRect(rectF, mBarChartPaint);
+            canvas.drawPath(path, mBarChartPaint);
         }
         return false;
     }
@@ -139,10 +145,7 @@ final public class BarChartRender {
                 float top = bottom - height;
                 String valueStr = mBarChartValueFormatter.getBarLabel(barEntry);
                 float txtY = top - mBarChartAttrs.barChartValuePaddingBottom;
-
-                if (drawText(canvas, parentLeft, parentRight, valueStr, childCenter, txtY, mTextPaint)) {
-                    continue;
-                }
+                drawText(canvas, parentLeft, parentRight, valueStr, childCenter, txtY, mTextPaint);
             }
         }
     }
