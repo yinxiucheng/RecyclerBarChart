@@ -91,14 +91,14 @@ final public class BarChartRender {
             View child = parent.getChildAt(i);
             BarEntry barChart = (BarEntry) child.getTag();
             RectF rectF = ChartComputeUtil.getBarChartRectF(child, parent, mYAxis, mBarChartAttrs, barChart);
-            if (drawChart(canvas, rectF, parentLeft, parentRight)){
+            if (drawChart(canvas, rectF, parentLeft, parentRight)) {
                 continue;
             }
         }
     }
 
     private boolean drawChart(Canvas canvas, RectF rectF, float parentLeft, float parentRight) {
-        float radius = (rectF.right - rectF.left)/8;
+        float radius = (rectF.right - rectF.left) * mBarChartAttrs.barChartRoundRectRadiusRatio;
         // 浮点数的 == 比较需要注意
         if (DecimalUtil.smallOrEquals(rectF.right, parentLeft)) {
             //continue 会闪，原因是end == parentLeft 没有过滤掉，显示出来柱状图了。
@@ -112,7 +112,7 @@ final public class BarChartRender {
         } else if (DecimalUtil.bigOrEquals(rectF.left, parentLeft) && DecimalUtil.smallOrEquals(rectF.right, parentRight)) {
             //中间的; 浮点数的 == 比较需要注意
             mBarChartPaint.setColor(mBarChartAttrs.barChartColor);
-            Path path = CanvasUtil.createRectRoundPath(rectF);
+            Path path = CanvasUtil.createRectRoundPath(rectF, radius);
             canvas.drawPath(path, mBarChartPaint);
         } else if (DecimalUtil.smallOrEquals(rectF.left, parentRight) && rectF.right > parentRight) {
             //右边部分滑出的时候，处理柱状图，文字的显示

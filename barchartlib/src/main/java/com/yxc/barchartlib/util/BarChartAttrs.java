@@ -19,8 +19,9 @@ public class BarChartAttrs {
     public float barChartValuePaddingLeft;//柱状图顶部value文字不居中时据左的padding
     public float barChartValueTxtMaskSize;//value 顶部popup的文字大小
     public int barChartValueTxtMaskColor;//value 顶部popup的文字颜色
+    public float barChartRoundRectRadiusRatio;//圆角矩形半径占宽度的比率
 
-    public float barSpace;//barchart item中 space 占比，能够控制barchart的宽度
+    public float barSpace;//barChart item中 space 占比，能够控制barchart的宽度
     public float barBorderWidth;//边框的宽度
     public float contentPaddingBottom;//底部的 X轴刻度所占的高度
     public float maxYAxisPaddingTop;//顶部显示的预留空间

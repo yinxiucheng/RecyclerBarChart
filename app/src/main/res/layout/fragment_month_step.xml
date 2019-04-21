@@ -27,6 +27,7 @@
         app:enableCharValueDisplay="true"
         app:enableLeftYAxisLabel="false"
         app:recyclerPaddingRight="3dp"
+        app:barChartRoundRectRadiusRatio="0.25"
         app:xAxisScaleDistance="7" />
 
     <TextView

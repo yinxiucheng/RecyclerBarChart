@@ -21,11 +21,10 @@ public class CanvasUtil {
     }
 
 
-    public static Path createRectRoundPath(RectF rectF) {
+    public static Path createRectRoundPath(RectF rectF, float radius) {
         Path path = new Path();
-        float width = rectF.right - rectF.left;
         //指定四个圆角不同大小
-        float radii[] = {width / 8, width / 8, width / 8, width / 8, 0, 0, 0, 0};
+        float radii[] = {radius, radius, radius, radius, 0, 0, 0, 0};
         path.addRoundRect(rectF, radii, Path.Direction.CCW);
         return path;
     }
@@ -33,7 +32,6 @@ public class CanvasUtil {
 
     public static Path createRectRoundPathLeft(RectF rectF, float radius) {
         Path path = new Path();
-        float width = rectF.right - rectF.left;
         //指定四个圆角不同大小
         float radii[] = {radius, radius, 0, 0, 0, 0, 0, 0};
         path.addRoundRect(rectF, radii, Path.Direction.CCW);
@@ -43,7 +41,6 @@ public class CanvasUtil {
 
     public static Path createRectRoundPathRight(RectF rectF, float radius) {
         Path path = new Path();
-        float width = rectF.right - rectF.left;
         //指定四个圆角不同大小
         float radii[] = {0, 0, radius, radius, 0, 0, 0, 0};
         path.addRoundRect(rectF, radii, Path.Direction.CCW);

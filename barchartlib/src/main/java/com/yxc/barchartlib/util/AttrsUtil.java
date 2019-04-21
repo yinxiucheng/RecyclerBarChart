@@ -32,6 +32,7 @@ public class AttrsUtil {
         attrs.contentPaddingBottom = ta.getDimension(R.styleable.BarChartRecyclerView_contentPaddingBottom, DisplayUtil.dip2px(15));
         attrs.maxYAxisPaddingTop = ta.getDimension(R.styleable.BarChartRecyclerView_maxYAxisPaddingTop, DisplayUtil.dip2px(15));
         attrs.displayNumbers = ta.getInteger(R.styleable.BarChartRecyclerView_displayNumbers, 12);
+        attrs.barChartRoundRectRadiusRatio = ta.getFloat(R.styleable.BarChartRecyclerView_barChartRoundRectRadiusRatio, 1.0f/8);
 
         //Switch Button
         attrs.enableBarBorder = ta.getBoolean(R.styleable.BarChartRecyclerView_enableBarBorder, true);

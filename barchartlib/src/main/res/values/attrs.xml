@@ -16,6 +16,7 @@
         <attr name="barChartValuePaddingBottom" format="dimension"/>
         <attr name="barChartValuePaddingLeft" format="dimension"/>
 
+        <attr name="barChartRoundRectRadiusRatio" format="float"/>
         <attr name="barBorderWidth" format="dimension" />
         <attr name="contentPaddingBottom" format="dimension" />
         <attr name="maxYAxisPaddingTop" format="dimension" />
