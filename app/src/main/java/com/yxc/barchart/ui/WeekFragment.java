@@ -60,7 +60,7 @@ public class WeekFragment extends BaseFragment implements ViewTreeObserver.OnGlo
     private BarChartAttrs mBarChartAttrs;
     private LocalDate currentLocalDate;
 
-    private int preEntries = 2;
+    private int preEntries = 0;
 
     //防止 Fragment重叠
     @Override
@@ -105,12 +105,12 @@ public class WeekFragment extends BaseFragment implements ViewTreeObserver.OnGlo
         mXAxis = new XAxis(mBarChartAttrs, displayNumber);
         mXAxis.setValueFormatter(valueFormatter);
         mItemDecoration = new BarChartItemDecoration(mYAxis, mXAxis, mBarChartAttrs);
-        mItemDecoration.setBarChartValueFormatter(new BarChartValueFormatter(){
-            @Override
-            public String getBarLabel(BarEntry barEntry) {
-                return TimeUtil.getDateStr(barEntry.timestamp, "MM-dd");
-            }
-        });
+//        mItemDecoration.setBarChartValueFormatter(new BarChartValueFormatter(){
+//            @Override
+//            public String getBarLabel(BarEntry barEntry) {
+//                return TimeUtil.getDateStr(barEntry.timestamp, "MM-dd");
+//            }
+//        });
         mItemDecoration.setChartValueMarkFormatter(new ChartValueMarkFormatter() {
             @Override
             public String getBarLabel(BarEntry barEntry) {

@@ -12,9 +12,7 @@
         android:layout_alignParentTop="true"
         android:layout_marginLeft="15dp"
         android:layout_marginRight="15dp">
-
         <include layout="@layout/layout_step_date_title" />
-
     </RelativeLayout>
 
     <com.yxc.barchartlib.view.BarChartRecyclerView
@@ -27,7 +25,9 @@
         android:paddingLeft="3dp"
         app:displayNumbers="7"
         app:enableCharValueDisplay="true"
-        app:enableLeftYAxisLabel="false"
+        app:enableLeftYAxisLabel="true"
+        app:enableScrollToScale="false"
+        app:recyclerPaddingRight="3dp"
         app:enableRightYAxisLabel="true" />
 
     <TextView

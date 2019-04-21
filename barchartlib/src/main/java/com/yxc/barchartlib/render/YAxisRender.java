@@ -45,7 +45,6 @@ public class YAxisRender {
         mLinePaint.setColor(Color.GRAY);
     }
 
-
     //绘制 Y轴刻度线 横的网格线
     public void drawHorizontalLine(Canvas canvas, RecyclerView parent, YAxis yAxis) {
         int left = parent.getPaddingLeft();
@@ -103,7 +102,7 @@ public class YAxisRender {
                 String labelStr = yAxis.getValueFormatter().getFormattedValue(yAxisScaleValue);
 
                 float txtY = yAxisScaleLocation + yAxis.labelVerticalPadding;
-                float txtX = yAxisWidth - mTextPaint.measureText(labelStr) - yAxis.labelHorizontalPadding;
+                float txtX = paddingLeft - mTextPaint.measureText(labelStr) - yAxis.labelHorizontalPadding;
                 canvas.drawText(labelStr, txtX, txtY, mTextPaint);
             }
         }
@@ -143,18 +142,9 @@ public class YAxisRender {
 
     private int computeYAxisWidth(int originPadding, float yAxisWidth) {
         float resultPadding;
-//        Log.d("YAxis1", "originPadding:" + originPadding + " yAxisWidth:" + yAxisWidth);
         if (originPadding > yAxisWidth) {
-            float distance = originPadding - yAxisWidth;
-            if (distance > DisplayUtil.dip2px(8)) {
-//                Log.d("YAxis", "if control originPadding:" + originPadding + " yAxisWidth:" + yAxisWidth);
-                resultPadding = yAxisWidth;//实际需要的跟原来差8dp了就用，实际测量的，否则就用原来的
-            } else {
-//                Log.d("YAxis", "else control originPadding:" + originPadding + " yAxisWidth:" + yAxisWidth);
-                resultPadding = originPadding;
-            }
+            resultPadding = originPadding;
         } else {//原来设定的 padding 不够用
-//            Log.d("YAxis", "control originPadding:" + originPadding + " yAxisWidth:" + yAxisWidth);
             resultPadding = yAxisWidth;
         }
         return (int) resultPadding;

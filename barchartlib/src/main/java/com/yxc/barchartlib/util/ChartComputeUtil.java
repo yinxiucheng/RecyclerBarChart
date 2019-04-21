@@ -1,5 +1,7 @@
 package com.yxc.barchartlib.util;
 
+import android.graphics.Path;
+import android.graphics.PointF;
 import android.graphics.RectF;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -229,7 +231,37 @@ public class ChartComputeUtil {
     }
 
 
+    public static float getYPosition(BarEntry entry, RecyclerView parent, YAxis mYAxis, BarChartAttrs mBarChartAttrs) {
+        float contentBottom = parent.getHeight() - mBarChartAttrs.contentPaddingBottom - parent.getPaddingBottom();
+        float contentTop = mBarChartAttrs.maxYAxisPaddingTop + parent.getPaddingTop();
+        float contentHeight = contentBottom - contentTop;
+        float height = entry.getY() / mYAxis.getAxisMaximum() * contentHeight;
+        return contentBottom - height;
+    }
 
+    public static Path createColorRectPath(PointF pointF1, PointF pointF2, float bottom) {
+        Path path = new Path();
+        path.moveTo(pointF1.x, pointF1.y);
+        path.lineTo(pointF2.x, pointF2.y);
+        path.lineTo(pointF2.x, bottom);
+        path.lineTo(pointF1.x, bottom);
+        path.close();
+        return path;
+    }
+
+    public static PointF getInterceptPointF(PointF pointF1, PointF pointF2, float x) {
+        float width = Math.abs(pointF1.x - pointF2.x);
+        float height = Math.abs(pointF1.y - pointF2.y);
+        float interceptWidth = Math.abs(pointF1.x - x);
+        float interceptHeight = interceptWidth * 1.0f / width * height;
+        float y;
+        if (pointF2.y < pointF1.y) {
+            y = pointF1.y - interceptHeight;
+        } else {
+            y = pointF1.y + interceptHeight;
+        }
+        return new PointF(x, y);
+    }
 
 
 }

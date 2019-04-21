@@ -4,11 +4,13 @@ import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
 import android.graphics.Path;
+import android.graphics.PointF;
 import android.graphics.RectF;
 import android.graphics.drawable.Drawable;
 import android.support.annotation.NonNull;
 import android.support.v7.widget.RecyclerView;
 import android.text.TextUtils;
+import android.util.Log;
 import android.view.View;
 
 import com.yxc.barchartlib.R;
@@ -21,12 +23,16 @@ import com.yxc.barchartlib.util.ChartComputeUtil;
 import com.yxc.barchartlib.util.DecimalUtil;
 import com.yxc.barchartlib.util.DisplayUtil;
 import com.yxc.barchartlib.view.AnimatedDecoratorDrawable;
+import com.yxc.barchartlib.view.BarChartAdapter;
+import com.yxc.barchartlib.view.LineChartDrawable;
+
+import java.util.List;
 
 /**
  * @author yxc
  * @date 2019/4/14
  */
-final public class BarChartRender {
+final public class LineChartRender {
     private BarChartAttrs mBarChartAttrs;
     private Paint mBarChartPaint;
     private Paint mTextPaint;
@@ -43,7 +49,7 @@ final public class BarChartRender {
         this.mBarChartValueFormatter = mBarChartValueFormatter;
     }
 
-    public BarChartRender(BarChartAttrs barChartAttrs, ValueFormatter barChartValueFormatter, ValueFormatter chartValueMarkFormatter) {
+    public LineChartRender(BarChartAttrs barChartAttrs, ValueFormatter barChartValueFormatter, ValueFormatter chartValueMarkFormatter) {
         this.mBarChartAttrs = barChartAttrs;
         initBarChartPaint();
         initTextPaint();
@@ -80,56 +86,13 @@ final public class BarChartRender {
         mBarChartPaint.setColor(mBarChartAttrs.barChartColor);
     }
 
-    //绘制柱状图, mYAxis这个坐标会实时变动，所以通过 BarChartItemDecoration 传过来的精确值。
-    final public void drawBarChart(final Canvas canvas, @NonNull final RecyclerView parent, final YAxis mYAxis) {
-        final float parentRight = parent.getWidth() - parent.getPaddingRight();
-        final float parentLeft = parent.getPaddingLeft();
-
-        final int childCount = parent.getChildCount();
-        for (int i = 0; i < childCount; i++) {
-            View child = parent.getChildAt(i);
-            BarEntry barChart = (BarEntry) child.getTag();
-            RectF rectF = ChartComputeUtil.getBarChartRectF(child, parent, mYAxis, mBarChartAttrs, barChart);
-            if (drawChart(canvas, rectF, parentLeft, parentRight)) {
-                continue;
-            }
-        }
-    }
-
-    private boolean drawChart(Canvas canvas, RectF rectF, float parentLeft, float parentRight) {
-        float radius = (rectF.right - rectF.left) * mBarChartAttrs.barChartRoundRectRadiusRatio;
-        // 浮点数的 == 比较需要注意
-        if (DecimalUtil.smallOrEquals(rectF.right, parentLeft)) {
-            //continue 会闪，原因是end == parentLeft 没有过滤掉，显示出来柱状图了。
-            return true;
-        } else if (rectF.left < parentLeft && rectF.right > parentLeft) {
-            //左边部分滑入的时候，处理柱状图的显示
-            rectF.left = parentLeft;
-            Path path = CanvasUtil.createRectRoundPathRight(rectF, radius);
-            mBarChartPaint.setColor(mBarChartAttrs.barChartEdgeColor);
-            canvas.drawPath(path, mBarChartPaint);
-        } else if (DecimalUtil.bigOrEquals(rectF.left, parentLeft) && DecimalUtil.smallOrEquals(rectF.right, parentRight)) {
-            //中间的; 浮点数的 == 比较需要注意
-            mBarChartPaint.setColor(mBarChartAttrs.barChartColor);
-            Path path = CanvasUtil.createRectRoundPath(rectF, radius);
-            canvas.drawPath(path, mBarChartPaint);
-        } else if (DecimalUtil.smallOrEquals(rectF.left, parentRight) && rectF.right > parentRight) {
-            //右边部分滑出的时候，处理柱状图，文字的显示
-            float distance = (parentRight - rectF.left);
-            rectF.right = rectF.left + distance;
-            Path path = CanvasUtil.createRectRoundPathLeft(rectF, radius);
-            mBarChartPaint.setColor(mBarChartAttrs.barChartEdgeColor);
-            canvas.drawPath(path, mBarChartPaint);
-        }
-        return false;
-    }
-
-
     //绘制柱状图顶部value文字
     final public void drawBarChartValue(Canvas canvas, @NonNull RecyclerView parent, YAxis mYAxis) {
         if (mBarChartAttrs.enableCharValueDisplay) {
+            float bottom = parent.getHeight() - parent.getPaddingBottom() - mBarChartAttrs.contentPaddingBottom;
             float parentRight = parent.getWidth() - parent.getPaddingRight();
             float parentLeft = parent.getPaddingLeft();
+            float realYAxisLabelHeight = bottom - mBarChartAttrs.maxYAxisPaddingTop - parent.getPaddingTop();
             int childCount = parent.getChildCount();
 
             View child;
@@ -138,7 +101,8 @@ final public class BarChartRender {
                 BarEntry barEntry = (BarEntry) child.getTag();
                 float width = child.getWidth();
                 float childCenter = child.getLeft() + width / 2;
-                float top = ChartComputeUtil.getYPosition(barEntry, parent, mYAxis, mBarChartAttrs);
+                int height = (int) (barEntry.getY() / mYAxis.getAxisMaximum() * realYAxisLabelHeight);
+                float top = bottom - height;
                 String valueStr = mBarChartValueFormatter.getBarLabel(barEntry);
                 float txtY = top - mBarChartAttrs.barChartValuePaddingBottom;
                 drawText(canvas, parentLeft, parentRight, valueStr, childCenter, txtY, mTextPaint);
@@ -146,10 +110,13 @@ final public class BarChartRender {
         }
     }
 
-
     public void drawValueMark(Canvas canvas, @NonNull RecyclerView parent, YAxis mYAxis) {
         if (mBarChartAttrs.enableValueMark) {
+            float bottom = parent.getHeight() - parent.getPaddingBottom() - mBarChartAttrs.contentPaddingBottom;
+            Log.d("Recycler", "Height:" + parent.getHeight()
+                    + " PaddingBottom:" + parent.getPaddingBottom() + " topPadding:" + parent.getPaddingTop() + " y:" + parent.getY());
             int childCount = parent.getChildCount();
+            float realYAxisLabelHeight = bottom - mBarChartAttrs.maxYAxisPaddingTop - parent.getPaddingTop();
             float parentRight = parent.getWidth() - parent.getPaddingRight();
             float parentLeft = parent.getPaddingLeft();
             View child;
@@ -157,7 +124,8 @@ final public class BarChartRender {
                 child = parent.getChildAt(i);
                 BarEntry barEntry = (BarEntry) child.getTag();
                 float width = child.getWidth();
-                float top = ChartComputeUtil.getYPosition(barEntry, parent, mYAxis, mBarChartAttrs);
+                int height = (int) (barEntry.getY() / mYAxis.getAxisMaximum() * realYAxisLabelHeight);
+                float top = bottom - height;
                 float childCenter = child.getLeft() + width / 2;
                 String valueStr = mChartValueMarkFormatter.getBarLabel(barEntry);
                 float txtWidth = mTextMarkPaint.measureText(valueStr);
@@ -232,31 +200,83 @@ final public class BarChartRender {
         return txtX;
     }
 
+    public void drawLineChart(Canvas canvas, RecyclerView parent, YAxis mYAxis) {
+        final float parentRight = parent.getWidth() - parent.getPaddingRight();
+        final float parentLeft = parent.getPaddingLeft();
 
-    final public void drawChart(final Canvas canvas, @NonNull final RecyclerView parent, YAxis mYAxis) {
-        boolean mustInvalidate = false;
-        if (parent != null && parent.getChildCount() > 0) {
-            for (int i = 0; i < parent.getChildCount(); i++) {
-                View child = parent.getChildAt(i);
-                int position = parent.getChildAdapterPosition(child);
-                BarEntry barEntry = (BarEntry) child.getTag();
-                float width = child.getWidth();
-                float barSpaceWidth = width * mBarChartAttrs.barSpace;
-                final float left = child.getLeft() + barSpaceWidth / 2;
-                if (position != RecyclerView.NO_POSITION && null != barEntry.drawable) {
-                    mustInvalidate = true;
-                    drawView(canvas, barEntry.drawable, left, child.getTop() + mBarChartAttrs.maxYAxisPaddingTop);
+        BarChartAdapter adapter = (BarChartAdapter) parent.getAdapter();
+        List<BarEntry> entryList = adapter.getEntries();
+
+        final int childCount = parent.getChildCount();
+
+        float pointX, pointY, pointXNear, pointYNear;
+
+        int adapterPosition;
+        for (int i = 0; i < childCount; i++) {
+            View child = parent.getChildAt(i);
+            BarEntry barEntry = (BarEntry) child.getTag();
+            adapterPosition = parent.getChildAdapterPosition(child);
+
+            RectF rectF = ChartComputeUtil.getBarChartRectF(child, parent, mYAxis, mBarChartAttrs, barEntry);
+            pointX = (rectF.left + rectF.right) / 2;
+            pointY = rectF.top;
+            PointF pointF2 = new PointF(pointX, pointY);
+            if (i < childCount - 1) {
+                View nearChild = parent.getChildAt(i + 1);
+                BarEntry barEntryNear = (BarEntry) nearChild.getTag();
+                RectF rectFNear = ChartComputeUtil.getBarChartRectF(nearChild, parent, mYAxis, mBarChartAttrs, barEntryNear);
+                pointXNear = (rectFNear.left + rectFNear.right) / 2;
+                pointYNear = rectFNear.top;
+                PointF pointF1 = new PointF(pointXNear, pointYNear);
+
+                if (pointF1.x >= parentLeft && pointF2.x <= parentRight) {
+                    canvas.drawLine(pointXNear, pointYNear, pointX, pointY, mBarChartPaint);
+                    Path path = ChartComputeUtil.createColorRectPath(pointF1, pointF2, rectF.bottom);
+                    LineChartDrawable drawable = new LineChartDrawable(mBarChartPaint, path);
+                    drawable.draw(canvas);
+
+                    if (adapterPosition + 2 < entryList.size() && nearChild.getLeft() < parentLeft) {
+                        float x = pointF1.x - nearChild.getWidth();
+                        BarEntry barEntry0 = entryList.get(adapterPosition + 2);
+                        float y = ChartComputeUtil.getYPosition(barEntry0, parent, mYAxis, mBarChartAttrs);
+                        PointF pointF0 = new PointF(x, y);
+                        PointF pointFIntercept = ChartComputeUtil.getInterceptPointF(pointF0, pointF1, parentLeft);
+                        canvas.drawLine(pointFIntercept.x, pointFIntercept.y, pointF1.x, pointF1.y, mBarChartPaint);
+                        Path path1 = ChartComputeUtil.createColorRectPath(pointFIntercept, pointF1, rectF.bottom);
+                        LineChartDrawable drawable1 = new LineChartDrawable(mBarChartPaint, path1);
+                        drawable1.draw(canvas);
+                    }
+                } else if (pointF1.x > parentLeft && pointF2.x > parentRight) {//右边界
+                    PointF pointF = ChartComputeUtil.getInterceptPointF(pointF1, pointF2, parentRight);
+                    canvas.drawLine(pointF1.x, pointF1.y, pointF.x, pointF.y, mBarChartPaint);
+                    Path path = ChartComputeUtil.createColorRectPath(pointF1, pointF, rectF.bottom);
+                    LineChartDrawable drawable = new LineChartDrawable(mBarChartPaint, path);
+                    drawable.draw(canvas);
+                } else if (pointF1.x < parentLeft && nearChild.getRight() >= parentLeft) {//左边界
+                    PointF pointF = ChartComputeUtil.getInterceptPointF(pointF1, pointF2, parentLeft);
+                    canvas.drawLine(pointF.x, pointF.y, pointF2.x, pointF2.y, mBarChartPaint);
+                    Path path = ChartComputeUtil.createColorRectPath(pointF, pointF2, rectF.bottom);
+                    LineChartDrawable drawable = new LineChartDrawable(mBarChartPaint, path);
+                    drawable.draw(canvas);
+                }
+
+
+                if (pointF1.x >= parentLeft && pointF2.x <= parentRight) {
+                    if (barEntry.isSelected) {
+                        canvas.drawCircle(pointF2.x, pointF2.y, DisplayUtil.dip2px(10), mBarChartPaint);
+                        canvas.drawLine(pointF2.x, pointF2.y, pointF2.x, rectF.bottom, mBarChartPaint);
+                    } else {
+                        canvas.drawCircle(pointX, pointY, DisplayUtil.dip2px(5), mBarChartPaint);
+                    }
+                    if (barEntryNear.isSelected) {
+                        canvas.drawCircle(pointF1.x, pointF1.y, DisplayUtil.dip2px(10), mBarChartPaint);
+                        canvas.drawLine(pointF1.x, pointF1.y, pointF1.x, rectF.bottom, mBarChartPaint);
+                    } else {
+                        canvas.drawCircle(pointF1.x, pointF1.y, DisplayUtil.dip2px(5), mBarChartPaint);
+                    }
                 }
             }
-            if (mustInvalidate) parent.invalidate();
         }
-    }
-
-    private void drawView(Canvas canvas, AnimatedDecoratorDrawable drawable, float dx, float dy) {
-        canvas.save();
-        canvas.translate(dx, dy);
-        drawable.draw(canvas, mBarChartPaint);
-        canvas.restore();
     }
 
 }

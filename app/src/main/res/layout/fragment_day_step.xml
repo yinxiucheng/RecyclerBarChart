@@ -28,7 +28,7 @@
         android:paddingTop="15dp"
         app:displayNumbers="24"
         app:enableCharValueDisplay="true"
-        app:enableLeftYAxisLabel="false"
+        app:enableLeftYAxisLabel="true"
         app:recyclerPaddingRight="3dp"
         app:barChartRoundRectRadiusRatio="0.25"
         app:xAxisScaleDistance="3" />
