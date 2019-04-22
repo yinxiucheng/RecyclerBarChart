@@ -10,7 +10,6 @@ import android.view.View;
 
 import com.yxc.barchartlib.component.DistanceCompare;
 import com.yxc.barchartlib.component.YAxis;
-import com.yxc.barchartlib.entrys.BarChart;
 import com.yxc.barchartlib.entrys.BarEntry;
 import com.yxc.barchartlib.view.BarChartAdapter;
 
@@ -21,13 +20,13 @@ import java.util.List;
 
 /**
  * @author yxc
- * @date 2019/4/12
+ * @since 2019/4/12
  */
 public class ChartComputeUtil {
 
-    public static final int VIEW_DAY = 0;
-    public static final int VIEW_WEEK = 1;
-    public static final int VIEW_MONTH = 2;
+    private static final int VIEW_DAY = 0;
+    private static final int VIEW_WEEK = 1;
+    private static final int VIEW_MONTH = 2;
     public static final int VIEW_YEAR = 3;
 
     //位置进行微调

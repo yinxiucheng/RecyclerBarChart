@@ -29,9 +29,9 @@ import com.yxc.barchartlib.util.ChartComputeUtil;
 import com.yxc.barchartlib.util.TextUtil;
 import com.yxc.barchartlib.util.TimeUtil;
 import com.yxc.barchartlib.view.BarChartAdapter;
-import com.yxc.barchartlib.view.BarChartItemDecoration;
 import com.yxc.barchartlib.view.BarChartRecyclerView;
 import com.yxc.barchartlib.view.CustomAnimatedDecorator;
+import com.yxc.barchartlib.view.LineChartItemDecoration;
 import com.yxc.barchartlib.view.SpeedRatioLinearLayoutManager;
 
 import org.joda.time.LocalDate;
@@ -51,7 +51,7 @@ public class WeekFragment extends BaseFragment implements ViewTreeObserver.OnGlo
 
     BarChartAdapter mBarChartAdapter;
     List<BarEntry> mEntries;
-    BarChartItemDecoration mItemDecoration;
+    LineChartItemDecoration mItemDecoration;
     YAxis mYAxis;
     XAxis mXAxis;
     ValueFormatter valueFormatter;
@@ -104,7 +104,7 @@ public class WeekFragment extends BaseFragment implements ViewTreeObserver.OnGlo
         mYAxis = new YAxis(mBarChartAttrs);
         mXAxis = new XAxis(mBarChartAttrs, displayNumber);
         mXAxis.setValueFormatter(valueFormatter);
-        mItemDecoration = new BarChartItemDecoration(mYAxis, mXAxis, mBarChartAttrs);
+        mItemDecoration = new LineChartItemDecoration(mYAxis, mXAxis, mBarChartAttrs);
 //        mItemDecoration.setBarChartValueFormatter(new BarChartValueFormatter(){
 //            @Override
 //            public String getBarLabel(BarEntry barEntry) {
@@ -256,7 +256,7 @@ public class WeekFragment extends BaseFragment implements ViewTreeObserver.OnGlo
                     0, realContentHeight - height);
             map.put(position, drawable);
         }
-        mItemDecoration.setAnimatorMap(map);
-        recyclerView.getViewTreeObserver().removeOnGlobalLayoutListener(this);
+//        mItemDecoration.setAnimatorMap(map);
+//        recyclerView.getViewTreeObserver().removeOnGlobalLayoutListener(this);
     }
 }

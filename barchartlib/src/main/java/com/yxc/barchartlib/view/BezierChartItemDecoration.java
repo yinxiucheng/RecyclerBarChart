@@ -23,8 +23,9 @@ import com.yxc.barchartlib.util.BarChartAttrs;
  * @date 2019/4/6
  * <p>
  * 这个ItemDecoration 是BarChartAdapter专用的，里面直接用到了BarChartAdapter
+ *
  */
-public class LineChartItemDecoration extends RecyclerView.ItemDecoration {
+public class BezierChartItemDecoration extends RecyclerView.ItemDecoration {
 
     private int mOrientation;
     private YAxis mYAxis;
@@ -33,7 +34,7 @@ public class LineChartItemDecoration extends RecyclerView.ItemDecoration {
     private YAxisRender yAxisRenderer;
     private XAxisRender xAxisRenderer;
     private BarBoardRender mBarBoardRender;
-    private LineChartRender mLineChartRender;
+    private LineChartRender mBezierRender;
     private ValueFormatter mBarChartValueFormatter;
     private ValueFormatter mChartValueMarkFormatter;
 
@@ -41,7 +42,7 @@ public class LineChartItemDecoration extends RecyclerView.ItemDecoration {
     public static final int HORIZONTAL_LIST = LinearLayoutManager.HORIZONTAL;
     public static final int VERTICAL_LIST = LinearLayoutManager.VERTICAL;
 
-    public LineChartItemDecoration(YAxis yAxis, XAxis xAxis, BarChartAttrs barChartAttrs) {
+    public BezierChartItemDecoration(YAxis yAxis, XAxis xAxis, BarChartAttrs barChartAttrs) {
         this.mOrientation = barChartAttrs.layoutManagerOrientation;
         this.mYAxis = yAxis;
         this.mXAxis = xAxis;
@@ -51,18 +52,18 @@ public class LineChartItemDecoration extends RecyclerView.ItemDecoration {
         this.mBarBoardRender = new BarBoardRender(mBarChartAttrs);
         this.mBarChartValueFormatter = new DefaultBarChartValueFormatter(0);
         this.mChartValueMarkFormatter = new DefaultBarChartValueFormatter(0);
-        this.mLineChartRender = new LineChartRender(mBarChartAttrs, mBarChartValueFormatter, mChartValueMarkFormatter);
+        this.mBezierRender = new LineChartRender(mBarChartAttrs, mBarChartValueFormatter, mChartValueMarkFormatter);
     }
 
     //支持自定义 柱状图顶部 value的格式。
     public void setBarChartValueFormatter(ValueFormatter barChartValueFormatter) {
         this.mBarChartValueFormatter = barChartValueFormatter;
-        this.mLineChartRender.setBarChartValueFormatter(barChartValueFormatter);
+        this.mBezierRender.setBarChartValueFormatter(barChartValueFormatter);
     }
 
     public void setChartValueMarkFormatter(ValueFormatter chartValueFormatter) {
         this.mChartValueMarkFormatter = chartValueFormatter;
-        this.mLineChartRender.setChartValueMarkFormatter(chartValueFormatter);
+        this.mBezierRender.setChartValueMarkFormatter(chartValueFormatter);
     }
 
 
@@ -81,9 +82,9 @@ public class LineChartItemDecoration extends RecyclerView.ItemDecoration {
 
             mBarBoardRender.drawBarBorder(canvas, parent);//绘制边框
 
-            mLineChartRender.drawLineChart(canvas, parent, mYAxis);//draw LineChart
-            mLineChartRender.drawValueMark(canvas, parent, mYAxis);
-            mLineChartRender.drawBarChartValue(canvas, parent, mYAxis);//draw LineChart value
+//            mBezierRender.drawBezierChart(canvas, parent, mYAxis);//draw LineChart
+            mBezierRender.drawValueMark(canvas, parent, mYAxis);
+            mBezierRender.drawBarChartValue(canvas, parent, mYAxis);//draw LineChart value
 
         } else if (mOrientation == VERTICAL_LIST) {//暂时不支持
             //竖向list 画横线
