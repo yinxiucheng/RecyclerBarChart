@@ -70,6 +70,11 @@ public class AttrsUtil {
         attrs.xAxisScaleDistance = ta.getInteger(R.styleable.BarChartRecyclerView_xAxisScaleDistance, 5);
 
         attrs.bezierIntensity = ta.getFloat(R.styleable.BarChartRecyclerView_bezierIntensity, 0.25f);
+        attrs.enableBezierLineFill = ta.getBoolean(R.styleable.BarChartRecyclerView_enableBezierLineFill, true);
+        attrs.bezierFillAlpha = ta.getInteger(R.styleable.BarChartRecyclerView_bezierFillAlpha, 0x30);
+        attrs.bezierFillColor = ta.getColor(R.styleable.BarChartRecyclerView_bezierFillColor, ColorUtil.getResourcesColor(context, R.color.pink));
+        attrs.bezierLinePaintColor = ta.getColor(R.styleable.BarChartRecyclerView_bezierLinePaintColor, ColorUtil.getResourcesColor(context, R.color.pink));
+        attrs.bezierLinePaintStrokeWidth = ta.getDimension(R.styleable.BarChartRecyclerView_bezierLinePaintStrokeWidth, DisplayUtil.dip2px(3));
 
         ta.recycle();
         return attrs;

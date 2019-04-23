@@ -60,6 +60,10 @@ public class BarChartAttrs {
 
     public int displayNumbers;//一屏显示多少个 barChart
     public float bezierIntensity;//bezier curve intensity
-
+    public boolean enableBezierLineFill;
+    public int bezierFillColor;
+    public int bezierFillAlpha;
+    public int bezierLinePaintColor;
+    public float bezierLinePaintStrokeWidth;
 
 }

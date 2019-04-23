@@ -61,8 +61,15 @@
         <attr name="xAxisScaleDistance" format="integer"/>
 
         <attr name="displayNumbers" format="integer"/>
-        <attr name="bezierIntensity" format="float"/>
 
+        <!--bezier curve-->
+        <attr name="bezierIntensity" format="float"/>
+        <attr name="enableBezierLineFill" format="boolean"/>
+
+        <attr name="bezierFillColor" format="color"/>
+        <attr name="bezierLinePaintColor" format="color"/>
+        <attr name="bezierFillAlpha" format="integer"/>
+        <attr name="bezierLinePaintStrokeWidth" format="dimension"/>
 
     </declare-styleable>
 
