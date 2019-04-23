@@ -25,7 +25,8 @@
         android:paddingLeft="3dp"
         app:displayNumbers="7"
         app:enableCharValueDisplay="true"
-        app:enableLeftYAxisLabel="true"
+        app:enableLeftYAxisLabel="false"
+        app:bezierIntensity="0.125"
         app:enableScrollToScale="false"
         app:recyclerPaddingRight="3dp"
         app:enableRightYAxisLabel="true" />

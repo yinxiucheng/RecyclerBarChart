@@ -11,6 +11,8 @@ import android.view.ViewGroup;
 import android.widget.TextView;
 import com.yxc.barchart.BaseFragment;
 import com.yxc.barchart.R;
+//import com.yxc.barchart.TestData;
+import com.yxc.barchart.RateTestData;
 import com.yxc.barchart.TestData;
 import com.yxc.barchart.formatter.XAxisYearFormatter;
 import com.yxc.barchartlib.component.XAxis;
@@ -24,6 +26,7 @@ import com.yxc.barchartlib.util.TimeUtil;
 import com.yxc.barchartlib.view.BarChartAdapter;
 import com.yxc.barchartlib.view.BarChartItemDecoration;
 import com.yxc.barchartlib.view.BarChartRecyclerView;
+import com.yxc.barchartlib.view.BezierChartItemDecoration;
 import com.yxc.barchartlib.view.SpeedRatioLinearLayoutManager;
 import org.joda.time.LocalDate;
 
@@ -41,7 +44,7 @@ public class YearFragment extends BaseFragment {
     TextView txtCountStep;
     BarChartAdapter mBarChartAdapter;
     List<BarEntry> mEntries;
-    BarChartItemDecoration mItemDecoration;
+    BezierChartItemDecoration mItemDecoration;
     YAxis mYAxis;
     XAxis mXAxis;
 
@@ -87,13 +90,13 @@ public class YearFragment extends BaseFragment {
         SpeedRatioLinearLayoutManager layoutManager = new SpeedRatioLinearLayoutManager(getActivity(), mBarChartAttrs);
         mYAxis = new YAxis(mBarChartAttrs);
         mXAxis = new XAxis(mBarChartAttrs, displayNumber, new XAxisYearFormatter());
-        mItemDecoration = new BarChartItemDecoration(mYAxis, mXAxis, mBarChartAttrs);
+        mItemDecoration = new BezierChartItemDecoration(mYAxis, mXAxis, mBarChartAttrs);
         recyclerView.addItemDecoration(mItemDecoration);
         mBarChartAdapter = new BarChartAdapter(getActivity(), mEntries, recyclerView, mYAxis, mBarChartAttrs);
         recyclerView.setAdapter(mBarChartAdapter);
         recyclerView.setLayoutManager(layoutManager);
         currentLocalDate = TimeUtil.getLastMonthOfTheYear(LocalDate.now());
-        List<BarEntry> barEntries = TestData.createYearEntries(currentLocalDate.plusMonths(preEntrySize), preEntrySize + 5 * displayNumber, mEntries.size());
+        List<BarEntry> barEntries = RateTestData.createYearEntries(currentLocalDate.plusMonths(preEntrySize), preEntrySize + 5 * displayNumber, mEntries.size());
         bindBarChartList(barEntries);
         currentLocalDate = currentLocalDate.minusMonths(displayNumber * 5);
         setXAxis(displayNumber);
@@ -125,7 +128,7 @@ public class YearFragment extends BaseFragment {
                 if (newState == RecyclerView.SCROLL_STATE_IDLE) {
                     //左滑
                     if (recyclerView.canScrollHorizontally(1) && isRightScroll) {
-                        List<BarEntry> entries = TestData.createYearEntries(currentLocalDate, displayNumber, mEntries.size());
+                        List<BarEntry> entries = RateTestData.createYearEntries(currentLocalDate, displayNumber, mEntries.size());
                         currentLocalDate = currentLocalDate.minusMonths(displayNumber);
                         mEntries.addAll(entries);
                         mBarChartAdapter.notifyDataSetChanged();

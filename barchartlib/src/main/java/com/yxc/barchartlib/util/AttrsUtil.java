@@ -69,6 +69,8 @@ public class AttrsUtil {
         attrs.xAxisLabelTxtPadding = ta.getDimension(R.styleable.BarChartRecyclerView_xAxisLabelTxtPadding, DisplayUtil.dip2px(2));
         attrs.xAxisScaleDistance = ta.getInteger(R.styleable.BarChartRecyclerView_xAxisScaleDistance, 5);
 
+        attrs.bezierIntensity = ta.getFloat(R.styleable.BarChartRecyclerView_bezierIntensity, 0.25f);
+
         ta.recycle();
         return attrs;
     }

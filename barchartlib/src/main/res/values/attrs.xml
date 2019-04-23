@@ -61,6 +61,7 @@
         <attr name="xAxisScaleDistance" format="integer"/>
 
         <attr name="displayNumbers" format="integer"/>
+        <attr name="bezierIntensity" format="float"/>
 
 
     </declare-styleable>

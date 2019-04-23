@@ -27,10 +27,13 @@
         android:paddingLeft="3dp"
         android:paddingTop="15dp"
         app:displayNumbers="24"
-        app:enableCharValueDisplay="true"
-        app:enableLeftYAxisLabel="true"
+        app:enableCharValueDisplay="false"
+        app:enableLeftYAxisLabel="false"
+        app:enableRightYAxisLabel="false"
         app:recyclerPaddingRight="3dp"
         app:barChartRoundRectRadiusRatio="0.25"
+        app:bezierIntensity="0.125"
+        app:enableScrollToScale="false"
         app:xAxisScaleDistance="3" />
 
     <TextView

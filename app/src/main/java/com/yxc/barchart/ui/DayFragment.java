@@ -15,6 +15,8 @@ import android.widget.TextView;
 
 import com.yxc.barchart.BaseFragment;
 import com.yxc.barchart.R;
+import com.yxc.barchart.RateTestData;
+//import com.yxc.barchart.TestData;
 import com.yxc.barchart.TestData;
 import com.yxc.barchart.formatter.XAxisDayFormatter;
 import com.yxc.barchartlib.component.XAxis;
@@ -22,15 +24,13 @@ import com.yxc.barchartlib.component.YAxis;
 import com.yxc.barchartlib.entrys.BarEntry;
 import com.yxc.barchartlib.formatter.ValueFormatter;
 import com.yxc.barchartlib.util.BarChartAttrs;
-import com.yxc.barchartlib.util.DecimalUtil;
 import com.yxc.barchartlib.util.ChartComputeUtil;
-import com.yxc.barchartlib.util.DisplayUtil;
+import com.yxc.barchartlib.util.DecimalUtil;
 import com.yxc.barchartlib.util.TextUtil;
 import com.yxc.barchartlib.util.TimeUtil;
-import com.yxc.barchartlib.view.AnimatedDecorator;
 import com.yxc.barchartlib.view.BarChartAdapter;
-import com.yxc.barchartlib.view.BarChartItemDecoration;
 import com.yxc.barchartlib.view.BarChartRecyclerView;
+import com.yxc.barchartlib.view.BezierChartItemDecoration;
 import com.yxc.barchartlib.view.CustomAnimatedDecorator;
 import com.yxc.barchartlib.view.SpeedRatioLinearLayoutManager;
 
@@ -51,7 +51,7 @@ public class DayFragment extends BaseFragment implements ViewTreeObserver.OnGlob
 
     BarChartAdapter mBarChartAdapter;
     List<BarEntry> mEntries;
-    BarChartItemDecoration mItemDecoration;
+    BezierChartItemDecoration mItemDecoration;
     YAxis mYAxis;
     XAxis mXAxis;
     ValueFormatter valueFormatter;
@@ -102,7 +102,7 @@ public class DayFragment extends BaseFragment implements ViewTreeObserver.OnGlob
         mYAxis = new YAxis(mBarChartAttrs);
         mXAxis = new XAxis(mBarChartAttrs, displayNumber, valueFormatter);
 
-        mItemDecoration = new BarChartItemDecoration(mYAxis, mXAxis, mBarChartAttrs);
+        mItemDecoration = new BezierChartItemDecoration(mYAxis, mXAxis, mBarChartAttrs);
         recyclerView.addItemDecoration(mItemDecoration);
         mBarChartAdapter = new BarChartAdapter(getActivity(), mEntries, recyclerView, mYAxis, mBarChartAttrs);
         recyclerView.setAdapter(mBarChartAdapter);
@@ -110,10 +110,10 @@ public class DayFragment extends BaseFragment implements ViewTreeObserver.OnGlob
 
         currentTimestamp = TimeUtil.changZeroOfTheDay(LocalDate.now().plusDays(1));
 
-        List<BarEntry> preEntries = TestData.createDayEntries(mBarChartAttrs,
+        List<BarEntry> preEntries = RateTestData.createDayEntries(mBarChartAttrs,
                 currentTimestamp + preEntrySize * TimeUtil.TIME_HOUR, preEntrySize, mEntries.size(), true);
 
-        List<BarEntry> barEntries = TestData.createDayEntries(mBarChartAttrs, currentTimestamp,
+        List<BarEntry> barEntries = RateTestData.createDayEntries(mBarChartAttrs, currentTimestamp,
                 10 * displayNumber, mEntries.size(), false);
         barEntries.addAll(0, preEntries);
         bindBarChartList(barEntries);
@@ -146,7 +146,7 @@ public class DayFragment extends BaseFragment implements ViewTreeObserver.OnGlob
                 if (newState == RecyclerView.SCROLL_STATE_IDLE) {
                     //加载更多
                     if (recyclerView.canScrollHorizontally(1) && isRightScroll) {
-                        List<BarEntry> entries = TestData.createDayEntries(mBarChartAttrs, currentTimestamp, displayNumber, mEntries.size(), false);
+                        List<BarEntry> entries = RateTestData.createDayEntries(mBarChartAttrs, currentTimestamp, displayNumber, mEntries.size(), false);
                         currentTimestamp = currentTimestamp - displayNumber * TimeUtil.TIME_HOUR;
                         mEntries.addAll(entries);
                         mBarChartAdapter.notifyDataSetChanged();
@@ -258,7 +258,7 @@ public class DayFragment extends BaseFragment implements ViewTreeObserver.OnGlob
                     0, realContentHeight - height);
             map.put(position, drawable);
         }
-        mItemDecoration.setAnimatorMap(map);
+//        mItemDecoration.setAnimatorMap(map);
 //        recyclerView.getViewTreeObserver().removeOnGlobalLayoutListener(this);
     }
 }

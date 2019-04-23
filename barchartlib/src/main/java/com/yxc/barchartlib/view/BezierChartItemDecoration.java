@@ -13,7 +13,7 @@ import com.yxc.barchartlib.component.YAxis;
 import com.yxc.barchartlib.formatter.DefaultBarChartValueFormatter;
 import com.yxc.barchartlib.formatter.ValueFormatter;
 import com.yxc.barchartlib.render.BarBoardRender;
-import com.yxc.barchartlib.render.LineChartRender;
+import com.yxc.barchartlib.render.BezierChartRender;
 import com.yxc.barchartlib.render.XAxisRender;
 import com.yxc.barchartlib.render.YAxisRender;
 import com.yxc.barchartlib.util.BarChartAttrs;
@@ -34,7 +34,7 @@ public class BezierChartItemDecoration extends RecyclerView.ItemDecoration {
     private YAxisRender yAxisRenderer;
     private XAxisRender xAxisRenderer;
     private BarBoardRender mBarBoardRender;
-    private LineChartRender mBezierRender;
+    private BezierChartRender mBezierRender;
     private ValueFormatter mBarChartValueFormatter;
     private ValueFormatter mChartValueMarkFormatter;
 
@@ -52,7 +52,7 @@ public class BezierChartItemDecoration extends RecyclerView.ItemDecoration {
         this.mBarBoardRender = new BarBoardRender(mBarChartAttrs);
         this.mBarChartValueFormatter = new DefaultBarChartValueFormatter(0);
         this.mChartValueMarkFormatter = new DefaultBarChartValueFormatter(0);
-        this.mBezierRender = new LineChartRender(mBarChartAttrs, mBarChartValueFormatter, mChartValueMarkFormatter);
+        this.mBezierRender = new BezierChartRender(mBarChartAttrs, mBarChartValueFormatter, mChartValueMarkFormatter);
     }
 
     //支持自定义 柱状图顶部 value的格式。
@@ -83,7 +83,7 @@ public class BezierChartItemDecoration extends RecyclerView.ItemDecoration {
             mBarBoardRender.drawBarBorder(canvas, parent);//绘制边框
 
 //            mBezierRender.drawBezierChart(canvas, parent, mYAxis);//draw LineChart
-            mBezierRender.drawValueMark(canvas, parent, mYAxis);
+            mBezierRender.drawBezierChart(canvas, parent, mYAxis);
             mBezierRender.drawBarChartValue(canvas, parent, mYAxis);//draw LineChart value
 
         } else if (mOrientation == VERTICAL_LIST) {//暂时不支持

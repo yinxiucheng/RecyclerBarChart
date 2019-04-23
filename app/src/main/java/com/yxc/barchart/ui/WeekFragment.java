@@ -15,6 +15,8 @@ import android.widget.TextView;
 
 import com.yxc.barchart.BaseFragment;
 import com.yxc.barchart.R;
+import com.yxc.barchart.RateTestData;
+//import com.yxc.barchart.TestData;
 import com.yxc.barchart.TestData;
 import com.yxc.barchart.formatter.BarChartValueFormatter;
 import com.yxc.barchart.formatter.ChartValueMarkFormatter;
@@ -30,6 +32,7 @@ import com.yxc.barchartlib.util.TextUtil;
 import com.yxc.barchartlib.util.TimeUtil;
 import com.yxc.barchartlib.view.BarChartAdapter;
 import com.yxc.barchartlib.view.BarChartRecyclerView;
+import com.yxc.barchartlib.view.BezierChartItemDecoration;
 import com.yxc.barchartlib.view.CustomAnimatedDecorator;
 import com.yxc.barchartlib.view.LineChartItemDecoration;
 import com.yxc.barchartlib.view.SpeedRatioLinearLayoutManager;
@@ -51,7 +54,7 @@ public class WeekFragment extends BaseFragment implements ViewTreeObserver.OnGlo
 
     BarChartAdapter mBarChartAdapter;
     List<BarEntry> mEntries;
-    LineChartItemDecoration mItemDecoration;
+    BezierChartItemDecoration mItemDecoration;
     YAxis mYAxis;
     XAxis mXAxis;
     ValueFormatter valueFormatter;
@@ -104,7 +107,7 @@ public class WeekFragment extends BaseFragment implements ViewTreeObserver.OnGlo
         mYAxis = new YAxis(mBarChartAttrs);
         mXAxis = new XAxis(mBarChartAttrs, displayNumber);
         mXAxis.setValueFormatter(valueFormatter);
-        mItemDecoration = new LineChartItemDecoration(mYAxis, mXAxis, mBarChartAttrs);
+        mItemDecoration = new BezierChartItemDecoration(mYAxis, mXAxis, mBarChartAttrs);
 //        mItemDecoration.setBarChartValueFormatter(new BarChartValueFormatter(){
 //            @Override
 //            public String getBarLabel(BarEntry barEntry) {
@@ -125,7 +128,7 @@ public class WeekFragment extends BaseFragment implements ViewTreeObserver.OnGlo
         recyclerView.setLayoutManager(layoutManager);
 
         currentLocalDate = TimeUtil.getLastDayOfThisWeek(LocalDate.now());
-        List<BarEntry> barEntries = TestData.createWeekEntries(currentLocalDate.plusDays(preEntries),
+        List<BarEntry> barEntries = RateTestData.createWeekEntries(currentLocalDate.plusDays(preEntries),
                 preEntries + 5 * displayNumber, mEntries.size());
         bindBarChartList(barEntries);
         currentLocalDate = currentLocalDate.minusDays(5 * displayNumber);
@@ -157,7 +160,7 @@ public class WeekFragment extends BaseFragment implements ViewTreeObserver.OnGlo
                 super.onScrollStateChanged(recyclerView, newState);
                 if (newState == RecyclerView.SCROLL_STATE_IDLE) {
                     if (recyclerView.canScrollHorizontally(1) && isRightScroll) {//加载更多
-                        List<BarEntry> entries = TestData.createWeekEntries(currentLocalDate, displayNumber, mEntries.size());
+                        List<BarEntry> entries = RateTestData.createWeekEntries(currentLocalDate, displayNumber, mEntries.size());
                         currentLocalDate = currentLocalDate.minusDays(displayNumber);
                         mEntries.addAll(entries);
                         mBarChartAdapter.setEntries(mEntries);

@@ -59,6 +59,7 @@ public class BarChartAttrs {
     public int xAxisScaleDistance;//x轴刻度 文字的间距
 
     public int displayNumbers;//一屏显示多少个 barChart
+    public float bezierIntensity;//bezier curve intensity
 
 
 }
