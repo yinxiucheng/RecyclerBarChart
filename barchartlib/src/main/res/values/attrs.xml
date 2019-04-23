@@ -65,7 +65,6 @@
         <!--bezier curve-->
         <attr name="bezierIntensity" format="float"/>
         <attr name="enableBezierLineFill" format="boolean"/>
-
         <attr name="bezierFillColor" format="color"/>
         <attr name="bezierLinePaintColor" format="color"/>
         <attr name="bezierFillAlpha" format="integer"/>

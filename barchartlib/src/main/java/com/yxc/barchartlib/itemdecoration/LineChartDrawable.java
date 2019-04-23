@@ -1,4 +1,4 @@
-package com.yxc.barchartlib.view;
+package com.yxc.barchartlib.itemdecoration;
 
 import android.graphics.Canvas;
 import android.graphics.ColorFilter;

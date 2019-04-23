@@ -22,7 +22,7 @@ import com.yxc.barchartlib.util.ChartComputeUtil;
 import com.yxc.barchartlib.util.DecimalUtil;
 import com.yxc.barchartlib.util.DisplayUtil;
 import com.yxc.barchartlib.view.BarChartAdapter;
-import com.yxc.barchartlib.view.LineChartDrawable;
+import com.yxc.barchartlib.itemdecoration.LineChartDrawable;
 
 import java.util.List;
 

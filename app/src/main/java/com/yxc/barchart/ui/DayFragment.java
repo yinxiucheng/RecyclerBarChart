@@ -30,7 +30,7 @@ import com.yxc.barchartlib.util.TextUtil;
 import com.yxc.barchartlib.util.TimeUtil;
 import com.yxc.barchartlib.view.BarChartAdapter;
 import com.yxc.barchartlib.view.BarChartRecyclerView;
-import com.yxc.barchartlib.view.BezierChartItemDecoration;
+import com.yxc.barchartlib.itemdecoration.BezierChartItemDecoration;
 import com.yxc.barchartlib.view.CustomAnimatedDecorator;
 import com.yxc.barchartlib.view.SpeedRatioLinearLayoutManager;
 

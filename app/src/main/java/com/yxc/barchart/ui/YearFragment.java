@@ -24,9 +24,8 @@ import com.yxc.barchartlib.util.ChartComputeUtil;
 import com.yxc.barchartlib.util.TextUtil;
 import com.yxc.barchartlib.util.TimeUtil;
 import com.yxc.barchartlib.view.BarChartAdapter;
-import com.yxc.barchartlib.view.BarChartItemDecoration;
 import com.yxc.barchartlib.view.BarChartRecyclerView;
-import com.yxc.barchartlib.view.BezierChartItemDecoration;
+import com.yxc.barchartlib.itemdecoration.BezierChartItemDecoration;
 import com.yxc.barchartlib.view.SpeedRatioLinearLayoutManager;
 import org.joda.time.LocalDate;
 

@@ -43,7 +43,9 @@ final public class BezierChartRender {
         this.mBarChartValueFormatter = mBarChartValueFormatter;
     }
 
-    public BezierChartRender(BarChartAttrs barChartAttrs, ValueFormatter barChartValueFormatter, ValueFormatter chartValueMarkFormatter) {
+    public BezierChartRender(BarChartAttrs barChartAttrs,
+                             ValueFormatter barChartValueFormatter,
+                             ValueFormatter chartValueMarkFormatter) {
         this.mBarChartAttrs = barChartAttrs;
         initBarChartPaint();
         initTextPaint();
