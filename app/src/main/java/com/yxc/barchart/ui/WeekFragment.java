@@ -11,6 +11,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.ViewTreeObserver;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import com.yxc.barchart.BaseFragment;
@@ -24,6 +25,7 @@ import com.yxc.barchartlib.entrys.BarEntry;
 import com.yxc.barchartlib.formatter.ValueFormatter;
 import com.yxc.barchartlib.itemdecoration.BarChartItemDecoration;
 import com.yxc.barchartlib.listener.RecyclerItemGestureListener;
+import com.yxc.barchartlib.listener.SimpleItemGestureListener;
 import com.yxc.barchartlib.util.BarChartAttrs;
 import com.yxc.barchartlib.util.ChartComputeUtil;
 import com.yxc.barchartlib.util.DecimalUtil;
@@ -41,13 +43,15 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-public class WeekFragment extends BaseFragment implements ViewTreeObserver.OnGlobalLayoutListener{
+public class WeekFragment extends BaseFragment implements ViewTreeObserver.OnGlobalLayoutListener {
 
     BarChartRecyclerView recyclerView;
     TextView txtLeftLocalDate;
     TextView txtRightLocalDate;
     TextView textTitle;
     TextView txtCountStep;
+
+    RelativeLayout rlTitle;
 
     BarChartAdapter mBarChartAdapter;
     List<BarEntry> mEntries;
@@ -85,6 +89,7 @@ public class WeekFragment extends BaseFragment implements ViewTreeObserver.OnGlo
 
 
     private void initView(View view) {
+        rlTitle = view.findViewById(R.id.rl_title);
         txtLeftLocalDate = view.findViewById(R.id.txt_left_local_date);
         txtRightLocalDate = view.findViewById(R.id.txt_right_local_date);
         textTitle = view.findViewById(R.id.txt_layout);
@@ -105,7 +110,7 @@ public class WeekFragment extends BaseFragment implements ViewTreeObserver.OnGlo
         mXAxis = new XAxis(mBarChartAttrs, displayNumber);
         mXAxis.setValueFormatter(valueFormatter);
         mItemDecoration = new BarChartItemDecoration(mYAxis, mXAxis, mBarChartAttrs);
-//        mItemDecoration.setBarChartValueFormatter(new BarChartValueFormatter(){
+//      mItemDecoration.setBarChartValueFormatter(new BarChartValueFormatter(){
 //            @Override
 //            public String getBarLabel(BarEntry barEntry) {
 //                return TimeUtil.getDateStr(barEntry.timestamp, "MM-dd");
@@ -120,7 +125,7 @@ public class WeekFragment extends BaseFragment implements ViewTreeObserver.OnGlo
             }
         });
         recyclerView.addItemDecoration(mItemDecoration);
-        mBarChartAdapter = new BarChartAdapter(getActivity(), mEntries, recyclerView, mYAxis, mBarChartAttrs);
+        mBarChartAdapter = new BarChartAdapter(getActivity(), mEntries, recyclerView, mXAxis, mBarChartAttrs);
         recyclerView.setAdapter(mBarChartAdapter);
         recyclerView.setLayoutManager(layoutManager);
 
@@ -139,7 +144,7 @@ public class WeekFragment extends BaseFragment implements ViewTreeObserver.OnGlo
         List<BarEntry> visibleEntries = mEntries.subList(preEntries, preEntries + displayNumber + 1);
         YAxis yAxis = mYAxis.resetYAxis(mYAxis, DecimalUtil.getTheMaxNumber(visibleEntries));
         mBarChartAdapter.notifyDataSetChanged();
-        if (yAxis != null){
+        if (yAxis != null) {
             mYAxis = yAxis;
             mItemDecoration.setYAxis(mYAxis);
             mBarChartAdapter.setYAxis(mYAxis);
@@ -149,18 +154,17 @@ public class WeekFragment extends BaseFragment implements ViewTreeObserver.OnGlo
 
     //设置RecyclerView的监听
     private void setListener() {
-
         recyclerView.addOnItemTouchListener(new RecyclerItemGestureListener(getActivity(), recyclerView,
-                new RecyclerItemGestureListener.OnItemGestureListener() {
+                new SimpleItemGestureListener() {
                     boolean isRightScroll;
-                    @Override
-                    public void onItemClick(View view, int position) {
-                        Log.d("ItemTouch", "weekFragment onItemClick");
-                    }
 
                     @Override
-                    public void onLongItemClick(View view, int position) {
-                        Log.d("ItemTouch", "weekFragment onLongItemClick");
+                    public void onItemSelected(BarEntry barEntry, int position) {
+                        if (null == barEntry || !barEntry.isSelected()) {
+                            rlTitle.setVisibility(View.VISIBLE);
+                        } else {
+                            rlTitle.setVisibility(View.INVISIBLE);
+                        }
                     }
 
                     @Override
@@ -177,7 +181,6 @@ public class WeekFragment extends BaseFragment implements ViewTreeObserver.OnGlo
                                 int scrollByDx = ChartComputeUtil.computeScrollByXOffset(recyclerView, displayNumber, TestData.VIEW_WEEK);
                                 recyclerView.scrollBy(scrollByDx, 0);
                             }
-
                             resetYAxis(recyclerView);
                         }
                     }
@@ -227,6 +230,17 @@ public class WeekFragment extends BaseFragment implements ViewTreeObserver.OnGlo
         BarEntry leftBarEntry = displayEntries.get(displayEntries.size() - 1);
         txtLeftLocalDate.setText(TimeUtil.getDateStr(leftBarEntry.timestamp, "yyyy-MM-dd HH:mm:ss"));
         txtRightLocalDate.setText(TimeUtil.getDateStr(rightBarEntry.timestamp, "yyyy-MM-dd HH:mm:ss"));
+
+
+        displayTitle(leftBarEntry, rightBarEntry);
+
+        String childStr = DecimalUtil.getAverageStepStr(displayEntries);
+        String parentStr = String.format(getString(R.string.str_count_step), childStr);
+        SpannableStringBuilder spannable = TextUtil.getSpannableStr(getActivity(), parentStr, childStr, 24);
+        txtCountStep.setText(spannable);
+    }
+
+    private void displayTitle(BarEntry leftBarEntry, BarEntry rightBarEntry) {
         String beginDateStr = TimeUtil.getDateStr(leftBarEntry.timestamp, "yyyy年MM月dd日");
         String patternStr = "yyyy年MM月dd日";
         if (TimeUtil.isSameMonth(leftBarEntry.timestamp, rightBarEntry.timestamp)) {
@@ -237,17 +251,13 @@ public class WeekFragment extends BaseFragment implements ViewTreeObserver.OnGlo
         String endDateStr = TimeUtil.getDateStr(rightBarEntry.timestamp, patternStr);
         String connectStr = "至";
         textTitle.setText(beginDateStr + connectStr + endDateStr);
-        String childStr = DecimalUtil.getAverageStepStr(displayEntries);
-        String parentStr = String.format(getString(R.string.str_count_step), childStr);
-        SpannableStringBuilder spannable = TextUtil.getSpannableStr(getActivity(), parentStr, childStr, 24);
-        txtCountStep.setText(spannable);
     }
 
 
     @Override
     public void onGlobalLayout() {
         HashMap<Integer, CustomAnimatedDecorator> map = new HashMap<>();
-        for (int i = 0; i< recyclerView.getChildCount(); i++){
+        for (int i = 0; i < recyclerView.getChildCount(); i++) {
 
             View child = recyclerView.getChildAt(i);
             int position = recyclerView.getChildAdapterPosition(child);

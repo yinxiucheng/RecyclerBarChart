@@ -147,6 +147,56 @@ final public class BarChartRender {
     }
 
 
+    public void drawHighLight(Canvas canvas, @NonNull RecyclerView parent, YAxis mYAxis) {
+        if (mBarChartAttrs.enableValueMark) {
+            float contentBottom = parent.getHeight() - parent.getPaddingBottom() - mBarChartAttrs.contentPaddingBottom;
+            float contentTop = parent.getPaddingTop();
+
+            int childCount = parent.getChildCount();
+            float parentRight = parent.getWidth() - parent.getPaddingRight();
+            float parentLeft = parent.getPaddingLeft();
+            View child;
+            for (int i = 0; i < childCount; i++) {
+                child = parent.getChildAt(i);
+                BarEntry barEntry = (BarEntry) child.getTag();
+                float width = child.getWidth();
+                float top = ChartComputeUtil.getYPosition(barEntry, parent, mYAxis, mBarChartAttrs);
+                float childCenter = child.getLeft() + width / 2;
+                String valueStr = mChartValueMarkFormatter.getBarLabel(barEntry);
+                float txtWidth = mTextMarkPaint.measureText(valueStr);
+                float distance = txtWidth / 2 + DisplayUtil.dip2px(10);
+                float lineTop = top - DisplayUtil.dip2px(1);
+                float[] points = new float[]{childCenter, contentBottom + DisplayUtil.dip2px(1), childCenter, contentBottom + DisplayUtil.dip2px(8),
+                    childCenter, lineTop, childCenter, contentTop - DisplayUtil.dip2px(2)
+                };
+                if (barEntry.isSelected() && !TextUtils.isEmpty(valueStr)) {
+                  drawHighLightLine(canvas, points);
+
+                }
+            }
+        }
+    }
+
+    private void drawHighLightMarkValue(){
+        RectF rectF = new RectF();
+    }
+
+    private void drawHighLightLine(Canvas canvas, float[] floats){
+        Paint.Style previous = mBarChartPaint.getStyle();
+        float strokeWidth = mBarChartPaint.getStrokeWidth();
+        int color = mBarChartPaint.getColor();
+        // set
+        mBarChartPaint.setStyle(Paint.Style.FILL);
+        mBarChartPaint.setStrokeWidth(DisplayUtil.dip2px(2));
+        mBarChartPaint.setColor(mBarChartAttrs.barChartColor);
+        canvas.drawLines(floats, mBarChartPaint);
+        // restore
+        mBarChartPaint.setStyle(previous);
+        mBarChartPaint.setStrokeWidth(strokeWidth);
+        mBarChartPaint.setColor(color);
+    }
+
+
     public void drawValueMark(Canvas canvas, @NonNull RecyclerView parent, YAxis mYAxis) {
         if (mBarChartAttrs.enableValueMark) {
             int childCount = parent.getChildCount();

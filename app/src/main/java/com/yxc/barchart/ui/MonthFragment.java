@@ -9,6 +9,7 @@ import android.text.SpannableStringBuilder;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import com.yxc.barchart.BaseFragment;
@@ -20,6 +21,7 @@ import com.yxc.barchartlib.component.YAxis;
 import com.yxc.barchartlib.entrys.BarEntry;
 import com.yxc.barchartlib.formatter.ValueFormatter;
 import com.yxc.barchartlib.listener.RecyclerItemGestureListener;
+import com.yxc.barchartlib.listener.SimpleItemGestureListener;
 import com.yxc.barchartlib.util.BarChartAttrs;
 import com.yxc.barchartlib.util.DecimalUtil;
 import com.yxc.barchartlib.util.ChartComputeUtil;
@@ -44,6 +46,8 @@ public class MonthFragment extends BaseFragment {
     TextView txtRightLocalDate;
     TextView textTitle;
     TextView txtCountStep;
+
+    RelativeLayout rlTitle;
 
     BarChartAdapter mBarChartAdapter;
     List<BarEntry> mEntries;
@@ -79,6 +83,7 @@ public class MonthFragment extends BaseFragment {
     }
 
     private void initView(View view) {
+        rlTitle = view.findViewById(R.id.rl_title);
         txtLeftLocalDate = view.findViewById(R.id.txt_left_local_date);
         txtRightLocalDate = view.findViewById(R.id.txt_right_local_date);
         textTitle = view.findViewById(R.id.txt_layout);
@@ -100,7 +105,7 @@ public class MonthFragment extends BaseFragment {
         mItemDecoration = new BarChartItemDecoration(mYAxis, mXAxis, mBarChartAttrs);
 
         recyclerView.addItemDecoration(mItemDecoration);
-        mBarChartAdapter = new BarChartAdapter(getActivity(), mEntries, recyclerView, mYAxis, mBarChartAttrs);
+        mBarChartAdapter = new BarChartAdapter(getActivity(), mEntries, recyclerView, mXAxis, mBarChartAttrs);
         recyclerView.setAdapter(mBarChartAdapter);
         recyclerView.setLayoutManager(layoutManager);
 
@@ -120,6 +125,7 @@ public class MonthFragment extends BaseFragment {
         if (null != mYAxis) {
             mYAxis = yAxis;
             mItemDecoration.setYAxis(mYAxis);
+            mBarChartAdapter.setYAxis(mYAxis);
         }
         displayDateAndStep(visibleEntries);
     }
@@ -127,14 +133,16 @@ public class MonthFragment extends BaseFragment {
     //滑动监听
     private void setListener() {
         recyclerView.addOnItemTouchListener(new RecyclerItemGestureListener(getActivity(), recyclerView,
-                new RecyclerItemGestureListener.OnItemGestureListener() {
+                new SimpleItemGestureListener() {
                     private boolean isRightScroll;
-                    @Override
-                    public void onItemClick(View view, int position) {
-                    }
 
                     @Override
-                    public void onLongItemClick(View view, int position) {
+                    public void onItemSelected(BarEntry barEntry, int position) {
+                        if (null == barEntry || !barEntry.isSelected()) {
+                            rlTitle.setVisibility(View.VISIBLE);
+                        } else {
+                            rlTitle.setVisibility(View.INVISIBLE);
+                        }
                     }
 
                     @Override
@@ -180,6 +188,7 @@ public class MonthFragment extends BaseFragment {
         }
         mYAxis = YAxis.getYAxis(mBarChartAttrs, yAxisMaximum);
         mItemDecoration.setYAxis(mYAxis);
+        mBarChartAdapter.setYAxis(mYAxis);
     }
 
 

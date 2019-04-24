@@ -97,7 +97,6 @@ public class BarChartItemDecoration extends RecyclerView.ItemDecoration {
             yAxisRenderer.drawLeftYAxisLabel(canvas, parent, mYAxis);//画左边y坐标的刻度，会设定RecyclerView的 leftPadding
             yAxisRenderer.drawRightYAxisLabel(canvas, parent, mYAxis);//画右边y坐标的刻度，会设定RecyclerView的 rightPadding
             yAxisRenderer.drawHorizontalLine(canvas, parent, mYAxis);//画横的网格线
-
             xAxisRenderer.drawVerticalLine(canvas, parent, mXAxis);//画竖的网格线
             xAxisRenderer.drawXAxis(canvas, parent, mXAxis);//画x轴坐标的刻度
 
@@ -105,7 +104,7 @@ public class BarChartItemDecoration extends RecyclerView.ItemDecoration {
 
             mBarChartRender.drawBarChart(canvas, parent, mYAxis);//draw BarChart
 //            mBarChartRender.drawChart(canvas, parent, mYAxis);
-            mBarChartRender.drawValueMark(canvas, parent, mYAxis);
+            mBarChartRender.drawHighLight(canvas, parent, mYAxis);
             mBarChartRender.drawBarChartValue(canvas, parent, mYAxis);//draw BarChart value
 
         } else if (mOrientation == VERTICAL_LIST) {//暂时不支持

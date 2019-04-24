@@ -11,6 +11,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.ViewTreeObserver;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import com.yxc.barchart.BaseFragment;
@@ -23,6 +24,7 @@ import com.yxc.barchartlib.entrys.BarEntry;
 import com.yxc.barchartlib.formatter.ValueFormatter;
 import com.yxc.barchartlib.itemdecoration.BarChartItemDecoration;
 import com.yxc.barchartlib.listener.RecyclerItemGestureListener;
+import com.yxc.barchartlib.listener.SimpleItemGestureListener;
 import com.yxc.barchartlib.util.BarChartAttrs;
 import com.yxc.barchartlib.util.ChartComputeUtil;
 import com.yxc.barchartlib.util.DecimalUtil;
@@ -47,6 +49,8 @@ public class DayFragment extends BaseFragment implements ViewTreeObserver.OnGlob
     TextView txtRightLocalDate;
     TextView textTitle;
     TextView txtCountStep;
+
+    RelativeLayout rlTitle;
 
     BarChartAdapter mBarChartAdapter;
     List<BarEntry> mEntries;
@@ -84,6 +88,7 @@ public class DayFragment extends BaseFragment implements ViewTreeObserver.OnGlob
 
 
     private void initView(View view) {
+        rlTitle = view.findViewById(R.id.rl_title);
         txtLeftLocalDate = view.findViewById(R.id.txt_left_local_date);
         txtRightLocalDate = view.findViewById(R.id.txt_right_local_date);
         textTitle = view.findViewById(R.id.txt_layout);
@@ -105,7 +110,7 @@ public class DayFragment extends BaseFragment implements ViewTreeObserver.OnGlob
         mItemDecoration = new BarChartItemDecoration(mYAxis, mXAxis, mBarChartAttrs);
 
         recyclerView.addItemDecoration(mItemDecoration);
-        mBarChartAdapter = new BarChartAdapter(getActivity(), mEntries, recyclerView, mYAxis, mBarChartAttrs);
+        mBarChartAdapter = new BarChartAdapter(getActivity(), mEntries, recyclerView, mXAxis, mBarChartAttrs);
         recyclerView.setAdapter(mBarChartAdapter);
         recyclerView.setLayoutManager(layoutManager);
 
@@ -123,7 +128,7 @@ public class DayFragment extends BaseFragment implements ViewTreeObserver.OnGlob
     }
 
     private void reSizeYAxis() {
-        recyclerView.scrollToPosition(preEntrySize);
+        recyclerView.scrollToPosition(preEntrySize + 1);
         List<BarEntry> visibleEntries = mEntries.subList(preEntrySize, preEntrySize + displayNumber + 1);
         YAxis yAxis = mYAxis.resetYAxis(mYAxis, DecimalUtil.getTheMaxNumber(visibleEntries));
         mBarChartAdapter.notifyDataSetChanged();
@@ -138,18 +143,18 @@ public class DayFragment extends BaseFragment implements ViewTreeObserver.OnGlob
     //滑动监听
     private void setListener() {
         recyclerView.addOnItemTouchListener(new RecyclerItemGestureListener(getActivity(), recyclerView,
-                new RecyclerItemGestureListener.OnItemGestureListener() {
+                new SimpleItemGestureListener() {
                     private boolean isRightScroll;
 
                     @Override
-                    public void onItemClick(View view, int position) {
-
+                    public void onItemSelected(BarEntry barEntry, int position) {
+                        if (null == barEntry || !barEntry.isSelected()) {
+                            rlTitle.setVisibility(View.VISIBLE);
+                        } else {
+                            rlTitle.setVisibility(View.INVISIBLE);
+                        }
                     }
 
-                    @Override
-                    public void onLongItemClick(View view, int position) {
-
-                    }
                     @Override
                     public void onScrollStateChanged(RecyclerView recyclerView, int newState) {
                         // 当不滚动时
@@ -176,7 +181,7 @@ public class DayFragment extends BaseFragment implements ViewTreeObserver.OnGlob
                         isRightScroll = dx < 0;
                     }
                 }));
-            //recyclerView.getViewTreeObserver().addOnGlobalLayoutListener(this);
+        //recyclerView.getViewTreeObserver().addOnGlobalLayoutListener(this);
     }
 
     //重新设置Y坐标

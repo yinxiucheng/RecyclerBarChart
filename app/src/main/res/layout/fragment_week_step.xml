@@ -6,36 +6,41 @@
     android:layout_marginTop="10dp"
     android:orientation="vertical">
 
-    <RelativeLayout
+    <FrameLayout
+        android:id="@+id/fl_chart"
         android:layout_width="match_parent"
-        android:layout_height="30dp"
-        android:layout_alignParentTop="true"
-        android:layout_marginLeft="15dp"
-        android:layout_marginRight="15dp">
-        <include layout="@layout/layout_step_date_title" />
-    </RelativeLayout>
+        android:layout_height="wrap_content">
 
-    <com.yxc.barchartlib.view.BarChartRecyclerView
-        android:id="@+id/recycler"
-        android:layout_width="match_parent"
-        android:layout_height="300dp"
-        android:layout_marginTop="20dp"
-        android:layout_alignParentTop="true"
-        android:paddingTop="15dp"
-        android:paddingLeft="3dp"
-        app:displayNumbers="7"
-        app:enableCharValueDisplay="true"
-        app:enableLeftYAxisLabel="false"
-        app:bezierIntensity="0.125"
-        app:enableScrollToScale="false"
-        app:recyclerPaddingRight="3dp"
-        app:enableRightYAxisLabel="true" />
+        <com.yxc.barchartlib.view.BarChartRecyclerView
+            android:id="@+id/recycler"
+            android:layout_width="match_parent"
+            android:layout_height="335dp"
+            android:layout_alignParentTop="true"
+            android:paddingLeft="3dp"
+            android:paddingTop="40dp"
+            app:displayNumbers="7"
+            app:enableCharValueDisplay="true"
+            app:enableLeftYAxisLabel="false"
+            app:enableRightYAxisLabel="true"
+            app:enableScrollToScale="true"
+            app:recyclerPaddingRight="3dp" />
+
+        <RelativeLayout
+            android:id="@+id/rl_title"
+            android:layout_width="match_parent"
+            android:layout_height="30dp"
+            android:layout_alignParentTop="true"
+            android:layout_marginLeft="15dp"
+            android:layout_marginRight="15dp">
+            <include layout="@layout/layout_step_date_title" />
+        </RelativeLayout>
+    </FrameLayout>
 
     <TextView
         android:id="@+id/txt_count_Step"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_below="@+id/recycler"
+        android:layout_below="@+id/fl_chart"
         android:layout_marginTop="20dp"
         android:paddingLeft="10dp"
         android:textColor="@color/red"
@@ -49,6 +54,7 @@
         android:layout_marginTop="10dp"
         android:layout_marginRight="10dp"
         android:layout_marginBottom="15dp">
+
         <include layout="@layout/layout_step_bottom_desc" />
     </RelativeLayout>
 

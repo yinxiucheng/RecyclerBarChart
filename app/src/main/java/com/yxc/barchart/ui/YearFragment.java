@@ -8,6 +8,7 @@ import android.text.SpannableStringBuilder;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
 import com.yxc.barchart.BaseFragment;
 import com.yxc.barchart.R;
@@ -19,6 +20,7 @@ import com.yxc.barchartlib.component.YAxis;
 import com.yxc.barchartlib.entrys.BarEntry;
 import com.yxc.barchartlib.itemdecoration.BarChartItemDecoration;
 import com.yxc.barchartlib.listener.RecyclerItemGestureListener;
+import com.yxc.barchartlib.listener.SimpleItemGestureListener;
 import com.yxc.barchartlib.util.BarChartAttrs;
 import com.yxc.barchartlib.util.ChartComputeUtil;
 import com.yxc.barchartlib.util.DecimalUtil;
@@ -41,6 +43,9 @@ public class YearFragment extends BaseFragment {
     TextView txtRightLocalDate;
     TextView textTitle;
     TextView txtCountStep;
+
+    RelativeLayout rlTitle;
+
     BarChartAdapter mBarChartAdapter;
     List<BarEntry> mEntries;
     BarChartItemDecoration mItemDecoration;
@@ -74,6 +79,7 @@ public class YearFragment extends BaseFragment {
     }
 
     private void initView(View view) {
+        rlTitle = view.findViewById(R.id.rl_title);
         txtLeftLocalDate = view.findViewById(R.id.txt_left_local_date);
         txtRightLocalDate = view.findViewById(R.id.txt_right_local_date);
         textTitle = view.findViewById(R.id.txt_layout);
@@ -91,7 +97,7 @@ public class YearFragment extends BaseFragment {
         mXAxis = new XAxis(mBarChartAttrs, displayNumber, new XAxisYearFormatter());
         mItemDecoration = new BarChartItemDecoration(mYAxis, mXAxis, mBarChartAttrs);
         recyclerView.addItemDecoration(mItemDecoration);
-        mBarChartAdapter = new BarChartAdapter(getActivity(), mEntries, recyclerView, mYAxis, mBarChartAttrs);
+        mBarChartAdapter = new BarChartAdapter(getActivity(), mEntries, recyclerView, mXAxis, mBarChartAttrs);
         recyclerView.setAdapter(mBarChartAdapter);
         recyclerView.setLayoutManager(layoutManager);
         currentLocalDate = TimeUtil.getLastMonthOfTheYear(LocalDate.now());
@@ -118,17 +124,17 @@ public class YearFragment extends BaseFragment {
     private void setListener() {
 
         recyclerView.addOnItemTouchListener(new RecyclerItemGestureListener(getActivity(), recyclerView,
-                new RecyclerItemGestureListener.OnItemGestureListener() {
-                    boolean isRightScroll;
+                new SimpleItemGestureListener() {
+
+                    private boolean isRightScroll;
 
                     @Override
-                    public void onItemClick(View view, int position) {
-
-                    }
-
-                    @Override
-                    public void onLongItemClick(View view, int position) {
-
+                    public void onItemSelected(BarEntry barEntry, int position) {
+                        if (null == barEntry || !barEntry.isSelected()) {
+                            rlTitle.setVisibility(View.VISIBLE);
+                        } else {
+                            rlTitle.setVisibility(View.INVISIBLE);
+                        }
                     }
 
                     @Override
@@ -147,7 +153,6 @@ public class YearFragment extends BaseFragment {
                                 int scrollByDx = ChartComputeUtil.computeScrollByXOffset(recyclerView, displayNumber, TestData.VIEW_YEAR);
                                 recyclerView.scrollBy(scrollByDx, 0);
                             }
-
                             resetYAxis(recyclerView);
                         }
 

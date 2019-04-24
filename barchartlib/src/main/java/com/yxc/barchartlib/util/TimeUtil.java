@@ -2,6 +2,7 @@ package com.yxc.barchartlib.util;
 
 import com.yxc.barchartlib.entrys.BarEntry;
 import com.yxc.barchartlib.component.DistanceCompare;
+import com.yxc.barchartlib.formatter.Hour12;
 
 import org.joda.time.Days;
 import org.joda.time.Instant;
@@ -59,7 +60,7 @@ public class TimeUtil {
     }
 
 
-    public static boolean isLastMonthOfTheYear(LocalDate localDate){
+    public static boolean isLastMonthOfTheYear(LocalDate localDate) {
         return localDate.getMonthOfYear() == 12;
     }
 
@@ -490,6 +491,31 @@ public class TimeUtil {
         return time;
     }
 
+    public static Hour12 get12HourOfTheDay(long timestamp) {
+        int time = getHourOfTheDay(timestamp);
+        Hour12 hour12 = new Hour12();
+        if (time == 0) {
+
+        } else if (time < 12) {
+            hour12.hour = time;
+            hour12.isAnte = true;
+        } else {
+            hour12.hour = time % 12;
+            hour12.isAnte = false;
+        }
+        return hour12;
+    }
+
+    //返回固定的时间段格式
+    public static String get12HourOfTheDayStr(long timestamp) {
+        long start = timestamp;
+        long end = timestamp + TimeUtil.TIME_HOUR;
+        Hour12 hour12Start = get12HourOfTheDay(start);
+        Hour12 hour12End = get12HourOfTheDay(end);
+        return hour12Start.getHour12String() + "-" + hour12End.getHour12String();
+    }
+
+
     public static boolean isSameYear(long timestamp, long timestampCompare) {
         LocalDate localDate = timestampToLocalDate(timestamp);
         LocalDate localDateCompare = timestampToLocalDate(timestampCompare);
@@ -502,7 +528,7 @@ public class TimeUtil {
         return localDate.getYear() == localDateCompare.getYear() && localDate.getMonthOfYear() == localDateCompare.getMonthOfYear();
     }
 
-    public static boolean isTheSameDay(long timestamp, long timestampCompare){
+    public static boolean isTheSameDay(long timestamp, long timestampCompare) {
         LocalDate localDate = timestampToLocalDate(timestamp);
         LocalDate localDateCompare = timestampToLocalDate(timestampCompare);
         return isSameLocalDate(localDate, localDateCompare);
@@ -539,12 +565,12 @@ public class TimeUtil {
         return new DistanceCompare(distanceLeft, distanceRight);
     }
 
-    public static boolean isFuture(LocalDate localDate){
+    public static boolean isFuture(LocalDate localDate) {
         return localDate.isAfter(LocalDate.now());
     }
 
-    public static boolean isFuture(long timestamp){
-        return timestamp > System.currentTimeMillis()/1000;
+    public static boolean isFuture(long timestamp) {
+        return timestamp > System.currentTimeMillis() / 1000;
     }
 
 
@@ -553,7 +579,7 @@ public class TimeUtil {
     }
 
     //get the firstDay of the lastMonth of zhe Year (yyyy-12-01)
-    public static LocalDate getLastMonthOfTheYear(LocalDate localDate){
+    public static LocalDate getLastMonthOfTheYear(LocalDate localDate) {
         int monthOfTheYear = localDate.getMonthOfYear();
         int distance = TimeUtil.NUM_MONTH_OF_YEAR - monthOfTheYear;
         LocalDate lastMonthOfYear = localDate.plusMonths(distance);
@@ -562,14 +588,14 @@ public class TimeUtil {
     }
 
 
-    public static LocalDate getLastDayOfThisMonth(LocalDate localDate){
+    public static LocalDate getLastDayOfThisMonth(LocalDate localDate) {
         LocalDate lastDayOfMonth = TimeUtil.getFirstDayOfNextMonth(localDate).minusDays(1);
         long timestamp = TimeUtil.changZeroOfTheDay(lastDayOfMonth);
         LocalDate lastDayOfMonthZero = TimeUtil.timestampToLocalDate(timestamp);
         return lastDayOfMonthZero;
     }
 
-    public static LocalDate getLastDayOfThisWeek(LocalDate localDate){
+    public static LocalDate getLastDayOfThisWeek(LocalDate localDate) {
         int dayOfWeek = localDate.getDayOfWeek();
         int distance = TimeUtil.NUM_DAY_OF_WEEK - dayOfWeek;
         LocalDate lastDayOfWeek = localDate.plusDays(distance);

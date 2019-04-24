@@ -8,7 +8,7 @@ import java.util.Objects;
 
 /**
  * @author yxc
- * @date 2019/4/6
+ * @since  2019/4/6
  */
 public class BarEntry extends Entry implements Comparable<BarEntry> {
 

@@ -11,7 +11,7 @@ import android.view.View;
 import com.yxc.barchartlib.entrys.BarEntry;
 import com.yxc.barchartlib.view.BarChartAdapter;
 import com.yxc.barchartlib.view.BarChartRecyclerView;
-import com.yxc.barchartlib.view.BarChartRecyclerView.onChartTouchListener;
+import com.yxc.barchartlib.view.BarChartRecyclerView.OnChartTouchListener;
 import com.yxc.barchartlib.view.SpeedRatioLinearLayoutManager;
 
 /**
@@ -51,7 +51,12 @@ public class RecyclerItemGestureListener implements RecyclerView.OnItemTouchList
                     final int position = parent.getChildAdapterPosition(child);
                     if (position != RecyclerView.NO_POSITION) {
                         BarEntry barEntry = (BarEntry) child.getTag();
-                        if (!barEntry.equals(selectBarEntry)) {
+                        if (barEntry.getY() <= 0 ) {
+                            if (null != selectBarEntry){
+                                selectBarEntry.isSelected = BarEntry.TYPE_UNSELECTED;
+                            }
+                            selectBarEntry = null;
+                        }else if (!barEntry.equals(selectBarEntry)) {
                             //重置原来的SelectBarEntry
                             if (null != selectBarEntry){
                                 selectBarEntry.isSelected = BarEntry.TYPE_UNSELECTED;
@@ -62,12 +67,14 @@ public class RecyclerItemGestureListener implements RecyclerView.OnItemTouchList
                             selectBarEntry = null;
                             barEntry.isSelected = BarEntry.TYPE_UNSELECTED;//再次被点击
                         }
+                        mListener.onItemSelected(barEntry, position);
+                        mListener.onItemClick(child, position);
 
                         if (null != mAdapter){
                             mAdapter.notifyItemChanged(position, false);
                         }
 
-                        mListener.onItemClick(child, position);
+
                         return true;
                     }
                 }
@@ -93,7 +100,9 @@ public class RecyclerItemGestureListener implements RecyclerView.OnItemTouchList
                     final int position = parent.getChildAdapterPosition(child);
                     if (position != RecyclerView.NO_POSITION) {
                         BarEntry barEntry = (BarEntry) child.getTag();
-                        if (!barEntry.equals(selectBarEntry)) {
+                        if (barEntry.getY() <= 0 ) {
+                            return;
+                        }else if (!barEntry.equals(selectBarEntry)) {
                             //重置原来的SelectBarEntry
                             if (null != selectBarEntry){
                                 selectBarEntry.isSelected = BarEntry.TYPE_UNSELECTED;
@@ -108,15 +117,14 @@ public class RecyclerItemGestureListener implements RecyclerView.OnItemTouchList
                         if (null != mAdapter){
                             mAdapter.notifyItemChanged(position, false);
                         }
-
                         mListener.onLongItemClick(child, position);
-                        return;
+                        mListener.onItemSelected(barEntry, position);
                     }
                 }
             }
         });
 
-        BarChartRecyclerView.onChartTouchListener onChartTouchListener = new onChartTouchListener() {
+        OnChartTouchListener onChartTouchListener = new OnChartTouchListener() {
 
             @Override
             public void onChartGestureStart(MotionEvent e) {
@@ -126,7 +134,7 @@ public class RecyclerItemGestureListener implements RecyclerView.OnItemTouchList
             @Override
             public void onChartGestureEnd(MotionEvent e) {
                 isLongPressing = false;
-                if (null != layoutManager) {
+                if (null != layoutManager) {//控制RecyclerView的滑动
                     layoutManager.resetRatioSpeed();
                 }
             }
@@ -145,24 +153,33 @@ public class RecyclerItemGestureListener implements RecyclerView.OnItemTouchList
                     if (x < parent.getPaddingLeft() + reservedWidth || x > parentRight - reservedWidth) {
                         return;
                     }
-                    BarEntry barEntry = (BarEntry) child.getTag();
                     int position = parent.getChildAdapterPosition(child);
-                    if (!barEntry.equals(selectBarEntry)) {
-                        if (selectBarEntry != null){
-                            selectBarEntry.isSelected = BarEntry.TYPE_UNSELECTED;
+                    if (position != RecyclerView.NO_POSITION){
+                        BarEntry barEntry = (BarEntry) child.getTag();
+                        if (barEntry.getY() <= 0 ) {
+                            return;
                         }
-                        selectBarEntry = barEntry;
-                        barEntry.isSelected = BarEntry.TYPE_LONG_PRESS_SELECTED;
-                        if (null != mAdapter){
-                            mAdapter.notifyItemChanged(position, false);
+
+                        if (!barEntry.equals(selectBarEntry)) {
+                            if (selectBarEntry != null){
+                                selectBarEntry.isSelected = BarEntry.TYPE_UNSELECTED;
+                            }
+                            selectBarEntry = barEntry;
+                            barEntry.isSelected = BarEntry.TYPE_LONG_PRESS_SELECTED;
+                            if (null != mAdapter){
+                                mAdapter.notifyItemChanged(position, false);
+                            }
                         }
+                        mListener.onItemSelected(barEntry, position);
                     }
                 } else {
                     //when is not longPress, normal condition reset the selected BarEntry
                     if (null != selectBarEntry && selectBarEntry.isSelected == BarEntry.TYPE_LONG_PRESS_SELECTED) {
                         selectBarEntry.isSelected = BarEntry.TYPE_UNSELECTED;
                         selectBarEntry = null;
+                        mListener.onItemSelected(null, -1);
                     }
+
                 }
             }
         };
@@ -182,10 +199,11 @@ public class RecyclerItemGestureListener implements RecyclerView.OnItemTouchList
             public void onScrolled(@NonNull RecyclerView recyclerView, int dx, int dy) {
                 super.onScrolled(recyclerView, dx, dy);
                 if (null != mListener) {
-                    if (null != selectBarEntry && selectBarEntry.isSelected == 1) {
+                    if (null != selectBarEntry && selectBarEntry.isSelected == BarEntry.TYPE_SINGLE_TAP_UP_SELECTED) {
                         if (Math.abs(dx) > 2) {
-                            selectBarEntry.isSelected = 0;
+                            selectBarEntry.isSelected = BarEntry.TYPE_UNSELECTED;
                             selectBarEntry = null;
+                            mListener.onItemSelected(null, -1);
                         }
                     }
                     mListener.onScrolled(recyclerView, dx, dy);
@@ -220,6 +238,8 @@ public class RecyclerItemGestureListener implements RecyclerView.OnItemTouchList
         void onItemClick(View view, int position);
 
         void onLongItemClick(View view, int position);
+
+        void onItemSelected(BarEntry barEntry, int position);
 
         void onScrollStateChanged(RecyclerView recyclerView, int newState);
 

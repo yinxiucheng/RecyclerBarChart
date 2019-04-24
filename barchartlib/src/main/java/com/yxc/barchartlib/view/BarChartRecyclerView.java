@@ -19,7 +19,7 @@ public class BarChartRecyclerView extends RecyclerView {
 
     public BarChartAttrs mAttrs;
 
-    public onChartTouchListener onChartTouchListener;
+    public OnChartTouchListener onChartTouchListener;
 
     public BarChartRecyclerView(@NonNull Context context, @Nullable AttributeSet attrs) {
         super(context, attrs);
@@ -52,8 +52,8 @@ public class BarChartRecyclerView extends RecyclerView {
             if (onChartTouchListener != null){
                 onChartTouchListener.onChartGestureStart(e);
             }
-        } else if (e.getActionMasked() == MotionEvent.ACTION_UP
-                || e.getActionMasked() == MotionEvent.ACTION_CANCEL) {
+        } else if (e.getAction() == MotionEvent.ACTION_UP
+                || e.getAction() == MotionEvent.ACTION_CANCEL) {
             if (onChartTouchListener != null) {
                 onChartTouchListener.onChartGestureEnd(e);
             }
@@ -65,7 +65,7 @@ public class BarChartRecyclerView extends RecyclerView {
         return super.onTouchEvent(e);
     }
 
-    public interface onChartTouchListener {
+    public interface OnChartTouchListener {
 
         void onChartGestureStart(MotionEvent e);
 
@@ -74,7 +74,7 @@ public class BarChartRecyclerView extends RecyclerView {
         void onChartGestureMovingOn(MotionEvent e);
     }
 
-    public void setOnChartTouchListener(BarChartRecyclerView.onChartTouchListener onChartTouchListener) {
+    public void setOnChartTouchListener(OnChartTouchListener onChartTouchListener) {
         this.onChartTouchListener = onChartTouchListener;
     }
 

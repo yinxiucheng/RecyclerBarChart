@@ -1,46 +1,39 @@
 package com.yxc.barchartlib.view;
 
 import android.content.Context;
-import android.graphics.RectF;
 import android.support.annotation.NonNull;
 import android.support.v7.widget.RecyclerView;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
-
 import com.yxc.barchartlib.R;
-import com.yxc.barchartlib.component.YAxis;
-import com.yxc.barchartlib.entrys.BarChart;
-import com.yxc.barchartlib.entrys.BarEntry;
 import com.yxc.barchartlib.component.XAxis;
+import com.yxc.barchartlib.component.YAxis;
+import com.yxc.barchartlib.entrys.BarEntry;
 import com.yxc.barchartlib.util.BarChartAttrs;
-import com.yxc.barchartlib.util.ChartComputeUtil;
 import com.yxc.barchartlib.util.DisplayUtil;
 
 import java.util.List;
 
 /**
  * @author yxc
- * @date 2019/4/6
+ * @since  2019/4/6
  */
 final public class BarChartAdapter extends RecyclerView.Adapter<BarChartAdapter.BarChartViewHolder> {
 
-    Context mContext;
-    List<BarEntry> mEntries;
-    RecyclerView mRecyclerView;
-    XAxis mXAxis;
-    YAxis mYAxis;
-    BarChartAttrs mBarChartAttrs;
+    private Context mContext;
+    private List<BarEntry> mEntries;
+    private RecyclerView mRecyclerView;
+    private XAxis mXAxis;
+    private YAxis mYAxis;
+    private BarChartAttrs mBarChartAttrs;
 
-    BarEntry selectBarEntry;
-
-    public BarChartAdapter(Context context, List<BarEntry> entries, RecyclerView recyclerView, YAxis mYAxis, BarChartAttrs attrs) {
+    public BarChartAdapter(Context context, List<BarEntry> entries, RecyclerView recyclerView, XAxis xAxis, BarChartAttrs attrs) {
         this.mContext = context;
         this.mEntries = entries;
         this.mRecyclerView = recyclerView;
-        this.mYAxis = mYAxis;
+        this.mXAxis = xAxis;
         this.mBarChartAttrs = attrs;
     }
 
@@ -71,8 +64,8 @@ final public class BarChartAdapter extends RecyclerView.Adapter<BarChartAdapter.
     public void onBindViewHolder(@NonNull BarChartViewHolder viewHolder, int position) {
         float contentWidth = (DisplayUtil.getScreenWidth(mContext) - mRecyclerView.getPaddingRight() - mRecyclerView.getPaddingLeft());
 
-        int itemWidth = (int) (contentWidth / mBarChartAttrs.displayNumbers);
-        int reminderWidth = (int) (contentWidth % mBarChartAttrs.displayNumbers);
+        int itemWidth = (int) (contentWidth / mXAxis.displayNumbers);
+        int reminderWidth = (int) (contentWidth % mXAxis.displayNumbers);
 
         //todo 这里只画右边，所以调整多余的只加在右边。 会造成重绘时，月的抖动，因为来回变动,
         // todo没有限定一定要显示一周，一天、一年、一月的数据是，不用重新设定这个padding，多显示一点没事。
@@ -80,43 +73,14 @@ final public class BarChartAdapter extends RecyclerView.Adapter<BarChartAdapter.
             resetRecyclerPadding(reminderWidth);
         }
         setLinearLayout(viewHolder.contentView, itemWidth);
-        bindBarEntryToView(viewHolder, position, contentWidth);
+        bindBarEntryToView(viewHolder, position);
     }
 
-    private void bindBarEntryToView(BarChartViewHolder viewHolder, final int position, float contentWidth) {
+    private void bindBarEntryToView(BarChartViewHolder viewHolder, final int position) {
         final BarEntry barEntry = mEntries.get(position);
-        float itemWidth = contentWidth/mBarChartAttrs.displayNumbers;
-        Log.d("BarChartAdapter", " mYAxis:" + mYAxis.getAxisMaximum());
-//        float width = viewHolder.contentView.getWidth();
-        float barSpaceWidth = itemWidth * mBarChartAttrs.barSpace;
-        float realBottomPadding = mRecyclerView.getPaddingBottom() + mBarChartAttrs.contentPaddingBottom;
-        float realTopPadding = mRecyclerView.getPaddingTop() + mBarChartAttrs.maxYAxisPaddingTop;
-        float realContentHeight = mRecyclerView.getHeight() - realBottomPadding - realTopPadding;
-        float barChartWidth = itemWidth - barSpaceWidth;//柱子的宽度
-        float height = barEntry.getY() / mYAxis.getAxisMaximum() * realContentHeight;
-        CustomAnimatedDecorator drawable = new CustomAnimatedDecorator(barChartWidth, realContentHeight,
-                0, realContentHeight - height);
-        barEntry.setDrawable(drawable);
-
         viewHolder.contentView.setTag(barEntry);
-
-//        viewHolder.contentView.setOnClickListener(new View.OnClickListener() {
-//            @Override
-//            public void onClick(View v) {
-//                if (selectBarEntry == barEntry) {
-//                    selectBarEntry = null;
-//                    barEntry.isSelected = false;
-//                } else {
-//                    if (null != selectBarEntry){
-//                        selectBarEntry.isSelected = false;
-//                    }
-//                    selectBarEntry = barEntry;
-//                    barEntry.isSelected = true;
-//                }
-//                notifyItemChanged(position, false);
-//            }
-//        });
     }
+
 
     private void resetRecyclerPadding(int reminderWidth) {
         if (mBarChartAttrs.enableLeftYAxisLabel && mBarChartAttrs.enableRightYAxisLabel) {
