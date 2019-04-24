@@ -13,7 +13,6 @@
         android:layout_alignParentTop="true"
         android:layout_marginLeft="15dp"
         android:layout_marginRight="15dp">
-
         <include layout="@layout/layout_step_date_title" />
 
     </RelativeLayout>
@@ -33,7 +32,7 @@
         app:recyclerPaddingRight="3dp"
         app:barChartRoundRectRadiusRatio="0.25"
         app:bezierIntensity="0.125"
-        app:enableScrollToScale="false"
+        app:enableScrollToScale="true"
         app:xAxisScaleDistance="3" />
 
     <TextView

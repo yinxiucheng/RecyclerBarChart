@@ -131,12 +131,10 @@ public class MonthFragment extends BaseFragment {
                     private boolean isRightScroll;
                     @Override
                     public void onItemClick(View view, int position) {
-
                     }
 
                     @Override
                     public void onLongItemClick(View view, int position) {
-
                     }
 
                     @Override

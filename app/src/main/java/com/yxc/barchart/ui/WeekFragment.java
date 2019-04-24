@@ -22,7 +22,7 @@ import com.yxc.barchartlib.component.XAxis;
 import com.yxc.barchartlib.component.YAxis;
 import com.yxc.barchartlib.entrys.BarEntry;
 import com.yxc.barchartlib.formatter.ValueFormatter;
-import com.yxc.barchartlib.itemdecoration.LineChartItemDecoration;
+import com.yxc.barchartlib.itemdecoration.BarChartItemDecoration;
 import com.yxc.barchartlib.listener.RecyclerItemGestureListener;
 import com.yxc.barchartlib.util.BarChartAttrs;
 import com.yxc.barchartlib.util.ChartComputeUtil;
@@ -51,7 +51,7 @@ public class WeekFragment extends BaseFragment implements ViewTreeObserver.OnGlo
 
     BarChartAdapter mBarChartAdapter;
     List<BarEntry> mEntries;
-    LineChartItemDecoration mItemDecoration;
+    BarChartItemDecoration mItemDecoration;
     YAxis mYAxis;
     XAxis mXAxis;
     ValueFormatter valueFormatter;
@@ -104,7 +104,7 @@ public class WeekFragment extends BaseFragment implements ViewTreeObserver.OnGlo
         mYAxis = new YAxis(mBarChartAttrs);
         mXAxis = new XAxis(mBarChartAttrs, displayNumber);
         mXAxis.setValueFormatter(valueFormatter);
-        mItemDecoration = new LineChartItemDecoration(mYAxis, mXAxis, mBarChartAttrs);
+        mItemDecoration = new BarChartItemDecoration(mYAxis, mXAxis, mBarChartAttrs);
 //        mItemDecoration.setBarChartValueFormatter(new BarChartValueFormatter(){
 //            @Override
 //            public String getBarLabel(BarEntry barEntry) {

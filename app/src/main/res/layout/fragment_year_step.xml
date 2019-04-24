@@ -30,7 +30,7 @@
         app:recyclerPaddingRight="3dp"
         app:bezierIntensity="0.125"
         app:barChartRoundRectRadiusRatio="0.20"
-        app:enableScrollToScale="false"
+        app:enableScrollToScale="true"
         app:displayNumbers="12"/>
 
     <TextView
