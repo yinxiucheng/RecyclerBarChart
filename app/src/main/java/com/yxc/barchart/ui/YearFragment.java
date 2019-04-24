@@ -11,21 +11,21 @@ import android.view.ViewGroup;
 import android.widget.TextView;
 import com.yxc.barchart.BaseFragment;
 import com.yxc.barchart.R;
-//import com.yxc.barchart.TestData;
 import com.yxc.barchart.RateTestData;
 import com.yxc.barchart.TestData;
 import com.yxc.barchart.formatter.XAxisYearFormatter;
 import com.yxc.barchartlib.component.XAxis;
 import com.yxc.barchartlib.component.YAxis;
 import com.yxc.barchartlib.entrys.BarEntry;
+import com.yxc.barchartlib.itemdecoration.BarChartItemDecoration;
+import com.yxc.barchartlib.listener.RecyclerItemGestureListener;
 import com.yxc.barchartlib.util.BarChartAttrs;
-import com.yxc.barchartlib.util.DecimalUtil;
 import com.yxc.barchartlib.util.ChartComputeUtil;
+import com.yxc.barchartlib.util.DecimalUtil;
 import com.yxc.barchartlib.util.TextUtil;
 import com.yxc.barchartlib.util.TimeUtil;
 import com.yxc.barchartlib.view.BarChartAdapter;
 import com.yxc.barchartlib.view.BarChartRecyclerView;
-import com.yxc.barchartlib.itemdecoration.BezierChartItemDecoration;
 import com.yxc.barchartlib.view.SpeedRatioLinearLayoutManager;
 import org.joda.time.LocalDate;
 
@@ -43,7 +43,7 @@ public class YearFragment extends BaseFragment {
     TextView txtCountStep;
     BarChartAdapter mBarChartAdapter;
     List<BarEntry> mEntries;
-    BezierChartItemDecoration mItemDecoration;
+    BarChartItemDecoration mItemDecoration;
     YAxis mYAxis;
     XAxis mXAxis;
 
@@ -89,7 +89,7 @@ public class YearFragment extends BaseFragment {
         SpeedRatioLinearLayoutManager layoutManager = new SpeedRatioLinearLayoutManager(getActivity(), mBarChartAttrs);
         mYAxis = new YAxis(mBarChartAttrs);
         mXAxis = new XAxis(mBarChartAttrs, displayNumber, new XAxisYearFormatter());
-        mItemDecoration = new BezierChartItemDecoration(mYAxis, mXAxis, mBarChartAttrs);
+        mItemDecoration = new BarChartItemDecoration(mYAxis, mXAxis, mBarChartAttrs);
         recyclerView.addItemDecoration(mItemDecoration);
         mBarChartAdapter = new BarChartAdapter(getActivity(), mEntries, recyclerView, mYAxis, mBarChartAttrs);
         recyclerView.setAdapter(mBarChartAdapter);
@@ -101,13 +101,12 @@ public class YearFragment extends BaseFragment {
         setXAxis(displayNumber);
     }
 
-
     private void reSizeYAxis() {
         recyclerView.scrollToPosition(preEntrySize);
         List<BarEntry> visibleEntries = mEntries.subList(preEntrySize, preEntrySize + displayNumber + 1);
         YAxis yAxis = mYAxis.resetYAxis(mYAxis, DecimalUtil.getTheMaxNumber(visibleEntries));
         mBarChartAdapter.notifyDataSetChanged();
-        if (yAxis != null){
+        if (yAxis != null) {
             mYAxis = yAxis;
             mItemDecoration.setYAxis(mYAxis);
         }
@@ -117,42 +116,53 @@ public class YearFragment extends BaseFragment {
 
     //滑动监听
     private void setListener() {
-        recyclerView.addOnScrollListener(new RecyclerView.OnScrollListener() {
-            private boolean isRightScroll;
 
-            @Override
-            public void onScrollStateChanged(RecyclerView recyclerView, int newState) {
-                super.onScrollStateChanged(recyclerView, newState);
-                // 当不滚动时
-                if (newState == RecyclerView.SCROLL_STATE_IDLE) {
-                    //左滑
-                    if (recyclerView.canScrollHorizontally(1) && isRightScroll) {
-                        List<BarEntry> entries = RateTestData.createYearEntries(currentLocalDate, displayNumber, mEntries.size());
-                        currentLocalDate = currentLocalDate.minusMonths(displayNumber);
-                        mEntries.addAll(entries);
-                        mBarChartAdapter.notifyDataSetChanged();
+        recyclerView.addOnItemTouchListener(new RecyclerItemGestureListener(getActivity(), recyclerView,
+                new RecyclerItemGestureListener.OnItemGestureListener() {
+                    boolean isRightScroll;
+
+                    @Override
+                    public void onItemClick(View view, int position) {
+
                     }
 
-                    if (mBarChartAttrs.enableScrollToScale) {
-                        int scrollByDx = ChartComputeUtil.computeScrollByXOffset(recyclerView, displayNumber, TestData.VIEW_YEAR);
-                        recyclerView.scrollBy(scrollByDx, 0);
+                    @Override
+                    public void onLongItemClick(View view, int position) {
+
                     }
 
-                    resetYAxis(recyclerView);
-                }
-            }
+                    @Override
+                    public void onScrollStateChanged(RecyclerView recyclerView, int newState) {
+                        // 当不滚动时
+                        if (newState == RecyclerView.SCROLL_STATE_IDLE) {
+                            //左滑
+                            if (recyclerView.canScrollHorizontally(1) && isRightScroll) {
+                                List<BarEntry> entries = RateTestData.createYearEntries(currentLocalDate, displayNumber, mEntries.size());
+                                currentLocalDate = currentLocalDate.minusMonths(displayNumber);
+                                mEntries.addAll(entries);
+                                mBarChartAdapter.notifyDataSetChanged();
+                            }
 
-            @Override
-            public void onScrolled(RecyclerView recyclerView, int dx, int dy) {
-                super.onScrolled(recyclerView, dx, dy);
-                //判断左滑，右滑时，ScrollView的位置不一样。
-                if (dx < 0) {
-                    isRightScroll = true;
-                } else {
-                    isRightScroll = false;
-                }
-            }
-        });
+                            if (mBarChartAttrs.enableScrollToScale) {
+                                int scrollByDx = ChartComputeUtil.computeScrollByXOffset(recyclerView, displayNumber, TestData.VIEW_YEAR);
+                                recyclerView.scrollBy(scrollByDx, 0);
+                            }
+
+                            resetYAxis(recyclerView);
+                        }
+
+                    }
+
+                    @Override
+                    public void onScrolled(RecyclerView recyclerView, int dx, int dy) {
+                    //判断左滑，右滑时，ScrollView的位置不一样。
+                        if (dx < 0) {
+                            isRightScroll = true;
+                        } else {
+                            isRightScroll = false;
+                        }
+                    }
+                }));
     }
 
     //重新设置Y坐标

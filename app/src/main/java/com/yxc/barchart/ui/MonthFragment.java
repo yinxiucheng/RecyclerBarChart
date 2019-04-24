@@ -19,6 +19,7 @@ import com.yxc.barchartlib.component.XAxis;
 import com.yxc.barchartlib.component.YAxis;
 import com.yxc.barchartlib.entrys.BarEntry;
 import com.yxc.barchartlib.formatter.ValueFormatter;
+import com.yxc.barchartlib.listener.RecyclerItemGestureListener;
 import com.yxc.barchartlib.util.BarChartAttrs;
 import com.yxc.barchartlib.util.DecimalUtil;
 import com.yxc.barchartlib.util.ChartComputeUtil;
@@ -77,7 +78,6 @@ public class MonthFragment extends BaseFragment {
         return view;
     }
 
-
     private void initView(View view) {
         txtLeftLocalDate = view.findViewById(R.id.txt_left_local_date);
         txtRightLocalDate = view.findViewById(R.id.txt_right_local_date);
@@ -117,50 +117,56 @@ public class MonthFragment extends BaseFragment {
         List<BarEntry> visibleEntries = mEntries.subList(preEntrySize, preEntrySize + displayNumber + 1);
         YAxis yAxis = mYAxis.resetYAxis(mYAxis, DecimalUtil.getTheMaxNumber(visibleEntries));
         mBarChartAdapter.notifyDataSetChanged();
-        if (null != mYAxis){
+        if (null != mYAxis) {
             mYAxis = yAxis;
             mItemDecoration.setYAxis(mYAxis);
         }
-
         displayDateAndStep(visibleEntries);
     }
 
-
     //滑动监听
     private void setListener() {
-        recyclerView.addOnScrollListener(new RecyclerView.OnScrollListener() {
-            private boolean isRightScroll;
+        recyclerView.addOnItemTouchListener(new RecyclerItemGestureListener(getActivity(), recyclerView,
+                new RecyclerItemGestureListener.OnItemGestureListener() {
+                    private boolean isRightScroll;
+                    @Override
+                    public void onItemClick(View view, int position) {
 
-            @Override
-            public void onScrollStateChanged(RecyclerView recyclerView, int newState) {
-                super.onScrollStateChanged(recyclerView, newState);
-                // 当不滚动时
-                if (newState == RecyclerView.SCROLL_STATE_IDLE) {
-                    if (recyclerView.canScrollHorizontally(1) && isRightScroll) {
-                        List<BarEntry> entries = TestData.getMonthEntries(mBarChartAttrs, currentLocalDate, displayNumber, mEntries.size());
-                        currentLocalDate = currentLocalDate.minusDays(displayNumber);
-                        mEntries.addAll(entries);
-                        mBarChartAdapter.notifyDataSetChanged();
                     }
-                    if (mBarChartAttrs.enableScrollToScale) {
-                        int scrollByDx = ChartComputeUtil.computeScrollByXOffset(recyclerView, displayNumber, TestData.VIEW_MONTH);
-                        recyclerView.scrollBy(scrollByDx, 0);
-                    }
-                    resetYAxis(recyclerView);
-                }
-            }
 
-            @Override
-            public void onScrolled(RecyclerView recyclerView, int dx, int dy) {
-                super.onScrolled(recyclerView, dx, dy);
-                //判断左滑，右滑时，ScrollView的位置不一样。
-                if (dx < 0) {
-                    isRightScroll = true;
-                } else {
-                    isRightScroll = false;
-                }
-            }
-        });
+                    @Override
+                    public void onLongItemClick(View view, int position) {
+
+                    }
+
+                    @Override
+                    public void onScrollStateChanged(RecyclerView recyclerView, int newState) {
+                        // 当不滚动时
+                        if (newState == RecyclerView.SCROLL_STATE_IDLE) {
+                            if (recyclerView.canScrollHorizontally(1) && isRightScroll) {
+                                List<BarEntry> entries = TestData.getMonthEntries(mBarChartAttrs, currentLocalDate, displayNumber, mEntries.size());
+                                currentLocalDate = currentLocalDate.minusDays(displayNumber);
+                                mEntries.addAll(entries);
+                                mBarChartAdapter.notifyDataSetChanged();
+                            }
+                            if (mBarChartAttrs.enableScrollToScale) {
+                                int scrollByDx = ChartComputeUtil.computeScrollByXOffset(recyclerView, displayNumber, TestData.VIEW_MONTH);
+                                recyclerView.scrollBy(scrollByDx, 0);
+                            }
+                            resetYAxis(recyclerView);
+                        }
+                    }
+
+                    @Override
+                    public void onScrolled(RecyclerView recyclerView, int dx, int dy) {
+                        //判断左滑，右滑时，ScrollView的位置不一样。
+                        if (dx < 0) {
+                            isRightScroll = true;
+                        } else {
+                            isRightScroll = false;
+                        }
+                    }
+                }));
     }
 
     //重新设置Y坐标

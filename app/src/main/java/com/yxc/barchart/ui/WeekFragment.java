@@ -15,8 +15,6 @@ import android.widget.TextView;
 
 import com.yxc.barchart.BaseFragment;
 import com.yxc.barchart.R;
-import com.yxc.barchart.RateTestData;
-//import com.yxc.barchart.TestData;
 import com.yxc.barchart.TestData;
 import com.yxc.barchart.formatter.ChartValueMarkFormatter;
 import com.yxc.barchart.formatter.XAxisWeekFormatter;
@@ -24,14 +22,15 @@ import com.yxc.barchartlib.component.XAxis;
 import com.yxc.barchartlib.component.YAxis;
 import com.yxc.barchartlib.entrys.BarEntry;
 import com.yxc.barchartlib.formatter.ValueFormatter;
+import com.yxc.barchartlib.itemdecoration.LineChartItemDecoration;
+import com.yxc.barchartlib.listener.RecyclerItemGestureListener;
 import com.yxc.barchartlib.util.BarChartAttrs;
-import com.yxc.barchartlib.util.DecimalUtil;
 import com.yxc.barchartlib.util.ChartComputeUtil;
+import com.yxc.barchartlib.util.DecimalUtil;
 import com.yxc.barchartlib.util.TextUtil;
 import com.yxc.barchartlib.util.TimeUtil;
 import com.yxc.barchartlib.view.BarChartAdapter;
 import com.yxc.barchartlib.view.BarChartRecyclerView;
-import com.yxc.barchartlib.itemdecoration.BezierChartItemDecoration;
 import com.yxc.barchartlib.view.CustomAnimatedDecorator;
 import com.yxc.barchartlib.view.SpeedRatioLinearLayoutManager;
 
@@ -52,7 +51,7 @@ public class WeekFragment extends BaseFragment implements ViewTreeObserver.OnGlo
 
     BarChartAdapter mBarChartAdapter;
     List<BarEntry> mEntries;
-    BezierChartItemDecoration mItemDecoration;
+    LineChartItemDecoration mItemDecoration;
     YAxis mYAxis;
     XAxis mXAxis;
     ValueFormatter valueFormatter;
@@ -105,7 +104,7 @@ public class WeekFragment extends BaseFragment implements ViewTreeObserver.OnGlo
         mYAxis = new YAxis(mBarChartAttrs);
         mXAxis = new XAxis(mBarChartAttrs, displayNumber);
         mXAxis.setValueFormatter(valueFormatter);
-        mItemDecoration = new BezierChartItemDecoration(mYAxis, mXAxis, mBarChartAttrs);
+        mItemDecoration = new LineChartItemDecoration(mYAxis, mXAxis, mBarChartAttrs);
 //        mItemDecoration.setBarChartValueFormatter(new BarChartValueFormatter(){
 //            @Override
 //            public String getBarLabel(BarEntry barEntry) {
@@ -126,7 +125,7 @@ public class WeekFragment extends BaseFragment implements ViewTreeObserver.OnGlo
         recyclerView.setLayoutManager(layoutManager);
 
         currentLocalDate = TimeUtil.getLastDayOfThisWeek(LocalDate.now());
-        List<BarEntry> barEntries = RateTestData.createWeekEntries(currentLocalDate.plusDays(preEntries),
+        List<BarEntry> barEntries = TestData.createWeekEntries(currentLocalDate.plusDays(preEntries),
                 preEntries + 5 * displayNumber, mEntries.size());
         bindBarChartList(barEntries);
         currentLocalDate = currentLocalDate.minusDays(5 * displayNumber);
@@ -148,41 +147,50 @@ public class WeekFragment extends BaseFragment implements ViewTreeObserver.OnGlo
         displayDateAndStep(visibleEntries);
     }
 
-    //滑动监听
+    //设置RecyclerView的监听
     private void setListener() {
-        recyclerView.addOnScrollListener(new RecyclerView.OnScrollListener() {
-            boolean isRightScroll;
 
-            @Override
-            public void onScrollStateChanged(RecyclerView recyclerView, int newState) {
-                super.onScrollStateChanged(recyclerView, newState);
-                if (newState == RecyclerView.SCROLL_STATE_IDLE) {
-                    if (recyclerView.canScrollHorizontally(1) && isRightScroll) {//加载更多
-                        List<BarEntry> entries = RateTestData.createWeekEntries(currentLocalDate, displayNumber, mEntries.size());
-                        currentLocalDate = currentLocalDate.minusDays(displayNumber);
-                        mEntries.addAll(entries);
-                        mBarChartAdapter.setEntries(mEntries);
+        recyclerView.addOnItemTouchListener(new RecyclerItemGestureListener(getActivity(), recyclerView,
+                new RecyclerItemGestureListener.OnItemGestureListener() {
+                    boolean isRightScroll;
+                    @Override
+                    public void onItemClick(View view, int position) {
+                        Log.d("ItemTouch", "weekFragment onItemClick");
                     }
 
-                    if (mBarChartAttrs.enableScrollToScale) {
-                        int scrollByDx = ChartComputeUtil.computeScrollByXOffset(recyclerView, displayNumber, TestData.VIEW_WEEK);
-                        recyclerView.scrollBy(scrollByDx, 0);
+                    @Override
+                    public void onLongItemClick(View view, int position) {
+                        Log.d("ItemTouch", "weekFragment onLongItemClick");
                     }
 
-                    resetYAxis(recyclerView);
-                }
-            }
+                    @Override
+                    public void onScrollStateChanged(RecyclerView recyclerView, int newState) {
+                        if (newState == RecyclerView.SCROLL_STATE_IDLE) {
+                            if (recyclerView.canScrollHorizontally(1) && isRightScroll) {//加载更多
+                                List<BarEntry> entries = TestData.createWeekEntries(currentLocalDate, displayNumber, mEntries.size());
+                                currentLocalDate = currentLocalDate.minusDays(displayNumber);
+                                mEntries.addAll(entries);
+                                mBarChartAdapter.setEntries(mEntries);
+                            }
 
-            @Override
-            public void onScrolled(RecyclerView recyclerView, int dx, int dy) {
-                super.onScrolled(recyclerView, dx, dy);
-                if (dx < 0) {
-                    isRightScroll = true;
-                } else {
-                    isRightScroll = false;
-                }
-            }
-        });
+                            if (mBarChartAttrs.enableScrollToScale) {
+                                int scrollByDx = ChartComputeUtil.computeScrollByXOffset(recyclerView, displayNumber, TestData.VIEW_WEEK);
+                                recyclerView.scrollBy(scrollByDx, 0);
+                            }
+
+                            resetYAxis(recyclerView);
+                        }
+                    }
+
+                    @Override
+                    public void onScrolled(RecyclerView recyclerView, int dx, int dy) {
+                        if (dx < 0) {
+                            isRightScroll = true;
+                        } else {
+                            isRightScroll = false;
+                        }
+                    }
+                }));
 //        recyclerView.getViewTreeObserver().addOnGlobalLayoutListener(this);
     }
 

@@ -5,6 +5,7 @@ import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v7.widget.RecyclerView;
 import android.util.AttributeSet;
+import android.view.MotionEvent;
 
 import com.yxc.barchartlib.util.AttrsUtil;
 import com.yxc.barchartlib.util.BarChartAttrs;
@@ -18,19 +19,21 @@ public class BarChartRecyclerView extends RecyclerView {
 
     public BarChartAttrs mAttrs;
 
+    public onChartTouchListener onChartTouchListener;
+
     public BarChartRecyclerView(@NonNull Context context, @Nullable AttributeSet attrs) {
         super(context, attrs);
         this.mAttrs = AttrsUtil.getCustomerRecyclerAttrs(context, attrs);
         setRecyclerViewDefaultPadding();
     }
 
-    private void setRecyclerViewDefaultPadding(){
+    private void setRecyclerViewDefaultPadding() {
         int paddingLeft = getPaddingLeft();
         int paddingRight = getPaddingRight();
-        if (mAttrs.enableRightYAxisLabel){
+        if (mAttrs.enableRightYAxisLabel) {
             paddingRight = DisplayUtil.dip2px(36);
         }
-        if (mAttrs.enableLeftYAxisLabel){
+        if (mAttrs.enableLeftYAxisLabel) {
             paddingLeft = DisplayUtil.dip2px(36);
         }
         setPadding(paddingLeft, getPaddingTop(), paddingRight, getPaddingBottom());
@@ -41,6 +44,38 @@ public class BarChartRecyclerView extends RecyclerView {
         velocityX *= mAttrs.ratioVelocity;
         velocityY *= mAttrs.ratioVelocity;
         return super.fling(velocityX, velocityY);
+    }
+
+    @Override
+    public boolean onTouchEvent(MotionEvent e) {
+        if (e.getActionMasked() == MotionEvent.ACTION_DOWN) {
+            if (onChartTouchListener != null){
+                onChartTouchListener.onChartGestureStart(e);
+            }
+        } else if (e.getActionMasked() == MotionEvent.ACTION_UP
+                || e.getActionMasked() == MotionEvent.ACTION_CANCEL) {
+            if (onChartTouchListener != null) {
+                onChartTouchListener.onChartGestureEnd(e);
+            }
+        } else if (e.getActionMasked() == MotionEvent.ACTION_MOVE){
+            if (onChartTouchListener != null) {
+                onChartTouchListener.onChartGestureMovingOn(e);
+            }
+        }
+        return super.onTouchEvent(e);
+    }
+
+    public interface onChartTouchListener {
+
+        void onChartGestureStart(MotionEvent e);
+
+        void onChartGestureEnd(MotionEvent e);
+
+        void onChartGestureMovingOn(MotionEvent e);
+    }
+
+    public void setOnChartTouchListener(BarChartRecyclerView.onChartTouchListener onChartTouchListener) {
+        this.onChartTouchListener = onChartTouchListener;
     }
 
 }

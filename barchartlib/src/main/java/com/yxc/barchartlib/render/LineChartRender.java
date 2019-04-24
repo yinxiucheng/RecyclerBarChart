@@ -130,7 +130,7 @@ final public class LineChartRender {
                 float distance = txtWidth / 2 + DisplayUtil.dip2px(10);
                 float txtY = top - mBarChartAttrs.barChartValuePaddingBottom - DisplayUtil.dip2px(15);
 
-                if (barEntry.isSelected && !TextUtils.isEmpty(valueStr)) {
+                if (barEntry.isSelected() && !TextUtils.isEmpty(valueStr)) {
 //                    Log.d("ChartRender1", "barEntry is Selected:" + barEntry.localDate);
                     Drawable drawable = parent.getContext().getResources().getDrawable(R.drawable.marker2, null);
                     int start = (int) (childCenter - distance);
@@ -284,13 +284,13 @@ final public class LineChartRender {
                 }
 
                 if (pointF1.x >= parentLeft && pointF2.x <= parentRightBoard) {
-                    if (barEntry.isSelected) {
+                    if (barEntry.isSelected()) {
                         canvas.drawCircle(pointF2.x, pointF2.y, DisplayUtil.dip2px(10), mBarChartPaint);
                         canvas.drawLine(pointF2.x, pointF2.y, pointF2.x, bottom, mBarChartPaint);
                     } else {
                         canvas.drawCircle(pointF2.x, pointF2.y, DisplayUtil.dip2px(5), mBarChartPaint);
                     }
-                    if (barEntryNear.isSelected) {
+                    if (barEntryNear.isSelected()) {
                         canvas.drawCircle(pointF1.x, pointF1.y, DisplayUtil.dip2px(10), mBarChartPaint);
                         canvas.drawLine(pointF1.x, pointF1.y, pointF1.x, bottom, mBarChartPaint);
                     } else {
@@ -300,5 +300,4 @@ final public class LineChartRender {
             }
         }
     }
-
 }

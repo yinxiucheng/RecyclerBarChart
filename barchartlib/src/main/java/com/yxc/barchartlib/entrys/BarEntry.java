@@ -20,9 +20,15 @@ public class BarEntry extends Entry implements Comparable<BarEntry> {
 
     public static final int TYPE_XAXIS_SPECIAL = 4;//同时是月线以及7日分隔线
 
+    public static final int TYPE_UNSELECTED = 0;//没有选中
+
+    public static final int TYPE_SINGLE_TAP_UP_SELECTED = 1;//单击选中
+
+    public static final int TYPE_LONG_PRESS_SELECTED = 2;//长按选中
+
     public long timestamp;
 
-    public boolean isSelected;
+    public int isSelected = TYPE_UNSELECTED;
 
     public int type;
 
@@ -66,5 +72,10 @@ public class BarEntry extends Entry implements Comparable<BarEntry> {
     @Override
     public int hashCode() {
         return Objects.hash(timestamp, type, localDate);
+    }
+
+
+    public boolean isSelected(){
+       return isSelected == TYPE_SINGLE_TAP_UP_SELECTED || isSelected == TYPE_LONG_PRESS_SELECTED;
     }
 }

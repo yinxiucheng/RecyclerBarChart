@@ -100,22 +100,22 @@ final public class BarChartAdapter extends RecyclerView.Adapter<BarChartAdapter.
 
         viewHolder.contentView.setTag(barEntry);
 
-        viewHolder.contentView.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                if (selectBarEntry == barEntry) {
-                    selectBarEntry = null;
-                    barEntry.isSelected = false;
-                } else {
-                    if (null != selectBarEntry){
-                        selectBarEntry.isSelected = false;
-                    }
-                    selectBarEntry = barEntry;
-                    barEntry.isSelected = true;
-                }
-                notifyItemChanged(position, false);
-            }
-        });
+//        viewHolder.contentView.setOnClickListener(new View.OnClickListener() {
+//            @Override
+//            public void onClick(View v) {
+//                if (selectBarEntry == barEntry) {
+//                    selectBarEntry = null;
+//                    barEntry.isSelected = false;
+//                } else {
+//                    if (null != selectBarEntry){
+//                        selectBarEntry.isSelected = false;
+//                    }
+//                    selectBarEntry = barEntry;
+//                    barEntry.isSelected = true;
+//                }
+//                notifyItemChanged(position, false);
+//            }
+//        });
     }
 
     private void resetRecyclerPadding(int reminderWidth) {

@@ -29,7 +29,7 @@
         app:displayNumbers="24"
         app:enableCharValueDisplay="false"
         app:enableLeftYAxisLabel="false"
-        app:enableRightYAxisLabel="false"
+        app:enableRightYAxisLabel="true"
         app:recyclerPaddingRight="3dp"
         app:barChartRoundRectRadiusRatio="0.25"
         app:bezierIntensity="0.125"

@@ -164,7 +164,7 @@ final public class BarChartRender {
                 float distance = txtWidth / 2 + DisplayUtil.dip2px(10);
                 float txtY = top - mBarChartAttrs.barChartValuePaddingBottom - DisplayUtil.dip2px(15);
 
-                if (barEntry.isSelected && !TextUtils.isEmpty(valueStr)) {
+                if (barEntry.isSelected() && !TextUtils.isEmpty(valueStr)) {
 //                    Log.d("ChartRender1", "barEntry is Selected:" + barEntry.localDate);
                     Drawable drawable = parent.getContext().getResources().getDrawable(R.drawable.marker2, null);
                     int start = (int) (childCenter - distance);

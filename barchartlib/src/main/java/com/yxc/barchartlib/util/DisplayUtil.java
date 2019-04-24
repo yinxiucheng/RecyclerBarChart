@@ -98,10 +98,9 @@ public class DisplayUtil {
      * 获得屏幕宽度
      */
     public static int getScreenHeight(Context context) {
-        WindowManager wm = (WindowManager) context
-                .getSystemService(Context.WINDOW_SERVICE);
+        WindowManager windowManager = (WindowManager) context.getSystemService(Context.WINDOW_SERVICE);
         DisplayMetrics outMetrics = new DisplayMetrics();
-        wm.getDefaultDisplay().getMetrics(outMetrics);
+        windowManager.getDefaultDisplay().getMetrics(outMetrics);
         return outMetrics.heightPixels;
     }
 
@@ -117,11 +116,11 @@ public class DisplayUtil {
 
     public static int getScreenHeightPx(Context context) {
         WindowManager windowManager = (WindowManager) context.getSystemService(Context.WINDOW_SERVICE);
-        DisplayMetrics dm = new DisplayMetrics();
+        DisplayMetrics outMetrics = new DisplayMetrics();
         if (windowManager != null) {
 //            windowManager.getDefaultDisplay().getMetrics(dm);
-            windowManager.getDefaultDisplay().getRealMetrics(dm);
-            return dm.heightPixels;
+            windowManager.getDefaultDisplay().getRealMetrics(outMetrics);
+            return outMetrics.heightPixels;
         }
         return 0;
 

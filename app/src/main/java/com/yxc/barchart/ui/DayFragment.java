@@ -15,14 +15,14 @@ import android.widget.TextView;
 
 import com.yxc.barchart.BaseFragment;
 import com.yxc.barchart.R;
-import com.yxc.barchart.RateTestData;
-//import com.yxc.barchart.TestData;
 import com.yxc.barchart.TestData;
 import com.yxc.barchart.formatter.XAxisDayFormatter;
 import com.yxc.barchartlib.component.XAxis;
 import com.yxc.barchartlib.component.YAxis;
 import com.yxc.barchartlib.entrys.BarEntry;
 import com.yxc.barchartlib.formatter.ValueFormatter;
+import com.yxc.barchartlib.itemdecoration.BarChartItemDecoration;
+import com.yxc.barchartlib.listener.RecyclerItemGestureListener;
 import com.yxc.barchartlib.util.BarChartAttrs;
 import com.yxc.barchartlib.util.ChartComputeUtil;
 import com.yxc.barchartlib.util.DecimalUtil;
@@ -30,7 +30,6 @@ import com.yxc.barchartlib.util.TextUtil;
 import com.yxc.barchartlib.util.TimeUtil;
 import com.yxc.barchartlib.view.BarChartAdapter;
 import com.yxc.barchartlib.view.BarChartRecyclerView;
-import com.yxc.barchartlib.itemdecoration.BezierChartItemDecoration;
 import com.yxc.barchartlib.view.CustomAnimatedDecorator;
 import com.yxc.barchartlib.view.SpeedRatioLinearLayoutManager;
 
@@ -41,7 +40,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-public class DayFragment extends BaseFragment implements ViewTreeObserver.OnGlobalLayoutListener{
+public class DayFragment extends BaseFragment implements ViewTreeObserver.OnGlobalLayoutListener {
 
     BarChartRecyclerView recyclerView;
     TextView txtLeftLocalDate;
@@ -51,7 +50,8 @@ public class DayFragment extends BaseFragment implements ViewTreeObserver.OnGlob
 
     BarChartAdapter mBarChartAdapter;
     List<BarEntry> mEntries;
-    BezierChartItemDecoration mItemDecoration;
+    BarChartItemDecoration mItemDecoration;
+
     YAxis mYAxis;
     XAxis mXAxis;
     ValueFormatter valueFormatter;
@@ -102,7 +102,8 @@ public class DayFragment extends BaseFragment implements ViewTreeObserver.OnGlob
         mYAxis = new YAxis(mBarChartAttrs);
         mXAxis = new XAxis(mBarChartAttrs, displayNumber, valueFormatter);
 
-        mItemDecoration = new BezierChartItemDecoration(mYAxis, mXAxis, mBarChartAttrs);
+        mItemDecoration = new BarChartItemDecoration(mYAxis, mXAxis, mBarChartAttrs);
+
         recyclerView.addItemDecoration(mItemDecoration);
         mBarChartAdapter = new BarChartAdapter(getActivity(), mEntries, recyclerView, mYAxis, mBarChartAttrs);
         recyclerView.setAdapter(mBarChartAdapter);
@@ -110,10 +111,10 @@ public class DayFragment extends BaseFragment implements ViewTreeObserver.OnGlob
 
         currentTimestamp = TimeUtil.changZeroOfTheDay(LocalDate.now().plusDays(1));
 
-        List<BarEntry> preEntries = RateTestData.createDayEntries(mBarChartAttrs,
+        List<BarEntry> preEntries = TestData.createDayEntries(mBarChartAttrs,
                 currentTimestamp + preEntrySize * TimeUtil.TIME_HOUR, preEntrySize, mEntries.size(), true);
 
-        List<BarEntry> barEntries = RateTestData.createDayEntries(mBarChartAttrs, currentTimestamp,
+        List<BarEntry> barEntries = TestData.createDayEntries(mBarChartAttrs, currentTimestamp,
                 10 * displayNumber, mEntries.size(), false);
         barEntries.addAll(0, preEntries);
         bindBarChartList(barEntries);
@@ -126,7 +127,7 @@ public class DayFragment extends BaseFragment implements ViewTreeObserver.OnGlob
         List<BarEntry> visibleEntries = mEntries.subList(preEntrySize, preEntrySize + displayNumber + 1);
         YAxis yAxis = mYAxis.resetYAxis(mYAxis, DecimalUtil.getTheMaxNumber(visibleEntries));
         mBarChartAdapter.notifyDataSetChanged();
-        if (yAxis != null){
+        if (yAxis != null) {
             mYAxis = yAxis;
             mItemDecoration.setYAxis(mYAxis);
             mBarChartAdapter.setYAxis(mYAxis);
@@ -134,45 +135,48 @@ public class DayFragment extends BaseFragment implements ViewTreeObserver.OnGlob
         displayDateAndStep(visibleEntries);
     }
 
-
     //滑动监听
     private void setListener() {
-        recyclerView.addOnScrollListener(new RecyclerView.OnScrollListener() {
-            private boolean isRightScroll;
-            @Override
-            public void onScrollStateChanged(RecyclerView recyclerView, int newState) {
-                super.onScrollStateChanged(recyclerView, newState);
-                // 当不滚动时
-                if (newState == RecyclerView.SCROLL_STATE_IDLE) {
-                    //加载更多
-                    if (recyclerView.canScrollHorizontally(1) && isRightScroll) {
-                        List<BarEntry> entries = RateTestData.createDayEntries(mBarChartAttrs, currentTimestamp, displayNumber, mEntries.size(), false);
-                        currentTimestamp = currentTimestamp - displayNumber * TimeUtil.TIME_HOUR;
-                        mEntries.addAll(entries);
-                        mBarChartAdapter.notifyDataSetChanged();
-                    }
-                    //回溯
-                    if (mBarChartAttrs.enableScrollToScale) {
-                        int scrollToByDx = ChartComputeUtil.computeScrollByXOffset(recyclerView, displayNumber, TestData.VIEW_DAY);
-                        recyclerView.scrollBy(scrollToByDx, 0);
-                    }
-                    //重绘Y轴
-                    resetYAxis(recyclerView);
-                }
-            }
+        recyclerView.addOnItemTouchListener(new RecyclerItemGestureListener(getActivity(), recyclerView,
+                new RecyclerItemGestureListener.OnItemGestureListener() {
+                    private boolean isRightScroll;
 
-            @Override
-            public void onScrolled(RecyclerView recyclerView, int dx, int dy) {
-                super.onScrolled(recyclerView, dx, dy);
-                if (dx < 0) {
-                    isRightScroll = true;
-                } else {
-                    isRightScroll = false;
-                }
-            }
-        });
+                    @Override
+                    public void onItemClick(View view, int position) {
 
-//        recyclerView.getViewTreeObserver().addOnGlobalLayoutListener(this);
+                    }
+
+                    @Override
+                    public void onLongItemClick(View view, int position) {
+
+                    }
+                    @Override
+                    public void onScrollStateChanged(RecyclerView recyclerView, int newState) {
+                        // 当不滚动时
+                        if (newState == RecyclerView.SCROLL_STATE_IDLE) {
+                            //加载更多
+                            if (recyclerView.canScrollHorizontally(1) && isRightScroll) {
+                                List<BarEntry> entries = TestData.createDayEntries(mBarChartAttrs, currentTimestamp, displayNumber, mEntries.size(), false);
+                                currentTimestamp = currentTimestamp - displayNumber * TimeUtil.TIME_HOUR;
+                                mEntries.addAll(entries);
+                                mBarChartAdapter.notifyDataSetChanged();
+                            }
+                            //回溯
+                            if (mBarChartAttrs.enableScrollToScale) {
+                                int scrollToByDx = ChartComputeUtil.computeScrollByXOffset(recyclerView, displayNumber, TestData.VIEW_DAY);
+                                recyclerView.scrollBy(scrollToByDx, 0);
+                            }
+                            //重绘Y轴
+                            resetYAxis(recyclerView);
+                        }
+                    }
+
+                    @Override
+                    public void onScrolled(RecyclerView recyclerView, int dx, int dy) {
+                        isRightScroll = dx < 0;
+                    }
+                }));
+            //recyclerView.getViewTreeObserver().addOnGlobalLayoutListener(this);
     }
 
     //重新设置Y坐标
@@ -185,7 +189,7 @@ public class DayFragment extends BaseFragment implements ViewTreeObserver.OnGlob
             break;
         }
         YAxis yAxis = YAxis.getYAxis(mBarChartAttrs, yAxisMaximum);
-        if (yAxis != null){
+        if (yAxis != null) {
             mYAxis = yAxis;
             mBarChartAdapter.setYAxis(mYAxis);
             mItemDecoration.setYAxis(mYAxis);
@@ -240,7 +244,7 @@ public class DayFragment extends BaseFragment implements ViewTreeObserver.OnGlob
     @Override
     public void onGlobalLayout() {
         HashMap<Integer, CustomAnimatedDecorator> map = new HashMap<>();
-        for (int i = 0; i< recyclerView.getChildCount(); i++){
+        for (int i = 0; i < recyclerView.getChildCount(); i++) {
             View child = recyclerView.getChildAt(i);
             int position = recyclerView.getChildAdapterPosition(child);
             BarEntry barEntry = mEntries.get(position);
