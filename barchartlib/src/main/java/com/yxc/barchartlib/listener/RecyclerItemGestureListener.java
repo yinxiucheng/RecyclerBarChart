@@ -76,14 +76,42 @@ public class RecyclerItemGestureListener implements RecyclerView.OnItemTouchList
 
             @Override
             public void onLongPress(MotionEvent e) {
-                View child = parent.findChildViewUnder(e.getX(), e.getY());
-                isLongPressing = true;
+                float x = e.getX();
+                float y = e.getY();
+                View child = parent.findChildViewUnder(x, y);
+                float parentRight = parent.getWidth() - parent.getPaddingRight();
 
+                isLongPressing = true;
                 if (null != layoutManager) {
                     layoutManager.setRatioSpeed(0);
                 }
                 if (child != null && mListener != null) {
-                    mListener.onLongItemClick(child, parent.getChildAdapterPosition(child));
+                    float reservedWidth = child.getWidth() / 2.0f;
+                    if (x < parent.getPaddingLeft() + reservedWidth || x > parentRight - reservedWidth) {
+                        return;
+                    }
+                    final int position = parent.getChildAdapterPosition(child);
+                    if (position != RecyclerView.NO_POSITION) {
+                        BarEntry barEntry = (BarEntry) child.getTag();
+                        if (!barEntry.equals(selectBarEntry)) {
+                            //重置原来的SelectBarEntry
+                            if (null != selectBarEntry){
+                                selectBarEntry.isSelected = BarEntry.TYPE_UNSELECTED;
+                            }
+                            selectBarEntry = barEntry;
+                            barEntry.isSelected = BarEntry.TYPE_LONG_PRESS_SELECTED;
+                        } else {
+                            selectBarEntry = null;
+                            barEntry.isSelected = BarEntry.TYPE_UNSELECTED;//再次被点击
+                        }
+
+                        if (null != mAdapter){
+                            mAdapter.notifyItemChanged(position, false);
+                        }
+
+                        mListener.onLongItemClick(child, position);
+                        return;
+                    }
                 }
             }
         });
