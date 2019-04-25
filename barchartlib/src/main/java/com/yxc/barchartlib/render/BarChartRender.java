@@ -172,7 +172,6 @@ final public class BarChartRender {
         }
     }
 
-
     //绘制选中时 highLight 标线及浮框。
     public void drawHighLight(Canvas canvas, @NonNull RecyclerView parent, YAxis mYAxis) {
         if (mBarChartAttrs.enableValueMark) {
@@ -319,14 +318,12 @@ final public class BarChartRender {
             int rightTopBaseLineY = (int) (topRightRectF.centerY() - rightUnitTop / 2 - rightUnitBottom / 2);//基线中间点的y轴计算公式
             canvas.drawText(strings[2], topRightRectF.left, rightTopBaseLineY, mHighLightUnitRightPaint);
 
-
             RectF bottomRightRectF = new RectF(rightRectFStart, topRightRectF.bottom, rectF.right, rectBottom - txtTopPadding/ 2.0f);
             int rightBottomBaseLineY = (int) (bottomRightRectF.centerY() - rightTop / 2 - rightBottom / 2);//基线中间点的y轴计算公式
             canvas.drawText(strings[3], bottomRightRectF.left, rightBottomBaseLineY, mHighLightValueRightPaint);
             float unitStart = topRightRectF.left + mHighLightValueRightPaint.measureText(strings[3]) + rightValueUnitPadding;
             canvas.drawText("步", unitStart, rightBottomBaseLineY, mHighLightUnitRightPaint);
-
-        } else {
+        } else {// 右边只有一个文字，居中显示。
             RectF rightRectF = new RectF(rightRectFStart, rectTop + txtTopPadding, rectF.right, rectBottom - txtTopPadding);
             int rightBaseLineY = (int) (rightRectF.centerY() - rightTop / 2 - rightBottom / 2);//基线中间点的y轴计算公式
             canvas.drawText(strings[2], rightRectF.left, rightBaseLineY, mHighLightValueRightPaint);

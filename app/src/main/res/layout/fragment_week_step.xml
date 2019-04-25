@@ -17,7 +17,7 @@
             android:layout_height="335dp"
             android:layout_alignParentTop="true"
             android:paddingLeft="3dp"
-            android:paddingTop="40dp"
+            android:paddingTop="38dp"
             app:displayNumbers="7"
             app:enableCharValueDisplay="true"
             app:enableLeftYAxisLabel="false"

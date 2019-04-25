@@ -130,12 +130,10 @@ public class RecyclerItemGestureListener implements RecyclerView.OnItemTouchList
         });
 
         OnChartTouchListener onChartTouchListener = new OnChartTouchListener() {
-
             @Override
             public void onChartGestureStart(MotionEvent e) {
 
             }
-
             @Override
             public void onChartGestureEnd(MotionEvent e) {
                 Log.d("OnItemTouch", " onChartGestureEnd" + System.currentTimeMillis()/1000);
