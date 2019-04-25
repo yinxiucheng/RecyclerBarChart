@@ -124,7 +124,7 @@ public class RecyclerItemGestureListener implements RecyclerView.OnItemTouchList
 
             @Override
             public boolean onDown(MotionEvent e) {
-                Log.d("OnItemTouch", " onDown" + System.currentTimeMillis()/1000);
+                Log.d("OnItemTouch", " onDown: " + System.currentTimeMillis()/1000);
                 return super.onDown(e);
             }
         });
@@ -134,9 +134,10 @@ public class RecyclerItemGestureListener implements RecyclerView.OnItemTouchList
             public void onChartGestureStart(MotionEvent e) {
 
             }
+
             @Override
             public void onChartGestureEnd(MotionEvent e) {
-                Log.d("OnItemTouch", " onChartGestureEnd" + System.currentTimeMillis()/1000);
+                Log.d("OnItemTouch", " onChartGestureEnd： " + System.currentTimeMillis()/1000);
                 isLongPressing = false;
                 if (null != layoutManager) {//控制RecyclerView的滑动
                     layoutManager.resetRatioSpeed();
@@ -145,7 +146,7 @@ public class RecyclerItemGestureListener implements RecyclerView.OnItemTouchList
 
             @Override
             public void onChartGestureMovingOn(MotionEvent e) {
-                Log.d("OnItemTouch", " onChartGestureMovingOn" + System.currentTimeMillis()/1000);
+                Log.d("OnItemTouch", " onChartGestureMovingOn： " + System.currentTimeMillis()/1000);
                 float x = e.getX();
                 float y = e.getY();
                 View child;
@@ -179,9 +180,10 @@ public class RecyclerItemGestureListener implements RecyclerView.OnItemTouchList
                     }
                 } else {
                     //when is not longPress, normal condition reset the selected BarEntry
-                    if (null != selectBarEntry && selectBarEntry.isSelected == BarEntry.TYPE_LONG_PRESS_SELECTED) {
+                    if (null != selectBarEntry && selectBarEntry.isSelected == BarEntry.TYPE_LONG_PRESS_SELECTED && isLongPressing) {
                         selectBarEntry.isSelected = BarEntry.TYPE_UNSELECTED;
                         selectBarEntry = null;
+                        Log.d("OnItemTouch", " onItemSelected 释放 在 onChartGestureMovingOn： " + System.currentTimeMillis()/1000);
                         mListener.onItemSelected(null, -1);
                     }
 
@@ -204,10 +206,11 @@ public class RecyclerItemGestureListener implements RecyclerView.OnItemTouchList
             public void onScrolled(@NonNull RecyclerView recyclerView, int dx, int dy) {
                 super.onScrolled(recyclerView, dx, dy);
                 if (null != mListener) {
-                    if (null != selectBarEntry && selectBarEntry.isSelected == BarEntry.TYPE_SINGLE_TAP_UP_SELECTED) {
-                        if (Math.abs(dx) > 2) {
+                    if (null != selectBarEntry && selectBarEntry.isSelected != BarEntry.TYPE_UNSELECTED && !isLongPressing) {
+                        if (Math.abs(dx) > 4) {
                             selectBarEntry.isSelected = BarEntry.TYPE_UNSELECTED;
                             selectBarEntry = null;
+                            Log.d("OnItemTouch", " onItemSelected 释放 在 onScrolled： " + System.currentTimeMillis()/1000);
                             mListener.onItemSelected(null, -1);
                         }
                     }
