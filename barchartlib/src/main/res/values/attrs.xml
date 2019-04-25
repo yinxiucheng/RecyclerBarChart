@@ -70,6 +70,15 @@
         <attr name="bezierFillAlpha" format="integer"/>
         <attr name="bezierLinePaintStrokeWidth" format="dimension"/>
 
+
+        <!--high light-->
+        <attr name="highLightLeftTxtColor" format="color"/>
+        <attr name="highLightLeftTxtSize" format="dimension"/>
+        <attr name="highLightRightTxtColor" format="color"/>
+        <attr name="highLightRightTxtSize" format="dimension"/>
+        <attr name="highLightRectColor" format="color"/>
+
+
     </declare-styleable>
 
 

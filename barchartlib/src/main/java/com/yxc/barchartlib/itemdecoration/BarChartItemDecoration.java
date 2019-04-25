@@ -16,6 +16,7 @@ import com.yxc.barchartlib.component.XAxis;
 import com.yxc.barchartlib.component.YAxis;
 import com.yxc.barchartlib.entrys.BarEntry;
 import com.yxc.barchartlib.formatter.DefaultBarChartValueFormatter;
+import com.yxc.barchartlib.formatter.DefaultHighLightMarkValueFormatter;
 import com.yxc.barchartlib.formatter.ValueFormatter;
 import com.yxc.barchartlib.render.BarBoardRender;
 import com.yxc.barchartlib.render.BarChartRender;
@@ -45,8 +46,9 @@ public class BarChartItemDecoration extends RecyclerView.ItemDecoration {
     private XAxisRender xAxisRenderer;
     private BarBoardRender mBarBoardRender;
     private BarChartRender mBarChartRender;
+
     private ValueFormatter mBarChartValueFormatter;
-    private ValueFormatter mChartValueMarkFormatter;
+    private ValueFormatter mHighLightValueFormatter;
 
     private Paint mBarChartPaint;
 
@@ -65,8 +67,8 @@ public class BarChartItemDecoration extends RecyclerView.ItemDecoration {
         this.xAxisRenderer = new XAxisRender(mBarChartAttrs);
         this.mBarBoardRender = new BarBoardRender(mBarChartAttrs);
         this.mBarChartValueFormatter = new DefaultBarChartValueFormatter(0);
-        this.mChartValueMarkFormatter = new DefaultBarChartValueFormatter(0);
-        this.mBarChartRender = new BarChartRender(mBarChartAttrs, mBarChartValueFormatter, mChartValueMarkFormatter);
+        this.mHighLightValueFormatter = new DefaultHighLightMarkValueFormatter(0);
+        this.mBarChartRender = new BarChartRender(mBarChartAttrs, mBarChartValueFormatter, mHighLightValueFormatter);
 
         initBarChartPaint();
     }
@@ -82,9 +84,9 @@ public class BarChartItemDecoration extends RecyclerView.ItemDecoration {
         this.mBarChartRender.setBarChartValueFormatter(barChartValueFormatter);
     }
 
-    public void setChartValueMarkFormatter(ValueFormatter chartValueFormatter) {
-        this.mChartValueMarkFormatter = chartValueFormatter;
-        this.mBarChartRender.setChartValueMarkFormatter(chartValueFormatter);
+    public void setHighLightValueFormatter(ValueFormatter highLightValueFormatter){
+        this.mHighLightValueFormatter = highLightValueFormatter;
+        this.mBarChartRender.setHighLightValueFormatter(mHighLightValueFormatter);
     }
 
 

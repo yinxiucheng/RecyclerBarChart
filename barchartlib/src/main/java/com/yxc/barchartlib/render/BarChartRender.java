@@ -1,25 +1,24 @@
 package com.yxc.barchartlib.render;
 
 import android.graphics.Canvas;
-import android.graphics.Color;
 import android.graphics.Paint;
 import android.graphics.Path;
 import android.graphics.RectF;
-import android.graphics.drawable.Drawable;
 import android.support.annotation.NonNull;
 import android.support.v7.widget.RecyclerView;
 import android.text.TextUtils;
 import android.view.View;
 
-import com.yxc.barchartlib.R;
 import com.yxc.barchartlib.component.YAxis;
 import com.yxc.barchartlib.entrys.BarEntry;
+import com.yxc.barchartlib.formatter.DefaultHighLightMarkValueFormatter;
 import com.yxc.barchartlib.formatter.ValueFormatter;
 import com.yxc.barchartlib.util.BarChartAttrs;
 import com.yxc.barchartlib.util.CanvasUtil;
 import com.yxc.barchartlib.util.ChartComputeUtil;
 import com.yxc.barchartlib.util.DecimalUtil;
 import com.yxc.barchartlib.util.DisplayUtil;
+import com.yxc.barchartlib.util.TextUtil;
 import com.yxc.barchartlib.view.AnimatedDecoratorDrawable;
 
 /**
@@ -30,26 +29,32 @@ final public class BarChartRender {
     private BarChartAttrs mBarChartAttrs;
     private Paint mBarChartPaint;
     private Paint mTextPaint;
-    private Paint mTextMarkPaint;
+
+    private Paint mHighLightValueLeftPaint;
+    private Paint mHighLightValueRightPaint;
+    private Paint mHighLightUnitRightPaint;
+
     private ValueFormatter mBarChartValueFormatter;
-    private ValueFormatter mChartValueMarkFormatter;
+    private ValueFormatter mHighLightValueFormatter;
 
-
-    public void setChartValueMarkFormatter(ValueFormatter mChartValueMarkFormatter) {
-        this.mChartValueMarkFormatter = mChartValueMarkFormatter;
-    }
 
     public void setBarChartValueFormatter(ValueFormatter mBarChartValueFormatter) {
         this.mBarChartValueFormatter = mBarChartValueFormatter;
     }
 
-    public BarChartRender(BarChartAttrs barChartAttrs, ValueFormatter barChartValueFormatter, ValueFormatter chartValueMarkFormatter) {
+    public void setHighLightValueFormatter(ValueFormatter highLightValueFormatter) {
+        this.mHighLightValueFormatter = highLightValueFormatter;
+    }
+
+    public BarChartRender(BarChartAttrs barChartAttrs, ValueFormatter barChartValueFormatter, ValueFormatter highLightValueFormatter) {
         this.mBarChartAttrs = barChartAttrs;
         initBarChartPaint();
         initTextPaint();
-        initTextMarkPaint();
+        initHighLightLeftPaint();
+        initHighLightRightPaint();
+        initHighLightUnitRightPaint();
         this.mBarChartValueFormatter = barChartValueFormatter;
-        this.mChartValueMarkFormatter = chartValueMarkFormatter;
+        this.mHighLightValueFormatter = highLightValueFormatter;
     }
 
     private void initTextPaint() {
@@ -62,22 +67,43 @@ final public class BarChartRender {
         mTextPaint.setTextSize(DisplayUtil.dip2px(12));
     }
 
-    private void initTextMarkPaint() {
-        mTextMarkPaint = new Paint();
-        mTextMarkPaint.reset();
-        mTextMarkPaint.setAntiAlias(true);
-        mTextMarkPaint.setStyle(Paint.Style.FILL);
-        mTextMarkPaint.setStrokeWidth(1);
-        mTextMarkPaint.setColor(Color.WHITE);
-        mTextMarkPaint.setTextSize(DisplayUtil.dip2px(12));
-    }
-
     private void initBarChartPaint() {
         mBarChartPaint = new Paint();
         mBarChartPaint.reset();
         mBarChartPaint.setAntiAlias(true);
         mBarChartPaint.setStyle(Paint.Style.FILL);
         mBarChartPaint.setColor(mBarChartAttrs.barChartColor);
+    }
+
+
+    private void initHighLightLeftPaint() {
+        mHighLightValueLeftPaint = new Paint();
+        mHighLightValueLeftPaint.reset();
+        mHighLightValueLeftPaint.setAntiAlias(true);
+        mHighLightValueLeftPaint.setStyle(Paint.Style.FILL);
+        mHighLightValueLeftPaint.setStrokeWidth(3);
+        mHighLightValueLeftPaint.setColor(mBarChartAttrs.highLightLeftTxtColor);
+        mHighLightValueLeftPaint.setTextSize(mBarChartAttrs.highLightLeftTxtSize);
+    }
+
+    private void initHighLightRightPaint() {
+        mHighLightValueRightPaint = new Paint();
+        mHighLightValueRightPaint.reset();
+        mHighLightValueRightPaint.setAntiAlias(true);
+        mHighLightValueRightPaint.setStyle(Paint.Style.FILL);
+        mHighLightValueRightPaint.setStrokeWidth(1);
+        mHighLightValueRightPaint.setColor(mBarChartAttrs.highLightRightTxtColor);
+        mHighLightValueRightPaint.setTextSize(mBarChartAttrs.highLightRightTxtSize);
+    }
+
+    private void initHighLightUnitRightPaint() {
+        mHighLightUnitRightPaint = new Paint();
+        mHighLightUnitRightPaint.reset();
+        mHighLightUnitRightPaint.setAntiAlias(true);
+        mHighLightUnitRightPaint.setStyle(Paint.Style.FILL);
+        mHighLightUnitRightPaint.setStrokeWidth(1);
+        mHighLightUnitRightPaint.setColor(mBarChartAttrs.highLightRightTxtColor);
+        mHighLightUnitRightPaint.setTextSize(DisplayUtil.dip2px(10));
     }
 
     //绘制柱状图, mYAxis这个坐标会实时变动，所以通过 BarChartItemDecoration 传过来的精确值。
@@ -147,14 +173,16 @@ final public class BarChartRender {
     }
 
 
+    //绘制选中时 highLight 标线及浮框。
     public void drawHighLight(Canvas canvas, @NonNull RecyclerView parent, YAxis mYAxis) {
         if (mBarChartAttrs.enableValueMark) {
             float contentBottom = parent.getHeight() - parent.getPaddingBottom() - mBarChartAttrs.contentPaddingBottom;
             float contentTop = parent.getPaddingTop();
 
             int childCount = parent.getChildCount();
-            float parentRight = parent.getWidth() - parent.getPaddingRight();
-            float parentLeft = parent.getPaddingLeft();
+            float contentRight = parent.getWidth() - parent.getPaddingRight();
+            float contentLeft = parent.getPaddingLeft();
+
             View child;
             for (int i = 0; i < childCount; i++) {
                 child = parent.getChildAt(i);
@@ -162,26 +190,157 @@ final public class BarChartRender {
                 float width = child.getWidth();
                 float top = ChartComputeUtil.getYPosition(barEntry, parent, mYAxis, mBarChartAttrs);
                 float childCenter = child.getLeft() + width / 2;
-                String valueStr = mChartValueMarkFormatter.getBarLabel(barEntry);
-                float txtWidth = mTextMarkPaint.measureText(valueStr);
-                float distance = txtWidth / 2 + DisplayUtil.dip2px(10);
+                String valueStr = mHighLightValueFormatter.getBarLabel(barEntry);
                 float lineTop = top - DisplayUtil.dip2px(1);
                 float[] points = new float[]{childCenter, contentBottom + DisplayUtil.dip2px(1), childCenter, contentBottom + DisplayUtil.dip2px(8),
-                    childCenter, lineTop, childCenter, contentTop - DisplayUtil.dip2px(2)
+                        childCenter, lineTop, childCenter, contentTop - DisplayUtil.dip2px(2)
                 };
-                if (barEntry.isSelected() && !TextUtils.isEmpty(valueStr)) {
-                  drawHighLightLine(canvas, points);
 
+                if (barEntry.isSelected() && !TextUtils.isEmpty(valueStr)) {
+                    drawHighLightLine(canvas, points);
+                    drawHighLightValue(canvas, valueStr, childCenter, contentLeft, contentRight, contentTop);
                 }
             }
         }
     }
 
-    private void drawHighLightMarkValue(){
+    private void drawHighLightValue(Canvas canvas, String valueStr, float childCenter, float contentLeft, float contentRight, float contentTop) {
+        float txtWidth = 0;
+        String[] strings = valueStr.split(DefaultHighLightMarkValueFormatter.CONNECT_STR);
+        float leftEdgeDistance = Math.abs(childCenter - contentLeft);
+        float rightEdgeDistance = Math.abs(contentRight - childCenter);
+
+        float leftPadding = DisplayUtil.dip2px(8);
+        float rightPadding = DisplayUtil.dip2px(8);
+        float centerPadding = DisplayUtil.dip2px(16);
+        float rightValueUnitPadding = DisplayUtil.dip2px(3);
+
+        float rectFHeight = 0;
+
+        float rectBottom = contentTop - DisplayUtil.dip2px(2);
+        float txtTopPadding = DisplayUtil.dip2px(4);
+        float txtLeftWidth = 0f;
+        float txtRightWidth = 0f;
+        float txtLeftHeight = 0f;
+        float txtRightHeight = 0f;
+
+        if (strings.length == 4) {
+            String leftStr1 = strings[0];
+            String leftStr2 = strings[1];
+            String rightStr1 = strings[2];
+            String rightStr2 = strings[3];
+
+            txtLeftWidth = Math.max(mHighLightValueLeftPaint.measureText(leftStr1), mHighLightValueLeftPaint.measureText(leftStr2));
+
+            txtLeftHeight = (TextUtil.getTxtHeight1(mHighLightValueLeftPaint) + txtTopPadding) * 2;
+            txtRightHeight = TextUtil.getTxtHeight1(mHighLightValueRightPaint) + TextUtil.getTxtHeight1(mHighLightUnitRightPaint) + txtTopPadding;
+
+            float txtRightWidthBottom = mHighLightValueRightPaint.measureText(rightStr2) + rightValueUnitPadding + mHighLightValueLeftPaint.measureText("步");
+            float txtRightWidthTop = mHighLightValueLeftPaint.measureText(rightStr1);
+            txtRightWidth = Math.max(txtRightWidthTop, txtRightWidthBottom);
+            txtWidth = txtLeftWidth + txtRightWidth + leftPadding + rightPadding + centerPadding;
+            rectFHeight = Math.max(txtLeftHeight, txtRightHeight);
+        } else {// size is 3
+            String leftStr1 = strings[0];
+            String leftStr2 = strings[1];
+            String rightStr = strings[2];
+            txtLeftWidth = Math.max(mHighLightValueLeftPaint.measureText(leftStr1), mHighLightValueLeftPaint.measureText(leftStr2));
+            txtRightWidth = mHighLightValueRightPaint.measureText(rightStr) + mHighLightValueLeftPaint.measureText("步");
+            txtWidth = txtLeftWidth + txtRightWidth + leftPadding + rightPadding + centerPadding;
+
+            rectFHeight = (TextUtil.getTxtHeight1(mHighLightValueLeftPaint) + txtTopPadding) * 2;
+
+        }
+
+        float edgeDistance = txtWidth / 2.0f;
+        float rectTop = contentTop - rectFHeight;
+
+        //绘制RectF
         RectF rectF = new RectF();
+        mBarChartPaint.setColor(mBarChartAttrs.barChartColor);
+
+
+        if (leftEdgeDistance <= edgeDistance) {//矩形框靠左对齐
+            rectF.set(contentLeft, rectTop, contentLeft + txtWidth, rectBottom);
+            float radius = DisplayUtil.dip2px(8);
+            canvas.drawRoundRect(rectF, radius, radius, mBarChartPaint);
+        } else if (rightEdgeDistance <= edgeDistance) {//矩形框靠右对齐
+            rectF.set(contentRight - txtWidth, rectTop, contentRight, rectBottom);
+            float radius = DisplayUtil.dip2px(8);
+            canvas.drawRoundRect(rectF, radius, radius, mBarChartPaint);
+        } else {//居中对齐。
+            rectF.set(childCenter - edgeDistance, rectTop, childCenter + edgeDistance, rectBottom);
+            float radius = DisplayUtil.dip2px(8);
+            canvas.drawRoundRect(rectF, radius, radius, mBarChartPaint);
+        }
+
+        //绘文字
+        RectF topLeftRectF = new RectF(rectF.left + leftPadding, rectTop + txtTopPadding,
+                rectF.left + leftPadding + txtLeftWidth, rectTop + rectFHeight / 2);
+
+        mHighLightValueLeftPaint.setTextAlign(Paint.Align.LEFT);
+        Paint.FontMetrics fontMetrics = mHighLightValueLeftPaint.getFontMetrics();
+        float top = fontMetrics.top;//为基线到字体上边框的距离,即上图中的top
+        float bottom = fontMetrics.bottom;//为基线到字体下边框的距离,即上图中的bottom
+        int leftTopBaseLineY = (int) (topLeftRectF.centerY() - top / 2 - bottom / 2);//基线中间点的y轴计算公式
+
+        canvas.drawText(strings[0], rectF.left + leftPadding, leftTopBaseLineY, mHighLightValueLeftPaint);
+        //绘文字
+        RectF bottomLeftRectF = new RectF(rectF.left, rectTop + rectFHeight / 2,
+                rectF.left + leftPadding + txtLeftWidth, rectBottom - txtTopPadding);
+
+        int bottomLeftBaseLineY = (int) (bottomLeftRectF.centerY() - top / 2 - bottom / 2);//基线中间点的y轴计算公式
+
+        canvas.drawText(strings[1], rectF.left + leftPadding, bottomLeftBaseLineY, mHighLightValueLeftPaint);
+
+        float dividerLineStartX = rectF.left + leftPadding + txtLeftWidth + centerPadding / 2.0f;
+        float dividerLineStartY = rectTop + DisplayUtil.dip2px(5);
+        float dividerLineEndX = dividerLineStartX;
+        float dividerLineEndY = rectBottom - DisplayUtil.dip2px(5);
+        float[] lines = new float[]{dividerLineStartX, dividerLineStartY, dividerLineEndX, dividerLineEndY};
+        canvas.drawLines(lines, mHighLightValueLeftPaint);
+
+        float rightRectFStart = rectF.left + leftPadding + txtLeftWidth + centerPadding;
+
+        mHighLightValueRightPaint.setTextAlign(Paint.Align.LEFT);
+        Paint.FontMetrics rightFontMetrics = mHighLightValueRightPaint.getFontMetrics();
+        float rightTop = rightFontMetrics.top;//为基线到字体上边框的距离,即上图中的top
+        float rightBottom = rightFontMetrics.bottom;//为基线到字体下边框的距离,即上图中的bottom
+
+        Paint.FontMetrics rightUnitFontMetrics = mHighLightValueRightPaint.getFontMetrics();
+        float rightUnitTop = rightUnitFontMetrics.top;//为基线到字体上边框的距离,即上图中的top
+        float rightUnitBottom = rightUnitFontMetrics.bottom;//为基线到字体下边框的距离,即上图中的bottom
+
+
+        if (strings.length == 4) {
+            float topRightRectFTop = rectTop + txtTopPadding;
+            float topRightRectFBottom = topRightRectFTop + (rightUnitBottom - rightUnitTop)/2;
+            RectF topRightRectF = new RectF(rightRectFStart, rectTop, rectF.right, topRightRectFBottom);
+            int rightTopBaseLineY = (int) (topRightRectF.centerY() - rightUnitTop / 2 - rightUnitBottom / 2);//基线中间点的y轴计算公式
+            canvas.drawText(strings[2], topRightRectF.left, rightTopBaseLineY, mHighLightUnitRightPaint);
+
+
+            RectF bottomRightRectF = new RectF(rightRectFStart, topRightRectF.bottom, rectF.right, rectBottom - txtTopPadding/ 2.0f);
+            int rightBottomBaseLineY = (int) (bottomRightRectF.centerY() - rightTop / 2 - rightBottom / 2);//基线中间点的y轴计算公式
+            canvas.drawText(strings[3], bottomRightRectF.left, rightBottomBaseLineY, mHighLightValueRightPaint);
+            float unitStart = topRightRectF.left + mHighLightValueRightPaint.measureText(strings[3]) + rightValueUnitPadding;
+            canvas.drawText("步", unitStart, rightBottomBaseLineY, mHighLightUnitRightPaint);
+
+        } else {
+            RectF rightRectF = new RectF(rightRectFStart, rectTop + txtTopPadding, rectF.right, rectBottom - txtTopPadding);
+            int rightBaseLineY = (int) (rightRectF.centerY() - rightTop / 2 - rightBottom / 2);//基线中间点的y轴计算公式
+            canvas.drawText(strings[2], rightRectF.left, rightBaseLineY, mHighLightValueRightPaint);
+
+            float unitStart = rightRectF.left + mHighLightValueRightPaint.measureText(strings[2]) + rightValueUnitPadding;
+
+            int color = mHighLightValueLeftPaint.getColor();
+            mHighLightValueLeftPaint.setColor(mBarChartAttrs.highLightRightTxtColor);
+            canvas.drawText("步", unitStart, rightBaseLineY, mHighLightValueLeftPaint);
+            mHighLightValueLeftPaint.setColor(color);
+        }
     }
 
-    private void drawHighLightLine(Canvas canvas, float[] floats){
+    private void drawHighLightLine(Canvas canvas, float[] floats) {
         Paint.Style previous = mBarChartPaint.getStyle();
         float strokeWidth = mBarChartPaint.getStrokeWidth();
         int color = mBarChartPaint.getColor();
@@ -195,59 +354,6 @@ final public class BarChartRender {
         mBarChartPaint.setStrokeWidth(strokeWidth);
         mBarChartPaint.setColor(color);
     }
-
-
-    public void drawValueMark(Canvas canvas, @NonNull RecyclerView parent, YAxis mYAxis) {
-        if (mBarChartAttrs.enableValueMark) {
-            int childCount = parent.getChildCount();
-            float parentRight = parent.getWidth() - parent.getPaddingRight();
-            float parentLeft = parent.getPaddingLeft();
-            View child;
-            for (int i = 0; i < childCount; i++) {
-                child = parent.getChildAt(i);
-                BarEntry barEntry = (BarEntry) child.getTag();
-                float width = child.getWidth();
-                float top = ChartComputeUtil.getYPosition(barEntry, parent, mYAxis, mBarChartAttrs);
-                float childCenter = child.getLeft() + width / 2;
-                String valueStr = mChartValueMarkFormatter.getBarLabel(barEntry);
-                float txtWidth = mTextMarkPaint.measureText(valueStr);
-                float distance = txtWidth / 2 + DisplayUtil.dip2px(10);
-                float txtY = top - mBarChartAttrs.barChartValuePaddingBottom - DisplayUtil.dip2px(15);
-
-                if (barEntry.isSelected() && !TextUtils.isEmpty(valueStr)) {
-//                    Log.d("ChartRender1", "barEntry is Selected:" + barEntry.localDate);
-                    Drawable drawable = parent.getContext().getResources().getDrawable(R.drawable.marker2, null);
-                    int start = (int) (childCenter - distance);
-                    int end = (int) (childCenter + distance);
-                    int topMark = (int) (top - DisplayUtil.dip2px(35));
-                    int bottomMark = (int) top;
-                    drawable.setBounds(start, topMark, end, bottomMark);
-                    drawable.draw(canvas);
-
-                    // 浮点数的 == 比较需要注意
-                    if (DecimalUtil.smallOrEquals(end, parentLeft)) {//continue 会闪，原因是end == parentLeft 没有过滤掉，显示出来柱状图了。
-                        continue;
-                    } else if (start < parentLeft && end > parentLeft) {//左边部分滑入的时候
-                        start = (int) parentLeft;
-                        drawable.setBounds(start, topMark, end, bottomMark);
-                        drawable.draw(canvas);
-                    } else if (DecimalUtil.bigOrEquals(start, parentLeft) && DecimalUtil.smallOrEquals(end, parentRight)) {//中间的; 浮点数的 == 比较需要注意
-                        drawable.setBounds(start, topMark, end, bottomMark);
-                        drawable.draw(canvas);
-                    } else if (DecimalUtil.smallOrEquals(start, parentRight) && end > parentRight) {//右边部分滑出的时候
-                        end = (int) (start + (parentRight - start));
-                        drawable.setBounds(start, topMark, end, bottomMark);
-                        drawable.draw(canvas);
-                    }
-
-                    if (drawText(canvas, parentLeft, parentRight, valueStr, childCenter, txtY, mTextMarkPaint)) {
-                        continue;
-                    }
-                }
-            }
-        }
-    }
-
 
     private boolean drawText(Canvas canvas, float parentLeft, float parentRight,
                              String valueStr, float childCenter, float txtY, Paint paint) {

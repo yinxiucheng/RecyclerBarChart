@@ -20,11 +20,24 @@
     <color name="black_03_transparent">#08000000</color>
     <color name="black_00_transparent">#00000000</color>
 
-    <color name="pink">#FFF76E6E</color>
+    <!-- common white -->
+    <color name="white">#FFFFFF</color>
+    <color name="white_80_transparent">#CDFFFFFF</color>
+    <color name="white_70_transparent">#B3FFFFFF</color>
+    <color name="white_60_transparent">#A0FFFFFF</color>
+    <color name="white_50_transparent">#80FFFFFF</color>
+    <color name="white_40_transparent">#66FFFFFF</color>
+    <color name="white_30_transparent">#60FFFFFF</color>
+    <color name="white_20_transparent">#30FFFFFF</color>
+    <color name="white_15_transparent">#27FFFFFF</color>
+    <color name="white_10_transparent">#1AFFFFFF</color>
+    <color name="white_07_transparent">#10FFFFFF</color>
+    <color name="white_03_transparent">#08FFFFFF</color>
+    <color name="white_00_transparent">#00FFFFFF</color>
 
+    <color name="pink">#FFF76E6E</color>
     <color name="tab_checked">#FFF76E6E</color>
     <color name="tab_unchecked">#d5d5d5</color>
-    <color name="white">#ffffff</color>
     <color name="transparent">#00000000</color>
 
 

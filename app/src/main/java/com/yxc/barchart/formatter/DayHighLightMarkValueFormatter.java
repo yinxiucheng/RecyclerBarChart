@@ -2,7 +2,6 @@ package com.yxc.barchart.formatter;
 
 import com.yxc.barchartlib.entrys.BarEntry;
 import com.yxc.barchartlib.formatter.DefaultHighLightMarkValueFormatter;
-import com.yxc.barchartlib.util.DecimalUtil;
 import com.yxc.barchartlib.util.TimeUtil;
 
 /**
@@ -23,11 +22,10 @@ public class DayHighLightMarkValueFormatter extends DefaultHighLightMarkValueFor
 
     @Override
     public String getBarLabel(BarEntry barEntry) {
-        String connectStr = "|";
         String str1 = TimeUtil.getDateStr(barEntry.timestamp, "M月d日");
         String str2 = TimeUtil.get12HourOfTheDayStr(barEntry.timestamp);
-        String str3 = DecimalUtil.addComma("10000");
-        String resultStr = str1 + connectStr + str2 + connectStr + str3;
+        String str3 = getFormattedValue(barEntry.getY());
+        String resultStr = str1 + CONNECT_STR + str2 + CONNECT_STR + str3;
         return barEntry.getY() > 0 ? resultStr : "";
     }
 }

@@ -9,6 +9,7 @@ import android.widget.FrameLayout;
 
 import com.yxc.barchart.tab.OnTabSelectListener;
 import com.yxc.barchart.tab.TopTabLayout;
+import com.yxc.barchart.ui.BaseFragment;
 import com.yxc.barchart.ui.DayFragment;
 import com.yxc.barchart.ui.MonthFragment;
 import com.yxc.barchart.ui.WeekFragment;
@@ -78,6 +79,7 @@ public class MainActivity extends AppCompatActivity {
         FragmentTransaction ft = getSupportFragmentManager().beginTransaction();
         BaseFragment fragment = (BaseFragment) getSupportFragmentManager().findFragmentByTag(tag);
         if (currentFragment != null) {
+            currentFragment.resetSelectedEntry();
             ft.hide(currentFragment);
         }
         if (fragment == null) {

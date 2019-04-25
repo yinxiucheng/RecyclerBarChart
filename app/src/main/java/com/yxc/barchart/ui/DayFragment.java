@@ -14,9 +14,9 @@ import android.view.ViewTreeObserver;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
-import com.yxc.barchart.BaseFragment;
 import com.yxc.barchart.R;
 import com.yxc.barchart.TestData;
+import com.yxc.barchart.formatter.DayHighLightMarkValueFormatter;
 import com.yxc.barchart.formatter.XAxisDayFormatter;
 import com.yxc.barchartlib.component.XAxis;
 import com.yxc.barchartlib.component.YAxis;
@@ -55,6 +55,8 @@ public class DayFragment extends BaseFragment implements ViewTreeObserver.OnGlob
     BarChartAdapter mBarChartAdapter;
     List<BarEntry> mEntries;
     BarChartItemDecoration mItemDecoration;
+
+    RecyclerItemGestureListener mItemGestureListener;
 
     YAxis mYAxis;
     XAxis mXAxis;
@@ -108,7 +110,7 @@ public class DayFragment extends BaseFragment implements ViewTreeObserver.OnGlob
         mXAxis = new XAxis(mBarChartAttrs, displayNumber, valueFormatter);
 
         mItemDecoration = new BarChartItemDecoration(mYAxis, mXAxis, mBarChartAttrs);
-
+        mItemDecoration.setHighLightValueFormatter(new DayHighLightMarkValueFormatter(0));
         recyclerView.addItemDecoration(mItemDecoration);
         mBarChartAdapter = new BarChartAdapter(getActivity(), mEntries, recyclerView, mXAxis, mBarChartAttrs);
         recyclerView.setAdapter(mBarChartAdapter);
@@ -142,7 +144,7 @@ public class DayFragment extends BaseFragment implements ViewTreeObserver.OnGlob
 
     //滑动监听
     private void setListener() {
-        recyclerView.addOnItemTouchListener(new RecyclerItemGestureListener(getActivity(), recyclerView,
+        mItemGestureListener = new RecyclerItemGestureListener(getActivity(), recyclerView,
                 new SimpleItemGestureListener() {
                     private boolean isRightScroll;
 
@@ -180,7 +182,8 @@ public class DayFragment extends BaseFragment implements ViewTreeObserver.OnGlob
                     public void onScrolled(RecyclerView recyclerView, int dx, int dy) {
                         isRightScroll = dx < 0;
                     }
-                }));
+                });
+        recyclerView.addOnItemTouchListener(mItemGestureListener);
         //recyclerView.getViewTreeObserver().addOnGlobalLayoutListener(this);
     }
 
@@ -269,5 +272,14 @@ public class DayFragment extends BaseFragment implements ViewTreeObserver.OnGlob
         }
 //        mItemDecoration.setAnimatorMap(map);
 //        recyclerView.getViewTreeObserver().removeOnGlobalLayoutListener(this);
+    }
+
+    @Override
+    public void resetSelectedEntry() {
+        if (mItemGestureListener != null){
+            Log.d("DayFragment", " visibleHint" );
+            mItemGestureListener.resetSelectedBarEntry();
+            rlTitle.setVisibility(View.VISIBLE);
+        }
     }
 }

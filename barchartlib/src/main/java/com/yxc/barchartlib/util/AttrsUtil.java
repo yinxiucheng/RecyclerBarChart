@@ -69,12 +69,20 @@ public class AttrsUtil {
         attrs.xAxisLabelTxtPadding = ta.getDimension(R.styleable.BarChartRecyclerView_xAxisLabelTxtPadding, DisplayUtil.dip2px(2));
         attrs.xAxisScaleDistance = ta.getInteger(R.styleable.BarChartRecyclerView_xAxisScaleDistance, 5);
 
+        //bezier curve
         attrs.bezierIntensity = ta.getFloat(R.styleable.BarChartRecyclerView_bezierIntensity, 0.25f);
         attrs.enableBezierLineFill = ta.getBoolean(R.styleable.BarChartRecyclerView_enableBezierLineFill, true);
         attrs.bezierFillAlpha = ta.getInteger(R.styleable.BarChartRecyclerView_bezierFillAlpha, 0x30);
         attrs.bezierFillColor = ta.getColor(R.styleable.BarChartRecyclerView_bezierFillColor, ColorUtil.getResourcesColor(context, R.color.pink));
         attrs.bezierLinePaintColor = ta.getColor(R.styleable.BarChartRecyclerView_bezierLinePaintColor, ColorUtil.getResourcesColor(context, R.color.pink));
         attrs.bezierLinePaintStrokeWidth = ta.getDimension(R.styleable.BarChartRecyclerView_bezierLinePaintStrokeWidth, DisplayUtil.dip2px(3));
+
+        //highLight
+        attrs.highLightLeftTxtColor = ta.getColor(R.styleable.BarChartRecyclerView_highLightLeftTxtColor, ColorUtil.getResourcesColor(context, R.color.white_70_transparent));
+        attrs.highLightRightTxtColor = ta.getColor(R.styleable.BarChartRecyclerView_highLightRightTxtColor, ColorUtil.getResourcesColor(context, R.color.white));
+        attrs.highLightLeftTxtSize = ta.getDimension(R.styleable.BarChartRecyclerView_highLightLeftTxtSize, DisplayUtil.dip2px(11));
+        attrs.highLightRightTxtSize = ta.getDimension(R.styleable.BarChartRecyclerView_highLightRightTxtSize, DisplayUtil.dip2px(14));
+        attrs.highLightRectColor = ta.getColor(R.styleable.BarChartRecyclerView_highLightRectColor, ColorUtil.getResourcesColor(context, R.color.pink));
 
         ta.recycle();
         return attrs;

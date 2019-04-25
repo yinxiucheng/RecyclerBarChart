@@ -14,7 +14,6 @@ import android.view.ViewTreeObserver;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
-import com.yxc.barchart.BaseFragment;
 import com.yxc.barchart.R;
 import com.yxc.barchart.TestData;
 import com.yxc.barchart.formatter.ChartValueMarkFormatter;
@@ -22,6 +21,7 @@ import com.yxc.barchart.formatter.XAxisWeekFormatter;
 import com.yxc.barchartlib.component.XAxis;
 import com.yxc.barchartlib.component.YAxis;
 import com.yxc.barchartlib.entrys.BarEntry;
+import com.yxc.barchartlib.formatter.DefaultHighLightMarkValueFormatter;
 import com.yxc.barchartlib.formatter.ValueFormatter;
 import com.yxc.barchartlib.itemdecoration.BarChartItemDecoration;
 import com.yxc.barchartlib.listener.RecyclerItemGestureListener;
@@ -65,6 +65,8 @@ public class WeekFragment extends BaseFragment implements ViewTreeObserver.OnGlo
     private LocalDate currentLocalDate;
 
     private int preEntries = 0;
+
+    RecyclerItemGestureListener mItemGestureListener;
 
     //防止 Fragment重叠
     @Override
@@ -110,20 +112,22 @@ public class WeekFragment extends BaseFragment implements ViewTreeObserver.OnGlo
         mXAxis = new XAxis(mBarChartAttrs, displayNumber);
         mXAxis.setValueFormatter(valueFormatter);
         mItemDecoration = new BarChartItemDecoration(mYAxis, mXAxis, mBarChartAttrs);
+        mItemDecoration.setHighLightValueFormatter(new DefaultHighLightMarkValueFormatter(0));
 //      mItemDecoration.setBarChartValueFormatter(new BarChartValueFormatter(){
 //            @Override
 //            public String getBarLabel(BarEntry barEntry) {
 //                return TimeUtil.getDateStr(barEntry.timestamp, "MM-dd");
 //            }
 //        });
-        mItemDecoration.setChartValueMarkFormatter(new ChartValueMarkFormatter() {
-            @Override
-            public String getBarLabel(BarEntry barEntry) {
-                String childStr = super.getBarLabel(barEntry);
-                String resultStr = TimeUtil.getDateStr(barEntry.timestamp, "yyyy/MM/dd") + " | " + childStr;
-                return barEntry.getY() > 0 ? resultStr : "";
-            }
-        });
+//        mItemDecoration.setChartValueMarkFormatter(new ChartValueMarkFormatter() {
+//            @Override
+//            public String getBarLabel(BarEntry barEntry) {
+//                String childStr = super.getBarLabel(barEntry);
+//                String resultStr = TimeUtil.getDateStr(barEntry.timestamp, "yyyy/MM/dd") + " | " + childStr;
+//                return barEntry.getY() > 0 ? resultStr : "";
+//            }
+//        });
+
         recyclerView.addItemDecoration(mItemDecoration);
         mBarChartAdapter = new BarChartAdapter(getActivity(), mEntries, recyclerView, mXAxis, mBarChartAttrs);
         recyclerView.setAdapter(mBarChartAdapter);
@@ -154,7 +158,7 @@ public class WeekFragment extends BaseFragment implements ViewTreeObserver.OnGlo
 
     //设置RecyclerView的监听
     private void setListener() {
-        recyclerView.addOnItemTouchListener(new RecyclerItemGestureListener(getActivity(), recyclerView,
+        mItemGestureListener = new RecyclerItemGestureListener(getActivity(), recyclerView,
                 new SimpleItemGestureListener() {
                     boolean isRightScroll;
 
@@ -193,7 +197,8 @@ public class WeekFragment extends BaseFragment implements ViewTreeObserver.OnGlo
                             isRightScroll = false;
                         }
                     }
-                }));
+                });
+        recyclerView.addOnItemTouchListener(mItemGestureListener);
 //        recyclerView.getViewTreeObserver().addOnGlobalLayoutListener(this);
     }
 
@@ -277,5 +282,14 @@ public class WeekFragment extends BaseFragment implements ViewTreeObserver.OnGlo
         }
 //        mItemDecoration.setAnimatorMap(map);
 //        recyclerView.getViewTreeObserver().removeOnGlobalLayoutListener(this);
+    }
+
+    @Override
+    public void resetSelectedEntry() {
+        if (mItemGestureListener != null){
+            Log.d("DayFragment", " visibleHint" );
+            mItemGestureListener.resetSelectedBarEntry();
+            rlTitle.setVisibility(View.VISIBLE);
+        }
     }
 }

@@ -4,6 +4,7 @@ import android.content.Context;
 import android.support.annotation.NonNull;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.RecyclerView.OnScrollListener;
+import android.util.Log;
 import android.view.GestureDetector;
 import android.view.MotionEvent;
 import android.view.View;
@@ -73,8 +74,6 @@ public class RecyclerItemGestureListener implements RecyclerView.OnItemTouchList
                         if (null != mAdapter){
                             mAdapter.notifyItemChanged(position, false);
                         }
-
-
                         return true;
                     }
                 }
@@ -122,6 +121,12 @@ public class RecyclerItemGestureListener implements RecyclerView.OnItemTouchList
                     }
                 }
             }
+
+            @Override
+            public boolean onDown(MotionEvent e) {
+                Log.d("OnItemTouch", " onDown" + System.currentTimeMillis()/1000);
+                return super.onDown(e);
+            }
         });
 
         OnChartTouchListener onChartTouchListener = new OnChartTouchListener() {
@@ -133,6 +138,7 @@ public class RecyclerItemGestureListener implements RecyclerView.OnItemTouchList
 
             @Override
             public void onChartGestureEnd(MotionEvent e) {
+                Log.d("OnItemTouch", " onChartGestureEnd" + System.currentTimeMillis()/1000);
                 isLongPressing = false;
                 if (null != layoutManager) {//控制RecyclerView的滑动
                     layoutManager.resetRatioSpeed();
@@ -141,6 +147,7 @@ public class RecyclerItemGestureListener implements RecyclerView.OnItemTouchList
 
             @Override
             public void onChartGestureMovingOn(MotionEvent e) {
+                Log.d("OnItemTouch", " onChartGestureMovingOn" + System.currentTimeMillis()/1000);
                 float x = e.getX();
                 float y = e.getY();
                 View child;
@@ -231,6 +238,13 @@ public class RecyclerItemGestureListener implements RecyclerView.OnItemTouchList
 
     @Override
     public void onRequestDisallowInterceptTouchEvent(boolean disallowIntercept) {
+    }
+
+    public void resetSelectedBarEntry() {
+        if (null != selectBarEntry){
+            selectBarEntry.isSelected = BarEntry.TYPE_UNSELECTED;
+            selectBarEntry = null;
+        }
     }
 
     public interface OnItemGestureListener {

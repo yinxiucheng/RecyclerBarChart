@@ -6,19 +6,21 @@ import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v7.widget.RecyclerView;
 import android.text.SpannableStringBuilder;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
-import com.yxc.barchart.BaseFragment;
 import com.yxc.barchart.R;
 import com.yxc.barchart.TestData;
+import com.yxc.barchart.formatter.DayHighLightMarkValueFormatter;
 import com.yxc.barchart.formatter.XAxisMonthFormatter;
 import com.yxc.barchartlib.component.XAxis;
 import com.yxc.barchartlib.component.YAxis;
 import com.yxc.barchartlib.entrys.BarEntry;
+import com.yxc.barchartlib.formatter.DefaultHighLightMarkValueFormatter;
 import com.yxc.barchartlib.formatter.ValueFormatter;
 import com.yxc.barchartlib.listener.RecyclerItemGestureListener;
 import com.yxc.barchartlib.listener.SimpleItemGestureListener;
@@ -60,6 +62,8 @@ public class MonthFragment extends BaseFragment {
     private BarChartAttrs mBarChartAttrs;
     private LocalDate currentLocalDate;
     private int preEntrySize = 5;
+
+    RecyclerItemGestureListener mItemGestureListener;
 
     //防止 Fragment重叠
     @Override
@@ -103,7 +107,7 @@ public class MonthFragment extends BaseFragment {
         mXAxis.setValueFormatter(valueFormatter);
 
         mItemDecoration = new BarChartItemDecoration(mYAxis, mXAxis, mBarChartAttrs);
-
+        mItemDecoration.setHighLightValueFormatter(new DefaultHighLightMarkValueFormatter(0));
         recyclerView.addItemDecoration(mItemDecoration);
         mBarChartAdapter = new BarChartAdapter(getActivity(), mEntries, recyclerView, mXAxis, mBarChartAttrs);
         recyclerView.setAdapter(mBarChartAdapter);
@@ -132,7 +136,7 @@ public class MonthFragment extends BaseFragment {
 
     //滑动监听
     private void setListener() {
-        recyclerView.addOnItemTouchListener(new RecyclerItemGestureListener(getActivity(), recyclerView,
+        mItemGestureListener = new RecyclerItemGestureListener(getActivity(), recyclerView,
                 new SimpleItemGestureListener() {
                     private boolean isRightScroll;
 
@@ -172,7 +176,8 @@ public class MonthFragment extends BaseFragment {
                             isRightScroll = false;
                         }
                     }
-                }));
+                });
+        recyclerView.addOnItemTouchListener(mItemGestureListener);
     }
 
     //重新设置Y坐标
@@ -239,4 +244,12 @@ public class MonthFragment extends BaseFragment {
         txtCountStep.setText(spannable);
     }
 
+    @Override
+    public void resetSelectedEntry() {
+        if (mItemGestureListener != null){
+            Log.d("DayFragment", " visibleHint" );
+            mItemGestureListener.resetSelectedBarEntry();
+            rlTitle.setVisibility(View.VISIBLE);
+        }
+    }
 }

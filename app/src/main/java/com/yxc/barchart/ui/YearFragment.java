@@ -5,16 +5,17 @@ import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v7.widget.RecyclerView;
 import android.text.SpannableStringBuilder;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
-import com.yxc.barchart.BaseFragment;
+
 import com.yxc.barchart.R;
-import com.yxc.barchart.RateTestData;
 import com.yxc.barchart.TestData;
 import com.yxc.barchart.formatter.XAxisYearFormatter;
+import com.yxc.barchart.formatter.YearHighLightMarkValueFormatter;
 import com.yxc.barchartlib.component.XAxis;
 import com.yxc.barchartlib.component.YAxis;
 import com.yxc.barchartlib.entrys.BarEntry;
@@ -29,6 +30,7 @@ import com.yxc.barchartlib.util.TimeUtil;
 import com.yxc.barchartlib.view.BarChartAdapter;
 import com.yxc.barchartlib.view.BarChartRecyclerView;
 import com.yxc.barchartlib.view.SpeedRatioLinearLayoutManager;
+
 import org.joda.time.LocalDate;
 
 import java.util.ArrayList;
@@ -56,6 +58,8 @@ public class YearFragment extends BaseFragment {
     private BarChartAttrs mBarChartAttrs;
     private LocalDate currentLocalDate;
     private int preEntrySize = 3;
+
+    RecyclerItemGestureListener mItemGestureListener;
 
     //防止 Fragment重叠
     @Override
@@ -96,12 +100,13 @@ public class YearFragment extends BaseFragment {
         mYAxis = new YAxis(mBarChartAttrs);
         mXAxis = new XAxis(mBarChartAttrs, displayNumber, new XAxisYearFormatter());
         mItemDecoration = new BarChartItemDecoration(mYAxis, mXAxis, mBarChartAttrs);
+        mItemDecoration.setHighLightValueFormatter(new YearHighLightMarkValueFormatter(0));
         recyclerView.addItemDecoration(mItemDecoration);
         mBarChartAdapter = new BarChartAdapter(getActivity(), mEntries, recyclerView, mXAxis, mBarChartAttrs);
         recyclerView.setAdapter(mBarChartAdapter);
         recyclerView.setLayoutManager(layoutManager);
         currentLocalDate = TimeUtil.getLastMonthOfTheYear(LocalDate.now());
-        List<BarEntry> barEntries = RateTestData.createYearEntries(currentLocalDate.plusMonths(preEntrySize), preEntrySize + 5 * displayNumber, mEntries.size());
+        List<BarEntry> barEntries = TestData.createYearEntries(currentLocalDate.plusMonths(preEntrySize), preEntrySize + 5 * displayNumber, mEntries.size());
         bindBarChartList(barEntries);
         currentLocalDate = currentLocalDate.minusMonths(displayNumber * 5);
         setXAxis(displayNumber);
@@ -122,8 +127,7 @@ public class YearFragment extends BaseFragment {
 
     //滑动监听
     private void setListener() {
-
-        recyclerView.addOnItemTouchListener(new RecyclerItemGestureListener(getActivity(), recyclerView,
+        mItemGestureListener = new RecyclerItemGestureListener(getActivity(), recyclerView,
                 new SimpleItemGestureListener() {
 
                     private boolean isRightScroll;
@@ -143,7 +147,7 @@ public class YearFragment extends BaseFragment {
                         if (newState == RecyclerView.SCROLL_STATE_IDLE) {
                             //左滑
                             if (recyclerView.canScrollHorizontally(1) && isRightScroll) {
-                                List<BarEntry> entries = RateTestData.createYearEntries(currentLocalDate, displayNumber, mEntries.size());
+                                List<BarEntry> entries = TestData.createYearEntries(currentLocalDate, displayNumber, mEntries.size());
                                 currentLocalDate = currentLocalDate.minusMonths(displayNumber);
                                 mEntries.addAll(entries);
                                 mBarChartAdapter.notifyDataSetChanged();
@@ -155,19 +159,18 @@ public class YearFragment extends BaseFragment {
                             }
                             resetYAxis(recyclerView);
                         }
-
                     }
-
                     @Override
                     public void onScrolled(RecyclerView recyclerView, int dx, int dy) {
-                    //判断左滑，右滑时，ScrollView的位置不一样。
+                        //判断左滑，右滑时，ScrollView的位置不一样。
                         if (dx < 0) {
                             isRightScroll = true;
                         } else {
                             isRightScroll = false;
                         }
                     }
-                }));
+                });
+        recyclerView.addOnItemTouchListener(mItemGestureListener);
     }
 
     //重新设置Y坐标
@@ -225,4 +228,12 @@ public class YearFragment extends BaseFragment {
         txtCountStep.setText(spannable);
     }
 
+    @Override
+    public void resetSelectedEntry() {
+        if (mItemGestureListener != null) {
+            Log.d("DayFragment", " visibleHint");
+            mItemGestureListener.resetSelectedBarEntry();
+            rlTitle.setVisibility(View.VISIBLE);
+        }
+    }
 }

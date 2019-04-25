@@ -1,6 +1,7 @@
 package com.yxc.barchartlib.util;
 
 import android.content.Context;
+import android.graphics.Paint;
 import android.graphics.Typeface;
 import android.text.SpannableStringBuilder;
 import android.text.Spanned;
@@ -54,10 +55,16 @@ public class TextUtil {
     }
 
 
+    public static float getTxtHeight1(Paint paint){
+        Paint.FontMetrics fontMetrics = paint.getFontMetrics();
+        float height1 = fontMetrics.descent - fontMetrics.ascent;
+        return fontMetrics.bottom - fontMetrics.top;
+    }
 
-
-
-
+    public static float getTxtHeight2(Paint paint){
+        Paint.FontMetrics fontMetrics = paint.getFontMetrics();
+        return  fontMetrics.descent - fontMetrics.ascent;
+    }
 
 
 }

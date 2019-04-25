@@ -503,6 +503,9 @@ public class TimeUtil {
             hour12.hour = time % 12;
             hour12.isAnte = false;
         }
+        if (hour12.hour == 0){
+            hour12.hour = 12;
+        }
         return hour12;
     }
 
