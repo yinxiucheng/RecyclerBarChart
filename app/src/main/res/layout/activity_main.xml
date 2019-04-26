@@ -5,7 +5,8 @@
     android:layout_height="match_parent"
     android:fitsSystemWindows="true"
     android:background="@color/white"
-    android:orientation="vertical">
+    android:orientation="vertical"
+    >
 
     <android.support.v7.widget.Toolbar
         android:id="@+id/toolBar"
@@ -31,10 +32,24 @@
         android:layout_height="1px"
         android:background="@color/black_40_transparent" />
 
-    <FrameLayout
-        android:id="@+id/container"
-        android:layout_width="match_parent"
-        android:layout_height="0dp"
-        android:layout_weight="1" />
+    <Button
+        android:id="@+id/step_btn"
+        android:layout_width="100dp"
+        android:layout_height="40dp"
+        android:layout_gravity="center_vertical"
+        android:text="步数图"
+        android:layout_marginTop="30dp"
+        android:onClick="clickStep"/>
+
+
+    <Button
+        android:id="@+id/sleep_btn"
+        android:layout_width="100dp"
+        android:layout_height="40dp"
+        android:layout_gravity="center_vertical"
+        android:text="睡眠图"
+        android:layout_marginTop="30dp"
+        android:onClick="clickSleep"/>
+
 
 </LinearLayout>
