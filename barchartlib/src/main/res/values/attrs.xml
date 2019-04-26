@@ -82,6 +82,19 @@
     </declare-styleable>
 
 
+    <declare-styleable name="SleepChartRecyclerView">
+        <!--LinearLayoutManager-->
+        <attr name="sr_layoutManagerOrientation" format="integer"/>
+        <attr name="sr_layoutManagerReverseLayout" format="boolean"/>
+        <attr name="sr_ratioSpeed" format="float"/>
+        
+        <attr name="deepSleepColor" format="color"/>
+        <attr name="slumberColor" format="color"/>
+        <attr name="weakColor" format="color"/>
+    </declare-styleable>
+
+
+
     <declare-styleable name="TopTabLayout">
         <!-- indicator -->
         <attr name="tl_indicator_color" />

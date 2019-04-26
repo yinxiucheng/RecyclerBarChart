@@ -8,10 +8,12 @@ import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import android.view.View;
 
+import com.yxc.chartlib.attrs.BarChartAttrs;
 import com.yxc.chartlib.component.DistanceCompare;
 import com.yxc.chartlib.component.YAxis;
 import com.yxc.chartlib.entrys.BarEntry;
-import com.yxc.chartlib.view.BarChartAdapter;
+import com.yxc.chartlib.barchart.BarChartAdapter;
+import com.yxc.commonlib.util.TimeUtil;
 
 import org.joda.time.LocalDate;
 

@@ -7,7 +7,7 @@ import android.graphics.Path;
 import android.support.v7.widget.RecyclerView;
 
 import com.yxc.chartlib.component.YAxis;
-import com.yxc.chartlib.util.BarChartAttrs;
+import com.yxc.chartlib.attrs.BarChartAttrs;
 
 import java.util.HashMap;
 import java.util.Map;

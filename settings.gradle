@@ -1,1 +1,1 @@
-include ':app', ':barchartlib'
+include ':app', ':barchartlib', ':widgetlib', ':commonlib'

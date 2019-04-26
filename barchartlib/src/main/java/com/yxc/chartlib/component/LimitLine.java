@@ -5,7 +5,7 @@ import android.graphics.Color;
 import android.graphics.DashPathEffect;
 import android.graphics.Paint;
 
-import com.yxc.chartlib.util.DisplayUtil;
+import com.yxc.commonlib.util.DisplayUtil;
 
 
 /**

@@ -6,7 +6,7 @@ import android.graphics.RectF;
 import android.support.annotation.NonNull;
 import android.support.v7.widget.RecyclerView;
 
-import com.yxc.chartlib.util.BarChartAttrs;
+import com.yxc.chartlib.attrs.BarChartAttrs;
 
 /**
  * @author yxc

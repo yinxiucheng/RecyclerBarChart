@@ -10,10 +10,10 @@ import android.view.MotionEvent;
 import android.view.View;
 
 import com.yxc.chartlib.entrys.BarEntry;
-import com.yxc.chartlib.view.BarChartAdapter;
-import com.yxc.chartlib.view.BarChartRecyclerView;
-import com.yxc.chartlib.view.BarChartRecyclerView.OnChartTouchListener;
-import com.yxc.chartlib.view.SpeedRatioLinearLayoutManager;
+import com.yxc.chartlib.barchart.BarChartAdapter;
+import com.yxc.chartlib.barchart.BarChartRecyclerView;
+import com.yxc.chartlib.barchart.BarChartRecyclerView.OnChartTouchListener;
+import com.yxc.chartlib.barchart.SpeedRatioLinearLayoutManager;
 
 /**
  * @author yxc

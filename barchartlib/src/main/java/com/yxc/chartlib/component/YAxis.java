@@ -1,6 +1,6 @@
 package com.yxc.chartlib.component;
 
-import com.yxc.chartlib.util.BarChartAttrs;
+import com.yxc.chartlib.attrs.BarChartAttrs;
 
 import java.util.ArrayList;
 import java.util.HashMap;

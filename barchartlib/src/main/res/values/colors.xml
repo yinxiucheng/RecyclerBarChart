@@ -41,4 +41,9 @@
     <color name="transparent">#00000000</color>
 
 
+    <color name="deep_sleep_color">#64c758</color>
+    <color name="slumber_color">#ffb400</color>
+    <color name="wake_color">#ff4f4f</color>
+    <color name="sleep_background">#1b212c</color>
+
 </resources>

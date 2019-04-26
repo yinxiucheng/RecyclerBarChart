@@ -12,10 +12,10 @@ import android.view.View;
 
 import com.yxc.chartlib.component.XAxis;
 import com.yxc.chartlib.entrys.BarEntry;
-import com.yxc.chartlib.util.BarChartAttrs;
+import com.yxc.chartlib.attrs.BarChartAttrs;
 import com.yxc.chartlib.util.DecimalUtil;
-import com.yxc.chartlib.util.DisplayUtil;
-import com.yxc.chartlib.view.BarChartAdapter;
+import com.yxc.chartlib.barchart.BarChartAdapter;
+import com.yxc.commonlib.util.DisplayUtil;
 
 import java.util.List;
 

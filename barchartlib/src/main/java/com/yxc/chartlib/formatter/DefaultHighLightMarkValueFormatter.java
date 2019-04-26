@@ -1,7 +1,7 @@
 package com.yxc.chartlib.formatter;
 
 import com.yxc.chartlib.entrys.BarEntry;
-import com.yxc.chartlib.util.TimeUtil;
+import com.yxc.commonlib.util.TimeUtil;
 
 /**
  * @author yxc

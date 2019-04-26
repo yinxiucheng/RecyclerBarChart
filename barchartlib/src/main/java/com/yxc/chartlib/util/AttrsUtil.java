@@ -6,11 +6,28 @@ import android.graphics.Color;
 import android.util.AttributeSet;
 
 import com.yxc.chartlib.R;
+import com.yxc.chartlib.attrs.BarChartAttrs;
+import com.yxc.chartlib.attrs.SleepChartAttrs;
+import com.yxc.commonlib.util.ColorUtil;
+import com.yxc.commonlib.util.DisplayUtil;
 
 public class AttrsUtil {
 
-    public static BarChartAttrs getCustomerRecyclerAttrs(Context context, AttributeSet attributeSet) {
+    public static SleepChartAttrs getSleepChartAttrs(Context context, AttributeSet attributeSet){
 
+        SleepChartAttrs attrs = new SleepChartAttrs();
+        TypedArray ta = context.obtainStyledAttributes(attributeSet, R.styleable.SleepChartRecyclerView);
+        attrs.ratioSpeed = ta.getFloat(R.styleable.SleepChartRecyclerView_sr_layoutManagerOrientation, 0f);
+        attrs.layoutManagerOrientation = ta.getInteger(R.styleable.SleepChartRecyclerView_sr_layoutManagerOrientation, 0);
+        attrs.layoutManagerReverseLayout = ta.getBoolean(R.styleable.SleepChartRecyclerView_sr_layoutManagerReverseLayout, true);
+        attrs.deepSleepColor = ta.getColor(R.styleable.SleepChartRecyclerView_deepSleepColor, ColorUtil.getResourcesColor(context, R.color.deep_sleep_color));
+        attrs.slumberColor = ta.getColor(R.styleable.SleepChartRecyclerView_slumberColor, ColorUtil.getResourcesColor(context, R.color.slumber_color));
+        attrs.weakColor = ta.getColor(R.styleable.SleepChartRecyclerView_weakColor, ColorUtil.getResourcesColor(context, R.color.wake_color));
+        ta.recycle();
+        return attrs;
+    }
+
+    public static BarChartAttrs getBarChartRecyclerAttrs(Context context, AttributeSet attributeSet) {
         BarChartAttrs attrs = new BarChartAttrs();
         TypedArray ta = context.obtainStyledAttributes(attributeSet, R.styleable.BarChartRecyclerView);
 

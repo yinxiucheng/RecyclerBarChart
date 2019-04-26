@@ -16,6 +16,19 @@ import com.yxc.chartlib.util.DecimalUtil;
  */
 public class Entry extends BaseEntry implements Parcelable {
 
+    public static final int TYPE_UNSELECTED = 0;//没有选中
+
+    public static final int TYPE_SINGLE_TAP_UP_SELECTED = 1;//单击选中
+
+    public static final int TYPE_LONG_PRESS_SELECTED = 2;//长按选中
+
+
+    public int isSelected = TYPE_UNSELECTED;
+
+    public boolean isSelected() {
+        return isSelected == TYPE_SINGLE_TAP_UP_SELECTED || isSelected == TYPE_LONG_PRESS_SELECTED;
+    }
+
     /** the x value */
     private float x = 0f;
 
@@ -170,4 +183,7 @@ public class Entry extends BaseEntry implements Parcelable {
             return new Entry[size];
         }
     };
+
+
+
 }

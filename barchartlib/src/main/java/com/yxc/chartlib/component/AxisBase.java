@@ -6,7 +6,7 @@ import android.util.Log;
 
 import com.yxc.chartlib.formatter.DefaultAxisValueFormatter;
 import com.yxc.chartlib.formatter.ValueFormatter;
-import com.yxc.chartlib.util.DisplayUtil;
+import com.yxc.commonlib.util.DisplayUtil;
 
 import java.util.ArrayList;
 import java.util.List;

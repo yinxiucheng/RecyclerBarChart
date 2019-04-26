@@ -13,13 +13,13 @@ import com.yxc.chartlib.component.YAxis;
 import com.yxc.chartlib.entrys.BarEntry;
 import com.yxc.chartlib.formatter.DefaultHighLightMarkValueFormatter;
 import com.yxc.chartlib.formatter.ValueFormatter;
-import com.yxc.chartlib.util.BarChartAttrs;
+import com.yxc.chartlib.attrs.BarChartAttrs;
 import com.yxc.chartlib.util.CanvasUtil;
 import com.yxc.chartlib.util.ChartComputeUtil;
 import com.yxc.chartlib.util.DecimalUtil;
-import com.yxc.chartlib.util.DisplayUtil;
-import com.yxc.chartlib.util.TextUtil;
 import com.yxc.chartlib.view.AnimatedDecoratorDrawable;
+import com.yxc.commonlib.util.DisplayUtil;
+import com.yxc.commonlib.util.TextUtil;
 
 /**
  * @author yxc

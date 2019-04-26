@@ -1,7 +1,7 @@
 package com.yxc.chartlib.component;
 
 import com.yxc.chartlib.formatter.ValueFormatter;
-import com.yxc.chartlib.util.BarChartAttrs;
+import com.yxc.chartlib.attrs.BarChartAttrs;
 
 /**
  * @author yxc

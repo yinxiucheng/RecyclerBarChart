@@ -4,7 +4,8 @@ package com.yxc.chartlib.component;
 import android.graphics.Color;
 import android.graphics.Typeface;
 
-import com.yxc.chartlib.util.DisplayUtil;
+import com.yxc.commonlib.util.DisplayUtil;
+
 
 /**
  * This class encapsulates everything both Axis, Legend and LimitLines have in common.
