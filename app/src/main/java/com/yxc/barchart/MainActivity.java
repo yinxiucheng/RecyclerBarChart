@@ -98,4 +98,11 @@ public class MainActivity extends AppCompatActivity {
         currentFragment = fragment;
     }
 
+    @Override
+    protected void onStop() {
+        super.onStop();
+        if (currentFragment != null){
+            currentFragment.resetSelectedEntry();
+        }
+    }
 }

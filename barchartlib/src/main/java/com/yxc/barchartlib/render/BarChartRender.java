@@ -23,7 +23,7 @@ import com.yxc.barchartlib.view.AnimatedDecoratorDrawable;
 
 /**
  * @author yxc
- * @date 2019/4/14
+ * @since  2019/4/14
  */
 final public class BarChartRender {
     private BarChartAttrs mBarChartAttrs;
@@ -220,19 +220,15 @@ final public class BarChartRender {
         float txtTopPadding = DisplayUtil.dip2px(4);
         float txtLeftWidth = 0f;
         float txtRightWidth = 0f;
-        float txtLeftHeight = 0f;
-        float txtRightHeight = 0f;
 
         if (strings.length == 4) {
             String leftStr1 = strings[0];
             String leftStr2 = strings[1];
             String rightStr1 = strings[2];
             String rightStr2 = strings[3];
-
             txtLeftWidth = Math.max(mHighLightValueLeftPaint.measureText(leftStr1), mHighLightValueLeftPaint.measureText(leftStr2));
-
-            txtLeftHeight = (TextUtil.getTxtHeight1(mHighLightValueLeftPaint) + txtTopPadding) * 2;
-            txtRightHeight = TextUtil.getTxtHeight1(mHighLightValueRightPaint) + TextUtil.getTxtHeight1(mHighLightUnitRightPaint) + txtTopPadding;
+            float txtLeftHeight = (TextUtil.getTxtHeight1(mHighLightValueLeftPaint) + txtTopPadding) * 2;
+            float txtRightHeight = TextUtil.getTxtHeight1(mHighLightValueRightPaint) + TextUtil.getTxtHeight1(mHighLightUnitRightPaint) + txtTopPadding;
 
             float txtRightWidthBottom = mHighLightValueRightPaint.measureText(rightStr2) + rightValueUnitPadding + mHighLightValueLeftPaint.measureText("步");
             float txtRightWidthTop = mHighLightValueLeftPaint.measureText(rightStr1);
