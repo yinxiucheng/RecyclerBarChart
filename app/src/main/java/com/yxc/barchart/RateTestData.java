@@ -2,9 +2,9 @@ package com.yxc.barchart;
 
 import android.util.Log;
 
-import com.yxc.barchartlib.entrys.BarEntry;
-import com.yxc.barchartlib.util.BarChartAttrs;
-import com.yxc.barchartlib.util.TimeUtil;
+import com.yxc.chartlib.entrys.BarEntry;
+import com.yxc.chartlib.util.BarChartAttrs;
+import com.yxc.chartlib.util.TimeUtil;
 
 import org.joda.time.LocalDate;
 

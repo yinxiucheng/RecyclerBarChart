@@ -8,9 +8,9 @@ import android.support.v7.widget.RecyclerView;
 import android.view.View;
 import android.view.ViewTreeObserver;
 
-import com.yxc.barchartlib.util.DisplayUtil;
-import com.yxc.barchartlib.view.AnimatedDecorator;
-import com.yxc.barchartlib.view.CustomAnimatedDecorator;
+import com.yxc.chartlib.util.DisplayUtil;
+import com.yxc.chartlib.view.AnimatedDecorator;
+import com.yxc.chartlib.view.CustomAnimatedDecorator;
 
 import java.util.ArrayList;
 import java.util.HashMap;

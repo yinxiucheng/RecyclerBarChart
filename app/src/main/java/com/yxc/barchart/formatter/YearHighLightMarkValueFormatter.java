@@ -1,8 +1,8 @@
 package com.yxc.barchart.formatter;
 
-import com.yxc.barchartlib.entrys.BarEntry;
-import com.yxc.barchartlib.formatter.DefaultHighLightMarkValueFormatter;
-import com.yxc.barchartlib.util.TimeUtil;
+import com.yxc.chartlib.entrys.BarEntry;
+import com.yxc.chartlib.formatter.DefaultHighLightMarkValueFormatter;
+import com.yxc.chartlib.util.TimeUtil;
 
 /**
  * @author yxc

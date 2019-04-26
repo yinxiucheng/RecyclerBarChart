@@ -1,7 +1,7 @@
 package com.yxc.barchart.formatter;
 
-import com.yxc.barchartlib.entrys.BarEntry;
-import com.yxc.barchartlib.formatter.ValueFormatter;
+import com.yxc.chartlib.entrys.BarEntry;
+import com.yxc.chartlib.formatter.ValueFormatter;
 
 import org.joda.time.LocalDate;
 

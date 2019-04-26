@@ -14,8 +14,8 @@ import com.yxc.barchart.ui.DayFragment;
 import com.yxc.barchart.ui.MonthFragment;
 import com.yxc.barchart.ui.WeekFragment;
 import com.yxc.barchart.ui.YearFragment;
-import com.yxc.barchartlib.util.ColorUtil;
-import com.yxc.barchartlib.util.TimeUtil;
+import com.yxc.chartlib.util.ColorUtil;
+import com.yxc.chartlib.util.TimeUtil;
 
 import org.joda.time.LocalDate;
 
