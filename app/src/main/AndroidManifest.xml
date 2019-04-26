@@ -27,6 +27,8 @@
 
         <activity android:name=".ui.sleep.SleepActivity"
             android:theme="@style/AppTheme.NoActionBar"/>
+
+
     </application>
 
 </manifest>

@@ -79,7 +79,7 @@ public class Util {
      */
     public static int getIntervalWeek(LocalDate date1, LocalDate date2, int type) {
 
-        if (type == Attrs.MONDAY) {
+        if (type == CalendarAttrs.MONDAY) {
             date1 = getMonFirstDayOfWeek(date1);
             date2 = getMonFirstDayOfWeek(date2);
         } else {
@@ -109,11 +109,11 @@ public class Util {
     }
 
     public static List<NDate> getMonthCalendar(LocalDate localDate) {
-        return getMonthCalendar(localDate, Attrs.SUNDAY);
+        return getMonthCalendar(localDate, CalendarAttrs.SUNDAY);
     }
 
     public static List<LocalDate> getMonthLocalDateCalendar(LocalDate localDate) {
-        return getMonthLocalDateCalendar(localDate, Attrs.MONDAY);
+        return getMonthLocalDateCalendar(localDate, CalendarAttrs.MONDAY);
     }
 
 
@@ -131,7 +131,7 @@ public class Util {
 
 
         //周一开始的
-        if (type == Attrs.MONDAY) {
+        if (type == CalendarAttrs.MONDAY) {
 
             //周一开始的
             for (int i = 0; i < firstDayOfWeek - 1; i++) {
@@ -200,7 +200,7 @@ public class Util {
 
 
         //周一开始的
-        if (type == Attrs.MONDAY) {
+        if (type == CalendarAttrs.MONDAY) {
 
             //周一开始的
             for (int i = 0; i < firstDayOfWeek - 1; i++) {

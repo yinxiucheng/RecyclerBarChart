@@ -1,7 +1,7 @@
 package com.yxc.widgetlib.calendar.utils;
 
 
-public class Attrs {
+public class CalendarAttrs {
 
     //日历默认视图
     public static final int WEEK = 100;//周视图
@@ -71,8 +71,8 @@ public class Attrs {
     public String disabledString;//点击不可用的日期提示语
 
 
-    public int weekBarTextColor;//weekBar 字的颜色
-    public float weekBarTextSize;//weekBar 字的大小
+    public int calendarBarTextColor;//weekBar 字的颜色
+    public float calendarBarTextSize;//weekBar 字的大小
 
 
 

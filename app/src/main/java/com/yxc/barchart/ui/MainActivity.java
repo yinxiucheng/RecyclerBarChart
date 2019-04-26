@@ -49,4 +49,12 @@ public class MainActivity extends AppCompatActivity {
     public void clickSleep(View view) {
         startActivity(new Intent(this, SleepActivity.class));
     }
+
+    public void clickBezier(View view) {
+
+    }
+
+    public void clickLine(View view) {
+
+    }
 }

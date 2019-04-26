@@ -30,5 +30,6 @@ dependencies {
     implementation 'com.android.support:design:28.+'
 
     implementation project(':barchartlib')
+    implementation project(':widgetlib')
 
 }

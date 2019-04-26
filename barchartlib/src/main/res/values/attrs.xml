@@ -1,7 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
 
-
     <declare-styleable name="BarChartRecyclerView">
 
         <attr name="barBorderColor" format="color" />
@@ -95,40 +94,7 @@
 
 
 
-    <declare-styleable name="TopTabLayout">
-        <!-- indicator -->
-        <attr name="tl_indicator_color" />
-        <attr name="tl_indicator_height" />
-        <attr name="tl_indicator_margin_left" />
-        <attr name="tl_indicator_margin_top" />
-        <attr name="tl_indicator_margin_right" />
-        <attr name="tl_indicator_margin_bottom" />
-        <attr name="tl_indicator_corner_radius" />
-        <attr name="tl_indicator_anim_enable" />
-        <attr name="tl_indicator_anim_duration" />
-        <attr name="tl_indicator_bounce_enable" />
 
-        <!-- divider -->
-        <attr name="tl_divider_color" />
-        <attr name="tl_divider_width" />
-        <attr name="tl_divider_padding" />
-
-        <!-- tab -->
-        <attr name="tl_tab_padding" />
-        <attr name="tl_tab_space_equal" />
-        <attr name="tl_tab_width" />
-
-        <!-- title -->
-        <attr name="tl_textsize" />
-        <attr name="tl_textSelectColor" />
-        <attr name="tl_textUnselectColor" />
-        <attr name="tl_textBold" />
-        <attr name="tl_textAllCaps" />
-
-        <attr name="tl_bar_color" format="color" />
-        <attr name="tl_bar_stroke_color" format="color" />
-        <attr name="tl_bar_stroke_width" format="dimension" />
-    </declare-styleable>
 
 
 </resources>

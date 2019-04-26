@@ -17,7 +17,7 @@ import android.view.animation.DecelerateInterpolator;
 import com.yxc.commonlib.util.DisplayUtil;
 import com.yxc.widgetlib.calendar.painter.CalendarWeekPainter;
 import com.yxc.widgetlib.calendar.painter.InnerMonthPainter;
-import com.yxc.widgetlib.calendar.utils.Attrs;
+import com.yxc.widgetlib.calendar.utils.CalendarAttrs;
 import com.yxc.widgetlib.calendar.utils.AttrsUtil;
 import com.yxc.widgetlib.calendar.utils.Util;
 
@@ -35,7 +35,7 @@ public class WeekCalendarView extends View {
     private LocalDate mSelectDate;//点击选中的日期
     private int selectDayWeek;
     private int todayWeek;
-    private Attrs mAttrs;
+    private CalendarAttrs mAttrs;
     private CalendarWeekPainter mCalendarPainter;
     private int mSelectWeekOfMonth;
 

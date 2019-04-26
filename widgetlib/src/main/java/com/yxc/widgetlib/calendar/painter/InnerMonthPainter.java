@@ -6,20 +6,20 @@ import android.graphics.Rect;
 import android.graphics.RectF;
 
 
-import com.yxc.widgetlib.calendar.utils.Attrs;
+import com.yxc.widgetlib.calendar.utils.CalendarAttrs;
 import com.yxc.widgetlib.calendar.utils.Util;
 
 import org.joda.time.LocalDate;
 
 public class InnerMonthPainter implements CalendarWeekPainter {
 
-    private Attrs mAttrs;
+    private CalendarAttrs mAttrs;
     protected Paint mTextPaint;
     protected Paint mCirclePaint;
 
     private int noAlphaColor = 255;
 
-    public InnerMonthPainter(Attrs attrs) {
+    public InnerMonthPainter(CalendarAttrs attrs) {
         this.mAttrs = attrs;
         mTextPaint = getPaint();
         mCirclePaint = getPaint();

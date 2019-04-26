@@ -4,6 +4,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:fitsSystemWindows="true"
+    android:background="@color/sleep_background"
     android:orientation="vertical">
 
     <android.support.v7.widget.Toolbar
@@ -11,7 +12,7 @@
         android:layout_width="match_parent"
         android:layout_height="45dp"
         android:textAlignment="gravity"
-        android:tooltipText="步数"
+        android:tooltipText="睡眠"
         app:contentInsetStartWithNavigation="0dp"
         app:titleTextAppearance="@style/Toolbar.TitleText">
 
@@ -19,33 +20,34 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="center"
-            android:text="步数"
-            android:textColor="@color/black"
+            android:text="睡眠"
+            android:textColor="@color/white"
             android:textStyle="bold"
             android:textSize="18sp" />
-
     </android.support.v7.widget.Toolbar>
 
     <View
         android:layout_width="match_parent"
         android:layout_height="1px"
-        android:background="@color/black_40_transparent" />
+        android:background="@color/white_80_transparent" />
 
-    <com.yxc.barchart.tab.TopTabLayout
-        android:id="@+id/topTabLayout"
+    <com.yxc.widgetlib.calendar.view.CalendarBar
         android:layout_width="match_parent"
-        android:layout_height="30dp"
-        android:layout_centerVertical="true"
-        android:layout_gravity="center"
-        android:layout_marginLeft="20dp"
-        android:layout_marginTop="10dp"
-        android:layout_marginRight="20dp"
-        android:layout_marginBottom="4dp"
-        app:tl_bar_color="#ffffff"
-        app:tl_divider_color="@color/pink"
-        app:tl_indicator_corner_radius="5dp"
-        app:tl_tab_padding="45dp"
-        app:tl_textBold="0" />
+        android:layout_height="wrap_content"
+        android:layout_marginTop="20dp"
+        app:calendarBarTextColor="@color/white"
+        app:calendarBarTextSize="14sp"
+        app:layout_scrollFlags="scroll"/>
+
+    <com.yxc.widgetlib.calendar.view.DayCalendarView
+        android:id="@+id/monthCalendar"
+        android:layout_width="match_parent"
+
+        android:layout_height="300dp"
+        app:hollowCircleColor="#0099FF"
+        app:selectCircleColor="#0099FF"
+        app:layout_scrollFlags="scroll"
+        app:solarTextColor="@color/white"/>
 
     <FrameLayout
         android:id="@+id/container"

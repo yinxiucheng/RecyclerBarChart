@@ -5,6 +5,7 @@ import android.os.Bundle;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
+import android.view.View;
 import android.widget.FrameLayout;
 
 import com.yxc.barchart.R;
@@ -38,6 +39,12 @@ public class StepActivity extends AppCompatActivity {
         toolbar = findViewById(R.id.toolBar);
         toolbar.setTitle(TimeUtil.getDateStr(TimeUtil.localDateToTimestamp(LocalDate.now()), "M月dd日"));
         toolbar.setNavigationIcon(R.drawable.ic_navigation_left_black_45dp);
+        toolbar.setNavigationOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                finish();
+            }
+        });
         setSupportActionBar(toolbar);
 
         switchTab(StepDayFragment.class, "DayFragment");

@@ -16,7 +16,7 @@ import android.view.animation.DecelerateInterpolator;
 import com.yxc.commonlib.util.DisplayUtil;
 import com.yxc.widgetlib.calendar.painter.CalendarPainter;
 import com.yxc.widgetlib.calendar.painter.InnerPainter;
-import com.yxc.widgetlib.calendar.utils.Attrs;
+import com.yxc.widgetlib.calendar.utils.CalendarAttrs;
 import com.yxc.widgetlib.calendar.utils.AttrsUtil;
 import com.yxc.widgetlib.calendar.utils.Util;
 
@@ -32,7 +32,7 @@ public class DayCalendarView extends View {
     protected List<Rect> mRectList;//点击用的矩形集合
     protected List<LocalDate> mDateList;//页面的数据集合
     private LocalDate mSelectDate;//点击选中的日期
-    private Attrs mAttrs;
+    private CalendarAttrs mAttrs;
     private CalendarPainter mCalendarPainter;
 
     public DayCalendarView(Context context, @Nullable AttributeSet attrs) {

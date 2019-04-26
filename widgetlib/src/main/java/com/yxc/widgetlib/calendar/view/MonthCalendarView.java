@@ -14,7 +14,7 @@ import android.view.View;
 import com.yxc.commonlib.util.ColorUtil;
 import com.yxc.commonlib.util.DisplayUtil;
 import com.yxc.widgetlib.R;
-import com.yxc.widgetlib.calendar.utils.Attrs;
+import com.yxc.widgetlib.calendar.utils.CalendarAttrs;
 import com.yxc.widgetlib.calendar.utils.AttrsUtil;
 import com.yxc.widgetlib.calendar.utils.Util;
 
@@ -44,7 +44,7 @@ public class MonthCalendarView extends View {
 
     private Paint mCirclePaint;
 
-    private Attrs mAttrs;
+    private CalendarAttrs mAttrs;
 
     private MonthCalendar mSelectYearCalendar;
 

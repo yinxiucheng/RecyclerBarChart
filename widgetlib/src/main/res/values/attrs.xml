@@ -45,9 +45,8 @@
         <attr name="bgChildColor" format="color" />
         <attr name="disabledColor" format="color" />
 
-
-        <attr name="weekBarTextColor" format="color"/>
-        <attr name="weekBarTextSize" format="dimension"/>
+        <attr name="calendarBarTextColor" format="color"/>
+        <attr name="calendarBarTextSize" format="dimension"/>
 
 
         <attr name="defaultCalendar" format="enum">
@@ -74,75 +73,39 @@
     </declare-styleable>
 
 
-    <declare-styleable name="BarChartRecyclerView">
+    <declare-styleable name="TopTabLayout">
+        <!-- indicator -->
+        <attr name="tl_indicator_color" />
+        <attr name="tl_indicator_height" />
+        <attr name="tl_indicator_margin_left" />
+        <attr name="tl_indicator_margin_top" />
+        <attr name="tl_indicator_margin_right" />
+        <attr name="tl_indicator_margin_bottom" />
+        <attr name="tl_indicator_corner_radius" />
+        <attr name="tl_indicator_anim_enable" />
+        <attr name="tl_indicator_anim_duration" />
+        <attr name="tl_indicator_bounce_enable" />
 
-        <attr name="barBorderColor" format="color" />
-        <attr name="barChartEdgeColor" format="color" />
-        <attr name="barChartColor" format="color" />
-        <attr name="barChartRoundRectRadiusRatio" format="float"/>
+        <!-- divider -->
+        <attr name="tl_divider_color" />
+        <attr name="tl_divider_width" />
+        <attr name="tl_divider_padding" />
 
-        <!-- 顶部文字属性 -->
-        <attr name="barChartValueTxtSize" format="dimension"/>
-        <attr name="barChartValueTxtColor" format="color"/>
-        <attr name="barChartValueTxtMaskSize" format="dimension"/>
-        <attr name="barChartValueTxtMaskColor" format="color"/>
-        <attr name="barChartValuePaddingBottom" format="dimension"/>
-        <attr name="barChartValuePaddingLeft" format="dimension"/>
+        <!-- tab -->
+        <attr name="tl_tab_padding" />
+        <attr name="tl_tab_space_equal" />
+        <attr name="tl_tab_width" />
 
-        <attr name="barBorderWidth" format="dimension" />
-        <attr name="contentPaddingBottom" format="dimension" />
-        <attr name="maxYAxisPaddingTop" format="dimension" />
-        <attr name="recyclerPaddingLeft" format="dimension" />
-        <attr name="recyclerPaddingRight" format="dimension" />
+        <!-- title -->
+        <attr name="tl_textsize" />
+        <attr name="tl_textSelectColor" />
+        <attr name="tl_textUnselectColor" />
+        <attr name="tl_textBold" />
+        <attr name="tl_textAllCaps" />
 
-        <!--LinearLayoutManager-->
-        <attr name="layoutManagerOrientation" format="integer"/>
-        <attr name="layoutManagerReverseLayout" format="boolean"/>
-
-        <attr name="enableCharValueDisplay" format="boolean" />
-        <attr name="enableYAxisZero" format="boolean" />
-        <attr name="enableXAxisGridLine" format="boolean" />
-        <attr name="enableRightYAxisLabel" format="boolean" />
-        <attr name="enableLeftYAxisLabel" format="boolean" />
-        <attr name="enableBarBorder" format="boolean" />
-        <attr name="enableScrollToScale" format="boolean"/>
-        <attr name="enableValueMark" format="boolean"/>
-
-        <attr name="barSpace" format="float"/>
-        <attr name="ratioVelocity" format="float"/>
-        <attr name="ratioSpeed" format="float"/>
-
-        <!-- YAxis -->
-        <attr name="yAxisMaximum" format="integer"/>
-        <attr name="yAxisMinimum" format="float"/>
-        <attr name="yAxisLabelTxtSize" format="dimension"/>
-        <attr name="yAxisLabelTxtColor" format="color"/>
-        <attr name="yAxisLabelSize" format="integer"/>
-        <attr name="yAxisLineColor" format="color"/>
-        <attr name="yAxisLabelHorizontalPadding" format="dimension"/>
-        <attr name="yAxisLabelVerticalPadding" format="dimension"/>
-
-
-        <!-- XAxis -->
-        <attr name="xAxisTxtSize" format="dimension"/>
-        <attr name="xAxisTxtColor" format="color"/>
-        <attr name="xAxisFirstDividerColor" format="color"/>
-        <attr name="xAxisSecondDividerColor" format="color"/>
-        <attr name="xAxisThirdDividerColor" format="color"/>
-        <attr name="xAxisLabelTxtPadding" format="dimension"/>
-        <attr name="xAxisScaleDistance" format="integer"/>
-
-        <attr name="displayNumbers" format="integer"/>
-
-        <!--bezier curve-->
-        <attr name="bezierIntensity" format="float"/>
-        <attr name="enableBezierLineFill" format="boolean"/>
-        <attr name="bezierFillColor" format="color"/>
-        <attr name="bezierLinePaintColor" format="color"/>
-        <attr name="bezierFillAlpha" format="integer"/>
-        <attr name="bezierLinePaintStrokeWidth" format="dimension"/>
-
-
+        <attr name="tl_bar_color" format="color" />
+        <attr name="tl_bar_stroke_color" format="color" />
+        <attr name="tl_bar_stroke_width" format="dimension" />
     </declare-styleable>
 
 </resources>

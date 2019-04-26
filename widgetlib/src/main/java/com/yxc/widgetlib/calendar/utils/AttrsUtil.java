@@ -2,7 +2,6 @@ package com.yxc.widgetlib.calendar.utils;
 
 import android.content.Context;
 import android.content.res.TypedArray;
-import android.graphics.Color;
 import android.text.TextUtils;
 import android.util.AttributeSet;
 
@@ -17,8 +16,8 @@ import com.yxc.widgetlib.R;
 public class AttrsUtil {
 
 
-    public static Attrs getAttrs(Context context, AttributeSet attributeSet) {
-        Attrs attrs = new Attrs();
+    public static CalendarAttrs getAttrs(Context context, AttributeSet attributeSet) {
+        CalendarAttrs attrs = new CalendarAttrs();
 
         TypedArray ta = context.obtainStyledAttributes(attributeSet, R.styleable.NCalendar);
 
@@ -53,16 +52,15 @@ public class AttrsUtil {
         attrs.workdayColor = ta.getColor(R.styleable.NCalendar_workdayColor, ColorUtil.getResourcesColor(context, R.color.workdayColor));
         attrs.bgCalendarColor = ta.getColor(R.styleable.NCalendar_bgCalendarColor, ColorUtil.getResourcesColor(context, R.color.transparent));
         attrs.bgChildColor = ta.getColor(R.styleable.NCalendar_bgChildColor, ColorUtil.getResourcesColor(context, R.color.white));
-        attrs.firstDayOfWeek = ta.getInt(R.styleable.NCalendar_firstDayOfWeek, Attrs.SUNDAY);
-        attrs.pointLocation = ta.getInt(R.styleable.NCalendar_pointLocation, Attrs.UP);
-        attrs.defaultCalendar = ta.getInt(R.styleable.NCalendar_defaultCalendar, Attrs.MONTH);
-        attrs.holidayLocation = ta.getInt(R.styleable.NCalendar_holidayLocation, Attrs.TOP_RIGHT);
+        attrs.firstDayOfWeek = ta.getInt(R.styleable.NCalendar_firstDayOfWeek, CalendarAttrs.SUNDAY);
+        attrs.pointLocation = ta.getInt(R.styleable.NCalendar_pointLocation, CalendarAttrs.UP);
+        attrs.defaultCalendar = ta.getInt(R.styleable.NCalendar_defaultCalendar, CalendarAttrs.MONTH);
+        attrs.holidayLocation = ta.getInt(R.styleable.NCalendar_holidayLocation, CalendarAttrs.TOP_RIGHT);
 
-        attrs.alphaColor = ta.getInt(R.styleable.NCalendar_alphaColor, 90);
+        attrs.alphaColor = ta.getInt(R.styleable.NCalendar_alphaColor, 0xA0);
         attrs.disabledAlphaColor = ta.getInt(R.styleable.NCalendar_disabledAlphaColor, 50);
-
-        attrs.weekBarTextColor = ta.getColor(R.styleable.NCalendar_weekBarTextColor, Color.GRAY);
-        attrs.weekBarTextSize = ta.getDimension(R.styleable.NCalendar_weekBarTextSize, DisplayUtil.sp2px(context, 12));
+        attrs.calendarBarTextColor = ta.getColor(R.styleable.NCalendar_calendarBarTextColor, ColorUtil.getResourcesColor(context, R.color.white));
+        attrs.calendarBarTextSize = ta.getDimension(R.styleable.NCalendar_calendarBarTextSize, DisplayUtil.sp2px(context, 12));
 
         String startString = ta.getString(R.styleable.NCalendar_startDate);
         String endString = ta.getString(R.styleable.NCalendar_endDate);

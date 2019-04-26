@@ -5,20 +5,20 @@ import android.graphics.Paint;
 import android.graphics.Rect;
 
 
-import com.yxc.widgetlib.calendar.utils.Attrs;
+import com.yxc.widgetlib.calendar.utils.CalendarAttrs;
 
 import org.joda.time.LocalDate;
 
 public class InnerPainter implements CalendarPainter {
 
-    private Attrs mAttrs;
+    private CalendarAttrs mAttrs;
     protected Paint mTextPaint;
     protected Paint mCirclePaint;
 
     private int noAlphaColor = 255;
 
 
-    public InnerPainter(Attrs attrs) {
+    public InnerPainter(CalendarAttrs attrs) {
         this.mAttrs = attrs;
 
         mTextPaint = getPaint();
