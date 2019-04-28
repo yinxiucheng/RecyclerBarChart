@@ -9,6 +9,7 @@ import android.view.MotionEvent;
 
 import com.yxc.chartlib.attrs.SleepChartAttrs;
 import com.yxc.chartlib.barchart.BarChartRecyclerView;
+import com.yxc.chartlib.util.AttrsUtil;
 
 /**
  * @author yxc
@@ -26,6 +27,7 @@ public class SleepChartRecyclerView extends RecyclerView {
 
     public SleepChartRecyclerView(@NonNull Context context, @Nullable AttributeSet attrs) {
         super(context, attrs);
+        this.mAttrs = AttrsUtil.getSleepChartAttrs(context, attrs);
     }
 
     @Override

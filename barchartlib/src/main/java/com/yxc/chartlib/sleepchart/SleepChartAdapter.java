@@ -3,6 +3,7 @@ package com.yxc.chartlib.sleepchart;
 import android.content.Context;
 import android.support.annotation.NonNull;
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -52,17 +53,15 @@ final public class SleepChartAdapter extends RecyclerView.Adapter<SleepChartAdap
                 mRecyclerView.getPaddingRight() - mRecyclerView.getPaddingLeft();
         SleepEntry latestSleepEntry = mEntries.get(0);
         SleepEntry longestSleepEntry = mEntries.get(mEntries.size() - 1);
+
         timestampDistance = Math.abs(latestSleepEntry.endTimestamp - longestSleepEntry.startTimestamp);
         SleepEntry currentSleepEntry = mEntries.get(position);
-        currentTimeDistance = currentSleepEntry.endTimestamp - currentSleepEntry.startTimestamp;
+
+        currentTimeDistance = (currentSleepEntry.endTimestamp - currentSleepEntry.startTimestamp);
         int itemWidth = (int) ((currentTimeDistance * contentWidth) / timestampDistance);
         setLinearLayout(viewHolder.contentView, itemWidth < 1 ? 1 : itemWidth);
-        bindBarEntryToView(viewHolder, position);
-    }
 
-    private void bindBarEntryToView(BarChartViewHolder viewHolder, final int position) {
-        final SleepEntry barEntry = mEntries.get(position);
-        viewHolder.contentView.setTag(barEntry);
+        viewHolder.contentView.setTag(currentSleepEntry);
     }
 
     @Override

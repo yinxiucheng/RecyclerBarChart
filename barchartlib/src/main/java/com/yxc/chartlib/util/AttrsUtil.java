@@ -23,6 +23,8 @@ public class AttrsUtil {
         attrs.deepSleepColor = ta.getColor(R.styleable.SleepChartRecyclerView_deepSleepColor, ColorUtil.getResourcesColor(context, R.color.deep_sleep_color));
         attrs.slumberColor = ta.getColor(R.styleable.SleepChartRecyclerView_slumberColor, ColorUtil.getResourcesColor(context, R.color.slumber_color));
         attrs.weakColor = ta.getColor(R.styleable.SleepChartRecyclerView_weakColor, ColorUtil.getResourcesColor(context, R.color.wake_color));
+        attrs.contentPaddingBottom = ta.getDimension(R.styleable.SleepChartRecyclerView_sr_contentPaddingBottom, DisplayUtil.dip2px(100));
+        attrs.txtColor = ta.getColor(R.styleable.SleepChartRecyclerView_sr_txtColor, ColorUtil.getResourcesColor(context, R.color.black_60_transparent));
         ta.recycle();
         return attrs;
     }

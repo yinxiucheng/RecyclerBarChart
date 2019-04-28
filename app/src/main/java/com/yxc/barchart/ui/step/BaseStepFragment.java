@@ -1,8 +1,8 @@
 package com.yxc.barchart.ui.step;
 
-import android.support.v4.app.Fragment;
+import com.yxc.barchart.ui.base.BaseFragment;
 
 
-public abstract class BaseStepFragment extends Fragment {
+public abstract class BaseStepFragment extends BaseFragment {
     public abstract void resetSelectedEntry();
 }

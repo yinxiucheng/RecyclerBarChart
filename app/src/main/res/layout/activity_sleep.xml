@@ -42,7 +42,6 @@
     <com.yxc.widgetlib.calendar.view.DayCalendarView
         android:id="@+id/monthCalendar"
         android:layout_width="match_parent"
-
         android:layout_height="300dp"
         app:hollowCircleColor="#0099FF"
         app:selectCircleColor="#0099FF"
@@ -52,7 +51,7 @@
     <FrameLayout
         android:id="@+id/container"
         android:layout_width="match_parent"
-        android:layout_height="0dp"
-        android:layout_weight="1" />
+        android:layout_height="200dp"
+        android:layout_marginTop="30dp"/>
 
 </LinearLayout>

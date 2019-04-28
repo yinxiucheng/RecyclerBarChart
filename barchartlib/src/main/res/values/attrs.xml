@@ -90,6 +90,8 @@
         <attr name="deepSleepColor" format="color"/>
         <attr name="slumberColor" format="color"/>
         <attr name="weakColor" format="color"/>
+        <attr name="sr_txtColor" format="color"/>
+        <attr name="sr_contentPaddingBottom" format="dimension"/>
     </declare-styleable>
 
 
