@@ -28,6 +28,8 @@
         <activity android:name=".ui.sleep.SleepActivity"
             android:theme="@style/AppTheme.NoActionBar"/>
 
+        <activity android:name=".ui.waterdrop.WaterDropActivity"
+            android:theme="@style/AppTheme.NoActionBar"/>
 
     </application>
 

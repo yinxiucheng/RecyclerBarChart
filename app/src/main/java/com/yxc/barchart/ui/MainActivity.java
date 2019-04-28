@@ -11,6 +11,7 @@ import android.view.View;
 import com.yxc.barchart.R;
 import com.yxc.barchart.ui.sleep.SleepActivity;
 import com.yxc.barchart.ui.step.StepActivity;
+import com.yxc.barchart.ui.waterdrop.WaterDropActivity;
 import com.yxc.commonlib.util.TimeUtil;
 
 import org.joda.time.LocalDate;
@@ -31,7 +32,6 @@ public class MainActivity extends AppCompatActivity {
         toolbar.setNavigationIcon(R.drawable.ic_navigation_left_black_45dp);
         setSupportActionBar(toolbar);
     }
-
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
@@ -62,4 +62,9 @@ public class MainActivity extends AppCompatActivity {
     public void clickLine(View view) {
 
     }
+    public void clickWaterDrop(View view) {
+        startActivity(new Intent(this, WaterDropActivity.class));
+    }
+
+
 }

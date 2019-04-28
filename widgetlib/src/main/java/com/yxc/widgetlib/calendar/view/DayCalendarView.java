@@ -131,7 +131,7 @@ public class DayCalendarView extends View {
                     LocalDate localDate = mDateList.get(i);
                     if (!isSameDay(localDate)){
                         // 点击事件去掉
-//                        onClick(localDate);
+                        onClick(localDate);
                     }
                     break;
                 }

@@ -26,7 +26,6 @@
             android:textColor="@color/black"
             android:textStyle="bold"
             android:textSize="18sp" />
-
     </android.support.v7.widget.Toolbar>
 
     <View
@@ -70,5 +69,14 @@
         android:text="睡眠图"
         android:layout_marginTop="30dp"
         android:onClick="clickSleep"/>
+
+    <Button
+        android:id="@+id/water_drop_btn"
+        android:layout_width="100dp"
+        android:layout_height="50dp"
+        android:layout_gravity="center_horizontal"
+        android:text="水滴图"
+        android:layout_marginTop="30dp"
+        android:onClick="clickWaterDrop"/>
 
 </LinearLayout>

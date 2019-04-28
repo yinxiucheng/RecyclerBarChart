@@ -45,5 +45,15 @@
     <color name="slumber_color">#ffb400</color>
     <color name="wake_color">#ff4f4f</color>
     <color name="sleep_background">#1b212c</color>
+    
+    
+    <color name="water_drop1">#fdb446</color>
+    <color name="water_drop2">#fd9a3b</color>
+    <color name="water_drop3">#fc7c41</color>
+    <color name="water_drop4">#f45c3c</color>
+    <color name="water_drop5">#e63f33</color>
+    <color name="water_drop6">#c60a38</color>
+    <color name="water_drop7">#ab083d</color>
+    <color name="water_drop8">#8c052f</color>
 
 </resources>

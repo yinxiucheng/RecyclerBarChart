@@ -246,12 +246,10 @@ final public class SleepChartRender {
         canvas.drawText(ratioStr, ratioRectF.left + contentTextPadding, ratioBaseLineY, mTextPaint);
     }
 
-
     private void drawRectF(Canvas canvas, Paint paint, float start, float top, float right, float bottom) {
         RectF rectF = new RectF();
         rectF.set(start, top, right, bottom);
         canvas.drawRect(rectF, paint);
     }
-
 
 }

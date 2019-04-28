@@ -6,12 +6,12 @@ import android.support.v4.app.FragmentTransaction;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.MenuItem;
-import android.view.View;
 import android.widget.FrameLayout;
 
 import com.yxc.barchart.R;
 import com.yxc.commonlib.util.ColorUtil;
 import com.yxc.commonlib.util.TimeUtil;
+import com.yxc.widgetlib.calendar.view.DayCalendarView;
 
 import org.joda.time.LocalDate;
 
@@ -19,12 +19,13 @@ import org.joda.time.LocalDate;
  * @author yxc
  * @since  2019/4/26
  */
-public class SleepActivity extends AppCompatActivity {
+public class SleepActivity extends AppCompatActivity implements DayCalendarView.OnDayCalendarItemSelectListener {
 
     Toolbar toolbar;
     FrameLayout container;
     SleepFragment currentFragment;
     LocalDate mLocalDate;
+    DayCalendarView mCalendarView;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -41,6 +42,8 @@ public class SleepActivity extends AppCompatActivity {
         toolbar.setTitleTextColor(ColorUtil.getResourcesColor(this, R.color.white));
         setSupportActionBar(toolbar);
 
+        mCalendarView = findViewById(R.id.calendar);
+        mCalendarView.setOnDayCalendarItemSelectListener(this);
         container = findViewById(R.id.container);
         mLocalDate = LocalDate.now();
         switchTab(SleepFragment.class, "SleepFragment", mLocalDate);
@@ -54,7 +57,6 @@ public class SleepActivity extends AppCompatActivity {
         }
         return super.onOptionsItemSelected(item);
     }
-
 
     public void switchTab(Class clz, String tag, LocalDate localDate) {
         FragmentTransaction ft = getSupportFragmentManager().beginTransaction();
@@ -82,5 +84,11 @@ public class SleepActivity extends AppCompatActivity {
         bundle.putLong("timestamp", timestamp);
         return bundle;
     }
+
+    @Override
+    public void onDayItemSelect(LocalDate localDate) {
+        switchTab(SleepFragment.class, "SleepFragment", localDate);
+    }
+
 
 }

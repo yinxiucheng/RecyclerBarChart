@@ -12,7 +12,7 @@
         android:layout_width="match_parent"
         android:layout_height="45dp"
         android:textAlignment="gravity"
-        android:tooltipText="睡眠"
+        android:tooltipText="水滴"
         app:contentInsetStartWithNavigation="0dp"
         app:titleTextAppearance="@style/Toolbar.TitleText">
 
@@ -20,7 +20,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="center"
-            android:text="睡眠"
+            android:text="水滴"
             android:textColor="@color/white"
             android:textStyle="bold"
             android:textSize="18sp" />
@@ -31,26 +31,8 @@
         android:layout_height="1px"
         android:background="@color/white_80_transparent" />
 
-    <com.yxc.widgetlib.calendar.view.CalendarBar
+    <com.yxc.barchart.view.WaterDrop
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="20dp"
-        app:calendarBarTextColor="@color/white"
-        app:calendarBarTextSize="14sp"
-        app:layout_scrollFlags="scroll"/>
-
-    <com.yxc.widgetlib.calendar.view.DayCalendarView
-        android:id="@+id/calendar"
-        android:layout_width="match_parent"
-        android:layout_height="300dp"
-        app:hollowCircleColor="#0099FF"
-        app:selectCircleColor="#0099FF"
-        app:layout_scrollFlags="scroll"
-        app:solarTextColor="@color/white"/>
-
-    <FrameLayout
-        android:id="@+id/container"
-        android:layout_width="match_parent"
-        android:layout_height="200dp"/>
+        android:layout_height="300dp" />
 
 </LinearLayout>
