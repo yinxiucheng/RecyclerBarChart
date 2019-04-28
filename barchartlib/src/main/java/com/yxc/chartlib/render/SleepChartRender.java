@@ -24,7 +24,6 @@ final public class SleepChartRender {
     private Paint mDeepSleepPaint;
     private Paint mSlumberPaint;
     private Paint mWakePaint;
-
     private Paint mTextPaint;
 
     private float contentTextPadding = 0;
@@ -73,16 +72,14 @@ final public class SleepChartRender {
 
     //绘制柱状图, mYAxis这个坐标会实时变动，所以通过 BarChartItemDecoration 传过来的精确值。
     final public void drawSleepChart(final Canvas canvas, @NonNull final RecyclerView parent) {
-
         float parentRight = parent.getWidth() - parent.getPaddingRight();
-        float parentHeight = parent.getMeasuredHeight() - mChartAttrs.contentPaddingBottom;
-        float parentBottom = parent.getBottom() - mChartAttrs.contentPaddingBottom;
+        float parentHeight = parent.getMeasuredHeight() - mChartAttrs.contentPaddingBottom - mChartAttrs.contentPaddingTop;
+        float chartBottom = parent.getBottom() - mChartAttrs.contentPaddingBottom;
         float distanceHeight = parentHeight / 3;
-
+        float chartTop = parent.getTop() + mChartAttrs.contentPaddingTop;
         final int childCount = parent.getChildCount();
 
         int sumWidth = 0;
-
         long sumWake = 0;
         long sumDeepSleep = 0;
         long sumSlumber = 0;
@@ -90,52 +87,71 @@ final public class SleepChartRender {
         SleepEntry latestSleepEntry = null;
         SleepEntry longestSleepEntry = null;
 
-        float wakeRatio = 0.f;
-        float slumberRatio = 0.f;
-        float deepSleepRatio = 0.f;
-
         for (int i = 0; i < childCount; i++) {
             View child = parent.getChildAt(i);
             SleepEntry sleepEntry = (SleepEntry) child.getTag();
-
             if (i == 0) {
                 latestSleepEntry = sleepEntry;
             } else if (i == childCount - 1) {
                 longestSleepEntry = sleepEntry;
             }
-
             long timeDistance = sleepEntry.endTimestamp - sleepEntry.startTimestamp;
             float end = parentRight - sumWidth;
             float start = end - child.getWidth();
             sumWidth += child.getWidth();
 
             if (sleepEntry.type == SleepEntry.TYPE_DEEP_SLEEP) {
-                float rectFTop = parentBottom - distanceHeight;
-                drawRectF(canvas, mDeepSleepPaint, start, rectFTop, end, parentBottom);
+                float rectFTop = chartTop +  2 * distanceHeight;
+                drawRectF(canvas, mDeepSleepPaint, start, rectFTop, end, chartBottom);
                 sumDeepSleep += timeDistance;
             } else if (sleepEntry.type == SleepEntry.TYPE_SLUMBER) {
-                float rectFTop = parentBottom - 2 * distanceHeight;
-                drawRectF(canvas, mSlumberPaint, start, rectFTop, end, parentBottom);
+                float rectFTop = chartTop + distanceHeight;
+                drawRectF(canvas, mSlumberPaint, start, rectFTop, end, chartBottom);
                 sumSlumber += timeDistance;
             } else {
-                float rectFTop = parentBottom - 3 * distanceHeight;
-                drawRectF(canvas, mWakePaint, start, rectFTop, end, parentBottom);
+                float rectFTop = chartTop;
+                drawRectF(canvas, mWakePaint, start, rectFTop, end, chartBottom);
                 sumWake += timeDistance;
             }
         }
 
         float parentLeft = parentRight - sumWidth;
+        String leftStr = TimeUtil.getDateStr(longestSleepEntry.startTimestamp, "hh:MM") + " 入睡";
+        float leftRectFStart = parentLeft;
+        float leftRectFEnd = leftRectFStart + mTextPaint.measureText(leftStr);
+        float rectFBottom = chartTop - DisplayUtil.dip2px(8);
+        drawTopTime(canvas, leftStr, rectFBottom, leftRectFStart, leftRectFEnd);
 
+        String rightStr = TimeUtil.getDateStr(latestSleepEntry.endTimestamp, "hh:MM") + " 醒来";
+        float rightRectFEnd = parentRight;
+        float rightRectFStart = parentRight - mTextPaint.measureText(rightStr);
+        drawTopTime(canvas, rightStr, rectFBottom, rightRectFStart, rightRectFEnd);
         if (null != latestSleepEntry && null != longestSleepEntry) {
             long timeDistance = latestSleepEntry.endTimestamp - longestSleepEntry.startTimestamp;
-
-            drawRatio(canvas, sumWake, sumSlumber, sumDeepSleep, timeDistance, parent, parentLeft);
+            drawChartBottomDecoration(canvas, sumWake, sumSlumber, sumDeepSleep, timeDistance, parent, parentLeft);
         }
     }
 
+    private void drawTopTime(Canvas canvas, String txtStr, float rectFBottom, float rectFLeft, float rectFRight){
+        Paint.FontMetrics fontMetrics = mTextPaint.getFontMetrics();
+        float top = fontMetrics.top;//为基线到字体上边框的距离,即上图中的top
+        float bottom = fontMetrics.bottom;//为基线到字体下边框的距离,即上图中的bottom
+        float txtHeight = bottom - top;
+        float txtCenter = (top + bottom) / 2;
 
-    private void drawRatio(Canvas canvas, long sumWake, long sumSlumber, long sumDeepSleep,
-                           long timeDistance, RecyclerView parent, float parentLeft) {
+        float rectFTop = rectFBottom - txtHeight;
+
+        RectF rectFTimeTop = new RectF(rectFLeft, rectFTop , rectFRight, rectFBottom);
+        int baseYLine = (int) (rectFTimeTop.centerY() - txtCenter);
+        int color = mTextPaint.getColor();
+        mTextPaint.setColor(Color.WHITE);
+        canvas.drawText(txtStr, rectFTimeTop.left, baseYLine, mTextPaint);
+        mTextPaint.setColor(color);
+    }
+
+
+    private void drawChartBottomDecoration(Canvas canvas, long sumWake, long sumSlumber, long sumDeepSleep,
+                                           long timeDistance, RecyclerView parent, float parentLeft) {
 
         float wakeRatio = (float) (sumWake * 100.0 / timeDistance);
         float slumberRatio = (float) (sumSlumber * 100.0 / timeDistance);
@@ -217,7 +233,6 @@ final public class SleepChartRender {
         mTextPaint.setColor(color);
     }
 
-
     private void drawRatioText(Canvas canvas, float ratio,
                                float rectFLeft, float rectFTop,
                                float rectFBottom, float txtCenter,
@@ -230,6 +245,7 @@ final public class SleepChartRender {
         canvas.drawRoundRect(ratioRectF, DisplayUtil.dip2px(2), DisplayUtil.dip2px(2), mSlumberPaint);
         canvas.drawText(ratioStr, ratioRectF.left + contentTextPadding, ratioBaseLineY, mTextPaint);
     }
+
 
     private void drawRectF(Canvas canvas, Paint paint, float start, float top, float right, float bottom) {
         RectF rectF = new RectF();

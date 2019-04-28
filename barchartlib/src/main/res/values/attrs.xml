@@ -92,6 +92,7 @@
         <attr name="weakColor" format="color"/>
         <attr name="sr_txtColor" format="color"/>
         <attr name="sr_contentPaddingBottom" format="dimension"/>
+        <attr name="sr_contentPaddingTop" format="dimension"/>
     </declare-styleable>
 
 
