@@ -63,12 +63,13 @@ public class WaterDrop extends View {
     }
 
     private void initPoint() {
-        xoff = canvasW / 3.5f;
+        xoff = canvasW / 4f;
         yoff = canvasH / 5f;
+
         startPoint.x = canvasW / 2f;
-        startPoint.y = yoff;
+        startPoint.y = canvasH - 2f * yoff;
         endPoint.x = startPoint.x;
-        endPoint.y = canvasH - 1.6f * yoff;
+        endPoint.y = yoff;
     }
 
     private void calculatePoint() {
@@ -78,10 +79,10 @@ public class WaterDrop extends View {
         control2.x = startPoint.x + xoff;
         control2.y = control1.y;
 
-        control3.x = startPoint.x - xoff / 3;
-        control3.y = endPoint.y - startPoint.y/8;
+        control3.x = startPoint.x - xoff / 8;
+        control3.y = endPoint.y + endPoint.y/8;
 
-        control4.x = startPoint.x + xoff / 3;
+        control4.x = startPoint.x + xoff / 8;
         control4.y = control3.y;
 
     }

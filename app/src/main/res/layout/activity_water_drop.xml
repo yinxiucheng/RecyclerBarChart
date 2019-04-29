@@ -31,8 +31,10 @@
         android:layout_height="1px"
         android:background="@color/white_80_transparent" />
 
-    <com.yxc.barchart.view.WaterDrop
+    <com.yxc.barchart.view.BezierCircle
+        android:id="@+id/bezier_view"
         android:layout_width="match_parent"
-        android:layout_height="300dp" />
+        android:layout_height="match_parent"
+        android:layout_centerInParent="true" />
 
 </LinearLayout>

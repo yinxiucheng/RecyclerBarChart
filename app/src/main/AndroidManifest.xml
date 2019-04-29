@@ -31,6 +31,8 @@
         <activity android:name=".ui.waterdrop.WaterDropActivity"
             android:theme="@style/AppTheme.NoActionBar"/>
 
+        <activity android:name=".ui.waterdrop.BezierActivity"/>
+
     </application>
 
 </manifest>
