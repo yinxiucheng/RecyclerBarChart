@@ -116,13 +116,13 @@ final public class SleepChartRender {
         }
 
         float parentLeft = parentRight - sumWidth;
-        String leftStr = TimeUtil.getDateStr(longestSleepEntry.startTimestamp, "hh:MM") + " 入睡";
+        String leftStr = TimeUtil.getDateStr(longestSleepEntry.startTimestamp, "HH:MM") + " 入睡";
         float leftRectFStart = parentLeft;
         float leftRectFEnd = leftRectFStart + mTextPaint.measureText(leftStr);
         float rectFBottom = chartTop - DisplayUtil.dip2px(8);
         drawTopTime(canvas, leftStr, rectFBottom, leftRectFStart, leftRectFEnd);
 
-        String rightStr = TimeUtil.getDateStr(latestSleepEntry.endTimestamp, "hh:MM") + " 醒来";
+        String rightStr = TimeUtil.getDateStr(latestSleepEntry.endTimestamp, "HH:MM") + " 醒来";
         float rightRectFEnd = parentRight;
         float rightRectFStart = parentRight - mTextPaint.measureText(rightStr);
         drawTopTime(canvas, rightStr, rectFBottom, rightRectFStart, rightRectFEnd);
