@@ -8,7 +8,6 @@ import android.content.Context;
 import android.graphics.Canvas;
 import android.support.annotation.Nullable;
 import android.util.AttributeSet;
-import android.view.animation.AccelerateDecelerateInterpolator;
 import android.view.animation.LinearInterpolator;
 import android.widget.FrameLayout;
 
@@ -73,7 +72,7 @@ public class WaterDrop extends FrameLayout {
         initWaterDropView();
         initAnimationLevelSet();
         initAnimationScanSet();
-//        startScanAnimator();
+        startScanAnimator();
         startLevelAnimator();
     }
 
@@ -233,9 +232,9 @@ public class WaterDrop extends FrameLayout {
 
 
     private ObjectAnimator createScanAnimator(BezierCircle water1, long delay) {
-        AccelerateDecelerateInterpolator timeInterpolator = new AccelerateDecelerateInterpolator();
+        LinearInterpolator timeInterpolator = new LinearInterpolator();
         ObjectAnimator water1Alpha = ObjectAnimator.ofFloat(water1, "alpha", 0.0f, 1.0f, 0.0f);
-        water1Alpha.setDuration(250);
+        water1Alpha.setDuration(1500);
         water1Alpha.setStartDelay(delay);
         water1Alpha.setInterpolator(timeInterpolator);
         return water1Alpha;
@@ -245,17 +244,15 @@ public class WaterDrop extends FrameLayout {
     //扫光动画
     public void initAnimationScanSet() {
         mAnimatorScanSet = new AnimatorSet();
+        int distance = 1000/3;
         ObjectAnimator water1Alpha = createScanAnimator(waterScan1, 0);
-        ObjectAnimator water2Alpha = createScanAnimator(waterScan2, 1 * 100);
-        ObjectAnimator water3Alpha = createScanAnimator(waterScan3, 2 * 100);
-        ObjectAnimator water4Alpha = createScanAnimator(waterScan4, 3 * 100);
-        ObjectAnimator water5Alpha = createScanAnimator(waterScan5, 4 * 100);
-        ObjectAnimator water6Alpha = createScanAnimator(waterScan6, 5 * 100);
-        ObjectAnimator water7Alpha = createScanAnimator(waterScan7, 6 * 100);
-        ObjectAnimator water8Alpha = createScanAnimator(waterScan8, 7 * 100);
-
-        ObjectAnimator nullAnimator = ObjectAnimator.ofFloat(waterScan8, "alpha", 0, 0);
-        nullAnimator.setDuration(2000);
+        ObjectAnimator water2Alpha = createScanAnimator(waterScan2, 1 * distance);
+        ObjectAnimator water3Alpha = createScanAnimator(waterScan3, 2 * distance);
+        ObjectAnimator water4Alpha = createScanAnimator(waterScan4, 3 * distance);
+        ObjectAnimator water5Alpha = createScanAnimator(waterScan5, 4 * distance);
+        ObjectAnimator water6Alpha = createScanAnimator(waterScan6, 5 * distance);
+        ObjectAnimator water7Alpha = createScanAnimator(waterScan7, 6 * distance);
+        ObjectAnimator water8Alpha = createScanAnimator(waterScan8, 7 * distance);
 
         List<Animator> list = new ArrayList<>();
         list.add(water1Alpha);
@@ -266,7 +263,6 @@ public class WaterDrop extends FrameLayout {
         list.add(water6Alpha);
         list.add(water7Alpha);
         list.add(water8Alpha);
-        list.add(nullAnimator);
 
         mAnimatorScanSet.playTogether(list);
     }
