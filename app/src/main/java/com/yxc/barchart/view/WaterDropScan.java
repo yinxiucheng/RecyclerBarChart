@@ -22,7 +22,6 @@ import java.util.List;
  * @since 2019/4/28
  */
 public class WaterDropScan extends FrameLayout {
-
     BezierCircle waterScan1;
     BezierCircle waterScan2;
     BezierCircle waterScan3;
@@ -31,10 +30,7 @@ public class WaterDropScan extends FrameLayout {
     BezierCircle waterScan6;
     BezierCircle waterScan7;
     BezierCircle waterScan8;
-
     AnimatorSet mAnimatorScanSet;
-
-    Animator wrapAnimator;
 
     int radius = DisplayUtil.dip2px(24);
     Context mContext;
@@ -46,7 +42,6 @@ public class WaterDropScan extends FrameLayout {
                     // 移除所有的msg.what为0等消息，保证只有一个循环消息队列再跑
                     handler.removeMessages(0);
                     mAnimatorScanSet.start();
-                    wrapAnimator.start();
                     // app的功能逻辑处理
                     // 再次发出msg，循环更新
                     handler.sendEmptyMessageDelayed(0, 2000);
@@ -85,18 +80,8 @@ public class WaterDropScan extends FrameLayout {
     private void initView() {
         initWaterScanView();
         initAnimationScanSet();
-        initWrapAnimator();
         startScanAnimator();
     }
-
-
-    private void initWrapAnimator(){
-        LinearInterpolator timeInterpolator = new LinearInterpolator();
-        wrapAnimator = ObjectAnimator.ofFloat(this, "alpha", 1f, 0f);
-        wrapAnimator.setDuration(2000);
-        wrapAnimator.setInterpolator(timeInterpolator);
-    }
-
 
     public void initWaterScanView() {
         waterScan1 = createWaterDrop(1, R.color.water_drop1);
@@ -143,22 +128,10 @@ public class WaterDropScan extends FrameLayout {
     }
 
 
-
-    private ObjectAnimator createLevelAnimator(final BezierCircle water1, long delay) {
-        LinearInterpolator timeInterpolator = new LinearInterpolator();
-        ObjectAnimator waterAlpha = ObjectAnimator.ofFloat(water1, "alpha", 0f, 0.5f, 0.2f, 1f);
-        waterAlpha.setDuration(3000);
-        waterAlpha.setStartDelay(delay);
-        waterAlpha.setInterpolator(timeInterpolator);
-        return waterAlpha;
-    }
-
     //层变动画
-
-
-    private ObjectAnimator createScanAnimator(BezierCircle water1, long delay, long duration) {
+    private ObjectAnimator createScanAnimator(BezierCircle water1, long delay, long duration, float start, float middle, float end) {
         LinearInterpolator timeInterpolator = new LinearInterpolator();
-        ObjectAnimator water1Alpha = ObjectAnimator.ofFloat(water1, "alpha", 0.0f, 1.0f, 0.0f);
+        ObjectAnimator water1Alpha = ObjectAnimator.ofFloat(water1, "alpha", start, middle, end);
         water1Alpha.setDuration(duration);
         water1Alpha.setStartDelay(delay);
         water1Alpha.setInterpolator(timeInterpolator);
@@ -169,15 +142,13 @@ public class WaterDropScan extends FrameLayout {
     //扫光动画
     public void initAnimationScanSet() {
         mAnimatorScanSet = new AnimatorSet();
-        int distance = 900 / 3;
-        ObjectAnimator water1Alpha = createScanAnimator(waterScan1, 0 * distance, 850);
-        ObjectAnimator water2Alpha = createScanAnimator(waterScan2, 1 * distance, 800);
-        ObjectAnimator water3Alpha = createScanAnimator(waterScan3, 2 * distance, 750);
-        ObjectAnimator water4Alpha = createScanAnimator(waterScan4, 3 * distance, 700);
-        ObjectAnimator water5Alpha = createScanAnimator(waterScan5, 4 * distance, 700);
-        ObjectAnimator water6Alpha = createScanAnimator(waterScan6, 5 * distance, 750);
-        ObjectAnimator water7Alpha = createScanAnimator(waterScan7, 6 * distance, 800);
-        ObjectAnimator water8Alpha = createScanAnimator(waterScan8, 7 * distance, 850);
+        ObjectAnimator water1Alpha = createScanAnimator(waterScan2, 0 , 700, 0f, 1.0f, 0f);
+        ObjectAnimator water2Alpha = createScanAnimator(waterScan3, 233, 630, 0f, 0.8f, 0f);
+        ObjectAnimator water3Alpha = createScanAnimator(waterScan4, 383, 630, 0f, 0.55f, 0f);
+        ObjectAnimator water4Alpha = createScanAnimator(waterScan5, 533, 650, 0f, 0.5f, 0f);
+        ObjectAnimator water5Alpha = createScanAnimator(waterScan6, 667, 650, 0f, 0.45f, 0f);
+        ObjectAnimator water6Alpha = createScanAnimator(waterScan7, 816, 567, 0f, 0.35f, 0f);
+        ObjectAnimator water7Alpha = createScanAnimator(waterScan8, 983, 433, 0f, 0.30f, 0f);
 
         List<Animator> list = new ArrayList<>();
         list.add(water1Alpha);
@@ -187,13 +158,8 @@ public class WaterDropScan extends FrameLayout {
         list.add(water5Alpha);
         list.add(water6Alpha);
         list.add(water7Alpha);
-        list.add(water8Alpha);
 
         mAnimatorScanSet.playTogether(list);
-    }
-
-    public void addWaterColorful(int number, int colorResource) {
-        addView(createWaterDrop(number, colorResource));
     }
 
     public BezierCircle createWaterDrop(int number, int colorResource) {
