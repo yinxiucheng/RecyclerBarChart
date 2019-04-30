@@ -1,7 +1,6 @@
 package com.yxc.barchart.view;
 
 import android.animation.Animator;
-import android.animation.AnimatorListenerAdapter;
 import android.animation.AnimatorSet;
 import android.animation.ObjectAnimator;
 import android.content.Context;
@@ -67,7 +66,9 @@ public class WaterDrop extends FrameLayout {
                 default:
                     break;
             }
-        };
+        }
+
+        ;
     };
 
     public WaterDrop(Context context) {
@@ -95,7 +96,7 @@ public class WaterDrop extends FrameLayout {
         initAnimationLevelSet();
         initAnimationScanSet();
         startScanAnimator();
-        startLevelAnimator();
+//        startLevelAnimator();
     }
 
     public void initBgView() {
@@ -143,7 +144,7 @@ public class WaterDrop extends FrameLayout {
         removeView(water8);
     }
 
-    public void resetWaterScan(){
+    public void resetWaterScan() {
         removeView(waterScan1);
         removeView(waterScan2);
         removeView(waterScan3);
@@ -230,10 +231,10 @@ public class WaterDrop extends FrameLayout {
     }
 
 
-    private ObjectAnimator createScanAnimator(BezierCircle water1, long delay) {
+    private ObjectAnimator createScanAnimator(BezierCircle water1, long delay, long duration) {
         LinearInterpolator timeInterpolator = new LinearInterpolator();
         ObjectAnimator water1Alpha = ObjectAnimator.ofFloat(water1, "alpha", 0.0f, 1.0f, 0.0f);
-        water1Alpha.setDuration(1500);
+        water1Alpha.setDuration(duration);
         water1Alpha.setStartDelay(delay);
         water1Alpha.setInterpolator(timeInterpolator);
         return water1Alpha;
@@ -243,15 +244,15 @@ public class WaterDrop extends FrameLayout {
     //扫光动画
     public void initAnimationScanSet() {
         mAnimatorScanSet = new AnimatorSet();
-        int distance = 1000/3;
-        ObjectAnimator water1Alpha = createScanAnimator(waterScan1, 0);
-        ObjectAnimator water2Alpha = createScanAnimator(waterScan2, 1 * distance);
-        ObjectAnimator water3Alpha = createScanAnimator(waterScan3, 2 * distance);
-        ObjectAnimator water4Alpha = createScanAnimator(waterScan4, 3 * distance);
-        ObjectAnimator water5Alpha = createScanAnimator(waterScan5, 4 * distance);
-        ObjectAnimator water6Alpha = createScanAnimator(waterScan6, 5 * distance);
-        ObjectAnimator water7Alpha = createScanAnimator(waterScan7, 6 * distance);
-        ObjectAnimator water8Alpha = createScanAnimator(waterScan8, 7 * distance);
+        int distance = 900 / 3;
+        ObjectAnimator water1Alpha = createScanAnimator(waterScan1, 0 * distance, 1000);
+        ObjectAnimator water2Alpha = createScanAnimator(waterScan2, 1 * distance, 900);
+        ObjectAnimator water3Alpha = createScanAnimator(waterScan3, 2 * distance, 800);
+        ObjectAnimator water4Alpha = createScanAnimator(waterScan4, 3 * distance, 700);
+        ObjectAnimator water5Alpha = createScanAnimator(waterScan5, 4 * distance, 700);
+        ObjectAnimator water6Alpha = createScanAnimator(waterScan6, 5 * distance, 800);
+        ObjectAnimator water7Alpha = createScanAnimator(waterScan7, 6 * distance, 900);
+        ObjectAnimator water8Alpha = createScanAnimator(waterScan8, 7 * distance, 1000);
 
         List<Animator> list = new ArrayList<>();
         list.add(water1Alpha);
