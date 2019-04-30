@@ -6,6 +6,7 @@ import android.animation.AnimatorSet;
 import android.animation.ObjectAnimator;
 import android.content.Context;
 import android.graphics.Canvas;
+import android.os.Handler;
 import android.support.annotation.Nullable;
 import android.util.AttributeSet;
 import android.view.animation.LinearInterpolator;
@@ -32,7 +33,6 @@ public class WaterDrop extends FrameLayout {
     BezierCircle water7;
     BezierCircle water8;
 
-
     BezierCircle waterScan1;
     BezierCircle waterScan2;
     BezierCircle waterScan3;
@@ -47,6 +47,28 @@ public class WaterDrop extends FrameLayout {
 
     int radius = DisplayUtil.dip2px(24);
     Context mContext;
+
+    private Handler handler = new Handler() {
+        public void handleMessage(android.os.Message msg) {
+            switch (msg.what) {
+                case 0:
+                    // 移除所有的msg.what为0等消息，保证只有一个循环消息队列再跑
+                    handler.removeMessages(0);
+                    mAnimatorScanSet.start();
+                    // app的功能逻辑处理
+                    // 再次发出msg，循环更新
+                    handler.sendEmptyMessageDelayed(0, 2000);
+                    break;
+                case 1:
+                    // 直接移除，定时器停止
+                    handler.removeMessages(0);
+                    break;
+
+                default:
+                    break;
+            }
+        };
+    };
 
     public WaterDrop(Context context) {
         super(context);
@@ -150,31 +172,8 @@ public class WaterDrop extends FrameLayout {
         addView(waterScan7);
         waterScan8.setAlpha(0.f);
         addView(waterScan8);
-
-        mAnimatorScanSet.setStartDelay(1000);
-        mAnimatorScanSet.start();
-        mAnimatorScanSet.addListener(new AnimatorListenerAdapter() {
-            private boolean mCanceled;
-
-            @Override
-            public void onAnimationStart(Animator animation) {
-                mCanceled = false;
-            }
-
-            @Override
-            public void onAnimationCancel(Animator animation) {
-                mCanceled = true;
-            }
-
-            @Override
-            public void onAnimationEnd(Animator animation) {
-                if (!mCanceled) {
-                    mAnimatorScanSet.start();
-                }
-            }
-        });
+        handler.sendEmptyMessageDelayed(0, 2000);
     }
-
 
     //层变动画
     public void startLevelAnimator() {
@@ -264,6 +263,8 @@ public class WaterDrop extends FrameLayout {
         list.add(water7Alpha);
         list.add(water8Alpha);
 
+        EaseCubicInterpolator interpolator = new EaseCubicInterpolator(0.20f, 0.13f, 0.60f, 1.00f);
+//        mAnimatorScanSet.setInterpolator(interpolator);
         mAnimatorScanSet.playTogether(list);
     }
 
