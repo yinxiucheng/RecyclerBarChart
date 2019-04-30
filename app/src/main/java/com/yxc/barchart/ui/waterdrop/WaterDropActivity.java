@@ -5,13 +5,15 @@ import android.support.annotation.Nullable;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.MenuItem;
+import android.view.View;
+import android.widget.Button;
 
 import com.yxc.barchart.R;
+import com.yxc.barchart.view.WaterDrop;
 import com.yxc.commonlib.util.ColorUtil;
 import com.yxc.commonlib.util.TimeUtil;
 
 import org.joda.time.LocalDate;
-
 /**
  * @author yxc
  * @since  2019/4/26
@@ -19,6 +21,8 @@ import org.joda.time.LocalDate;
 public class WaterDropActivity extends AppCompatActivity {
 
     Toolbar toolbar;
+    WaterDrop mContainer;
+    Button mBtn;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -28,13 +32,21 @@ public class WaterDropActivity extends AppCompatActivity {
     }
 
     private void initView() {
-
         toolbar = findViewById(R.id.toolBar);
         toolbar.setTitle(TimeUtil.getDateStr(TimeUtil.localDateToTimestamp(LocalDate.now()), "M月dd日"));
         toolbar.setNavigationIcon(R.drawable.ic_chevron_left_white_45dp);
         toolbar.setTitleTextColor(ColorUtil.getResourcesColor(this, R.color.white));
         setSupportActionBar(toolbar);
+        mContainer = findViewById(R.id.waterDrop);
+        mBtn = findViewById(R.id.btn);
 
+        mBtn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                mContainer.resetWaterDrop();
+                mContainer.startAnimator();
+            }
+        });
     }
 
     @Override

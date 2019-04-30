@@ -3,41 +3,37 @@ package com.yxc.barchart.view;
 import android.content.Context;
 import android.graphics.Canvas;
 import android.graphics.Paint;
-import android.graphics.PaintFlagsDrawFilter;
 import android.graphics.Path;
+import android.graphics.Region;
+import android.os.Build;
 import android.util.AttributeSet;
 import android.view.View;
-import com.yxc.commonlib.util.ColorUtil;
 
-public class BezierCircle extends View {
-    /**
-     * 路径
-     */
+import com.yxc.barchart.R;
+import com.yxc.commonlib.util.ColorUtil;
+import com.yxc.commonlib.util.DisplayUtil;
+
+/**
+ * @author yxc
+ * @date 2019/4/29
+ */
+public class WaterDropCore extends View {
     private Path mPath;
-    /**
-     * 画笔
-     */
     private Paint mFillCirclePaint;
-    /**
-     * 四个点
-     */
     private VPoint p2;
     private VPoint p4;
     private HPoint p1;
     private HPoint p3;
-    /**
-     * 半径
-     */
-    private Context mContext;
 
-    private float c;
+    private Context mContext;
+    private float control;
     private float blackMagic = 0.551915024494f;
 
-    private int number;
+    private int radius = DisplayUtil.dip2px(24);
+    private int number = 2;
     private int colorResource;
-    private int radius;
 
-    public BezierCircle(Context context, int radius, int number, int colorResource) {
+    public WaterDropCore(Context context, int radius, int number, int colorResource) {
         this(context, null);
         this.mContext = context;
         this.radius = radius;
@@ -46,13 +42,13 @@ public class BezierCircle extends View {
         init();
     }
 
-    public BezierCircle(Context context, AttributeSet attrs) {
+    public WaterDropCore(Context context, AttributeSet attrs) {
         this(context, attrs, 0);
         this.mContext = context;
         init();
     }
 
-    public BezierCircle(Context context, AttributeSet attrs, int defStyleAttr) {
+    public WaterDropCore(Context context, AttributeSet attrs, int defStyleAttr) {
         super(context, attrs, defStyleAttr);
         this.mContext = context;
         init();
@@ -63,7 +59,7 @@ public class BezierCircle extends View {
      */
     private void init() {
         mFillCirclePaint = new Paint();
-        mFillCirclePaint.setColor(0xFFFFFFFF);
+        mFillCirclePaint.setColor(0xFFFFFFFF);//fe626d);
         mFillCirclePaint.setStyle(Paint.Style.FILL);
         mFillCirclePaint.setStrokeWidth(1);
         mFillCirclePaint.setAntiAlias(true);
@@ -72,9 +68,15 @@ public class BezierCircle extends View {
         p4 = new VPoint();
         p1 = new HPoint();
         p3 = new HPoint();
-        c = radius * blackMagic;
+        colorResource = ColorUtil.getResourcesColor(mContext, R.color.water_drop5);
+        radius = DisplayUtil.dip2px(24);
+        control = radius * blackMagic;
     }
 
+    @Override
+    protected void onMeasure(int widthMeasureSpec, int heightMeasureSpec) {
+        super.onMeasure(widthMeasureSpec, heightMeasureSpec);
+    }
 
     @Override
     protected void onDraw(Canvas canvas) {
@@ -83,20 +85,22 @@ public class BezierCircle extends View {
         drawWaterDrop(canvas, number, radius, colorResource);
     }
 
+
     private void drawWaterDrop(Canvas canvas, int number, int radius, int colorResource) {
         canvas.save();
         Path path = getPath(number * radius);
         if (number > 1) {
             int radiusCircle = (number - 1) * radius;
             Path clipPath = getPath(radiusCircle);
-            path.op(clipPath, Path.Op.DIFFERENCE);
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+                canvas.clipOutPath(clipPath);
+            } else {
+                canvas.clipPath(clipPath, Region.Op.DIFFERENCE);
+            }
         }
-        //去锯齿
-        canvas.setDrawFilter(new PaintFlagsDrawFilter(0, Paint.ANTI_ALIAS_FLAG | Paint.FILTER_BITMAP_FLAG));
         drawBezierPath(canvas, ColorUtil.getResourcesColor(mContext, colorResource), path);
         canvas.restore();
     }
-
 
     /**
      * 画圆
@@ -123,20 +127,20 @@ public class BezierCircle extends View {
     }
 
     private void CircleModel(int radius) {
-        c = radius * blackMagic;
+        control = radius * blackMagic;
         // p2.p4属于圆左右两点
         p1.setY(radius);//右边
         p3.setY(-radius);// 左边
         p3.x = p1.x = 0;//圆心
-        p3.left.x = -c * 0.36f;
-        p3.right.x = c * 0.36f;
-        p1.left.x = -c;
-        p1.right.x = c;
+        p3.left.x = -control * 0.36f;
+        p3.right.x = control * 0.36f;
+        p1.left.x = -control;
+        p1.right.x = control;
         //p1.p3属于圆的上下两点
         p2.setX(radius); // 下边
         p4.setX(-radius);// 上边
         p2.y = p4.y = 0;//圆心
-        p2.top.y = p4.top.y = -c;
-        p2.bottom.y = p4.bottom.y = c;
+        p2.top.y = p4.top.y = -control;
+        p2.bottom.y = p4.bottom.y = control;
     }
 }

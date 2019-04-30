@@ -55,5 +55,14 @@
     <color name="water_drop6">#c60a38</color>
     <color name="water_drop7">#ab083d</color>
     <color name="water_drop8">#8c052f</color>
+    
+    <color name="water_n_drop1">#3f4658</color>
+    <color name="water_n_drop2">#363b4d</color>
+    <color name="water_n_drop3">#303343</color>
+    <color name="water_n_drop4">#292c3a</color>
+    <color name="water_n_drop5">#222431</color>
+    <color name="water_n_drop6">#1b1d28</color>
+    <color name="water_n_drop7">#15151e</color>
+    <color name="water_n_drop8">#050508</color>
 
 </resources>
