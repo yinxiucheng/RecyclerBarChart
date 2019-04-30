@@ -1,6 +1,7 @@
 package com.yxc.barchart.view;
 
 import android.animation.Animator;
+import android.animation.AnimatorListenerAdapter;
 import android.animation.AnimatorSet;
 import android.animation.ObjectAnimator;
 import android.content.Context;
@@ -8,6 +9,7 @@ import android.graphics.Canvas;
 import android.support.annotation.Nullable;
 import android.util.AttributeSet;
 import android.view.animation.AccelerateDecelerateInterpolator;
+import android.view.animation.LinearInterpolator;
 import android.widget.FrameLayout;
 
 import com.yxc.barchart.R;
@@ -21,6 +23,7 @@ import java.util.List;
  * @since 2019/4/28
  */
 public class WaterDrop extends FrameLayout {
+
     BezierCircle water1;
     BezierCircle water2;
     BezierCircle water3;
@@ -30,7 +33,19 @@ public class WaterDrop extends FrameLayout {
     BezierCircle water7;
     BezierCircle water8;
 
-    AnimatorSet mAnimatorLevelChangedSet;
+
+    BezierCircle waterScan1;
+    BezierCircle waterScan2;
+    BezierCircle waterScan3;
+    BezierCircle waterScan4;
+    BezierCircle waterScan5;
+    BezierCircle waterScan6;
+    BezierCircle waterScan7;
+    BezierCircle waterScan8;
+
+    AnimatorSet mAnimatorLevelSet;
+    AnimatorSet mAnimatorScanSet;
+
     int radius = DisplayUtil.dip2px(24);
     Context mContext;
 
@@ -54,9 +69,12 @@ public class WaterDrop extends FrameLayout {
 
     private void initView() {
         initBgView();
+        initWaterScanView();
         initWaterDropView();
         initAnimationLevelSet();
-        mAnimatorLevelChangedSet.start();
+        initAnimationScanSet();
+//        startScanAnimator();
+        startLevelAnimator();
     }
 
     public void initBgView() {
@@ -70,7 +88,7 @@ public class WaterDrop extends FrameLayout {
         this.addWaterColorful(1, R.color.water_n_drop1);
     }
 
-    public void initWaterDropView(){
+    public void initWaterDropView() {
         water1 = createWaterDrop(1, R.color.water_drop1);
         water2 = createWaterDrop(2, R.color.water_drop2);
         water3 = createWaterDrop(3, R.color.water_drop3);
@@ -79,10 +97,21 @@ public class WaterDrop extends FrameLayout {
         water6 = createWaterDrop(6, R.color.water_drop6);
         water7 = createWaterDrop(7, R.color.water_drop7);
         water8 = createWaterDrop(8, R.color.water_drop8);
-        addView(water1);
     }
 
-    public void resetWaterDrop(){
+
+    public void initWaterScanView() {
+        waterScan1 = createWaterDrop(1, R.color.water_drop1);
+        waterScan2 = createWaterDrop(2, R.color.water_drop2);
+        waterScan3 = createWaterDrop(3, R.color.water_drop3);
+        waterScan4 = createWaterDrop(4, R.color.water_drop4);
+        waterScan5 = createWaterDrop(5, R.color.water_drop5);
+        waterScan6 = createWaterDrop(6, R.color.water_drop6);
+        waterScan7 = createWaterDrop(7, R.color.water_drop7);
+        waterScan8 = createWaterDrop(8, R.color.water_drop8);
+    }
+
+    public void resetWaterDrop() {
         removeView(water1);
         removeView(water2);
         removeView(water3);
@@ -93,44 +122,103 @@ public class WaterDrop extends FrameLayout {
         removeView(water8);
     }
 
-    //层变动画
-    public void startAnimator(){
-        addView(water1);
-        mAnimatorLevelChangedSet.start();
+    public void resetWaterScan(){
+        removeView(waterScan1);
+        removeView(waterScan2);
+        removeView(waterScan3);
+        removeView(waterScan4);
+        removeView(waterScan5);
+        removeView(waterScan6);
+        removeView(waterScan7);
+        removeView(waterScan8);
     }
 
-    private ObjectAnimator createLevelObjectAnimator(final BezierCircle water1,
-                                                     final BezierCircle water2,
-                                                     AccelerateDecelerateInterpolator mTimeInterpolator){
-        ObjectAnimator waterAlpha = ObjectAnimator.ofFloat(water1, "alpha", 0f, 0.5f, 0.2f, 1f);
-        waterAlpha.setDuration(1000);
-        waterAlpha.setInterpolator(mTimeInterpolator);
+    //层变动画
+    public void startScanAnimator() {
+        waterScan1.setAlpha(0.f);
+        addView(waterScan1);
+        waterScan2.setAlpha(0.f);
+        addView(waterScan2);
+        waterScan3.setAlpha(0.f);
+        addView(waterScan3);
+        waterScan4.setAlpha(0.f);
+        addView(waterScan4);
+        waterScan5.setAlpha(0.f);
+        addView(waterScan5);
+        waterScan6.setAlpha(0.f);
+        addView(waterScan6);
+        waterScan7.setAlpha(0.f);
+        addView(waterScan7);
+        waterScan8.setAlpha(0.f);
+        addView(waterScan8);
 
-        if (null != water2){
-            waterAlpha.addListener(new SimpleAnimatorListener(){
-                @Override
-                public void onAnimationEnd(Animator animation) {
-                    super.onAnimationEnd(animation);
-                    addView(water2);
+        mAnimatorScanSet.setStartDelay(1000);
+        mAnimatorScanSet.start();
+        mAnimatorScanSet.addListener(new AnimatorListenerAdapter() {
+            private boolean mCanceled;
+
+            @Override
+            public void onAnimationStart(Animator animation) {
+                mCanceled = false;
+            }
+
+            @Override
+            public void onAnimationCancel(Animator animation) {
+                mCanceled = true;
+            }
+
+            @Override
+            public void onAnimationEnd(Animator animation) {
+                if (!mCanceled) {
+                    mAnimatorScanSet.start();
                 }
+            }
+        });
+    }
 
-            });
-        }
+
+    //层变动画
+    public void startLevelAnimator() {
+        water1.setAlpha(0.f);
+        addView(water1);
+        water2.setAlpha(0.f);
+        addView(water2);
+        water3.setAlpha(0.f);
+        addView(water3);
+        water4.setAlpha(0.f);
+        addView(water4);
+        water5.setAlpha(0.f);
+        addView(water5);
+        water6.setAlpha(0.f);
+        addView(water6);
+        water7.setAlpha(0.f);
+        addView(water7);
+        water8.setAlpha(0.f);
+        addView(water8);
+        mAnimatorLevelSet.start();
+    }
+
+
+    private ObjectAnimator createLevelAnimator(final BezierCircle water1, long delay) {
+        LinearInterpolator timeInterpolator = new LinearInterpolator();
+        ObjectAnimator waterAlpha = ObjectAnimator.ofFloat(water1, "alpha", 0f, 0.5f, 0.2f, 1f);
+        waterAlpha.setDuration(3000);
+        waterAlpha.setStartDelay(delay);
+        waterAlpha.setInterpolator(timeInterpolator);
         return waterAlpha;
     }
 
     //层变动画
-    public void initAnimationLevelSet(){
-        AccelerateDecelerateInterpolator mTimeInterpolator = new AccelerateDecelerateInterpolator();
-        mAnimatorLevelChangedSet = new AnimatorSet();
-        ObjectAnimator water1Alpha = createLevelObjectAnimator(water1, water2, mTimeInterpolator);
-        ObjectAnimator water2Alpha = createLevelObjectAnimator(water2, water3, mTimeInterpolator);
-        ObjectAnimator water3Alpha = createLevelObjectAnimator(water3, water4, mTimeInterpolator);
-        ObjectAnimator water4Alpha = createLevelObjectAnimator(water4, water5, mTimeInterpolator);
-        ObjectAnimator water5Alpha = createLevelObjectAnimator(water5, water6, mTimeInterpolator);
-        ObjectAnimator water6Alpha = createLevelObjectAnimator(water6, water7, mTimeInterpolator);
-        ObjectAnimator water7Alpha = createLevelObjectAnimator(water7, water8, mTimeInterpolator);
-        ObjectAnimator water8Alpha = createLevelObjectAnimator(water8, null, mTimeInterpolator);
+    public void initAnimationLevelSet() {
+        mAnimatorLevelSet = new AnimatorSet();
+        ObjectAnimator water1Alpha = createLevelAnimator(water1, 0);
+        ObjectAnimator water2Alpha = createLevelAnimator(water2, 1 * 2000);
+        ObjectAnimator water3Alpha = createLevelAnimator(water3, 2 * 2000);
+        ObjectAnimator water4Alpha = createLevelAnimator(water4, 3 * 2000);
+        ObjectAnimator water5Alpha = createLevelAnimator(water5, 4 * 2000);
+        ObjectAnimator water6Alpha = createLevelAnimator(water6, 5 * 2000);
+        ObjectAnimator water7Alpha = createLevelAnimator(water7, 6 * 2000);
+        ObjectAnimator water8Alpha = createLevelAnimator(water8, 7 * 2000);
         List<Animator> list = new ArrayList<>();
         list.add(water1Alpha);
         list.add(water2Alpha);
@@ -140,55 +228,34 @@ public class WaterDrop extends FrameLayout {
         list.add(water6Alpha);
         list.add(water7Alpha);
         list.add(water8Alpha);
-        mAnimatorLevelChangedSet.playSequentially(list);
+        mAnimatorLevelSet.playTogether(list);
+    }
+
+
+    private ObjectAnimator createScanAnimator(BezierCircle water1, long delay) {
+        AccelerateDecelerateInterpolator timeInterpolator = new AccelerateDecelerateInterpolator();
+        ObjectAnimator water1Alpha = ObjectAnimator.ofFloat(water1, "alpha", 0.0f, 1.0f, 0.0f);
+        water1Alpha.setDuration(250);
+        water1Alpha.setStartDelay(delay);
+        water1Alpha.setInterpolator(timeInterpolator);
+        return water1Alpha;
     }
 
 
     //扫光动画
-    public void initScanAnimationSet(){
+    public void initAnimationScanSet() {
+        mAnimatorScanSet = new AnimatorSet();
+        ObjectAnimator water1Alpha = createScanAnimator(waterScan1, 0);
+        ObjectAnimator water2Alpha = createScanAnimator(waterScan2, 1 * 100);
+        ObjectAnimator water3Alpha = createScanAnimator(waterScan3, 2 * 100);
+        ObjectAnimator water4Alpha = createScanAnimator(waterScan4, 3 * 100);
+        ObjectAnimator water5Alpha = createScanAnimator(waterScan5, 4 * 100);
+        ObjectAnimator water6Alpha = createScanAnimator(waterScan6, 5 * 100);
+        ObjectAnimator water7Alpha = createScanAnimator(waterScan7, 6 * 100);
+        ObjectAnimator water8Alpha = createScanAnimator(waterScan8, 7 * 100);
 
-        AccelerateDecelerateInterpolator mTimeInterpolator = new AccelerateDecelerateInterpolator();
-        mAnimatorLevelChangedSet = new AnimatorSet();
-
-        ObjectAnimator water1Alpha = ObjectAnimator.ofFloat(water1, "alpha", 0f, 1f, 0f);
-        water1Alpha.setDuration(250);
-        water1Alpha.setStartDelay(0);
-        water1Alpha.setInterpolator(mTimeInterpolator);
-
-        ObjectAnimator water2Alpha = ObjectAnimator.ofFloat(water2, "alpha", 0f, 1f, 0f);
-        water2Alpha.setDuration(250);
-        water1Alpha.setStartDelay(1 * 100);
-        water2Alpha.setInterpolator(mTimeInterpolator);
-
-        ObjectAnimator water3Alpha = ObjectAnimator.ofFloat(water3, "alpha", 0f, 1f, 0f);
-        water3Alpha.setDuration(250);
-        water1Alpha.setStartDelay(2 * 100);
-        water3Alpha.setInterpolator(mTimeInterpolator);
-
-        ObjectAnimator water4Alpha = ObjectAnimator.ofFloat(water4, "alpha", 0f, 1f, 0f);
-        water4Alpha.setDuration(250);
-        water1Alpha.setStartDelay(3 * 100);
-        water4Alpha.setInterpolator(mTimeInterpolator);
-
-        ObjectAnimator water5Alpha = ObjectAnimator.ofFloat(water5, "alpha", 0f, 1f, 0f);
-        water5Alpha.setDuration(250);
-        water1Alpha.setStartDelay(4 * 100);
-        water5Alpha.setInterpolator(mTimeInterpolator);
-
-        ObjectAnimator water6Alpha = ObjectAnimator.ofFloat(water6, "alpha", 0f, 1f, 0f);
-        water6Alpha.setDuration(250);
-        water1Alpha.setStartDelay(5 * 100);
-        water6Alpha.setInterpolator(mTimeInterpolator);
-
-        ObjectAnimator water7Alpha = ObjectAnimator.ofFloat(water7, "alpha", 0f, 1f, 0f);
-        water7Alpha.setDuration(250);
-        water1Alpha.setStartDelay(6 * 100);
-        water7Alpha.setInterpolator(mTimeInterpolator);
-
-        ObjectAnimator water8Alpha = ObjectAnimator.ofFloat(water8, "alpha", 0f, 1f, 0f);
-        water8Alpha.setDuration(250);
-        water1Alpha.setStartDelay(7 * 100);
-        water8Alpha.setInterpolator(mTimeInterpolator);
+        ObjectAnimator nullAnimator = ObjectAnimator.ofFloat(waterScan8, "alpha", 0, 0);
+        nullAnimator.setDuration(2000);
 
         List<Animator> list = new ArrayList<>();
         list.add(water1Alpha);
@@ -199,15 +266,16 @@ public class WaterDrop extends FrameLayout {
         list.add(water6Alpha);
         list.add(water7Alpha);
         list.add(water8Alpha);
+        list.add(nullAnimator);
 
-        mAnimatorLevelChangedSet.playSequentially(list);
+        mAnimatorScanSet.playTogether(list);
     }
 
-    public void addWaterColorful(int number, int colorResource){
+    public void addWaterColorful(int number, int colorResource) {
         addView(createWaterDrop(number, colorResource));
     }
 
-    public BezierCircle createWaterDrop(int number, int colorResource){
+    public BezierCircle createWaterDrop(int number, int colorResource) {
         BezierCircle bezierCircle = new BezierCircle(mContext, radius, number, colorResource);
         return bezierCircle;
     }

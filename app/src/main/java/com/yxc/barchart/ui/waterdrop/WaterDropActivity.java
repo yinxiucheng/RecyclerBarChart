@@ -22,7 +22,9 @@ public class WaterDropActivity extends AppCompatActivity {
 
     Toolbar toolbar;
     WaterDrop mContainer;
+
     Button mBtn;
+    Button mResetBtn;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -38,13 +40,22 @@ public class WaterDropActivity extends AppCompatActivity {
         toolbar.setTitleTextColor(ColorUtil.getResourcesColor(this, R.color.white));
         setSupportActionBar(toolbar);
         mContainer = findViewById(R.id.waterDrop);
+
         mBtn = findViewById(R.id.btn);
+        mResetBtn = findViewById(R.id.restBtn);
 
         mBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 mContainer.resetWaterDrop();
-                mContainer.startAnimator();
+                mContainer.startLevelAnimator();
+            }
+        });
+
+        mResetBtn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                mContainer.resetWaterDrop();
             }
         });
     }
