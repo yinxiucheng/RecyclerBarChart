@@ -22,6 +22,7 @@ import java.util.List;
  * @since 2019/4/28
  */
 public class WaterDropScan extends FrameLayout {
+
     BezierCircle waterScan1;
     BezierCircle waterScan2;
     BezierCircle waterScan3;
@@ -30,6 +31,7 @@ public class WaterDropScan extends FrameLayout {
     BezierCircle waterScan6;
     BezierCircle waterScan7;
     BezierCircle waterScan8;
+
     AnimatorSet mAnimatorScanSet;
 
     int radius = DisplayUtil.dip2px(24);

@@ -49,6 +49,8 @@ public class WaterDropActivity extends AppCompatActivity {
             public void onClick(View v) {
                 mContainer.resetWaterDrop();
                 mContainer.startLevelAnimator();
+                mContainer.resetWaterScan();
+                mContainer.startScanAnimator();
             }
         });
 
