@@ -16,6 +16,7 @@ import android.widget.TextView;
 import com.yxc.barchart.R;
 import com.yxc.barchart.TestData;
 import com.yxc.barchart.formatter.XAxisMonthFormatter;
+import com.yxc.barchart.ui.base.BaseChartFragment;
 import com.yxc.chartlib.attrs.BarChartAttrs;
 import com.yxc.chartlib.barchart.BarChartAdapter;
 import com.yxc.chartlib.barchart.BarChartRecyclerView;
@@ -40,7 +41,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-public class StepMonthFragment extends BaseStepFragment {
+public class StepMonthFragment extends BaseChartFragment {
 
     BarChartRecyclerView recyclerView;
     TextView txtLeftLocalDate;

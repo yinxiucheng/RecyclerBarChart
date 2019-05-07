@@ -1,5 +1,4 @@
-
-package com.yxc.barchart.ui.step;
+package com.yxc.barchart.ui.bezier;
 
 import android.os.Bundle;
 import android.support.v4.app.FragmentTransaction;
@@ -12,12 +11,14 @@ import com.yxc.barchart.R;
 import com.yxc.barchart.tab.OnTabSelectListener;
 import com.yxc.barchart.tab.TopTabLayout;
 import com.yxc.barchart.ui.base.BaseChartFragment;
+import com.yxc.barchart.ui.step.StepDayFragment;
 import com.yxc.commonlib.util.ColorUtil;
 import com.yxc.commonlib.util.TimeUtil;
 
 import org.joda.time.LocalDate;
 
-public class StepActivity extends AppCompatActivity {
+
+public class BezierActivity extends AppCompatActivity {
 
     private String[] mTitles = {"日", "周", "月", "年"};
 
@@ -42,7 +43,7 @@ public class StepActivity extends AppCompatActivity {
         toolbar.setNavigationIcon(R.drawable.ic_navigation_left_black_45dp);
         setSupportActionBar(toolbar);
 
-        switchTab(StepDayFragment.class, "DayFragment");
+        switchTab(DayBezierFragment.class, "DayBezierFragment");
     }
 
     @Override
@@ -65,13 +66,13 @@ public class StepActivity extends AppCompatActivity {
             @Override
             public void onTabSelect(int position) {
                 if (position == 0) {// 创建 月视图的数据
-                    switchTab(StepDayFragment.class, "DayFragment");
+                    switchTab(DayBezierFragment.class, "DayBezierFragment");
                 } else if (position == 1) {//创建Week视图的数据
-                    switchTab(StepWeekFragment.class, "WeekFragment");
+                    switchTab(WeekBezierFragment.class, "WeekBezierFragment");
                 } else if (position == 2) {//创建Month视图的数据
-                    switchTab(StepMonthFragment.class, "MonthFragment");
+                    switchTab(MonthBezierFragment.class, "MonthBezierFragment");
                 } else if (position == 3) {//创建Year视图的数据
-                    switchTab(StepYearFragment.class, "YearFragment");
+                    switchTab(YearBezierFragment.class, "YearBezierFragment");
                 }
             }
 

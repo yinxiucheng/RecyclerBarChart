@@ -1,5 +1,5 @@
 
-package com.yxc.barchart.ui.step;
+package com.yxc.barchart.ui.bezier;
 
 import android.os.Bundle;
 import android.support.annotation.NonNull;
@@ -15,15 +15,16 @@ import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import com.yxc.barchart.R;
+import com.yxc.barchart.RateTestData;
 import com.yxc.barchart.TestData;
-import com.yxc.barchart.formatter.DayHighLightMarkValueFormatter;
 import com.yxc.barchart.formatter.XAxisDayFormatter;
 import com.yxc.barchart.ui.base.BaseChartFragment;
+import com.yxc.barchart.ui.base.BaseFragment;
 import com.yxc.chartlib.attrs.BarChartAttrs;
 import com.yxc.chartlib.barchart.BarChartAdapter;
 import com.yxc.chartlib.barchart.BarChartRecyclerView;
 import com.yxc.chartlib.barchart.SpeedRatioLinearLayoutManager;
-import com.yxc.chartlib.barchart.itemdecoration.BarChartItemDecoration;
+import com.yxc.chartlib.barchart.itemdecoration.BezierChartItemDecoration;
 import com.yxc.chartlib.component.XAxis;
 import com.yxc.chartlib.component.YAxis;
 import com.yxc.chartlib.entrys.BarEntry;
@@ -43,7 +44,9 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-public class StepDayFragment extends BaseChartFragment implements ViewTreeObserver.OnGlobalLayoutListener {
+//import com.yxc.barchart.TestData;
+
+public class DayBezierFragment extends BaseChartFragment implements ViewTreeObserver.OnGlobalLayoutListener {
 
     BarChartRecyclerView recyclerView;
     TextView txtLeftLocalDate;
@@ -55,7 +58,7 @@ public class StepDayFragment extends BaseChartFragment implements ViewTreeObserv
 
     BarChartAdapter mBarChartAdapter;
     List<BarEntry> mEntries;
-    BarChartItemDecoration mItemDecoration;
+    BezierChartItemDecoration mItemDecoration;
 
     RecyclerItemGestureListener mItemGestureListener;
 
@@ -81,7 +84,7 @@ public class StepDayFragment extends BaseChartFragment implements ViewTreeObserv
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container,
                              @Nullable Bundle savedInstanceState) {
-        View view = View.inflate(getActivity(), R.layout.fragment_day_step, null);
+        View view = View.inflate(getActivity(), R.layout.fragment_day_bezier, null);
         initView(view);
         initData();
         reSizeYAxis();
@@ -110,8 +113,7 @@ public class StepDayFragment extends BaseChartFragment implements ViewTreeObserv
         mYAxis = new YAxis(mBarChartAttrs);
         mXAxis = new XAxis(mBarChartAttrs, displayNumber, valueFormatter);
 
-        mItemDecoration = new BarChartItemDecoration(mYAxis, mXAxis, mBarChartAttrs);
-        mItemDecoration.setHighLightValueFormatter(new DayHighLightMarkValueFormatter(0));
+        mItemDecoration = new BezierChartItemDecoration(mYAxis, mXAxis, mBarChartAttrs);
         recyclerView.addItemDecoration(mItemDecoration);
         mBarChartAdapter = new BarChartAdapter(getActivity(), mEntries, recyclerView, mXAxis, mBarChartAttrs);
         recyclerView.setAdapter(mBarChartAdapter);
@@ -119,10 +121,10 @@ public class StepDayFragment extends BaseChartFragment implements ViewTreeObserv
 
         currentTimestamp = TimeUtil.changZeroOfTheDay(LocalDate.now().plusDays(1));
 
-        List<BarEntry> preEntries = TestData.createDayEntries(mBarChartAttrs,
+        List<BarEntry> preEntries = RateTestData.createDayEntries(mBarChartAttrs,
                 currentTimestamp + preEntrySize * TimeUtil.TIME_HOUR, preEntrySize, mEntries.size(), true);
 
-        List<BarEntry> barEntries = TestData.createDayEntries(mBarChartAttrs, currentTimestamp,
+        List<BarEntry> barEntries = RateTestData.createDayEntries(mBarChartAttrs, currentTimestamp,
                 10 * displayNumber, mEntries.size(), false);
         barEntries.addAll(0, preEntries);
         bindBarChartList(barEntries);
@@ -164,14 +166,14 @@ public class StepDayFragment extends BaseChartFragment implements ViewTreeObserv
                         if (newState == RecyclerView.SCROLL_STATE_IDLE) {
                             //加载更多
                             if (recyclerView.canScrollHorizontally(1) && isRightScroll) {
-                                List<BarEntry> entries = TestData.createDayEntries(mBarChartAttrs, currentTimestamp, displayNumber, mEntries.size(), false);
+                                List<BarEntry> entries = RateTestData.createDayEntries(mBarChartAttrs, currentTimestamp, displayNumber, mEntries.size(), false);
                                 currentTimestamp = currentTimestamp - displayNumber * TimeUtil.TIME_HOUR;
                                 mEntries.addAll(entries);
                                 mBarChartAdapter.notifyDataSetChanged();
                             }
                             //回溯
                             if (mBarChartAttrs.enableScrollToScale) {
-                                int scrollToByDx = ChartComputeUtil.computeScrollByXOffset(recyclerView, displayNumber, TestData.VIEW_DAY);
+                                int scrollToByDx = ChartComputeUtil.computeScrollByXOffset(recyclerView, displayNumber, mType);
                                 recyclerView.scrollBy(scrollToByDx, 0);
                             }
                             //重绘Y轴

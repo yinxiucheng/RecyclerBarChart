@@ -4,7 +4,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:fitsSystemWindows="true"
-    android:background="@color/black_30_transparent"
+    android:background="@color/transparent"
     android:orientation="vertical">
 
     <android.support.v7.widget.Toolbar
@@ -38,7 +38,8 @@
         android:layout_width="100dp"
         android:layout_height="50dp"
         android:layout_marginStart="10dp"
-        android:layout_below="@id/toolBar"
+        android:layout_alignParentBottom="true"
+        android:layout_marginBottom="20dp"
         android:text="开启动画"
         android:layout_marginTop="5dp"/>
 
@@ -48,14 +49,15 @@
         android:layout_height="50dp"
         android:layout_alignParentEnd="true"
         android:layout_marginEnd="10dp"
-        android:layout_below="@id/toolBar"
+        android:layout_alignParentBottom="true"
+        android:layout_marginBottom="20dp"
         android:text="重置"
         android:layout_marginTop="5dp"/>
 
     <com.yxc.barchart.view.WaterDrop
         android:id="@+id/waterDrop"
         android:layout_width="match_parent"
-        android:layout_height="match_parent" />
+        android:layout_height="match_parent"/>
 
     <!--<com.yxc.barchart.view.WaterDropScan-->
         <!--android:id="@+id/waterDropScan"-->

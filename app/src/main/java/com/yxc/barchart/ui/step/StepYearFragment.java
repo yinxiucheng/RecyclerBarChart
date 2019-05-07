@@ -16,6 +16,7 @@ import com.yxc.barchart.R;
 import com.yxc.barchart.TestData;
 import com.yxc.barchart.formatter.XAxisYearFormatter;
 import com.yxc.barchart.formatter.YearHighLightMarkValueFormatter;
+import com.yxc.barchart.ui.base.BaseChartFragment;
 import com.yxc.chartlib.attrs.BarChartAttrs;
 import com.yxc.chartlib.barchart.BarChartAdapter;
 import com.yxc.chartlib.barchart.BarChartRecyclerView;
@@ -38,7 +39,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-public class StepYearFragment extends BaseStepFragment {
+public class StepYearFragment extends BaseChartFragment {
 
     BarChartRecyclerView recyclerView;
     TextView txtLeftLocalDate;

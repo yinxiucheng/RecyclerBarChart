@@ -1,5 +1,4 @@
-
-package com.yxc.barchart.ui.step;
+package com.yxc.barchart.ui.bezier;
 
 import android.os.Bundle;
 import android.support.annotation.NonNull;
@@ -10,40 +9,36 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.view.ViewTreeObserver;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import com.yxc.barchart.R;
+import com.yxc.barchart.RateTestData;
 import com.yxc.barchart.TestData;
-import com.yxc.barchart.formatter.DayHighLightMarkValueFormatter;
-import com.yxc.barchart.formatter.XAxisDayFormatter;
+import com.yxc.barchart.formatter.XAxisYearFormatter;
 import com.yxc.barchart.ui.base.BaseChartFragment;
 import com.yxc.chartlib.attrs.BarChartAttrs;
 import com.yxc.chartlib.barchart.BarChartAdapter;
 import com.yxc.chartlib.barchart.BarChartRecyclerView;
 import com.yxc.chartlib.barchart.SpeedRatioLinearLayoutManager;
-import com.yxc.chartlib.barchart.itemdecoration.BarChartItemDecoration;
+import com.yxc.chartlib.barchart.itemdecoration.BezierChartItemDecoration;
 import com.yxc.chartlib.component.XAxis;
 import com.yxc.chartlib.component.YAxis;
 import com.yxc.chartlib.entrys.BarEntry;
-import com.yxc.chartlib.formatter.ValueFormatter;
 import com.yxc.chartlib.listener.RecyclerItemGestureListener;
 import com.yxc.chartlib.listener.SimpleItemGestureListener;
 import com.yxc.chartlib.util.ChartComputeUtil;
 import com.yxc.chartlib.util.DecimalUtil;
-import com.yxc.chartlib.view.CustomAnimatedDecorator;
 import com.yxc.commonlib.util.TextUtil;
 import com.yxc.commonlib.util.TimeUtil;
 
 import org.joda.time.LocalDate;
-
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-public class StepDayFragment extends BaseChartFragment implements ViewTreeObserver.OnGlobalLayoutListener {
+public class YearBezierFragment extends BaseChartFragment {
 
     BarChartRecyclerView recyclerView;
     TextView txtLeftLocalDate;
@@ -55,18 +50,16 @@ public class StepDayFragment extends BaseChartFragment implements ViewTreeObserv
 
     BarChartAdapter mBarChartAdapter;
     List<BarEntry> mEntries;
-    BarChartItemDecoration mItemDecoration;
-
-    RecyclerItemGestureListener mItemGestureListener;
-
+    BezierChartItemDecoration mItemDecoration;
     YAxis mYAxis;
     XAxis mXAxis;
-    ValueFormatter valueFormatter;
-    public int mType;
+
     private int displayNumber;
     private BarChartAttrs mBarChartAttrs;
-    long currentTimestamp;
-    int preEntrySize = 4;
+    private LocalDate currentLocalDate;
+    private int preEntrySize = 3;
+
+    RecyclerItemGestureListener mItemGestureListener;
 
     //防止 Fragment重叠
     @Override
@@ -81,14 +74,13 @@ public class StepDayFragment extends BaseChartFragment implements ViewTreeObserv
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container,
                              @Nullable Bundle savedInstanceState) {
-        View view = View.inflate(getActivity(), R.layout.fragment_day_step, null);
+        View view = View.inflate(getActivity(), R.layout.fragment_year_bezier, null);
         initView(view);
         initData();
         reSizeYAxis();
         setListener();
         return view;
     }
-
 
     private void initView(View view) {
         rlTitle = view.findViewById(R.id.rl_title);
@@ -97,56 +89,46 @@ public class StepDayFragment extends BaseChartFragment implements ViewTreeObserv
         textTitle = view.findViewById(R.id.txt_layout);
         txtCountStep = view.findViewById(R.id.txt_count_Step);
         recyclerView = view.findViewById(R.id.recycler);
+
         mBarChartAttrs = recyclerView.mAttrs;
     }
 
     private void initData() {
         displayNumber = mBarChartAttrs.displayNumbers;
-        mType = TestData.VIEW_DAY;
-        valueFormatter = new XAxisDayFormatter();
         mEntries = new ArrayList<>();
-
         SpeedRatioLinearLayoutManager layoutManager = new SpeedRatioLinearLayoutManager(getActivity(), mBarChartAttrs);
         mYAxis = new YAxis(mBarChartAttrs);
-        mXAxis = new XAxis(mBarChartAttrs, displayNumber, valueFormatter);
-
-        mItemDecoration = new BarChartItemDecoration(mYAxis, mXAxis, mBarChartAttrs);
-        mItemDecoration.setHighLightValueFormatter(new DayHighLightMarkValueFormatter(0));
+        mXAxis = new XAxis(mBarChartAttrs, displayNumber, new XAxisYearFormatter());
+        mItemDecoration = new BezierChartItemDecoration(mYAxis, mXAxis, mBarChartAttrs);
         recyclerView.addItemDecoration(mItemDecoration);
         mBarChartAdapter = new BarChartAdapter(getActivity(), mEntries, recyclerView, mXAxis, mBarChartAttrs);
         recyclerView.setAdapter(mBarChartAdapter);
         recyclerView.setLayoutManager(layoutManager);
-
-        currentTimestamp = TimeUtil.changZeroOfTheDay(LocalDate.now().plusDays(1));
-
-        List<BarEntry> preEntries = TestData.createDayEntries(mBarChartAttrs,
-                currentTimestamp + preEntrySize * TimeUtil.TIME_HOUR, preEntrySize, mEntries.size(), true);
-
-        List<BarEntry> barEntries = TestData.createDayEntries(mBarChartAttrs, currentTimestamp,
-                10 * displayNumber, mEntries.size(), false);
-        barEntries.addAll(0, preEntries);
+        currentLocalDate = TimeUtil.getLastMonthOfTheYear(LocalDate.now());
+        List<BarEntry> barEntries = RateTestData.createYearEntries(currentLocalDate.plusMonths(preEntrySize), preEntrySize + 5 * displayNumber, mEntries.size());
         bindBarChartList(barEntries);
-        currentTimestamp = currentTimestamp - TimeUtil.TIME_HOUR * displayNumber * 10;
+        currentLocalDate = currentLocalDate.minusMonths(displayNumber * 5);
         setXAxis(displayNumber);
     }
 
     private void reSizeYAxis() {
-        recyclerView.scrollToPosition(preEntrySize + 1);
+        recyclerView.scrollToPosition(preEntrySize);
         List<BarEntry> visibleEntries = mEntries.subList(preEntrySize, preEntrySize + displayNumber + 1);
         YAxis yAxis = mYAxis.resetYAxis(mYAxis, DecimalUtil.getTheMaxNumber(visibleEntries));
         mBarChartAdapter.notifyDataSetChanged();
         if (yAxis != null) {
             mYAxis = yAxis;
             mItemDecoration.setYAxis(mYAxis);
-            mBarChartAdapter.setYAxis(mYAxis);
         }
         displayDateAndStep(visibleEntries);
     }
+
 
     //滑动监听
     private void setListener() {
         mItemGestureListener = new RecyclerItemGestureListener(getActivity(), recyclerView,
                 new SimpleItemGestureListener() {
+
                     private boolean isRightScroll;
 
                     @Override
@@ -162,30 +144,32 @@ public class StepDayFragment extends BaseChartFragment implements ViewTreeObserv
                     public void onScrollStateChanged(RecyclerView recyclerView, int newState) {
                         // 当不滚动时
                         if (newState == RecyclerView.SCROLL_STATE_IDLE) {
-                            //加载更多
+                            //左滑
                             if (recyclerView.canScrollHorizontally(1) && isRightScroll) {
-                                List<BarEntry> entries = TestData.createDayEntries(mBarChartAttrs, currentTimestamp, displayNumber, mEntries.size(), false);
-                                currentTimestamp = currentTimestamp - displayNumber * TimeUtil.TIME_HOUR;
+                                List<BarEntry> entries = RateTestData.createYearEntries(currentLocalDate, displayNumber, mEntries.size());
+                                currentLocalDate = currentLocalDate.minusMonths(displayNumber);
                                 mEntries.addAll(entries);
                                 mBarChartAdapter.notifyDataSetChanged();
                             }
-                            //回溯
+
                             if (mBarChartAttrs.enableScrollToScale) {
-                                int scrollToByDx = ChartComputeUtil.computeScrollByXOffset(recyclerView, displayNumber, TestData.VIEW_DAY);
-                                recyclerView.scrollBy(scrollToByDx, 0);
+                                int scrollByDx = ChartComputeUtil.computeScrollByXOffset(recyclerView, displayNumber, TestData.VIEW_YEAR);
+                                recyclerView.scrollBy(scrollByDx, 0);
                             }
-                            //重绘Y轴
                             resetYAxis(recyclerView);
                         }
                     }
-
                     @Override
                     public void onScrolled(RecyclerView recyclerView, int dx, int dy) {
-                        isRightScroll = dx < 0;
+                        //判断左滑，右滑时，ScrollView的位置不一样。
+                        if (dx < 0) {
+                            isRightScroll = true;
+                        } else {
+                            isRightScroll = false;
+                        }
                     }
                 });
         recyclerView.addOnItemTouchListener(mItemGestureListener);
-        //recyclerView.getViewTreeObserver().addOnGlobalLayoutListener(this);
     }
 
     //重新设置Y坐标
@@ -197,13 +181,8 @@ public class StepDayFragment extends BaseChartFragment implements ViewTreeObserv
             displayDateAndStep(entry.getValue());
             break;
         }
-        YAxis yAxis = YAxis.getYAxis(mBarChartAttrs, yAxisMaximum);
-        if (yAxis != null) {
-            mYAxis = yAxis;
-            mBarChartAdapter.setYAxis(mYAxis);
-            mItemDecoration.setYAxis(mYAxis);
-        }
-
+        mYAxis = YAxis.getYAxis(mBarChartAttrs, yAxisMaximum);
+        mItemDecoration.setYAxis(mYAxis);
     }
 
     private void bindBarChartList(List<BarEntry> entries) {
@@ -220,21 +199,18 @@ public class StepDayFragment extends BaseChartFragment implements ViewTreeObserv
         mBarChartAdapter.setXAxis(mXAxis);
     }
 
-
     private void displayDateAndStep(List<BarEntry> displayEntries) {
-        mBarChartAdapter.setYAxis(mYAxis);
         BarEntry rightBarEntry = displayEntries.get(0);
         BarEntry leftBarEntry = displayEntries.get(displayEntries.size() - 1);
         txtLeftLocalDate.setText(TimeUtil.getDateStr(leftBarEntry.timestamp, "yyyy-MM-dd HH:mm:ss"));
         txtRightLocalDate.setText(TimeUtil.getDateStr(rightBarEntry.timestamp, "yyyy-MM-dd HH:mm:ss"));
 
-        String beginDateStr = TimeUtil.getDateStr(leftBarEntry.timestamp, "yyyy年MM月dd日 HH:mm");
-        String patternStr = "yyyy年MM月dd日 HH:mm";
-        if (TimeUtil.isTheSameDay(leftBarEntry.timestamp, rightBarEntry.timestamp)) {
-            textTitle.setText(TimeUtil.getDateStr(leftBarEntry.timestamp, "yyyy年MM月dd日"));
+        if (TimeUtil.isSameYear(leftBarEntry.timestamp, rightBarEntry.timestamp)) {
+            textTitle.setText(TimeUtil.getDateStr(leftBarEntry.timestamp, "yyyy年"));
         } else {
-            String endDateStr = TimeUtil.getDateStr(rightBarEntry.timestamp, patternStr);
-            String connectStr = " - ";
+            String beginDateStr = TimeUtil.getDateStr(leftBarEntry.timestamp, "yyyy/MM/dd");
+            String endDateStr = TimeUtil.getDateStr(rightBarEntry.timestamp, "yyyy/MM/dd");
+            String connectStr = " -- ";
             textTitle.setText(beginDateStr + connectStr + endDateStr);
         }
 
@@ -243,6 +219,7 @@ public class StepDayFragment extends BaseChartFragment implements ViewTreeObserv
             BarEntry entry = displayEntries.get(i);
             count += entry.getY();
         }
+
         int averageStep = (int) (count / displayEntries.size());
         String childStr = DecimalUtil.addComma(Integer.toString(averageStep));
         String parentStr = String.format(getString(R.string.str_count_step), childStr);
@@ -251,34 +228,9 @@ public class StepDayFragment extends BaseChartFragment implements ViewTreeObserv
     }
 
     @Override
-    public void onGlobalLayout() {
-        HashMap<Integer, CustomAnimatedDecorator> map = new HashMap<>();
-        for (int i = 0; i < recyclerView.getChildCount(); i++) {
-            View child = recyclerView.getChildAt(i);
-            int position = recyclerView.getChildAdapterPosition(child);
-            BarEntry barEntry = mEntries.get(position);
-            Log.d("DayFragment", " barEntry, localDate" + barEntry.localDate);
-            float realBottomPadding = recyclerView.getPaddingBottom() + mBarChartAttrs.contentPaddingBottom;
-            float realTopPadding = recyclerView.getPaddingTop() + mBarChartAttrs.maxYAxisPaddingTop;
-            float realContentHeight = recyclerView.getHeight() - realBottomPadding - realTopPadding;
-
-            float width = child.getWidth();
-            float barSpaceWidth = width * mBarChartAttrs.barSpace;
-            float barChartWidth = width - barSpaceWidth;//柱子的宽度
-            float height = barEntry.getY() / mYAxis.getAxisMaximum() * realContentHeight;
-
-            CustomAnimatedDecorator drawable = new CustomAnimatedDecorator(barChartWidth, realContentHeight,
-                    0, realContentHeight - height);
-            map.put(position, drawable);
-        }
-//        mItemDecoration.setAnimatorMap(map);
-//        recyclerView.getViewTreeObserver().removeOnGlobalLayoutListener(this);
-    }
-
-    @Override
     public void resetSelectedEntry() {
-        if (mItemGestureListener != null){
-            Log.d("DayFragment", " visibleHint" );
+        if (mItemGestureListener != null) {
+            Log.d("DayFragment", " visibleHint");
             mItemGestureListener.resetSelectedBarEntry();
             rlTitle.setVisibility(View.VISIBLE);
         }

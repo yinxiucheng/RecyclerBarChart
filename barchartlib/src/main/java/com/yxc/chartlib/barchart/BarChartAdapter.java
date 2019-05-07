@@ -62,7 +62,7 @@ final public class BarChartAdapter extends RecyclerView.Adapter<BarChartAdapter.
 
     @Override
     public void onBindViewHolder(@NonNull BarChartViewHolder viewHolder, int position) {
-        float contentWidth = (DisplayUtil.getScreenWidth(mContext) - mRecyclerView.getPaddingRight() - mRecyclerView.getPaddingLeft());
+        float contentWidth = (mRecyclerView.getWidth() - mRecyclerView.getPaddingRight() - mRecyclerView.getPaddingLeft());
 
         int itemWidth = (int) (contentWidth / mXAxis.displayNumbers);
         int reminderWidth = (int) (contentWidth % mXAxis.displayNumbers);
