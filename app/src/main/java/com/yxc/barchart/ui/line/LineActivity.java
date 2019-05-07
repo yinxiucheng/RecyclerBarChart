@@ -6,6 +6,7 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.MenuItem;
 import android.widget.FrameLayout;
+import android.widget.TextView;
 
 import com.yxc.barchart.R;
 import com.yxc.barchart.tab.OnTabSelectListener;
@@ -25,6 +26,7 @@ public class LineActivity extends AppCompatActivity {
     Toolbar toolbar;
     FrameLayout container;
     private BaseChartFragment currentFragment;
+    private TextView txtTitle;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -38,8 +40,10 @@ public class LineActivity extends AppCompatActivity {
         mTabLayout = findViewById(R.id.topTabLayout);
         container = findViewById(R.id.container);
         toolbar = findViewById(R.id.toolBar);
+        txtTitle = findViewById(R.id.title);
         toolbar.setTitle(TimeUtil.getDateStr(TimeUtil.localDateToTimestamp(LocalDate.now()), "M月dd日"));
         toolbar.setNavigationIcon(R.drawable.ic_navigation_left_black_45dp);
+        txtTitle.setText("折线图");
         setSupportActionBar(toolbar);
 
         switchTab(DayLineFragment.class, "DayLineFragment");
