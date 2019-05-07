@@ -283,20 +283,20 @@ final public class LineChartRender {
                     drawable.draw(canvas);
                 }
 
-                if (pointF1.x >= parentLeft && pointF2.x <= parentRightBoard) {
-                    if (barEntry.isSelected()) {
-                        canvas.drawCircle(pointF2.x, pointF2.y, DisplayUtil.dip2px(10), mBarChartPaint);
-                        canvas.drawLine(pointF2.x, pointF2.y, pointF2.x, bottom, mBarChartPaint);
-                    } else {
-                        canvas.drawCircle(pointF2.x, pointF2.y, DisplayUtil.dip2px(5), mBarChartPaint);
-                    }
-                    if (barEntryNear.isSelected()) {
-                        canvas.drawCircle(pointF1.x, pointF1.y, DisplayUtil.dip2px(10), mBarChartPaint);
-                        canvas.drawLine(pointF1.x, pointF1.y, pointF1.x, bottom, mBarChartPaint);
-                    } else {
-                        canvas.drawCircle(pointF1.x, pointF1.y, DisplayUtil.dip2px(5), mBarChartPaint);
-                    }
-                }
+//                if (pointF1.x >= parentLeft && pointF2.x <= parentRightBoard) {
+//                    if (barEntry.isSelected()) {
+//                        canvas.drawCircle(pointF2.x, pointF2.y, DisplayUtil.dip2px(10), mBarChartPaint);
+//                        canvas.drawLine(pointF2.x, pointF2.y, pointF2.x, bottom, mBarChartPaint);
+//                    } else {
+//                        canvas.drawCircle(pointF2.x, pointF2.y, DisplayUtil.dip2px(5), mBarChartPaint);
+//                    }
+//                    if (barEntryNear.isSelected()) {
+//                        canvas.drawCircle(pointF1.x, pointF1.y, DisplayUtil.dip2px(10), mBarChartPaint);
+//                        canvas.drawLine(pointF1.x, pointF1.y, pointF1.x, bottom, mBarChartPaint);
+//                    } else {
+//                        canvas.drawCircle(pointF1.x, pointF1.y, DisplayUtil.dip2px(5), mBarChartPaint);
+//                    }
+//                }
             }
         }
     }

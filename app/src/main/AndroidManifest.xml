@@ -26,6 +26,8 @@
 
         <activity android:name=".ui.sleep.SleepActivity"/>
 
+        <activity android:name=".ui.line.LineActivity"/>
+
         <activity android:name=".ui.waterdrop.WaterDropActivity" />
 
         <activity android:name=".ui.bezier.BezierActivity"/>

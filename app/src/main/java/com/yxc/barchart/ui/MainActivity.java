@@ -9,6 +9,7 @@ import android.view.MenuItem;
 import android.view.View;
 
 import com.yxc.barchart.R;
+import com.yxc.barchart.ui.line.LineActivity;
 import com.yxc.barchart.ui.sleep.SleepActivity;
 import com.yxc.barchart.ui.step.StepActivity;
 import com.yxc.barchart.ui.bezier.BezierActivity;
@@ -61,7 +62,7 @@ public class MainActivity extends AppCompatActivity {
     }
 
     public void clickLine(View view) {
-        startActivity(new Intent(this, BezierActivity.class));
+        startActivity(new Intent(this, LineActivity.class));
     }
 
     public void clickWaterDrop(View view) {

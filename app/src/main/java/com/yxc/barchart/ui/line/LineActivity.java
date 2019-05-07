@@ -1,4 +1,4 @@
-package com.yxc.barchart.ui.bezier;
+package com.yxc.barchart.ui.line;
 
 import android.os.Bundle;
 import android.support.v4.app.FragmentTransaction;
@@ -17,7 +17,7 @@ import com.yxc.commonlib.util.TimeUtil;
 import org.joda.time.LocalDate;
 
 
-public class BezierActivity extends AppCompatActivity {
+public class LineActivity extends AppCompatActivity {
 
     private String[] mTitles = {"日", "周", "月", "年"};
 
@@ -42,7 +42,7 @@ public class BezierActivity extends AppCompatActivity {
         toolbar.setNavigationIcon(R.drawable.ic_navigation_left_black_45dp);
         setSupportActionBar(toolbar);
 
-        switchTab(DayBezierFragment.class, "DayBezierFragment");
+        switchTab(DayLineFragment.class, "DayLineFragment");
     }
 
     @Override
@@ -65,13 +65,13 @@ public class BezierActivity extends AppCompatActivity {
             @Override
             public void onTabSelect(int position) {
                 if (position == 0) {// 创建 月视图的数据
-                    switchTab(DayBezierFragment.class, "DayBezierFragment");
+                    switchTab(DayLineFragment.class, "DayLineFragment");
                 } else if (position == 1) {//创建Week视图的数据
-                    switchTab(WeekBezierFragment.class, "WeekBezierFragment");
+                    switchTab(WeekLineFragment.class, "WeekLineFragment");
                 } else if (position == 2) {//创建Month视图的数据
-                    switchTab(MonthBezierFragment.class, "MonthBezierFragment");
+                    switchTab(MonthLineFragment.class, "MonthLineFragment");
                 } else if (position == 3) {//创建Year视图的数据
-                    switchTab(YearBezierFragment.class, "YearBezierFragment");
+                    switchTab(YearLineFragment.class, "YearLineFragment");
                 }
             }
 
