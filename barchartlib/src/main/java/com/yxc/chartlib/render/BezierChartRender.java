@@ -2,14 +2,17 @@ package com.yxc.chartlib.render;
 
 import android.graphics.Canvas;
 import android.graphics.Color;
+import android.graphics.LinearGradient;
 import android.graphics.Paint;
 import android.graphics.Path;
 import android.graphics.PointF;
 import android.graphics.RectF;
+import android.graphics.Shader;
 import android.support.annotation.NonNull;
 import android.support.v7.widget.RecyclerView;
 import android.view.View;
 
+import com.yxc.chartlib.R;
 import com.yxc.chartlib.bezier.ControlPoint;
 import com.yxc.chartlib.component.YAxis;
 import com.yxc.chartlib.entrys.BarEntry;
@@ -17,6 +20,7 @@ import com.yxc.chartlib.formatter.ValueFormatter;
 import com.yxc.chartlib.attrs.BarChartAttrs;
 import com.yxc.chartlib.util.ChartComputeUtil;
 import com.yxc.chartlib.util.DecimalUtil;
+import com.yxc.commonlib.util.ColorUtil;
 import com.yxc.commonlib.util.DisplayUtil;
 
 import java.util.ArrayList;
@@ -170,20 +174,21 @@ final public class BezierChartRender {
 
         List<ControlPoint> controlList = ControlPoint.getControlPointList(originPointFList, mBarChartAttrs.bezierIntensity);
 
-//        mLinearGradient = new LinearGradient(
-//                0,
-//                0,
-//                0,
-//                parent.getMeasuredHeight(),
-//                new int[]{
-//                        0xffffffff,
-//                        ColorUtil.getResourcesColor(parent.getContext(), R.color.pink),
-//                        ColorUtil.getResourcesColor(parent.getContext(), R.color.colorPrimary),
-//                        ColorUtil.getResourcesColor(parent.getContext(), R.color.colorPrimary),
-//                        ColorUtil.getResourcesColor(parent.getContext(), R.color.colorPrimary)},
-//                null,
-//                Shader.TileMode.CLAMP
-//        );
+        mLinearGradient = new LinearGradient(
+                0,
+                0,
+                0,
+                parent.getMeasuredHeight(),
+                new int[]{
+                        0xffffffff,
+                        ColorUtil.getResourcesColor(parent.getContext(), R.color.pink),
+                        ColorUtil.getResourcesColor(parent.getContext(), R.color.colorPrimary),
+                        ColorUtil.getResourcesColor(parent.getContext(), R.color.colorPrimary),
+                        ColorUtil.getResourcesColor(parent.getContext(), R.color.colorPrimary)},
+                null,
+                Shader.TileMode.CLAMP
+        );
+
         Path cubicPath = new Path();
         Path cubicFillPath = new Path();
         //贝塞尔曲线获取控制点
@@ -212,6 +217,8 @@ final public class BezierChartRender {
         canvas.save();
     }
 
+    LinearGradient mLinearGradient;
+
     private void drawCubicFill(Canvas c, List<PointF> pointFList, Path spline, float bottom) {
         spline.lineTo(pointFList.get(pointFList.size() - 1).x, bottom);
         spline.lineTo(pointFList.get(0).x, bottom);
@@ -234,7 +241,7 @@ final public class BezierChartRender {
         mBezierFillPaint.setStyle(Paint.Style.FILL);
         mBezierFillPaint.setColor(color);
 
-//        mBezierFillPaint.setShader(mLinearGradient);
+        mBezierFillPaint.setShader(mLinearGradient);
         canvas.drawPath(filledPath, mBezierFillPaint);
 
         // restore

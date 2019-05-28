@@ -51,7 +51,7 @@ public class LineActivity extends AppCompatActivity {
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
-        if(item.getItemId()==android.R.id.home){
+        if (item.getItemId() == android.R.id.home) {
             finish();
             return true;
         }
@@ -112,7 +112,7 @@ public class LineActivity extends AppCompatActivity {
     @Override
     protected void onStop() {
         super.onStop();
-        if (currentFragment != null){
+        if (currentFragment != null) {
             currentFragment.resetSelectedEntry();
         }
     }

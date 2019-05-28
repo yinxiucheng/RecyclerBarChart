@@ -98,7 +98,6 @@ public class BarChartItemDecoration extends RecyclerView.ItemDecoration {
             mBarBoardRender.drawBarBorder(canvas, parent);//绘制边框
 
             mBarChartRender.drawBarChart(canvas, parent, mYAxis);//draw BarChart
-//            mBarChartRender.drawChart(canvas, parent, mYAxis);
             mBarChartRender.drawHighLight(canvas, parent, mYAxis);
             mBarChartRender.drawBarChartValue(canvas, parent, mYAxis);//draw BarChart value
 
