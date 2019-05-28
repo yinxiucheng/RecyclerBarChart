@@ -3,8 +3,8 @@ package com.yxc.chartlib.util;
 import android.graphics.Path;
 import android.graphics.PointF;
 import android.graphics.RectF;
-import android.support.v7.widget.LinearLayoutManager;
-import android.support.v7.widget.RecyclerView;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
 import android.util.Log;
 import android.view.View;
 

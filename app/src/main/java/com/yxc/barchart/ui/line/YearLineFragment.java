@@ -1,9 +1,9 @@
 package com.yxc.barchart.ui.line;
 
 import android.os.Bundle;
-import android.support.annotation.NonNull;
-import android.support.annotation.Nullable;
-import android.support.v7.widget.RecyclerView;
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import androidx.recyclerview.widget.RecyclerView;
 import android.text.SpannableStringBuilder;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -21,7 +21,6 @@ import com.yxc.chartlib.attrs.BarChartAttrs;
 import com.yxc.chartlib.barchart.BarChartAdapter;
 import com.yxc.chartlib.barchart.BarChartRecyclerView;
 import com.yxc.chartlib.barchart.SpeedRatioLinearLayoutManager;
-import com.yxc.chartlib.barchart.itemdecoration.BezierChartItemDecoration;
 import com.yxc.chartlib.barchart.itemdecoration.LineChartItemDecoration;
 import com.yxc.chartlib.component.XAxis;
 import com.yxc.chartlib.component.YAxis;

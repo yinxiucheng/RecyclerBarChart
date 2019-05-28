@@ -7,7 +7,7 @@
     android:background="@color/sleep_background"
     android:orientation="vertical">
 
-    <android.support.v7.widget.Toolbar
+    <androidx.appcompat.widget.Toolbar
         android:id="@+id/toolBar"
         android:layout_width="match_parent"
         android:layout_height="45dp"
@@ -24,7 +24,7 @@
             android:textColor="@color/white"
             android:textStyle="bold"
             android:textSize="18sp" />
-    </android.support.v7.widget.Toolbar>
+    </androidx.appcompat.widget.Toolbar>
 
     <View
         android:layout_width="match_parent"

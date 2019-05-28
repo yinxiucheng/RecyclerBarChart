@@ -1,6 +1,6 @@
 package com.yxc.chartlib.entrys;
 
-import android.support.annotation.NonNull;
+import androidx.annotation.NonNull;
 import org.joda.time.LocalDate;
 
 /**
