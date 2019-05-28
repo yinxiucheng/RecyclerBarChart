@@ -84,7 +84,7 @@ final public class BezierChartRender {
         mBarChartPaint.reset();
         mBarChartPaint.setAntiAlias(true);
         mBarChartPaint.setStyle(Paint.Style.STROKE);
-        mBarChartPaint.setStrokeWidth(DisplayUtil.dip2px(2));
+        mBarChartPaint.setStrokeWidth(1);
         mBarChartPaint.setColor(mBarChartAttrs.barChartColor);
     }
 
