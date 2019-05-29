@@ -28,13 +28,21 @@
 
         <attr name="enableCharValueDisplay" format="boolean" />
         <attr name="enableYAxisZero" format="boolean" />
-        <attr name="enableXAxisGridLine" format="boolean" />
+        <attr name="enableYAxisGridLine" format="boolean" />
         <attr name="enableRightYAxisLabel" format="boolean" />
         <attr name="enableLeftYAxisLabel" format="boolean" />
         <attr name="enableBarBorder" format="boolean" />
         <attr name="enableScrollToScale" format="boolean"/>
         <attr name="enableValueMark" format="boolean"/>
-        
+        <attr name="enableXAxisLabel" format="boolean"/>
+        <attr name="enableXAxisDisplayLabel" format="boolean"/>
+        <attr name="enableXAxisGridLine" format="boolean"/>
+        <attr name="enableXAxisFirstGridLine" format="boolean"/>
+        <attr name="enableXAxisSecondGridLine" format="boolean"/>
+        <attr name="enableXAxisThirdGridLine" format="boolean"/>
+        <attr name="enableXAxisLineCircle" format="boolean"/>
+        <attr name="averageDisplay" format="boolean"/>
+
         <attr name="barSpace" format="float"/>
         <attr name="ratioVelocity" format="float"/>
         <attr name="ratioSpeed" format="float"/>
@@ -48,7 +56,7 @@
         <attr name="yAxisLineColor" format="color"/>
         <attr name="yAxisLabelHorizontalPadding" format="dimension"/>
         <attr name="yAxisLabelVerticalPadding" format="dimension"/>
-
+        <attr name="yAxisReverse" format="boolean"/>
 
         <!-- XAxis -->
         <attr name="xAxisTxtSize" format="dimension"/>
@@ -71,28 +79,47 @@
 
 
         <!--high light-->
-        <attr name="highLightLeftTxtColor" format="color"/>
-        <attr name="highLightLeftTxtSize" format="dimension"/>
-        <attr name="highLightRightTxtColor" format="color"/>
-        <attr name="highLightRightTxtSize" format="dimension"/>
-        <attr name="highLightRectColor" format="color"/>
+        <attr name="highLightLineType" format="integer"/>
+        <attr name="linePointRadius" format="dimension"/>
+        <attr name="linePointSelectRadius" format="dimension"/>
+        <attr name="linePointSelectStrokeWidth" format="dimension"/>
 
+        <!--fill color-->
+        <attr name="lineShaderBeginColor" format="color"/>
+        <attr name="lineShaderEndColor" format="color"/>
+        <attr name="enableLineFill" format="boolean"/>
+        <attr name="rateChartDarkColor" format="color"/>
+        <attr name="rateChartLightColor" format="color"/>
+        <attr name="lineColor" format="color"/>
+        <attr name="fillAlpha" format="integer"/>
+
+        <attr name="isDisplay" format="boolean"/>
 
     </declare-styleable>
-
 
     <declare-styleable name="SleepChartRecyclerView">
         <!--LinearLayoutManager-->
         <attr name="sr_layoutManagerOrientation" format="integer"/>
         <attr name="sr_layoutManagerReverseLayout" format="boolean"/>
         <attr name="sr_ratioSpeed" format="float"/>
-        
+
         <attr name="deepSleepColor" format="color"/>
         <attr name="slumberColor" format="color"/>
+        <attr name="eyeMoveColor" format="color"/>
         <attr name="weakColor" format="color"/>
         <attr name="sr_txtColor" format="color"/>
+        <attr name="sr_txtSize" format="dimension"/>
         <attr name="sr_contentPaddingBottom" format="dimension"/>
         <attr name="sr_contentPaddingTop" format="dimension"/>
+        <attr name="sleepItemHeight" format="dimension"/>
+        <attr name="sr_enableValueMark" format="boolean"/>
+
+        <attr name="sr_highLightLeftTxtColor" format="color"/>
+        <attr name="sr_highLightLeftTxtSize" format="dimension"/>
+        <attr name="sr_highLightRightTxtColor" format="color"/>
+        <attr name="sr_highLightRightTxtSize" format="dimension"/>
+        <attr name="sr_highLightRectColor" format="color"/>
+
     </declare-styleable>
 
 

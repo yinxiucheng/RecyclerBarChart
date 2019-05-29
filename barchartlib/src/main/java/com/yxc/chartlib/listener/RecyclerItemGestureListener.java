@@ -1,19 +1,19 @@
 package com.yxc.chartlib.listener;
 
 import android.content.Context;
-import androidx.annotation.NonNull;
-import androidx.recyclerview.widget.RecyclerView;
-import androidx.recyclerview.widget.RecyclerView.OnScrollListener;
 import android.util.Log;
 import android.view.GestureDetector;
 import android.view.MotionEvent;
 import android.view.View;
 
+import androidx.annotation.NonNull;
+import androidx.recyclerview.widget.RecyclerView;
+import androidx.recyclerview.widget.RecyclerView.OnScrollListener;
+
+import com.yxc.chartlib.barchart.SpeedRatioLayoutManager;
 import com.yxc.chartlib.entrys.BarEntry;
-import com.yxc.chartlib.barchart.BarChartAdapter;
-import com.yxc.chartlib.barchart.BarChartRecyclerView;
-import com.yxc.chartlib.barchart.BarChartRecyclerView.OnChartTouchListener;
-import com.yxc.chartlib.barchart.SpeedRatioLinearLayoutManager;
+import com.yxc.chartlib.view.BaseChartRecyclerView;
+import com.yxc.chartlib.view.BaseChartRecyclerView.OnChartTouchListener;
 
 /**
  * @author yxc
@@ -29,14 +29,14 @@ public class RecyclerItemGestureListener implements RecyclerView.OnItemTouchList
 
     private GestureDetector mGestureDetector;
 
-    private SpeedRatioLinearLayoutManager layoutManager;
+    private SpeedRatioLayoutManager layoutManager;
 
-    private BarChartAdapter mAdapter;
+    private RecyclerView.Adapter mAdapter;
 
-    public RecyclerItemGestureListener(Context context, final BarChartRecyclerView parent, final OnItemGestureListener listener) {
+    public RecyclerItemGestureListener(Context context, final BaseChartRecyclerView parent, final OnItemGestureListener listener) {
         mListener = listener;
-        layoutManager = (SpeedRatioLinearLayoutManager) parent.getLayoutManager();
-        mAdapter = (BarChartAdapter) parent.getAdapter();
+        layoutManager = (SpeedRatioLayoutManager) parent.getLayoutManager();
+        mAdapter =  parent.getAdapter();
         mGestureDetector = new GestureDetector(context, new GestureDetector.SimpleOnGestureListener() {
             @Override
             public boolean onSingleTapUp(MotionEvent e) {

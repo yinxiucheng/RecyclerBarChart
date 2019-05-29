@@ -2,21 +2,21 @@ package com.yxc.chartlib.barchart.itemdecoration;
 
 import android.graphics.Canvas;
 import android.graphics.Rect;
+import android.view.View;
+
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
-import android.util.Log;
-import android.view.View;
 
+import com.yxc.chartlib.attrs.BarChartAttrs;
+import com.yxc.chartlib.component.BaseYAxis;
 import com.yxc.chartlib.component.XAxis;
-import com.yxc.chartlib.component.YAxis;
 import com.yxc.chartlib.formatter.DefaultBarChartValueFormatter;
 import com.yxc.chartlib.formatter.ValueFormatter;
 import com.yxc.chartlib.render.BarBoardRender;
 import com.yxc.chartlib.render.BezierChartRender;
 import com.yxc.chartlib.render.XAxisRender;
 import com.yxc.chartlib.render.YAxisRender;
-import com.yxc.chartlib.attrs.BarChartAttrs;
 
 /**
  * @author yxc
@@ -25,10 +25,10 @@ import com.yxc.chartlib.attrs.BarChartAttrs;
  * 这个ItemDecoration 是BarChartAdapter专用的，里面直接用到了BarChartAdapter
  *
  */
-public class BezierChartItemDecoration extends RecyclerView.ItemDecoration {
+public class BezierChartItemDecoration<T extends BaseYAxis> extends RecyclerView.ItemDecoration {
 
     private int mOrientation;
-    private YAxis mYAxis;
+    private T mYAxis;
     private XAxis mXAxis;
     private BarChartAttrs mBarChartAttrs;
     private YAxisRender yAxisRenderer;
@@ -36,13 +36,11 @@ public class BezierChartItemDecoration extends RecyclerView.ItemDecoration {
     private BarBoardRender mBarBoardRender;
     private BezierChartRender mBezierRender;
     private ValueFormatter mBarChartValueFormatter;
-    private ValueFormatter mChartValueMarkFormatter;
-
 
     public static final int HORIZONTAL_LIST = LinearLayoutManager.HORIZONTAL;
     public static final int VERTICAL_LIST = LinearLayoutManager.VERTICAL;
 
-    public BezierChartItemDecoration(YAxis yAxis, XAxis xAxis, BarChartAttrs barChartAttrs) {
+    public BezierChartItemDecoration(T yAxis, XAxis xAxis, BarChartAttrs barChartAttrs) {
         this.mOrientation = barChartAttrs.layoutManagerOrientation;
         this.mYAxis = yAxis;
         this.mXAxis = xAxis;
@@ -51,8 +49,7 @@ public class BezierChartItemDecoration extends RecyclerView.ItemDecoration {
         this.xAxisRenderer = new XAxisRender(mBarChartAttrs);
         this.mBarBoardRender = new BarBoardRender(mBarChartAttrs);
         this.mBarChartValueFormatter = new DefaultBarChartValueFormatter(0);
-        this.mChartValueMarkFormatter = new DefaultBarChartValueFormatter(0);
-        this.mBezierRender = new BezierChartRender(mBarChartAttrs, mBarChartValueFormatter, mChartValueMarkFormatter);
+        this.mBezierRender = new BezierChartRender(mBarChartAttrs, mBarChartValueFormatter);
     }
 
     //支持自定义 柱状图顶部 value的格式。
@@ -61,17 +58,10 @@ public class BezierChartItemDecoration extends RecyclerView.ItemDecoration {
         this.mBezierRender.setBarChartValueFormatter(barChartValueFormatter);
     }
 
-    public void setChartValueMarkFormatter(ValueFormatter chartValueFormatter) {
-        this.mChartValueMarkFormatter = chartValueFormatter;
-        this.mBezierRender.setChartValueMarkFormatter(chartValueFormatter);
-    }
-
-
     @Override
     public void onDrawOver(Canvas canvas, RecyclerView parent, RecyclerView.State state) {
-        super.onDrawOver(canvas, parent, state);
+        super.onDraw(canvas, parent, state);
         if (mOrientation == HORIZONTAL_LIST) {
-            Log.d("ItemDecoration", " itemdecoration invoke!");
             //横向 list 画竖线
             yAxisRenderer.drawLeftYAxisLabel(canvas, parent, mYAxis);//画左边y坐标的刻度，会设定RecyclerView的 leftPadding
             yAxisRenderer.drawRightYAxisLabel(canvas, parent, mYAxis);//画右边y坐标的刻度，会设定RecyclerView的 rightPadding
@@ -79,7 +69,6 @@ public class BezierChartItemDecoration extends RecyclerView.ItemDecoration {
 
             xAxisRenderer.drawVerticalLine(canvas, parent, mXAxis);//画竖的网格线
             xAxisRenderer.drawXAxis(canvas, parent, mXAxis);//画x轴坐标的刻度
-
             mBarBoardRender.drawBarBorder(canvas, parent);//绘制边框
 
 //            mBezierRender.drawBezierChart(canvas, parent, mYAxis);//draw LineChart
@@ -103,7 +92,7 @@ public class BezierChartItemDecoration extends RecyclerView.ItemDecoration {
     }
 
 
-    public void setYAxis(YAxis mYAxis) {
+    public void setYAxis(T mYAxis) {
         this.mYAxis = mYAxis;
     }
 

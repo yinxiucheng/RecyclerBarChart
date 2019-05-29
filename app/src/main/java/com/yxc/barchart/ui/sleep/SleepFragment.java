@@ -2,22 +2,26 @@ package com.yxc.barchart.ui.sleep;
 
 import android.app.Activity;
 import android.os.Bundle;
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import androidx.recyclerview.widget.RecyclerView;
+
 import com.yxc.barchart.R;
 import com.yxc.barchart.ui.base.BaseFragment;
 import com.yxc.chartlib.attrs.SleepChartAttrs;
-import com.yxc.chartlib.entrys.SleepEntry;
+import com.yxc.chartlib.barchart.SpeedRatioLayoutManager;
+import com.yxc.chartlib.entrys.SleepItemEntry;
+import com.yxc.chartlib.listener.RecyclerItemGestureListener;
+import com.yxc.chartlib.listener.SimpleItemGestureListener;
 import com.yxc.chartlib.sleepchart.SleepChartAdapter;
 import com.yxc.chartlib.sleepchart.SleepChartItemDecoration;
-import com.yxc.chartlib.sleepchart.SleepChartRecyclerView;
-import com.yxc.chartlib.sleepchart.SleepLinearLayoutManager;
-import com.yxc.commonlib.util.TimeUtil;
+import com.yxc.chartlib.view.SleepChartRecyclerView;
+import com.yxc.commonlib.util.TimeDateUtil;
 
 import org.joda.time.LocalDate;
 
@@ -26,16 +30,16 @@ import java.util.List;
 
 /**
  * @author yxc
- * @date 2019/4/26
+ * @since 2019/4/26
  */
 public class SleepFragment extends BaseFragment {
 
     private SleepChartRecyclerView mRecyclerView;
-    private List<SleepEntry> mDataList;
+    private List<SleepItemEntry> mDataList;
     private LocalDate mLocalDate;
     private SleepChartAdapter mAdapter;
     private SleepChartAttrs mAttrs;
-    private SleepLinearLayoutManager mLayoutManager;
+    private SpeedRatioLayoutManager mLayoutManager;
     private Activity mContext;
     private SleepChartItemDecoration mItemDecoration;
 
@@ -78,7 +82,7 @@ public class SleepFragment extends BaseFragment {
         mRecyclerView = view.findViewById(R.id.recycler);
         mAttrs = mRecyclerView.mAttrs;
         mAdapter = new SleepChartAdapter(mContext, mDataList, mRecyclerView);
-        mLayoutManager = new SleepLinearLayoutManager(mContext, mAttrs);
+        mLayoutManager = new SpeedRatioLayoutManager(mContext, mAttrs);
         mItemDecoration = new SleepChartItemDecoration(mAttrs);
 
         mRecyclerView.setAdapter(mAdapter);
@@ -92,7 +96,7 @@ public class SleepFragment extends BaseFragment {
         if (null == bundle) {
             long timestamp = bundle.getLong("timestamp", -1);
             if (timestamp != -1) {
-                mLocalDate = TimeUtil.timestampToLocalDate(timestamp);
+                mLocalDate = TimeDateUtil.timestampToLocalDate(timestamp);
             } else {
                 mLocalDate = LocalDate.now();
             }
@@ -105,12 +109,36 @@ public class SleepFragment extends BaseFragment {
         } else {
             mDataList.clear();
         }
-        List<SleepEntry> entryList = SleepTestData.createSleepEntry(mLocalDate);
+        List<SleepItemEntry> entryList = SleepTestData.createSleepEntry(mLocalDate);
         mDataList.addAll(entryList);
     }
 
-    private void setListener() {
+    RecyclerItemGestureListener mItemGestureListener;
 
+    protected void setListener() {
+        mItemGestureListener = new RecyclerItemGestureListener(getActivity(), mRecyclerView,
+                new SimpleItemGestureListener() {
+                    @Override
+                    public void onItemClick(View view, int position) {
+
+                    }
+
+                    @Override
+                    public void onLongItemClick(View view, int position) {
+
+                    }
+
+                    @Override
+                    public void onScrollStateChanged(RecyclerView recyclerView, int newState) {
+
+                    }
+
+                    @Override
+                    public void onScrolled(RecyclerView recyclerView, int dx, int dy) {
+
+                    }
+                });
+        mRecyclerView.addOnItemTouchListener(mItemGestureListener);
     }
 
 }

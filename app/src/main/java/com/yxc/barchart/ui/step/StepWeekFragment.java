@@ -17,15 +17,15 @@ import android.widget.TextView;
 import com.yxc.barchart.R;
 import com.yxc.barchart.TestData;
 import com.yxc.barchart.formatter.XAxisWeekFormatter;
-import com.yxc.barchart.ui.base.BaseChartFragment;
 import com.yxc.chartlib.attrs.BarChartAttrs;
 import com.yxc.chartlib.barchart.BarChartAdapter;
-import com.yxc.chartlib.barchart.BarChartRecyclerView;
-import com.yxc.chartlib.barchart.SpeedRatioLinearLayoutManager;
+import com.yxc.chartlib.view.BarChartRecyclerView;
+import com.yxc.chartlib.barchart.SpeedRatioLayoutManager;
 import com.yxc.chartlib.barchart.itemdecoration.BarChartItemDecoration;
 import com.yxc.chartlib.component.XAxis;
 import com.yxc.chartlib.component.YAxis;
 import com.yxc.chartlib.entrys.BarEntry;
+import com.yxc.chartlib.entrys.YAxisMaxEntries;
 import com.yxc.chartlib.formatter.DefaultHighLightMarkValueFormatter;
 import com.yxc.chartlib.formatter.ValueFormatter;
 import com.yxc.chartlib.listener.RecyclerItemGestureListener;
@@ -34,16 +34,15 @@ import com.yxc.chartlib.util.ChartComputeUtil;
 import com.yxc.chartlib.util.DecimalUtil;
 import com.yxc.chartlib.view.CustomAnimatedDecorator;
 import com.yxc.commonlib.util.TextUtil;
-import com.yxc.commonlib.util.TimeUtil;
+import com.yxc.commonlib.util.TimeDateUtil;
 
 import org.joda.time.LocalDate;
 
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
-public class StepWeekFragment extends BaseChartFragment implements ViewTreeObserver.OnGlobalLayoutListener {
+public class StepWeekFragment extends BaseStepFragment implements ViewTreeObserver.OnGlobalLayoutListener {
 
     BarChartRecyclerView recyclerView;
     TextView txtLeftLocalDate;
@@ -107,7 +106,7 @@ public class StepWeekFragment extends BaseChartFragment implements ViewTreeObser
         valueFormatter = new XAxisWeekFormatter();
 
         mEntries = new ArrayList<>();
-        SpeedRatioLinearLayoutManager layoutManager = new SpeedRatioLinearLayoutManager(getActivity(), mBarChartAttrs);
+        SpeedRatioLayoutManager layoutManager = new SpeedRatioLayoutManager(getActivity(), mBarChartAttrs);
         mYAxis = new YAxis(mBarChartAttrs);
         mXAxis = new XAxis(mBarChartAttrs, displayNumber);
         mXAxis.setValueFormatter(valueFormatter);
@@ -133,7 +132,7 @@ public class StepWeekFragment extends BaseChartFragment implements ViewTreeObser
         recyclerView.setAdapter(mBarChartAdapter);
         recyclerView.setLayoutManager(layoutManager);
 
-        currentLocalDate = TimeUtil.getLastDayOfThisWeek(LocalDate.now());
+        currentLocalDate = TimeDateUtil.getLastDayOfThisWeek(LocalDate.now());
         List<BarEntry> barEntries = TestData.createWeekEntries(currentLocalDate.plusDays(preEntries),
                 preEntries + 5 * displayNumber, mEntries.size());
         bindBarChartList(barEntries);
@@ -204,15 +203,9 @@ public class StepWeekFragment extends BaseChartFragment implements ViewTreeObser
 
     //重新设置Y坐标
     private void resetYAxis(RecyclerView recyclerView) {
-        float yAxisMaximum = 0;
-        HashMap<Float, List<BarEntry>> map = ChartComputeUtil.getVisibleEntries(recyclerView);
-
-        for (Map.Entry<Float, List<BarEntry>> entry : map.entrySet()) {
-            yAxisMaximum = entry.getKey();
-            displayDateAndStep(entry.getValue());
-            break;
-        }
-        mYAxis = YAxis.getYAxis(mBarChartAttrs, yAxisMaximum);
+        YAxisMaxEntries yAxisMaxEntries = ChartComputeUtil.getVisibleEntries(recyclerView);
+        setVisibleEntries(yAxisMaxEntries.visibleEntries);
+        mYAxis = YAxis.getYAxis(mBarChartAttrs, yAxisMaxEntries.yAxisMaximum);
         mItemDecoration.setYAxis(mYAxis);
     }
 
@@ -233,27 +226,27 @@ public class StepWeekFragment extends BaseChartFragment implements ViewTreeObser
     private void displayDateAndStep(List<BarEntry> displayEntries) {
         BarEntry rightBarEntry = displayEntries.get(0);
         BarEntry leftBarEntry = displayEntries.get(displayEntries.size() - 1);
-        txtLeftLocalDate.setText(TimeUtil.getDateStr(leftBarEntry.timestamp, "yyyy-MM-dd HH:mm:ss"));
-        txtRightLocalDate.setText(TimeUtil.getDateStr(rightBarEntry.timestamp, "yyyy-MM-dd HH:mm:ss"));
+        txtLeftLocalDate.setText(TimeDateUtil.getDateStr(leftBarEntry.timestamp, "yyyy-MM-dd HH:mm:ss"));
+        txtRightLocalDate.setText(TimeDateUtil.getDateStr(rightBarEntry.timestamp, "yyyy-MM-dd HH:mm:ss"));
 
 
         displayTitle(leftBarEntry, rightBarEntry);
 
-        String childStr = DecimalUtil.getAverageStepStr(displayEntries);
+        String childStr = DecimalUtil.getAverageStr(displayEntries);
         String parentStr = String.format(getString(R.string.str_count_step), childStr);
         SpannableStringBuilder spannable = TextUtil.getSpannableStr(getActivity(), parentStr, childStr, 24);
         txtCountStep.setText(spannable);
     }
 
     private void displayTitle(BarEntry leftBarEntry, BarEntry rightBarEntry) {
-        String beginDateStr = TimeUtil.getDateStr(leftBarEntry.timestamp, "yyyy年MM月dd日");
+        String beginDateStr = TimeDateUtil.getDateStr(leftBarEntry.timestamp, "yyyy年MM月dd日");
         String patternStr = "yyyy年MM月dd日";
-        if (TimeUtil.isSameMonth(leftBarEntry.timestamp, rightBarEntry.timestamp)) {
+        if (TimeDateUtil.isSameMonth(leftBarEntry.timestamp, rightBarEntry.timestamp)) {
             patternStr = "dd日";
-        } else if (TimeUtil.isSameYear(leftBarEntry.timestamp, rightBarEntry.timestamp)) {
+        } else if (TimeDateUtil.isSameYear(leftBarEntry.timestamp, rightBarEntry.timestamp)) {
             patternStr = "MM月dd日";
         }
-        String endDateStr = TimeUtil.getDateStr(rightBarEntry.timestamp, patternStr);
+        String endDateStr = TimeDateUtil.getDateStr(rightBarEntry.timestamp, patternStr);
         String connectStr = "至";
         textTitle.setText(beginDateStr + connectStr + endDateStr);
     }
@@ -268,7 +261,7 @@ public class StepWeekFragment extends BaseChartFragment implements ViewTreeObser
             int position = recyclerView.getChildAdapterPosition(child);
             BarEntry barEntry = mEntries.get(position);
             float realBottomPadding = recyclerView.getPaddingBottom() + mBarChartAttrs.contentPaddingBottom;
-            float realTopPadding = recyclerView.getPaddingTop() + mBarChartAttrs.maxYAxisPaddingTop;
+            float realTopPadding = recyclerView.getPaddingTop() + mBarChartAttrs.contentPaddingTop;
             float realContentHeight = recyclerView.getHeight() - realBottomPadding - realTopPadding;
             Log.d("WeekFragment", " barEntry, localDate" + barEntry.localDate);
             float width = child.getWidth();
@@ -291,5 +284,15 @@ public class StepWeekFragment extends BaseChartFragment implements ViewTreeObser
             mItemGestureListener.resetSelectedBarEntry();
             rlTitle.setVisibility(View.VISIBLE);
         }
+    }
+
+    @Override
+    public void displayDateAndRate() {
+
+    }
+
+    @Override
+    public void scrollToCurrentCycle() {
+
     }
 }

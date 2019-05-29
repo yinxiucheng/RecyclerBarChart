@@ -16,30 +16,28 @@ import com.yxc.barchart.R;
 import com.yxc.barchart.TestData;
 import com.yxc.barchart.formatter.XAxisYearFormatter;
 import com.yxc.barchart.formatter.YearHighLightMarkValueFormatter;
-import com.yxc.barchart.ui.base.BaseChartFragment;
 import com.yxc.chartlib.attrs.BarChartAttrs;
 import com.yxc.chartlib.barchart.BarChartAdapter;
-import com.yxc.chartlib.barchart.BarChartRecyclerView;
-import com.yxc.chartlib.barchart.SpeedRatioLinearLayoutManager;
+import com.yxc.chartlib.barchart.SpeedRatioLayoutManager;
+import com.yxc.chartlib.view.BarChartRecyclerView;
 import com.yxc.chartlib.barchart.itemdecoration.BarChartItemDecoration;
 import com.yxc.chartlib.component.XAxis;
 import com.yxc.chartlib.component.YAxis;
 import com.yxc.chartlib.entrys.BarEntry;
+import com.yxc.chartlib.entrys.YAxisMaxEntries;
 import com.yxc.chartlib.listener.RecyclerItemGestureListener;
 import com.yxc.chartlib.listener.SimpleItemGestureListener;
 import com.yxc.chartlib.util.ChartComputeUtil;
 import com.yxc.chartlib.util.DecimalUtil;
 import com.yxc.commonlib.util.TextUtil;
-import com.yxc.commonlib.util.TimeUtil;
+import com.yxc.commonlib.util.TimeDateUtil;
 
 import org.joda.time.LocalDate;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
-public class StepYearFragment extends BaseChartFragment {
+public class StepYearFragment extends BaseStepFragment {
 
     BarChartRecyclerView recyclerView;
     TextView txtLeftLocalDate;
@@ -97,7 +95,7 @@ public class StepYearFragment extends BaseChartFragment {
     private void initData() {
         displayNumber = mBarChartAttrs.displayNumbers;
         mEntries = new ArrayList<>();
-        SpeedRatioLinearLayoutManager layoutManager = new SpeedRatioLinearLayoutManager(getActivity(), mBarChartAttrs);
+        SpeedRatioLayoutManager layoutManager = new SpeedRatioLayoutManager(getActivity(), mBarChartAttrs);
         mYAxis = new YAxis(mBarChartAttrs);
         mXAxis = new XAxis(mBarChartAttrs, displayNumber, new XAxisYearFormatter());
         mItemDecoration = new BarChartItemDecoration(mYAxis, mXAxis, mBarChartAttrs);
@@ -106,7 +104,7 @@ public class StepYearFragment extends BaseChartFragment {
         mBarChartAdapter = new BarChartAdapter(getActivity(), mEntries, recyclerView, mXAxis, mBarChartAttrs);
         recyclerView.setAdapter(mBarChartAdapter);
         recyclerView.setLayoutManager(layoutManager);
-        currentLocalDate = TimeUtil.getLastMonthOfTheYear(LocalDate.now());
+        currentLocalDate = TimeDateUtil.getLastMonthOfTheYear(LocalDate.now());
         List<BarEntry> barEntries = TestData.createYearEntries(currentLocalDate.plusMonths(preEntrySize), preEntrySize + 5 * displayNumber, mEntries.size());
         bindBarChartList(barEntries);
         currentLocalDate = currentLocalDate.minusMonths(displayNumber * 5);
@@ -176,14 +174,9 @@ public class StepYearFragment extends BaseChartFragment {
 
     //重新设置Y坐标
     private void resetYAxis(RecyclerView recyclerView) {
-        float yAxisMaximum = 0;
-        HashMap<Float, List<BarEntry>> map = ChartComputeUtil.getVisibleEntries(recyclerView);
-        for (Map.Entry<Float, List<BarEntry>> entry : map.entrySet()) {
-            yAxisMaximum = entry.getKey();
-            displayDateAndStep(entry.getValue());
-            break;
-        }
-        mYAxis = YAxis.getYAxis(mBarChartAttrs, yAxisMaximum);
+        YAxisMaxEntries yAxisMaxEntries = ChartComputeUtil.getVisibleEntries(recyclerView);
+        setVisibleEntries(yAxisMaxEntries.visibleEntries);
+        mYAxis = YAxis.getYAxis(mBarChartAttrs, yAxisMaxEntries.yAxisMaximum);
         mItemDecoration.setYAxis(mYAxis);
     }
 
@@ -204,14 +197,14 @@ public class StepYearFragment extends BaseChartFragment {
     private void displayDateAndStep(List<BarEntry> displayEntries) {
         BarEntry rightBarEntry = displayEntries.get(0);
         BarEntry leftBarEntry = displayEntries.get(displayEntries.size() - 1);
-        txtLeftLocalDate.setText(TimeUtil.getDateStr(leftBarEntry.timestamp, "yyyy-MM-dd HH:mm:ss"));
-        txtRightLocalDate.setText(TimeUtil.getDateStr(rightBarEntry.timestamp, "yyyy-MM-dd HH:mm:ss"));
+        txtLeftLocalDate.setText(TimeDateUtil.getDateStr(leftBarEntry.timestamp, "yyyy-MM-dd HH:mm:ss"));
+        txtRightLocalDate.setText(TimeDateUtil.getDateStr(rightBarEntry.timestamp, "yyyy-MM-dd HH:mm:ss"));
 
-        if (TimeUtil.isSameYear(leftBarEntry.timestamp, rightBarEntry.timestamp)) {
-            textTitle.setText(TimeUtil.getDateStr(leftBarEntry.timestamp, "yyyy年"));
+        if (TimeDateUtil.isSameYear(leftBarEntry.timestamp, rightBarEntry.timestamp)) {
+            textTitle.setText(TimeDateUtil.getDateStr(leftBarEntry.timestamp, "yyyy年"));
         } else {
-            String beginDateStr = TimeUtil.getDateStr(leftBarEntry.timestamp, "yyyy/MM/dd");
-            String endDateStr = TimeUtil.getDateStr(rightBarEntry.timestamp, "yyyy/MM/dd");
+            String beginDateStr = TimeDateUtil.getDateStr(leftBarEntry.timestamp, "yyyy/MM/dd");
+            String endDateStr = TimeDateUtil.getDateStr(rightBarEntry.timestamp, "yyyy/MM/dd");
             String connectStr = " -- ";
             textTitle.setText(beginDateStr + connectStr + endDateStr);
         }
@@ -236,5 +229,15 @@ public class StepYearFragment extends BaseChartFragment {
             mItemGestureListener.resetSelectedBarEntry();
             rlTitle.setVisibility(View.VISIBLE);
         }
+    }
+
+    @Override
+    public void displayDateAndRate() {
+
+    }
+
+    @Override
+    public void scrollToCurrentCycle() {
+
     }
 }

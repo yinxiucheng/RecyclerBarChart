@@ -2,7 +2,7 @@ package com.yxc.barchart.formatter;
 
 import com.yxc.chartlib.entrys.BarEntry;
 import com.yxc.chartlib.formatter.ValueFormatter;
-import com.yxc.commonlib.util.TimeUtil;
+import com.yxc.commonlib.util.TimeDateUtil;
 
 import org.joda.time.LocalDate;
 
@@ -16,6 +16,6 @@ public class XAxisWeekFormatter extends ValueFormatter {
     public String getBarLabel(BarEntry barEntry) {
         LocalDate localDate = barEntry.localDate;
 //        return TimeUtil.getDateStr(barEntry.timestamp, "MM-dd");
-        return TimeUtil.getWeekStr(localDate.getDayOfWeek());
+        return TimeDateUtil.getWeekStr(localDate.getDayOfWeek());
     }
 }

@@ -11,6 +11,32 @@ import java.util.List;
  */
 public class DecimalUtil {
 
+    //一位小数
+    public static final int ONE_LENGTH_DECIMAL = 1;
+    //两位小数
+    public static final int TWO_LENGTH_DECIMAL = 2;
+    //三位小数
+    public static final int THREE_LENGTH_DECIMAL = 3;
+
+    //获取小数点后 type 小数的Float值。
+    public static float getDecimalFloat(int type, float value) {
+        float f;
+        if (type == TWO_LENGTH_DECIMAL) {
+            float temp = (value * 100.0f);
+            f = Math.round(temp);
+            f = f / 100.0f;
+        } else if (type == THREE_LENGTH_DECIMAL) {
+            float temp = (value * 1000.0f);
+            f = Math.round(temp);
+            f = f / 1000.0f;
+        } else {
+            float temp = (value * 10.0f);
+            f = Math.round(temp);
+            f = f / 10.0f;
+        }
+        return f;
+    }
+
 
     @SuppressWarnings("unused")
     public final static double DOUBLE_EPSILON = Double.longBitsToDouble(1);
@@ -56,7 +82,7 @@ public class DecimalUtil {
 
 
     //获取最大值
-    public static float getTheMaxNumber(List<BarEntry> entries) {
+    public static float getTheMaxNumber(List<? extends BarEntry> entries) {
         BarEntry barEntry = entries.get(0);
         float max = barEntry.getY();
         for (int i = 0; i < entries.size(); i++) {
@@ -64,6 +90,21 @@ public class DecimalUtil {
             max = Math.max(max, entryTemp.getY());
         }
         return max;
+    }
+
+
+    public static float getTheMinNumber(List<? extends BarEntry> entries) {
+        BarEntry barEntry = entries.get(0);
+        float min = barEntry.getY();
+        for (int i = 0; i < entries.size(); i++) {
+            BarEntry entryTemp = entries.get(i);
+            min = Math.min(min, entryTemp.getY());
+        }
+        return min;
+    }
+
+    public static String getTheMaxNumberIntStr(List<BarEntry> entries){
+        return addComma(Integer.toString((int)getTheMaxNumber(entries)));
     }
 
 
@@ -79,27 +120,26 @@ public class DecimalUtil {
     }
 
 
-    public static long getCountStepSum(List<BarEntry> displayEntries){
+    public static long getCountSum(List<BarEntry> displayEntries){
         long count = 0;
         for (int i = 0; i < displayEntries.size(); i++) {
             BarEntry entry = displayEntries.get(i);
             count += entry.getY();
         }
-
         return count;
     }
 
-    public static long getAverageStep(List<BarEntry> displayEntries){
-        return getCountStepSum(displayEntries)/displayEntries.size();
+    public static long getAverage(List<BarEntry> displayEntries){
+        return getCountSum(displayEntries)/displayEntries.size();
     }
 
-    public static String getAverageStepStr(List<BarEntry> displayEntries){
-        return addComma(Long.toString(getAverageStep(displayEntries)));
+    public static String getAverageStr(List<BarEntry> displayEntries){
+        return addComma(Long.toString(getAverage(displayEntries)));
     }
 
 
-    public static String getCountStepStr(List<BarEntry> displayEntries){
-        return addComma(Long.toString(getCountStepSum(displayEntries)));
+    public static String getCountStr(List<BarEntry> displayEntries){
+        return addComma(Long.toString(getCountSum(displayEntries)));
     }
 
 }

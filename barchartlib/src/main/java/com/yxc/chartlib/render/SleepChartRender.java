@@ -4,14 +4,22 @@ import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
 import android.graphics.RectF;
-import androidx.annotation.NonNull;
-import androidx.recyclerview.widget.RecyclerView;
+import android.graphics.Typeface;
+import android.text.TextUtils;
 import android.view.View;
 
+import androidx.annotation.NonNull;
+import androidx.recyclerview.widget.RecyclerView;
+
 import com.yxc.chartlib.attrs.SleepChartAttrs;
-import com.yxc.chartlib.entrys.SleepEntry;
+import com.yxc.chartlib.entrys.SleepItemEntry;
+import com.yxc.chartlib.entrys.model.SleepItemTime;
+import com.yxc.chartlib.formatter.DefaultHighLightMarkValueFormatter;
+import com.yxc.chartlib.formatter.ValueFormatter;
 import com.yxc.commonlib.util.DisplayUtil;
-import com.yxc.commonlib.util.TimeUtil;
+import com.yxc.commonlib.util.TextUtil;
+import com.yxc.commonlib.util.TimeDateUtil;
+
 
 /**
  * @author yxc
@@ -21,20 +29,17 @@ final public class SleepChartRender {
 
     private SleepChartAttrs mChartAttrs;
 
-    private Paint mDeepSleepPaint;
-    private Paint mSlumberPaint;
-    private Paint mWakePaint;
+    private Paint mBarChartPaint;
     private Paint mTextPaint;
+    protected Paint mHighLightValuePaint;
 
-    private float contentTextPadding = 0;
-
-    public SleepChartRender(SleepChartAttrs sleepChartAttrs) {
+    protected ValueFormatter mHighLightValueFormatter;
+    public SleepChartRender(SleepChartAttrs sleepChartAttrs, ValueFormatter highLightValueFormatter) {
         this.mChartAttrs = sleepChartAttrs;
-        contentTextPadding = DisplayUtil.dip2px(2);
-        initDeepSleepPaint();
-        initSlumberPaint();
-        initWakePaint();
+        initBarChartPaint();
         initTextPaint();
+        initHighLightLeftPaint();
+        this.mHighLightValueFormatter = highLightValueFormatter;
     }
 
     private void initTextPaint() {
@@ -42,208 +47,116 @@ final public class SleepChartRender {
         mTextPaint.reset();
         mTextPaint.setAntiAlias(true);
         mTextPaint.setStyle(Paint.Style.FILL);
-        mTextPaint.setTextSize(DisplayUtil.dip2px(14));
+        mTextPaint.setTextSize(mChartAttrs.txtSize);
+        mTextPaint.setTypeface(Typeface.DEFAULT_BOLD);
         mTextPaint.setColor(mChartAttrs.txtColor);
     }
 
-    private void initDeepSleepPaint() {
-        mDeepSleepPaint = new Paint();
-        mDeepSleepPaint.reset();
-        mDeepSleepPaint.setAntiAlias(true);
-        mDeepSleepPaint.setStyle(Paint.Style.FILL);
-        mDeepSleepPaint.setColor(mChartAttrs.deepSleepColor);
+    private void initBarChartPaint() {
+        mBarChartPaint = new Paint();
+        mBarChartPaint.reset();
+        mBarChartPaint.setAntiAlias(true);
+        mBarChartPaint.setStyle(Paint.Style.FILL);
+        mBarChartPaint.setColor(mChartAttrs.deepSleepColor);
     }
 
-    private void initSlumberPaint() {
-        mSlumberPaint = new Paint();
-        mSlumberPaint.reset();
-        mSlumberPaint.setAntiAlias(true);
-        mSlumberPaint.setStyle(Paint.Style.FILL);
-        mSlumberPaint.setColor(mChartAttrs.slumberColor);
+    private void initHighLightLeftPaint() {
+        mHighLightValuePaint = new Paint();
+        mHighLightValuePaint.reset();
+        mHighLightValuePaint.setAntiAlias(true);
+        mHighLightValuePaint.setStyle(Paint.Style.FILL);
+        mHighLightValuePaint.setStrokeWidth(1);
+        mHighLightValuePaint.setColor(Color.WHITE);
+        mHighLightValuePaint.setTextSize(DisplayUtil.dip2px(12));
     }
 
-    private void initWakePaint() {
-        mWakePaint = new Paint();
-        mWakePaint.reset();
-        mWakePaint.setAntiAlias(true);
-        mWakePaint.setStyle(Paint.Style.FILL);
-        mWakePaint.setColor(mChartAttrs.weakColor);
+    public void setHighLightValueFormatter(ValueFormatter highLightValueFormatter) {
+        this.mHighLightValueFormatter = highLightValueFormatter;
     }
+
 
     //绘制柱状图, mYAxis这个坐标会实时变动，所以通过 BarChartItemDecoration 传过来的精确值。
     final public void drawSleepChart(final Canvas canvas, @NonNull final RecyclerView parent) {
         float parentRight = parent.getWidth() - parent.getPaddingRight();
-        float parentHeight = parent.getMeasuredHeight() - mChartAttrs.contentPaddingBottom - mChartAttrs.contentPaddingTop;
-        float chartBottom = parent.getBottom() - mChartAttrs.contentPaddingBottom;
-        float distanceHeight = parentHeight / 3;
-        float chartTop = parent.getTop() + mChartAttrs.contentPaddingTop;
+        float parentLeft = parent.getPaddingLeft();
+        float contentWidth = parent.getWidth() - parent.getPaddingStart() - parent.getPaddingEnd();
+        float distanceHeight = mChartAttrs.sleepItemHeight;
+        float chartTop = parent.getTop() + parent.getPaddingTop();
         final int childCount = parent.getChildCount();
-
         int sumWidth = 0;
         long sumWake = 0;
         long sumDeepSleep = 0;
         long sumSlumber = 0;
-
-        SleepEntry latestSleepEntry = null;
-        SleepEntry longestSleepEntry = null;
+        SleepItemEntry latestSleepEntry = null;
+        SleepItemEntry longestSleepEntry = null;
 
         for (int i = 0; i < childCount; i++) {
             View child = parent.getChildAt(i);
-            SleepEntry sleepEntry = (SleepEntry) child.getTag();
+            SleepItemEntry sleepEntry = (SleepItemEntry) child.getTag();
+            SleepItemTime sleepTime = sleepEntry.sleepItemTime;
             if (i == 0) {
                 latestSleepEntry = sleepEntry;
             } else if (i == childCount - 1) {
                 longestSleepEntry = sleepEntry;
             }
-            long timeDistance = sleepEntry.endTimestamp - sleepEntry.startTimestamp;
+            long timeDistance = sleepTime.getSleepTime();
             float end = parentRight - sumWidth;
             float start = end - child.getWidth();
             sumWidth += child.getWidth();
-
-            if (sleepEntry.type == SleepEntry.TYPE_DEEP_SLEEP) {
-                float rectFTop = chartTop +  2 * distanceHeight;
-                drawRectF(canvas, mDeepSleepPaint, start, rectFTop, end, chartBottom);
-                sumDeepSleep += timeDistance;
-            } else if (sleepEntry.type == SleepEntry.TYPE_SLUMBER) {
-                float rectFTop = chartTop + distanceHeight;
-                drawRectF(canvas, mSlumberPaint, start, rectFTop, end, chartBottom);
-                sumSlumber += timeDistance;
-            } else {
-                float rectFTop = chartTop;
-                drawRectF(canvas, mWakePaint, start, rectFTop, end, chartBottom);
-                sumWake += timeDistance;
-            }
+            drawSleepChartItem(canvas, sleepTime, chartTop, start, end);
+            sumWake += timeDistance;
         }
 
-        float parentLeft = parentRight - sumWidth;
-        String leftStr = TimeUtil.getDateStr(longestSleepEntry.startTimestamp, "HH:MM") + " 入睡";
-        float leftRectFStart = parentLeft;
-        float leftRectFEnd = leftRectFStart + mTextPaint.measureText(leftStr);
-        float rectFBottom = chartTop - DisplayUtil.dip2px(8);
-        drawTopTime(canvas, leftStr, rectFBottom, leftRectFStart, leftRectFEnd);
-
-        String rightStr = TimeUtil.getDateStr(latestSleepEntry.endTimestamp, "HH:MM") + " 醒来";
-        float rightRectFEnd = parentRight;
-        float rightRectFStart = parentRight - mTextPaint.measureText(rightStr);
-        drawTopTime(canvas, rightStr, rectFBottom, rightRectFStart, rightRectFEnd);
-        if (null != latestSleepEntry && null != longestSleepEntry) {
-            long timeDistance = latestSleepEntry.endTimestamp - longestSleepEntry.startTimestamp;
-            drawChartBottomDecoration(canvas, sumWake, sumSlumber, sumDeepSleep, timeDistance, parent, parentLeft);
+        if (sumWidth < contentWidth) {//补一段填满。
+            int colorOrigin = mBarChartPaint.getColor();
+            float start = parentLeft;
+            float end = parentLeft + (contentWidth - sumWidth);
+            float rectFTop = getSleepRectTop(SleepItemTime.TYPE_WAKE, chartTop);
+            mBarChartPaint.setColor(mChartAttrs.weakColor);
+            drawRectF(canvas, mBarChartPaint, start, rectFTop, end, rectFTop + distanceHeight);
+            mBarChartPaint.setColor(colorOrigin);
+        }
+        float rectFTextTop = chartTop + 4 * distanceHeight + mChartAttrs.contentPaddingBottom;
+        if (longestSleepEntry.sleepItemTime != null) {
+            String leftStr = TimeDateUtil.getDateStr(longestSleepEntry.sleepItemTime.startTimestamp, "HH:mm") + " 入睡";
+            float leftRectFStart = parentLeft;
+            float leftRectFEnd = leftRectFStart + mTextPaint.measureText(leftStr);
+            drawTopTime(canvas, leftStr, rectFTextTop, leftRectFStart, leftRectFEnd);
+        }
+        if (latestSleepEntry.sleepItemTime != null) {
+            String rightStr = TimeDateUtil.getDateStr(latestSleepEntry.sleepItemTime.endTimestamp, "HH:mm") + " 醒来";
+            float rightRectFEnd = parentRight;
+            float rightRectFStart = parentRight - mTextPaint.measureText(rightStr);
+            drawTopTime(canvas, rightStr, rectFTextTop, rightRectFStart, rightRectFEnd);
         }
     }
 
-    private void drawTopTime(Canvas canvas, String txtStr, float rectFBottom, float rectFLeft, float rectFRight){
+    private void drawSleepChartItem(Canvas canvas, SleepItemTime sleepItemTime, float chartTop, float start, float end) {
+        float distanceHeight = mChartAttrs.sleepItemHeight;
+        float rectFTop = getSleepRectTop(sleepItemTime.sleepType, chartTop);
+        int color = sleepItemTime.getChartColor(mChartAttrs);
+        int colorOrigin = mBarChartPaint.getColor();
+        mBarChartPaint.setColor(color);
+        drawRectF(canvas, mBarChartPaint, start, rectFTop, end, rectFTop + distanceHeight);
+        mBarChartPaint.setColor(colorOrigin);
+    }
+
+    private float getSleepRectTop(int sleepType, float parentTop) {
+        float distanceHeight = mChartAttrs.sleepItemHeight;
+        float rectFTop = parentTop + sleepType * distanceHeight;
+        return rectFTop;
+    }
+
+    private void drawTopTime(Canvas canvas, String txtStr, float rectFTextTop, float rectFLeft, float rectFRight) {
         Paint.FontMetrics fontMetrics = mTextPaint.getFontMetrics();
         float top = fontMetrics.top;//为基线到字体上边框的距离,即上图中的top
         float bottom = fontMetrics.bottom;//为基线到字体下边框的距离,即上图中的bottom
         float txtHeight = bottom - top;
         float txtCenter = (top + bottom) / 2;
-
-        float rectFTop = rectFBottom - txtHeight;
-
-        RectF rectFTimeTop = new RectF(rectFLeft, rectFTop , rectFRight, rectFBottom);
+        float rectFBottom = rectFTextTop + txtHeight;
+        RectF rectFTimeTop = new RectF(rectFLeft, rectFTextTop, rectFRight, rectFBottom);
         int baseYLine = (int) (rectFTimeTop.centerY() - txtCenter);
-        int color = mTextPaint.getColor();
-        mTextPaint.setColor(Color.WHITE);
         canvas.drawText(txtStr, rectFTimeTop.left, baseYLine, mTextPaint);
-        mTextPaint.setColor(color);
-    }
-
-
-    private void drawChartBottomDecoration(Canvas canvas, long sumWake, long sumSlumber, long sumDeepSleep,
-                                           long timeDistance, RecyclerView parent, float parentLeft) {
-
-        float wakeRatio = (float) (sumWake * 100.0 / timeDistance);
-        float slumberRatio = (float) (sumSlumber * 100.0 / timeDistance);
-        float deepSleepRatio = (float) (sumDeepSleep * 100.0 / timeDistance);
-
-        float parentRight = parent.getWidth() - parent.getPaddingRight();
-        float rectRatioTop = parent.getBottom() - mChartAttrs.contentPaddingBottom + DisplayUtil.dip2px(5);
-        float widthDistance = (parentRight - parentLeft) / 3;
-
-        Paint.FontMetrics fontMetrics = mTextPaint.getFontMetrics();
-        float top = fontMetrics.top;//为基线到字体上边框的距离,即上图中的top
-        float bottom = fontMetrics.bottom;//为基线到字体下边框的距离,即上图中的bottom
-
-        float txtHeight = bottom - top;
-        float rectFBottom = rectRatioTop + txtHeight;
-
-        float rectFDescTop = rectFBottom + DisplayUtil.dip2px(2);
-        float rectFDescBottom = rectFDescTop + txtHeight;
-
-        float rectFTimeTop = rectFDescBottom + DisplayUtil.dip2px(2);
-        float rectFTimeBottom = rectFTimeTop + txtHeight;
-        float txtCenter = (top + bottom) / 2;
-
-        float rectFWake = parentLeft + contentTextPadding;
-        drawRatioText(canvas, wakeRatio, rectFWake,
-                rectRatioTop, rectFBottom, txtCenter, mWakePaint);
-        drawDescTxt(canvas, "醒着", rectFWake, rectFDescTop, rectFDescBottom, txtCenter, mChartAttrs.weakColor);
-        drawTimeStr(canvas, sumWake, rectFWake, rectFTimeTop, rectFTimeBottom, txtCenter);
-
-        float rectFSlumber = parentLeft + widthDistance + contentTextPadding;
-        drawRatioText(canvas, slumberRatio, rectFSlumber,
-                rectRatioTop, rectFBottom, txtCenter, mSlumberPaint);
-        drawDescTxt(canvas, "浅睡眠", rectFSlumber,
-                rectFDescTop, rectFDescBottom, txtCenter, mChartAttrs.slumberColor);
-        drawTimeStr(canvas, sumSlumber, rectFSlumber, rectFTimeTop, rectFTimeBottom, txtCenter);
-
-        float rectFDeepSleepLeft = parentLeft + 2 * widthDistance + contentTextPadding;
-        drawRatioText(canvas, deepSleepRatio, rectFDeepSleepLeft,
-                rectRatioTop, rectFBottom, txtCenter, mDeepSleepPaint);
-        drawDescTxt(canvas, "深睡眠", rectFDeepSleepLeft,
-                rectFDescTop, rectFDescBottom, txtCenter, mChartAttrs.deepSleepColor);
-        drawTimeStr(canvas, sumDeepSleep, rectFDeepSleepLeft, rectFTimeTop, rectFTimeBottom, txtCenter);
-    }
-
-    private void drawTimeStr(Canvas canvas, long sumWake, float parentLeft, float rectFTop, float rectTimeBottom, float txtCenter) {
-        String timeStr = getTimeStr(sumWake);
-        float rectFLeft = parentLeft + contentTextPadding;
-        float txtTimeWidth = mTextPaint.measureText(timeStr);
-        float rectFRight = rectFLeft + txtTimeWidth + 2 * contentTextPadding;
-
-        RectF timeRectF = new RectF(rectFLeft, rectFTop, rectFRight, rectTimeBottom);
-        int timeBaseLineY = (int) (timeRectF.centerY() - txtCenter);//基线中间点的y轴计算公式
-
-        int color = mTextPaint.getColor();
-        mTextPaint.setColor(Color.WHITE);
-        canvas.drawText(timeStr, parentLeft + contentTextPadding, timeBaseLineY, mTextPaint);
-        mTextPaint.setColor(color);
-    }
-
-    private String getTimeStr(long sumTime) {
-        int hour = (int) (sumTime / TimeUtil.TIME_HOUR);
-        int min = (int) (sumTime % TimeUtil.TIME_HOUR / 60);
-        String hourStr = hour > 0 ? hour+ "h" + ":" : "";
-        String minStr = min + "min";
-        return hourStr + minStr;
-    }
-
-    private void drawDescTxt(Canvas canvas, String descStr, float parentLeft, float rectFTop, float rectDescBottom, float txtCenter, int txtColor) {
-        float rectFLeft = parentLeft + contentTextPadding;
-        float txtDescWidth = mTextPaint.measureText(descStr);
-        float rectFRight = rectFLeft + txtDescWidth + 2 * contentTextPadding;
-
-        RectF descRectF = new RectF(rectFLeft, rectFTop, rectFRight, rectDescBottom);
-        int descBaseLineY = (int) (descRectF.centerY() - txtCenter);//基线中间点的y轴计算公式
-
-        int color = mTextPaint.getColor();
-        mTextPaint.setColor(txtColor);
-        canvas.drawText(descStr, parentLeft + contentTextPadding, descBaseLineY, mTextPaint);
-        mTextPaint.setColor(color);
-    }
-
-    private void drawRatioText(Canvas canvas, float ratio,
-                               float rectFLeft, float rectFTop,
-                               float rectFBottom, float txtCenter,
-                               Paint mSlumberPaint) {
-        String ratioStr = ratio + "%";
-        float ratioTxtWidth = mTextPaint.measureText(ratioStr);
-        //绘文字
-        RectF ratioRectF = new RectF(rectFLeft, rectFTop, rectFLeft + ratioTxtWidth + 2 * contentTextPadding, rectFBottom);
-        int ratioBaseLineY = (int) (ratioRectF.centerY() - txtCenter);//基线中间点的y轴计算公式
-        canvas.drawRoundRect(ratioRectF, DisplayUtil.dip2px(2), DisplayUtil.dip2px(2), mSlumberPaint);
-        canvas.drawText(ratioStr, ratioRectF.left + contentTextPadding, ratioBaseLineY, mTextPaint);
     }
 
     private void drawRectF(Canvas canvas, Paint paint, float start, float top, float right, float bottom) {
@@ -251,5 +164,122 @@ final public class SleepChartRender {
         rectF.set(start, top, right, bottom);
         canvas.drawRect(rectF, paint);
     }
+
+
+    //绘制选中时 highLight 标线及浮框。
+    public void drawHighLight(Canvas canvas, @NonNull RecyclerView parent) {
+        if (mChartAttrs.enableValueMark) {
+            float parentTop = parent.getPaddingTop();
+            int childCount = parent.getChildCount();
+
+
+            View child;
+            for (int i = 0; i < childCount; i++) {
+                child = parent.getChildAt(i);
+                SleepItemEntry barEntry = (SleepItemEntry) child.getTag();
+                SleepItemTime sleepItemTime = barEntry.sleepItemTime;
+
+                float width = child.getWidth();
+                float top = getSleepRectTop(sleepItemTime.sleepType, parentTop);
+                float childCenter = child.getLeft() + width / 2;
+                String valueStr = mHighLightValueFormatter.getBarLabel(barEntry);
+
+                if (barEntry.isSelected() && !TextUtils.isEmpty(valueStr)) {
+                    int chartColor = sleepItemTime.getChartColor(mChartAttrs);
+                    float rectFHeight = drawHighLightValue(canvas, valueStr, childCenter, parent, chartColor);
+                    float[] points = new float[]{childCenter, top, childCenter, rectFHeight};
+                    drawHighLightLine(canvas, points, chartColor);
+
+                }
+            }
+        }
+    }
+
+
+    private float drawHighLightValue(Canvas canvas, String valueStr, float childCenter,
+                                    RecyclerView parent, int barChartColor) {
+
+        float contentRight = parent.getWidth() - parent.getPaddingRight();
+        float contentLeft = parent.getPaddingLeft();
+
+        String[] strings = valueStr.split(DefaultHighLightMarkValueFormatter.CONNECT_STR);
+        float leftEdgeDistance = Math.abs(childCenter - contentLeft);
+        float rightEdgeDistance = Math.abs(contentRight - childCenter);
+
+        float leftPadding = DisplayUtil.dip2px(8);
+        float rightPadding = DisplayUtil.dip2px(8);
+        float centerPadding = DisplayUtil.dip2px(16);
+        float txtTopPadding = DisplayUtil.dip2px(8);
+
+        String leftStr = strings[0];
+        String rightStr = strings[1];
+
+        float txtLeftWidth = mHighLightValuePaint.measureText(leftStr);
+        float txtRightWidth = mHighLightValuePaint.measureText(rightStr);
+
+        float rectFHeight = TextUtil.getTxtHeight1(mHighLightValuePaint) + txtTopPadding * 2;
+        float txtWidth = txtLeftWidth + txtRightWidth + leftPadding + rightPadding + centerPadding;
+
+        float edgeDistance = txtWidth / 2.0f;
+        float rectTop = parent.getTop();
+        float rectBottom = rectTop + rectFHeight;
+
+        //绘制RectF
+        RectF rectF = new RectF();
+        mBarChartPaint.setColor(barChartColor);
+        if (leftEdgeDistance <= edgeDistance) {//矩形框靠左对齐
+            rectF.set(contentLeft, rectTop, contentLeft + txtWidth, rectBottom);
+            float radius = DisplayUtil.dip2px(8);
+            canvas.drawRoundRect(rectF, radius, radius, mBarChartPaint);
+        } else if (rightEdgeDistance <= edgeDistance) {//矩形框靠右对齐
+            rectF.set(contentRight - txtWidth, rectTop, contentRight, rectBottom);
+            float radius = DisplayUtil.dip2px(8);
+            canvas.drawRoundRect(rectF, radius, radius, mBarChartPaint);
+        } else {//居中对齐。
+            rectF.set(childCenter - edgeDistance, rectTop, childCenter + edgeDistance, rectBottom);
+            float radius = DisplayUtil.dip2px(8);
+            canvas.drawRoundRect(rectF, radius, radius, mBarChartPaint);
+        }
+
+        //绘文字
+        RectF leftRectF = new RectF(rectF.left + leftPadding, rectTop + txtTopPadding,
+                rectF.left + leftPadding + txtLeftWidth, rectTop + txtTopPadding + rectFHeight);
+        mHighLightValuePaint.setTextAlign(Paint.Align.LEFT);
+        Paint.FontMetrics fontMetrics = mHighLightValuePaint.getFontMetrics();
+        float top = fontMetrics.top;//为基线到字体上边框的距离,即上图中的top
+        float bottom = fontMetrics.bottom;//为基线到字体下边框的距离,即上图中的bottom
+        int baseLineY = (int) (leftRectF.centerY()+(top + bottom)/2);//基线中间点的y轴计算公式
+        canvas.drawText(leftStr, rectF.left + leftPadding, baseLineY, mHighLightValuePaint);
+
+        float dividerLineStartX = rectF.left + leftPadding + txtLeftWidth + centerPadding / 2.0f;
+        float dividerLineStartY = rectTop + DisplayUtil.dip2px(10);
+        float dividerLineEndX = dividerLineStartX;
+        float dividerLineEndY = rectBottom - DisplayUtil.dip2px(10);
+        float[] lines = new float[]{dividerLineStartX, dividerLineStartY, dividerLineEndX, dividerLineEndY};
+        canvas.drawLines(lines, mHighLightValuePaint);
+
+        float rightRectFStart = rectF.left + leftPadding + txtLeftWidth + centerPadding;
+        RectF rightRectF = new RectF(rightRectFStart, rectTop + txtTopPadding, rectF.right - rightPadding, rectBottom - txtTopPadding);
+        canvas.drawText(rightStr, rightRectF.left, baseLineY, mHighLightValuePaint);
+
+        return rectFHeight;
+    }
+
+
+    private void drawHighLightLine(Canvas canvas, float[] floats, int barChartColor) {
+        Paint.Style previous = mBarChartPaint.getStyle();
+        float strokeWidth = mBarChartPaint.getStrokeWidth();
+        int color = mBarChartPaint.getColor();
+        // set
+        mBarChartPaint.setStyle(Paint.Style.FILL);
+        mBarChartPaint.setStrokeWidth(DisplayUtil.dip2px(1));
+        mBarChartPaint.setColor(barChartColor);
+        canvas.drawLines(floats, mBarChartPaint);
+        // restore
+        mBarChartPaint.setStyle(previous);
+        mBarChartPaint.setStrokeWidth(strokeWidth);
+        mBarChartPaint.setColor(color);
+    }
+
 
 }

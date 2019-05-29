@@ -13,7 +13,7 @@ import com.yxc.barchart.tab.OnTabSelectListener;
 import com.yxc.barchart.tab.TopTabLayout;
 import com.yxc.barchart.ui.base.BaseChartFragment;
 import com.yxc.commonlib.util.ColorUtil;
-import com.yxc.commonlib.util.TimeUtil;
+import com.yxc.commonlib.util.TimeDateUtil;
 
 import org.joda.time.LocalDate;
 
@@ -41,7 +41,7 @@ public class LineActivity extends AppCompatActivity {
         container = findViewById(R.id.container);
         toolbar = findViewById(R.id.toolBar);
         txtTitle = findViewById(R.id.title);
-        toolbar.setTitle(TimeUtil.getDateStr(TimeUtil.localDateToTimestamp(LocalDate.now()), "M月dd日"));
+        toolbar.setTitle(TimeDateUtil.getDateStr(TimeDateUtil.localDateToTimestamp(LocalDate.now()), "M月dd日"));
         toolbar.setNavigationIcon(R.drawable.ic_navigation_left_black_45dp);
         txtTitle.setText("折线图");
         setSupportActionBar(toolbar);

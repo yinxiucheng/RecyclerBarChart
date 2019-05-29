@@ -2,7 +2,7 @@ package com.yxc.barchart.formatter;
 
 import com.yxc.chartlib.entrys.BarEntry;
 import com.yxc.chartlib.formatter.ValueFormatter;
-import com.yxc.commonlib.util.TimeUtil;
+import com.yxc.commonlib.util.TimeDateUtil;
 
 /**
  * @author yxc
@@ -14,7 +14,7 @@ public class XAxisDayFormatter extends ValueFormatter {
     public String getBarLabel(BarEntry barEntry) {
         if (barEntry.type == BarEntry.TYPE_XAXIS_SECOND
                 || barEntry.type == BarEntry.TYPE_XAXIS_SPECIAL) {
-            return TimeUtil.getHourOfTheDay(barEntry.timestamp) + "时";
+            return TimeDateUtil.getHourOfTheDay(barEntry.timestamp) + "时";
         } else {
             return "";
         }

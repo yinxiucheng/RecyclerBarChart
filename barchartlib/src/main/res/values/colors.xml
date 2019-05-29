@@ -43,6 +43,7 @@
 
     <color name="deep_sleep_color">#64c758</color>
     <color name="slumber_color">#ffb400</color>
+    <color name="eye_move_color">#d5d5d5</color>
     <color name="wake_color">#ff4f4f</color>
     <color name="sleep_background">#1b212c</color>
     
@@ -64,5 +65,12 @@
     <color name="water_n_drop6">#1b1d28</color>
     <color name="water_n_drop7">#15151e</color>
     <color name="water_n_drop8">#050508</color>
+
+
+    <color name="rate_shader_end">#FF9494</color>
+    <color name="rate_shader_begin">#F54F66</color>
+
+    <color name="rate_title_select_color">#F54F66</color>
+    <color name="rate_chart_color_light">#FFC5CE</color>
 
 </resources>

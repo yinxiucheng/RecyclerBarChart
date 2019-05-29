@@ -1,33 +1,24 @@
-package com.yxc.chartlib.sleepchart;
+package com.yxc.chartlib.view;
 
 import android.content.Context;
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
-import androidx.recyclerview.widget.RecyclerView;
 import android.util.AttributeSet;
 import android.view.MotionEvent;
 
-import com.yxc.chartlib.attrs.SleepChartAttrs;
-import com.yxc.chartlib.barchart.BarChartRecyclerView;
-import com.yxc.chartlib.util.AttrsUtil;
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import androidx.recyclerview.widget.RecyclerView;
 
 /**
  * @author yxc
- * @date 2019/4/26
+ * @since  2019-05-10
+ *
  */
-public class SleepChartRecyclerView extends RecyclerView {
+public class BaseChartRecyclerView extends RecyclerView {
 
-    public SleepChartAttrs mAttrs;
+    public OnChartTouchListener onChartTouchListener;
 
-    public BarChartRecyclerView.OnChartTouchListener onChartTouchListener;
-
-    public SleepChartRecyclerView(@NonNull Context context) {
-        super(context);
-    }
-
-    public SleepChartRecyclerView(@NonNull Context context, @Nullable AttributeSet attrs) {
+    public BaseChartRecyclerView(@NonNull Context context, @Nullable AttributeSet attrs) {
         super(context, attrs);
-        this.mAttrs = AttrsUtil.getSleepChartAttrs(context, attrs);
     }
 
     @Override
@@ -49,6 +40,11 @@ public class SleepChartRecyclerView extends RecyclerView {
         return super.onTouchEvent(e);
     }
 
+
+    public void setOnChartTouchListener(OnChartTouchListener onChartTouchListener) {
+        this.onChartTouchListener = onChartTouchListener;
+    }
+
     public interface OnChartTouchListener {
 
         void onChartGestureStart(MotionEvent e);
@@ -58,8 +54,6 @@ public class SleepChartRecyclerView extends RecyclerView {
         void onChartGestureMovingOn(MotionEvent e);
     }
 
-    public void setOnChartTouchListener(BarChartRecyclerView.OnChartTouchListener onChartTouchListener) {
-        this.onChartTouchListener = onChartTouchListener;
-    }
+
 
 }

@@ -4,14 +4,15 @@ import com.yxc.chartlib.entrys.BarEntry;
 
 /**
  * @author yxc
- * @date 2019/4/9
+ * @since  2019/4/9
+ *
  */
-public class DistanceCompare {
+public class DistanceCompare<T extends BarEntry> {
 
     public int distanceLeft;
     public int distanceRight;
     public int position;
-    public BarEntry barEntry;
+    public T barEntry;
 
     public DistanceCompare(int distanceLeft, int distanceRight){
         this.distanceLeft = distanceLeft;
@@ -42,7 +43,7 @@ public class DistanceCompare {
         this.position = position;
     }
 
-    public void setBarEntry(BarEntry barEntry) {
+    public void setBarEntry(T barEntry) {
         this.barEntry = barEntry;
     }
 

@@ -6,18 +6,22 @@ import android.graphics.DashPathEffect;
 import android.graphics.Paint;
 import android.graphics.Path;
 import android.graphics.PathEffect;
-import androidx.recyclerview.widget.RecyclerView;
+import android.graphics.RectF;
 import android.text.TextUtils;
 import android.view.View;
 
+
+import androidx.recyclerview.widget.RecyclerView;
+
+import com.yxc.chartlib.attrs.BarChartAttrs;
+import com.yxc.chartlib.barchart.BaseBarChartAdapter;
 import com.yxc.chartlib.component.XAxis;
 import com.yxc.chartlib.entrys.BarEntry;
-import com.yxc.chartlib.attrs.BarChartAttrs;
 import com.yxc.chartlib.util.DecimalUtil;
-import com.yxc.chartlib.barchart.BarChartAdapter;
 import com.yxc.commonlib.util.DisplayUtil;
 
 import java.util.List;
+
 
 final public class XAxisRender {
 
@@ -61,10 +65,12 @@ final public class XAxisRender {
         mTextPaint.setTextSize(mBarChartAttrs.xAxisTxtSize);
     }
 
-
     //绘制网格 纵轴线
     final public void drawVerticalLine(Canvas canvas, RecyclerView parent, XAxis xAxis) {
-        BarChartAdapter mAdapter = (BarChartAdapter) parent.getAdapter();
+        if (!mBarChartAttrs.enableXAxisGridLine){
+            return;
+        }
+        BaseBarChartAdapter mAdapter = (BaseBarChartAdapter) parent.getAdapter();
         List<BarEntry> entries = mAdapter.getEntries();
         int parentTop = parent.getPaddingTop();
         int parentBottom = parent.getHeight() - parent.getPaddingBottom();
@@ -75,47 +81,56 @@ final public class XAxisRender {
         for (int i = 0; i < childCount; i++) {
             final View child = parent.getChildAt(i);
             int adapterPosition = parent.getChildAdapterPosition(child);
+            if (adapterPosition == RecyclerView.NO_POSITION){
+                continue;
+            }
             int type = parent.getAdapter().getItemViewType(adapterPosition);
             final int x = child.getRight();
             if (x > parentRight || x < parentLeft) {//超出的时候就不要画了
                 continue;
             }
             if (type == BarEntry.TYPE_XAXIS_FIRST || type == BarEntry.TYPE_XAXIS_SPECIAL) {
-                boolean isNextSecondType = isNearEntrySecondType(entries, xAxis, child.getWidth(), adapterPosition);
-                mLinePaint.setColor(xAxis.firstDividerColor);
-                Path path = new Path();
-                if (isNextSecondType) {
-                    path.moveTo(x, parentBottom - mBarChartAttrs.contentPaddingBottom);
-                } else {
-                    path.moveTo(x, parentBottom);
+                if (mBarChartAttrs.enableXAxisFirstGridLine){
+                    boolean isNextSecondType = isNearEntrySecondType(entries, xAxis, child.getWidth(), adapterPosition);
+                    mLinePaint.setColor(xAxis.firstDividerColor);
+                    Path path = new Path();
+                    if (isNextSecondType) {
+                        path.moveTo(x, parentBottom - mBarChartAttrs.contentPaddingBottom);
+                    } else {
+                        path.moveTo(x, parentBottom);
+                    }
+                    path.lineTo(x, parentTop);
+                    canvas.drawPath(path, mLinePaint);
                 }
-                path.lineTo(x, parentTop);
-                canvas.drawPath(path, mLinePaint);
             } else if (type == BarEntry.TYPE_XAXIS_SECOND) {
-                //拿到child 的布局信息
-                PathEffect pathEffect = new DashPathEffect(new float[]{5, 5, 5, 5}, 1);
-                mDashPaint.setPathEffect(pathEffect);
-                mDashPaint.setColor(xAxis.secondDividerColor);
-                Path path = new Path();
-                path.moveTo(x, parentBottom - DisplayUtil.dip2px(1));
-                path.lineTo(x, parentTop);
-                canvas.drawPath(path, mDashPaint);
+                if (mBarChartAttrs.enableXAxisSecondGridLine){
+                    //拿到child 的布局信息
+                    PathEffect pathEffect = new DashPathEffect(new float[]{5, 5, 5, 5}, 1);
+                    mDashPaint.setPathEffect(pathEffect);
+                    mDashPaint.setColor(xAxis.secondDividerColor);
+                    Path path = new Path();
+                    path.moveTo(x, parentBottom - DisplayUtil.dip2px(1));
+                    path.lineTo(x, parentTop);
+                    canvas.drawPath(path, mDashPaint);
+                }
             } else if (type == BarEntry.TYPE_XAXIS_THIRD) {
-                //拿到child 的布局信息
-                PathEffect pathEffect = new DashPathEffect(new float[]{5, 5, 5, 5}, 1);
-                mDashPaint.setPathEffect(pathEffect);
-                mDashPaint.setColor(xAxis.thirdDividerColor);
-                Path path = new Path();
-                path.moveTo(x, parentBottom - mBarChartAttrs.contentPaddingBottom);
-                path.lineTo(x, parentTop);
-                canvas.drawPath(path, mDashPaint);
+                if (mBarChartAttrs.enableXAxisThirdGridLine){
+                    //拿到child 的布局信息
+                    PathEffect pathEffect = new DashPathEffect(new float[]{5, 5, 5, 5}, 1);
+                    mDashPaint.setPathEffect(pathEffect);
+                    mDashPaint.setColor(xAxis.thirdDividerColor);
+                    Path path = new Path();
+                    path.moveTo(x, parentBottom - mBarChartAttrs.contentPaddingBottom);
+                    path.lineTo(x, parentTop);
+                    canvas.drawPath(path, mDashPaint);
+                }
             }
         }
     }
 
     //画月线的时候，当邻近的靠左的存在需要写 X轴坐标的BarEntry，返回true, 柱体宽度大于文本宽度时除外。
-    private boolean isNearEntrySecondType(List<BarEntry> entries, XAxis xAxis, int itemWidth, int adapterPosition) {
-        if (adapterPosition == 0){
+    private boolean isNearEntrySecondType(List<? extends BarEntry> entries, XAxis xAxis, int itemWidth, int adapterPosition) {
+        if (adapterPosition == 0) {
             return false;
         }
         BarEntry barEntryNext;
@@ -124,9 +139,9 @@ final public class XAxisRender {
             mTextPaint.setTextSize(xAxis.getTextSize());
             float distance = itemWidth * (adapterPosition - nearPosition);
             String xAxisLabel = xAxis.getValueFormatter().getBarLabel(barEntryNext);
-            if (!TextUtils.isEmpty(xAxisLabel)){
+            if (!TextUtils.isEmpty(xAxisLabel)) {
                 float txtWidth = mTextPaint.measureText(xAxisLabel) + xAxis.labelTxtPadding;
-                if (txtWidth > distance){
+                if (txtWidth > distance) {
                     return true;
                 }
                 break;
@@ -137,22 +152,20 @@ final public class XAxisRender {
 
     //绘制X坐标
     final public void drawXAxis(Canvas canvas, RecyclerView parent, XAxis xAxis) {
-        BarChartAdapter mAdapter = (BarChartAdapter) parent.getAdapter();
-        List<BarEntry> entries = mAdapter.getEntries();
+        if (!mBarChartAttrs.enableXAxisLabel){
+            return;
+        }
         int parentBottom = parent.getHeight() - parent.getPaddingBottom();
         int parentLeft = parent.getPaddingLeft();
         final int childCount = parent.getChildCount();
         mTextPaint.setTextSize(xAxis.getTextSize());
         int parentRight = parent.getWidth() - parent.getPaddingRight();
 
-
         for (int i = 0; i < childCount; i++) {
             final View child = parent.getChildAt(i);
-            int adapterPosition = parent.getChildAdapterPosition(child);
-
             final int xLeft = child.getLeft();
             final int xRight = child.getRight();
-            BarEntry barEntry = entries.get(adapterPosition);
+            BarEntry barEntry = (BarEntry) child.getTag();
 
             String dateStr = xAxis.getValueFormatter().getBarLabel(barEntry);
             if (!TextUtils.isEmpty(dateStr)) {
@@ -184,6 +197,35 @@ final public class XAxisRender {
                     canvas.drawText(dateStr, 0, endIndex, txtXLeft, txtY, mTextPaint);
                 }
             }
+        }
+    }
+
+
+    //绘制X坐标
+    final public void drawXAxisDisplay(Canvas canvas, RecyclerView parent, BarChartAttrs attrs) {
+        if (!mBarChartAttrs.enableXAxisDisplayLabel){
+            return;
+        }
+        float parentBottom = parent.getHeight() - parent.getPaddingBottom() + DisplayUtil.dip2px(5);
+        mTextPaint.setTextSize(attrs.xAxisTxtSize);
+        mTextPaint.setColor(attrs.xAxisTxtColor);
+        String[] strArray = new String[]{"00:00", "06:00", "12:00", "18:00", "24:00"};
+        float textWidth = mTextPaint.measureText(strArray[0]);
+        float parentWidth = parent.getWidth() - parent.getPaddingStart() - parent.getPaddingEnd();
+        float spaceWidth = (parentWidth - textWidth * 5) / 4;
+
+        Paint.FontMetrics fontMetrics = mTextPaint.getFontMetrics();
+        float top = fontMetrics.top;
+        float bottom = fontMetrics.bottom;
+        float height = bottom - top;
+        for (int i = 0; i < 5; i++) {
+            float rectFLeft = parent.getPaddingStart() + i * (spaceWidth + textWidth);
+            float rectFRight = rectFLeft + textWidth;
+            RectF rect = new RectF(rectFLeft, parentBottom,
+                    rectFRight, parentBottom + height);
+            int baseLineY = (int) (rect.centerY() - top / 2 - bottom / 2);
+            canvas.drawText(strArray[i], rect.left, baseLineY, mTextPaint);
+
         }
     }
 

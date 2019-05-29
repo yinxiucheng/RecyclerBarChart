@@ -1,15 +1,15 @@
 package com.yxc.chartlib.sleepchart;
 
 import android.content.Context;
-import androidx.annotation.NonNull;
-import androidx.recyclerview.widget.RecyclerView;
-
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
+import androidx.annotation.NonNull;
+import androidx.recyclerview.widget.RecyclerView;
+
 import com.yxc.chartlib.R;
-import com.yxc.chartlib.entrys.SleepEntry;
+import com.yxc.chartlib.entrys.SleepItemEntry;
 
 import java.util.List;
 
@@ -20,23 +20,23 @@ import java.util.List;
 final public class SleepChartAdapter extends RecyclerView.Adapter<SleepChartAdapter.BarChartViewHolder> {
 
     private Context mContext;
-    private List<SleepEntry> mEntries;
+    private List<SleepItemEntry> mEntries;
     private RecyclerView mRecyclerView;
     private long timestampDistance;
     private long currentTimeDistance;
 
-    public SleepChartAdapter(Context context, List<SleepEntry> entries, RecyclerView recyclerView) {
+    public SleepChartAdapter(Context context, List<SleepItemEntry> entries, RecyclerView recyclerView) {
         this.mContext = context;
         this.mEntries = entries;
         this.mRecyclerView = recyclerView;
     }
 
-    public void setEntries(List<SleepEntry> mEntries) {
+    public void setEntries(List<SleepItemEntry> mEntries) {
         this.mEntries = mEntries;
         notifyDataSetChanged();
     }
 
-    public List<SleepEntry> getEntries() {
+    public List<SleepItemEntry> getEntries() {
         return mEntries;
     }
 
@@ -49,24 +49,21 @@ final public class SleepChartAdapter extends RecyclerView.Adapter<SleepChartAdap
 
     @Override
     public void onBindViewHolder(@NonNull BarChartViewHolder viewHolder, int position) {
-        float contentWidth = mRecyclerView.getWidth() -
-                mRecyclerView.getPaddingRight() - mRecyclerView.getPaddingLeft();
-        SleepEntry latestSleepEntry = mEntries.get(0);
-        SleepEntry longestSleepEntry = mEntries.get(mEntries.size() - 1);
+        float contentWidth = mRecyclerView.getWidth() - mRecyclerView.getPaddingRight() - mRecyclerView.getPaddingLeft();
 
-        timestampDistance = Math.abs(latestSleepEntry.endTimestamp - longestSleepEntry.startTimestamp);
-        SleepEntry currentSleepEntry = mEntries.get(position);
-
-        currentTimeDistance = (currentSleepEntry.endTimestamp - currentSleepEntry.startTimestamp);
+        SleepItemEntry latestSleepEntry = mEntries.get(0);
+        SleepItemEntry longestSleepEntry = mEntries.get(mEntries.size() - 1);
+        timestampDistance = latestSleepEntry.sleepItemTime.endTimestamp - longestSleepEntry.sleepItemTime.startTimestamp;
+        SleepItemEntry currentSleepEntry = mEntries.get(position);
+        currentTimeDistance = currentSleepEntry.sleepItemTime.getSleepTime();
         int itemWidth = (int) ((currentTimeDistance * contentWidth) / timestampDistance);
         setLinearLayout(viewHolder.contentView, itemWidth < 1 ? 1 : itemWidth);
-
         viewHolder.contentView.setTag(currentSleepEntry);
     }
 
     @Override
     public int getItemViewType(int position) {
-        SleepEntry barEntry = mEntries.get(position);
+        SleepItemEntry barEntry = mEntries.get(position);
         if (null != barEntry) {
             return barEntry.type;
         }

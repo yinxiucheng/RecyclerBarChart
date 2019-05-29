@@ -11,7 +11,7 @@ import android.widget.Button;
 import com.yxc.barchart.R;
 import com.yxc.barchart.view.WaterDrop;
 import com.yxc.commonlib.util.ColorUtil;
-import com.yxc.commonlib.util.TimeUtil;
+import com.yxc.commonlib.util.TimeDateUtil;
 
 import org.joda.time.LocalDate;
 /**
@@ -35,7 +35,7 @@ public class WaterDropActivity extends AppCompatActivity {
 
     private void initView() {
         toolbar = findViewById(R.id.toolBar);
-        toolbar.setTitle(TimeUtil.getDateStr(TimeUtil.localDateToTimestamp(LocalDate.now()), "M月dd日"));
+        toolbar.setTitle(TimeDateUtil.getDateStr(TimeDateUtil.localDateToTimestamp(LocalDate.now()), "M月dd日"));
         toolbar.setNavigationIcon(R.drawable.ic_chevron_left_white_45dp);
         toolbar.setTitleTextColor(ColorUtil.getResourcesColor(this, R.color.white));
         setSupportActionBar(toolbar);

@@ -4,19 +4,22 @@ package com.yxc.chartlib.attrs;
  * @author yxc
  * @date 2019/4/26
  */
-public class SleepChartAttrs {
+public class SleepChartAttrs extends BaseChartAttrs {
 
     public int deepSleepColor;//
     public int slumberColor;//
+    public int eyeMoveColor;//
     public int weakColor; //
+    public float sleepItemHeight;//睡眠block的高度
 
     public int txtColor;
-    public double ratioSpeed;//LinearLayoutManager 速度的 比率。
+    public float txtSize;
 
-    public float contentPaddingBottom;//底部内容绘制高度
-    public float contentPaddingTop;//顶部内容绘制
-
-    public int layoutManagerOrientation;//layout  orientation
-    public boolean layoutManagerReverseLayout;//layout Horizontall layout from right to left, default is true;
+    public boolean enableValueMark;
+    public int highLightLeftTxtColor;
+    public float highLightLeftTxtSize;
+    public int highLightRightTxtColor;
+    public float highLightRightTxtSize;
+    public float highLightRectColor;
 
 }

@@ -1,14 +1,14 @@
 package com.yxc.chartlib.barchart.itemdecoration;
 
 import android.graphics.Canvas;
-import android.graphics.Paint;
 import android.graphics.Rect;
+import android.view.View;
+
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
-import android.util.Log;
-import android.view.View;
 
+import com.yxc.chartlib.attrs.BarChartAttrs;
 import com.yxc.chartlib.component.XAxis;
 import com.yxc.chartlib.component.YAxis;
 import com.yxc.chartlib.formatter.DefaultBarChartValueFormatter;
@@ -18,10 +18,6 @@ import com.yxc.chartlib.render.BarBoardRender;
 import com.yxc.chartlib.render.BarChartRender;
 import com.yxc.chartlib.render.XAxisRender;
 import com.yxc.chartlib.render.YAxisRender;
-import com.yxc.chartlib.attrs.BarChartAttrs;
-import com.yxc.chartlib.view.CustomAnimatedDecorator;
-
-import java.util.HashMap;
 
 /**
  * @author yxc
@@ -43,13 +39,8 @@ public class BarChartItemDecoration extends RecyclerView.ItemDecoration {
     private ValueFormatter mBarChartValueFormatter;
     private ValueFormatter mHighLightValueFormatter;
 
-    private Paint mBarChartPaint;
-
-    @SuppressWarnings("unused")
-    private HashMap<Integer, CustomAnimatedDecorator> mAnimatorMap;
-
-    private static final int HORIZONTAL_LIST = LinearLayoutManager.HORIZONTAL;
-    private static final int VERTICAL_LIST = LinearLayoutManager.VERTICAL;
+    public static final int HORIZONTAL_LIST = LinearLayoutManager.HORIZONTAL;
+    public static final int VERTICAL_LIST = LinearLayoutManager.VERTICAL;
 
     public BarChartItemDecoration(YAxis yAxis, XAxis xAxis, BarChartAttrs barChartAttrs) {
         this.mOrientation = barChartAttrs.layoutManagerOrientation;
@@ -62,14 +53,7 @@ public class BarChartItemDecoration extends RecyclerView.ItemDecoration {
         this.mBarChartValueFormatter = new DefaultBarChartValueFormatter(0);
         this.mHighLightValueFormatter = new DefaultHighLightMarkValueFormatter(0);
         this.mBarChartRender = new BarChartRender(mBarChartAttrs, mBarChartValueFormatter, mHighLightValueFormatter);
-
-        initBarChartPaint();
     }
-
-    public void setAnimatorMap(HashMap<Integer, CustomAnimatedDecorator> map) {
-        this.mAnimatorMap = map;
-    }
-
 
     //支持自定义 柱状图顶部 value的格式。
     public void setBarChartValueFormatter(ValueFormatter barChartValueFormatter) {
@@ -85,16 +69,16 @@ public class BarChartItemDecoration extends RecyclerView.ItemDecoration {
 
     @Override
     public void onDrawOver(Canvas canvas, RecyclerView parent, RecyclerView.State state) {
-        super.onDrawOver(canvas, parent, state);
+        super.onDraw(canvas, parent, state);
         if (mOrientation == HORIZONTAL_LIST) {
-            Log.d("ItemDecoration", " itemdecoration invoke!");
             //横向 list 画竖线
             yAxisRenderer.drawLeftYAxisLabel(canvas, parent, mYAxis);//画左边y坐标的刻度，会设定RecyclerView的 leftPadding
             yAxisRenderer.drawRightYAxisLabel(canvas, parent, mYAxis);//画右边y坐标的刻度，会设定RecyclerView的 rightPadding
             yAxisRenderer.drawHorizontalLine(canvas, parent, mYAxis);//画横的网格线
+
             xAxisRenderer.drawVerticalLine(canvas, parent, mXAxis);//画竖的网格线
             xAxisRenderer.drawXAxis(canvas, parent, mXAxis);//画x轴坐标的刻度
-
+            xAxisRenderer.drawXAxisDisplay(canvas, parent, mBarChartAttrs);//绘制数据首页中的供显示用的非数据关联的坐标。
             mBarBoardRender.drawBarBorder(canvas, parent);//绘制边框
 
             mBarChartRender.drawBarChart(canvas, parent, mYAxis);//draw BarChart
@@ -107,13 +91,7 @@ public class BarChartItemDecoration extends RecyclerView.ItemDecoration {
         }
     }
 
-    private void initBarChartPaint() {
-        mBarChartPaint = new Paint();
-        mBarChartPaint.reset();
-        mBarChartPaint.setAntiAlias(true);
-        mBarChartPaint.setStyle(Paint.Style.FILL);
-        mBarChartPaint.setColor(mBarChartAttrs.barChartColor);
-    }
+
 
     @Override
     public void onDraw(@NonNull Canvas canvas, @NonNull RecyclerView parent, @NonNull RecyclerView.State state) {
@@ -134,5 +112,4 @@ public class BarChartItemDecoration extends RecyclerView.ItemDecoration {
     public void getItemOffsets(Rect outRect, View view, RecyclerView parent, RecyclerView.State state) {
         outRect.set(0, 0, 0, 0);
     }
-
 }

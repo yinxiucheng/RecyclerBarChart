@@ -14,7 +14,7 @@ import com.yxc.barchart.ui.sleep.SleepActivity;
 import com.yxc.barchart.ui.step.StepActivity;
 import com.yxc.barchart.ui.bezier.BezierActivity;
 import com.yxc.barchart.ui.waterdrop.WaterDropActivity;
-import com.yxc.commonlib.util.TimeUtil;
+import com.yxc.commonlib.util.TimeDateUtil;
 
 import org.joda.time.LocalDate;
 
@@ -30,7 +30,7 @@ public class MainActivity extends AppCompatActivity {
 
     private void initView() {
         toolbar = findViewById(R.id.toolBar);
-        toolbar.setTitle(TimeUtil.getDateStr(TimeUtil.localDateToTimestamp(LocalDate.now()), "M月dd日"));
+        toolbar.setTitle(TimeDateUtil.getDateStr(TimeDateUtil.localDateToTimestamp(LocalDate.now()), "M月dd日"));
         toolbar.setNavigationIcon(R.drawable.ic_navigation_left_black_45dp);
         setSupportActionBar(toolbar);
     }

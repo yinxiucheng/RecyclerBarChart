@@ -4,7 +4,7 @@ import android.util.Log;
 
 import com.yxc.chartlib.attrs.BarChartAttrs;
 import com.yxc.chartlib.entrys.BarEntry;
-import com.yxc.commonlib.util.TimeUtil;
+import com.yxc.commonlib.util.TimeDateUtil;
 
 import org.joda.time.LocalDate;
 
@@ -26,10 +26,10 @@ public class TestData {
     // 创建 月视图的数据
     public static List<BarEntry> getMonthEntries(BarChartAttrs attrs, LocalDate localDate, int length, int originEntrySize) {
         List<BarEntry> entries = new ArrayList<>();
-        long timestamp = TimeUtil.changZeroOfTheDay(localDate);
+        long timestamp = TimeDateUtil.changZeroOfTheDay(localDate);
         for (int i = originEntrySize; i < originEntrySize + length; i++) {
             if (i > originEntrySize) {
-                timestamp = timestamp - TimeUtil.TIME_DAY;
+                timestamp = timestamp - TimeDateUtil.TIME_DAY;
             }
             float mult = 10;
             float value;
@@ -48,8 +48,8 @@ public class TestData {
             }
             value = Math.round(value);
             int type = BarEntry.TYPE_XAXIS_THIRD;
-            LocalDate localDateEntry = TimeUtil.timestampToLocalDate(timestamp);
-            boolean isLastDayOfMonth = TimeUtil.isLastDayOfMonth(localDateEntry);
+            LocalDate localDateEntry = TimeDateUtil.timestampToLocalDate(timestamp);
+            boolean isLastDayOfMonth = TimeDateUtil.isLastDayOfMonth(localDateEntry);
             int dayOfYear = localDateEntry.getDayOfYear();
             Log.d("TestData", "dayOfYear:" + dayOfYear + " localDate:" + localDateEntry);
             if (isLastDayOfMonth && (dayOfYear+1) % attrs.xAxisScaleDistance == 0) {
@@ -60,7 +60,7 @@ public class TestData {
                 type = BarEntry.TYPE_XAXIS_SECOND;
             }
 
-            if (TimeUtil.isFuture(localDateEntry)) {
+            if (TimeDateUtil.isFuture(localDateEntry)) {
                 value = 0;
             }
             BarEntry barEntry = new BarEntry(i, value, timestamp, type);
@@ -76,10 +76,10 @@ public class TestData {
     //创建Week视图的数据
     public static List<BarEntry> createWeekEntries(LocalDate localDate, int length, int originEntrySize) {
         List<BarEntry> entries = new ArrayList<>();
-        long timestamp = TimeUtil.changZeroOfTheDay(localDate);
+        long timestamp = TimeDateUtil.changZeroOfTheDay(localDate);
         for (int i = originEntrySize; i < originEntrySize + length; i++) {
             if (i > originEntrySize) {
-                timestamp = timestamp - TimeUtil.TIME_DAY;
+                timestamp = timestamp - TimeDateUtil.TIME_DAY;
             }
             float mult = 10;
             float value = 0;
@@ -98,12 +98,12 @@ public class TestData {
             }
             value = Math.round(value);
             int type = BarEntry.TYPE_XAXIS_SECOND;
-            LocalDate localDateEntry = TimeUtil.timestampToLocalDate(timestamp);
-            boolean isSunday = TimeUtil.isSunday(localDateEntry);
+            LocalDate localDateEntry = TimeDateUtil.timestampToLocalDate(timestamp);
+            boolean isSunday = TimeDateUtil.isSunday(localDateEntry);
             if (isSunday) {
                 type = BarEntry.TYPE_XAXIS_FIRST;
             }
-            if (TimeUtil.isFuture(localDateEntry)){
+            if (TimeDateUtil.isFuture(localDateEntry)){
                 value = 0;
             }
             BarEntry barEntry = new BarEntry(i, value, timestamp, type);
@@ -120,7 +120,7 @@ public class TestData {
         List<BarEntry> entries = new ArrayList<>();
         for (int i = originEntrySize; i < length + originEntrySize; i++) {
             if (i > originEntrySize){
-                timestamp = timestamp - TimeUtil.TIME_HOUR;
+                timestamp = timestamp - TimeDateUtil.TIME_HOUR;
             }
             float mult = 10;
             float value = 0;
@@ -139,9 +139,9 @@ public class TestData {
             }
             value = Math.round(value);
             int type = BarEntry.TYPE_XAXIS_THIRD;
-            boolean isLastHourOfTheDay = TimeUtil.isLastHourOfTheDay(timestamp);
-            LocalDate localDateEntry = TimeUtil.timestampToLocalDate(timestamp);
-            int hourOfTheDay = TimeUtil.getHourOfTheDay(timestamp);
+            boolean isLastHourOfTheDay = TimeDateUtil.isEndHourOfTheDay(timestamp);
+            LocalDate localDateEntry = TimeDateUtil.timestampToLocalDate(timestamp);
+            int hourOfTheDay = TimeDateUtil.getHourOfTheDay(timestamp);
             if (isLastHourOfTheDay && (hourOfTheDay + 1) % attrs.xAxisScaleDistance == 0) {
                 type = BarEntry.TYPE_XAXIS_SPECIAL;
             } else if (isLastHourOfTheDay) {
@@ -149,7 +149,7 @@ public class TestData {
             } else if ((hourOfTheDay + 1) % attrs.xAxisScaleDistance == 0) {
                 type = BarEntry.TYPE_XAXIS_SECOND;
             }
-            if (TimeUtil.isFuture(timestamp)){
+            if (TimeDateUtil.isFuture(timestamp)){
                 value = 0;
             }
             BarEntry barEntry = new BarEntry(i, value, timestamp, type);
@@ -186,12 +186,12 @@ public class TestData {
             }
             value = Math.round(value);
             int type = BarEntry.TYPE_XAXIS_SECOND;
-            boolean isLastMonthOfTheYear = TimeUtil.isLastMonthOfTheYear(localDate);
+            boolean isLastMonthOfTheYear = TimeDateUtil.isLastMonthOfTheYear(localDate);
             if (isLastMonthOfTheYear) {
                 type = BarEntry.TYPE_XAXIS_FIRST;
             }
-            long timestamp = TimeUtil.changZeroOfTheDay(localDate);
-            if (TimeUtil.isFuture(localDate)){
+            long timestamp = TimeDateUtil.changZeroOfTheDay(localDate);
+            if (TimeDateUtil.isFuture(localDate)){
                 value = 0;
             }
             BarEntry barEntry = new BarEntry(i, value, timestamp, type);

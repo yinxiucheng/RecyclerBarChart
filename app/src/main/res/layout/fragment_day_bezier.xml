@@ -12,7 +12,7 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content">
 
-        <com.yxc.chartlib.barchart.BarChartRecyclerView
+        <com.yxc.chartlib.view.BarChartRecyclerView
             android:id="@+id/recycler"
             android:layout_width="match_parent"
             android:layout_height="335dp"

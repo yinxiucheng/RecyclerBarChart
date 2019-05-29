@@ -16,7 +16,7 @@ import android.widget.FrameLayout;
 import com.yxc.barchart.R;
 import com.yxc.widgetlib.viewpager2.ViewPager2;
 import com.yxc.commonlib.util.ColorUtil;
-import com.yxc.commonlib.util.TimeUtil;
+import com.yxc.commonlib.util.TimeDateUtil;
 import com.yxc.widgetlib.calendar.view.DayCalendarView;
 
 import org.joda.time.LocalDate;
@@ -48,7 +48,7 @@ public class SleepActivity extends AppCompatActivity implements DayCalendarView.
         mLocalDate = LocalDate.now();
 
         toolbar = findViewById(R.id.toolBar);
-        toolbar.setTitle(TimeUtil.getDateStr(TimeUtil.localDateToTimestamp(mLocalDate), "M月dd日"));
+        toolbar.setTitle(TimeDateUtil.getDateStr(TimeDateUtil.localDateToTimestamp(mLocalDate), "M月dd日"));
         toolbar.setNavigationIcon(R.drawable.ic_chevron_left_white_45dp);
         toolbar.setTitleTextColor(ColorUtil.getResourcesColor(this, R.color.white));
         setSupportActionBar(toolbar);
@@ -100,7 +100,7 @@ public class SleepActivity extends AppCompatActivity implements DayCalendarView.
 
     @Override
     public void onDayItemSelect(LocalDate localDate) {
-        int position = TimeUtil.getIntervalDay(localDate, mLocalDate);
+        int position = TimeDateUtil.getIntervalDay(localDate, mLocalDate);
         viewPager2.setCurrentItem(position, true);
 //        switchTab(SleepFragment.class, "SleepFragment", localDate);
     }
@@ -126,7 +126,7 @@ public class SleepActivity extends AppCompatActivity implements DayCalendarView.
             } catch (InstantiationException e) {
                 e.printStackTrace();
             }
-            fragment.setArguments(bindTimestamp(TimeUtil.localDateToTimestamp(localDate)));
+            fragment.setArguments(bindTimestamp(TimeDateUtil.localDateToTimestamp(localDate)));
             return fragment;
         }
 

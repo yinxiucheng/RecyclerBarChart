@@ -2,21 +2,22 @@ package com.yxc.chartlib.barchart.itemdecoration;
 
 import android.graphics.Canvas;
 import android.graphics.Rect;
-import androidx.annotation.NonNull;
-import androidx.recyclerview.widget.LinearLayoutManager;
-import androidx.recyclerview.widget.RecyclerView;
 import android.util.Log;
 import android.view.View;
 
+import androidx.annotation.NonNull;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
+
+import com.yxc.chartlib.attrs.BarChartAttrs;
 import com.yxc.chartlib.component.XAxis;
 import com.yxc.chartlib.component.YAxis;
-import com.yxc.chartlib.formatter.DefaultBarChartValueFormatter;
+import com.yxc.chartlib.formatter.DefaultHighLightMarkValueFormatter;
 import com.yxc.chartlib.formatter.ValueFormatter;
 import com.yxc.chartlib.render.BarBoardRender;
 import com.yxc.chartlib.render.LineChartRender;
 import com.yxc.chartlib.render.XAxisRender;
 import com.yxc.chartlib.render.YAxisRender;
-import com.yxc.chartlib.attrs.BarChartAttrs;
 
 /**
  * @author yxc
@@ -34,9 +35,7 @@ public class LineChartItemDecoration extends RecyclerView.ItemDecoration {
     private XAxisRender xAxisRenderer;
     private BarBoardRender mBarBoardRender;
     private LineChartRender mLineChartRender;
-    private ValueFormatter mBarChartValueFormatter;
-    private ValueFormatter mChartValueMarkFormatter;
-
+    private ValueFormatter mHighLightValueFormatter;
 
     public static final int HORIZONTAL_LIST = LinearLayoutManager.HORIZONTAL;
     public static final int VERTICAL_LIST = LinearLayoutManager.VERTICAL;
@@ -49,26 +48,13 @@ public class LineChartItemDecoration extends RecyclerView.ItemDecoration {
         this.yAxisRenderer = new YAxisRender(mBarChartAttrs);
         this.xAxisRenderer = new XAxisRender(mBarChartAttrs);
         this.mBarBoardRender = new BarBoardRender(mBarChartAttrs);
-        this.mBarChartValueFormatter = new DefaultBarChartValueFormatter(0);
-        this.mChartValueMarkFormatter = new DefaultBarChartValueFormatter(0);
-        this.mLineChartRender = new LineChartRender(mBarChartAttrs, mBarChartValueFormatter, mChartValueMarkFormatter);
+        this.mHighLightValueFormatter = new DefaultHighLightMarkValueFormatter(0);
+        this.mLineChartRender = new LineChartRender(mBarChartAttrs, mHighLightValueFormatter);
     }
-
-    //支持自定义 柱状图顶部 value的格式。
-    public void setBarChartValueFormatter(ValueFormatter barChartValueFormatter) {
-        this.mBarChartValueFormatter = barChartValueFormatter;
-        this.mLineChartRender.setBarChartValueFormatter(barChartValueFormatter);
-    }
-
-    public void setChartValueMarkFormatter(ValueFormatter chartValueFormatter) {
-        this.mChartValueMarkFormatter = chartValueFormatter;
-        this.mLineChartRender.setChartValueMarkFormatter(chartValueFormatter);
-    }
-
 
     @Override
     public void onDrawOver(Canvas canvas, RecyclerView parent, RecyclerView.State state) {
-        super.onDrawOver(canvas, parent, state);
+        super.onDraw(canvas, parent, state);
         if (mOrientation == HORIZONTAL_LIST) {
             Log.d("ItemDecoration", " itemdecoration invoke!");
             //横向 list 画竖线
@@ -82,8 +68,7 @@ public class LineChartItemDecoration extends RecyclerView.ItemDecoration {
             mBarBoardRender.drawBarBorder(canvas, parent);//绘制边框
 
             mLineChartRender.drawLineChart(canvas, parent, mYAxis);//draw LineChart
-            mLineChartRender.drawValueMark(canvas, parent, mYAxis);
-            mLineChartRender.drawBarChartValue(canvas, parent, mYAxis);//draw LineChart value
+            mLineChartRender.drawHighLight(canvas, parent, mYAxis);//绘制选中高亮
 
         } else if (mOrientation == VERTICAL_LIST) {//暂时不支持
             //竖向list 画横线
@@ -110,6 +95,11 @@ public class LineChartItemDecoration extends RecyclerView.ItemDecoration {
     @Override
     public void getItemOffsets(Rect outRect, View view, RecyclerView parent, RecyclerView.State state) {
         outRect.set(0, 0, 0, 0);
+    }
+
+    public void setHighLightValueFormatter(ValueFormatter highLightValueFormatter){
+        this.mHighLightValueFormatter = highLightValueFormatter;
+        this.mLineChartRender.setHighLightValueFormatter(mHighLightValueFormatter);
     }
 
 }

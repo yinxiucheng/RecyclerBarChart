@@ -1,23 +1,24 @@
 package com.yxc.chartlib.barchart;
 
 import android.content.Context;
-import androidx.recyclerview.widget.LinearLayoutManager;
-import androidx.recyclerview.widget.RecyclerView;
 import android.util.AttributeSet;
 
-import com.yxc.chartlib.attrs.BarChartAttrs;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
+
+import com.yxc.chartlib.attrs.BaseChartAttrs;
 
 /**
  * @author yxc
- * @date 2019/4/11
+ * @since  2019/4/11
  */
-public class SpeedRatioLinearLayoutManager extends LinearLayoutManager {
+public class SpeedRatioLayoutManager extends LinearLayoutManager {
 
-    private BarChartAttrs mAttrs;
+    private BaseChartAttrs mAttrs;
 
     private double ratioSpeed;
 
-    public SpeedRatioLinearLayoutManager(Context context, BarChartAttrs attrs) {
+    public SpeedRatioLayoutManager(Context context, BaseChartAttrs attrs) {
         super(context);
         this.mAttrs = attrs;
         setOrientation(mAttrs.layoutManagerOrientation);
@@ -25,11 +26,11 @@ public class SpeedRatioLinearLayoutManager extends LinearLayoutManager {
         ratioSpeed = mAttrs.ratioSpeed;
     }
 
-    public SpeedRatioLinearLayoutManager(Context context, int orientation, boolean reverseLayout) {
+    public SpeedRatioLayoutManager(Context context, int orientation, boolean reverseLayout) {
         super(context, orientation, reverseLayout);
     }
 
-    public SpeedRatioLinearLayoutManager(Context context, AttributeSet attrs, int defStyleAttr, int defStyleRes) {
+    public SpeedRatioLayoutManager(Context context, AttributeSet attrs, int defStyleAttr, int defStyleRes) {
         super(context, attrs, defStyleAttr, defStyleRes);
     }
 

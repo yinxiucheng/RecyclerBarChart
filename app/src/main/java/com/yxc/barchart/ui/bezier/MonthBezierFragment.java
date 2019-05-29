@@ -17,33 +17,31 @@ import com.yxc.barchart.R;
 import com.yxc.barchart.RateTestData;
 import com.yxc.barchart.TestData;
 import com.yxc.barchart.formatter.XAxisMonthFormatter;
-import com.yxc.barchart.ui.base.BaseChartFragment;
 import com.yxc.chartlib.attrs.BarChartAttrs;
 import com.yxc.chartlib.barchart.BarChartAdapter;
-import com.yxc.chartlib.barchart.BarChartRecyclerView;
-import com.yxc.chartlib.barchart.SpeedRatioLinearLayoutManager;
+import com.yxc.chartlib.barchart.SpeedRatioLayoutManager;
+import com.yxc.chartlib.view.BarChartRecyclerView;
 import com.yxc.chartlib.barchart.itemdecoration.BezierChartItemDecoration;
 import com.yxc.chartlib.component.XAxis;
 import com.yxc.chartlib.component.YAxis;
 import com.yxc.chartlib.entrys.BarEntry;
+import com.yxc.chartlib.entrys.YAxisMaxEntries;
 import com.yxc.chartlib.formatter.ValueFormatter;
 import com.yxc.chartlib.listener.RecyclerItemGestureListener;
 import com.yxc.chartlib.listener.SimpleItemGestureListener;
 import com.yxc.chartlib.util.ChartComputeUtil;
 import com.yxc.chartlib.util.DecimalUtil;
 import com.yxc.commonlib.util.TextUtil;
-import com.yxc.commonlib.util.TimeUtil;
+import com.yxc.commonlib.util.TimeDateUtil;
 
 import org.joda.time.LocalDate;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 //import com.yxc.barchart.TestData;
 
-public class MonthBezierFragment extends BaseChartFragment {
+public class MonthBezierFragment extends BaseBezierFragment {
 
     BarChartRecyclerView recyclerView;
     TextView txtLeftLocalDate;
@@ -103,7 +101,7 @@ public class MonthBezierFragment extends BaseChartFragment {
         displayNumber = mBarChartAttrs.displayNumbers;
         valueFormatter = new XAxisMonthFormatter(getActivity());
         mEntries = new ArrayList<>();
-        SpeedRatioLinearLayoutManager layoutManager = new SpeedRatioLinearLayoutManager(getActivity(), mBarChartAttrs);
+        SpeedRatioLayoutManager layoutManager = new SpeedRatioLayoutManager(getActivity(), mBarChartAttrs);
         mYAxis = new YAxis(mBarChartAttrs);
         mXAxis = new XAxis(mBarChartAttrs, displayNumber);
         mXAxis.setValueFormatter(valueFormatter);
@@ -114,7 +112,7 @@ public class MonthBezierFragment extends BaseChartFragment {
         recyclerView.setAdapter(mBarChartAdapter);
         recyclerView.setLayoutManager(layoutManager);
 
-        currentLocalDate = TimeUtil.getLastDayOfThisMonth(LocalDate.now());
+        currentLocalDate = TimeDateUtil.getLastDayOfThisMonth(LocalDate.now());
         List<BarEntry> barEntries = RateTestData.getMonthEntries(mBarChartAttrs, currentLocalDate.plusDays(preEntrySize),
                 preEntrySize + 3 * displayNumber, mEntries.size());
         bindBarChartList(barEntries);
@@ -184,15 +182,9 @@ public class MonthBezierFragment extends BaseChartFragment {
     //重新设置Y坐标
     private void resetYAxis(RecyclerView recyclerView) {
 
-        float yAxisMaximum = 0;
-        HashMap<Float, List<BarEntry>> map = ChartComputeUtil.getVisibleEntries(recyclerView);
-
-        for (Map.Entry<Float, List<BarEntry>> entry : map.entrySet()) {
-            yAxisMaximum = entry.getKey();
-            displayDateAndStep(entry.getValue());
-            break;
-        }
-        mYAxis = YAxis.getYAxis(mBarChartAttrs, yAxisMaximum);
+        YAxisMaxEntries yAxisMaxEntries = ChartComputeUtil.getVisibleEntries(recyclerView);
+        setVisibleEntries(yAxisMaxEntries.visibleEntries);
+        mYAxis = YAxis.getYAxis(mBarChartAttrs, yAxisMaxEntries.yAxisMaximum);
         mItemDecoration.setYAxis(mYAxis);
         mBarChartAdapter.setYAxis(mYAxis);
     }
@@ -215,20 +207,20 @@ public class MonthBezierFragment extends BaseChartFragment {
     private void displayDateAndStep(List<BarEntry> displayEntries) {
         BarEntry rightBarEntry = displayEntries.get(0);
         BarEntry leftBarEntry = displayEntries.get(displayEntries.size() - 1);
-        txtLeftLocalDate.setText(TimeUtil.getDateStr(leftBarEntry.timestamp, "yyyy-MM-dd HH:mm:ss"));
-        txtRightLocalDate.setText(TimeUtil.getDateStr(rightBarEntry.timestamp, "yyyy-MM-dd HH:mm:ss"));
+        txtLeftLocalDate.setText(TimeDateUtil.getDateStr(leftBarEntry.timestamp, "yyyy-MM-dd HH:mm:ss"));
+        txtRightLocalDate.setText(TimeDateUtil.getDateStr(rightBarEntry.timestamp, "yyyy-MM-dd HH:mm:ss"));
 
-        String beginDateStr = TimeUtil.getDateStr(leftBarEntry.timestamp, "yyyy年MM月dd日");
+        String beginDateStr = TimeDateUtil.getDateStr(leftBarEntry.timestamp, "yyyy年MM月dd日");
         String patternStr = "yyyy年MM月dd日";
-        if (TimeUtil.isSameMonth(leftBarEntry.timestamp, rightBarEntry.timestamp)) {
-            textTitle.setText(TimeUtil.getDateStr(leftBarEntry.timestamp, "yyyy年MM月"));
-        } else if (TimeUtil.isSameYear(leftBarEntry.timestamp, rightBarEntry.timestamp)) {
+        if (TimeDateUtil.isSameMonth(leftBarEntry.timestamp, rightBarEntry.timestamp)) {
+            textTitle.setText(TimeDateUtil.getDateStr(leftBarEntry.timestamp, "yyyy年MM月"));
+        } else if (TimeDateUtil.isSameYear(leftBarEntry.timestamp, rightBarEntry.timestamp)) {
             patternStr = "MM月dd日";
-            String endDateStr = TimeUtil.getDateStr(rightBarEntry.timestamp, patternStr);
+            String endDateStr = TimeDateUtil.getDateStr(rightBarEntry.timestamp, patternStr);
             String connectStr = "至";
             textTitle.setText(beginDateStr + connectStr + endDateStr);
         } else {
-            String endDateStr = TimeUtil.getDateStr(rightBarEntry.timestamp, patternStr);
+            String endDateStr = TimeDateUtil.getDateStr(rightBarEntry.timestamp, patternStr);
             String connectStr = "至";
             textTitle.setText(beginDateStr + connectStr + endDateStr);
         }
@@ -252,5 +244,15 @@ public class MonthBezierFragment extends BaseChartFragment {
             mItemGestureListener.resetSelectedBarEntry();
             rlTitle.setVisibility(View.VISIBLE);
         }
+    }
+
+    @Override
+    public void displayDateAndRate() {
+
+    }
+
+    @Override
+    public void scrollToCurrentCycle() {
+
     }
 }

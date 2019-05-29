@@ -1,26 +1,24 @@
 package com.yxc.chartlib.render;
 
 import android.graphics.Canvas;
-import android.graphics.Color;
 import android.graphics.LinearGradient;
 import android.graphics.Paint;
 import android.graphics.Path;
 import android.graphics.PointF;
 import android.graphics.RectF;
 import android.graphics.Shader;
-import androidx.annotation.NonNull;
-import androidx.recyclerview.widget.RecyclerView;
 import android.view.View;
 
-import com.yxc.chartlib.R;
+import androidx.annotation.NonNull;
+import androidx.recyclerview.widget.RecyclerView;
+
+import com.yxc.chartlib.attrs.BarChartAttrs;
 import com.yxc.chartlib.bezier.ControlPoint;
-import com.yxc.chartlib.component.YAxis;
+import com.yxc.chartlib.component.BaseYAxis;
 import com.yxc.chartlib.entrys.BarEntry;
 import com.yxc.chartlib.formatter.ValueFormatter;
-import com.yxc.chartlib.attrs.BarChartAttrs;
 import com.yxc.chartlib.util.ChartComputeUtil;
 import com.yxc.chartlib.util.DecimalUtil;
-import com.yxc.commonlib.util.ColorUtil;
 import com.yxc.commonlib.util.DisplayUtil;
 
 import java.util.ArrayList;
@@ -34,29 +32,20 @@ final public class BezierChartRender {
     private BarChartAttrs mBarChartAttrs;
     private Paint mBarChartPaint;
     private Paint mTextPaint;
-    private Paint mTextMarkPaint;
     private Paint mBezierFillPaint;
     private ValueFormatter mBarChartValueFormatter;
-    private ValueFormatter mChartValueMarkFormatter;
-
-    public void setChartValueMarkFormatter(ValueFormatter mChartValueMarkFormatter) {
-        this.mChartValueMarkFormatter = mChartValueMarkFormatter;
-    }
 
     public void setBarChartValueFormatter(ValueFormatter mBarChartValueFormatter) {
         this.mBarChartValueFormatter = mBarChartValueFormatter;
     }
 
     public BezierChartRender(BarChartAttrs barChartAttrs,
-                             ValueFormatter barChartValueFormatter,
-                             ValueFormatter chartValueMarkFormatter) {
+                             ValueFormatter barChartValueFormatter) {
         this.mBarChartAttrs = barChartAttrs;
         initBarChartPaint();
         initTextPaint();
-        initTextMarkPaint();
         initBezierFillPaint();
         this.mBarChartValueFormatter = barChartValueFormatter;
-        this.mChartValueMarkFormatter = chartValueMarkFormatter;
     }
 
     private void initTextPaint() {
@@ -69,22 +58,12 @@ final public class BezierChartRender {
         mTextPaint.setTextSize(DisplayUtil.dip2px(12));
     }
 
-    private void initTextMarkPaint() {
-        mTextMarkPaint = new Paint();
-        mTextMarkPaint.reset();
-        mTextMarkPaint.setAntiAlias(true);
-        mTextMarkPaint.setStyle(Paint.Style.FILL);
-        mTextMarkPaint.setStrokeWidth(1);
-        mTextMarkPaint.setColor(Color.WHITE);
-        mTextMarkPaint.setTextSize(DisplayUtil.dip2px(12));
-    }
-
     private void initBarChartPaint() {
         mBarChartPaint = new Paint();
         mBarChartPaint.reset();
         mBarChartPaint.setAntiAlias(true);
         mBarChartPaint.setStyle(Paint.Style.STROKE);
-        mBarChartPaint.setStrokeWidth(1);
+        mBarChartPaint.setStrokeWidth(DisplayUtil.dip2px(1));
         mBarChartPaint.setColor(mBarChartAttrs.barChartColor);
     }
 
@@ -93,17 +72,17 @@ final public class BezierChartRender {
         mBezierFillPaint.reset();
         mBezierFillPaint.setAntiAlias(true);
         mBezierFillPaint.setStyle(Paint.Style.FILL);
-        mBezierFillPaint.setColor(mBarChartAttrs.bezierFillColor);
-        mBezierFillPaint.setAlpha(mBarChartAttrs.bezierFillAlpha);
+        mBezierFillPaint.setColor(mBarChartAttrs.barChartColor);
+        mBezierFillPaint.setAlpha(mBarChartAttrs.fillAlpha);
     }
 
     //绘制柱状图顶部value文字
-    final public void drawBarChartValue(Canvas canvas, @NonNull RecyclerView parent, YAxis mYAxis) {
+     public <T extends BaseYAxis>void drawBarChartValue(Canvas canvas, @NonNull RecyclerView parent, T yAxis) {
         if (mBarChartAttrs.enableCharValueDisplay) {
             float bottom = parent.getHeight() - parent.getPaddingBottom() - mBarChartAttrs.contentPaddingBottom;
             float parentRight = parent.getWidth() - parent.getPaddingRight();
             float parentLeft = parent.getPaddingLeft();
-            float realYAxisLabelHeight = bottom - mBarChartAttrs.maxYAxisPaddingTop - parent.getPaddingTop();
+            float realYAxisLabelHeight = bottom - mBarChartAttrs.contentPaddingTop - parent.getPaddingTop();
             int childCount = parent.getChildCount();
 
             View child;
@@ -112,7 +91,7 @@ final public class BezierChartRender {
                 BarEntry barEntry = (BarEntry) child.getTag();
                 float width = child.getWidth();
                 float childCenter = child.getLeft() + width / 2;
-                int height = (int) (barEntry.getY() / mYAxis.getAxisMaximum() * realYAxisLabelHeight);
+                int height = (int) (barEntry.getY() / yAxis.getAxisMaximum() * realYAxisLabelHeight);
                 float top = bottom - height;
                 String valueStr = mBarChartValueFormatter.getBarLabel(barEntry);
                 float txtY = top - mBarChartAttrs.barChartValuePaddingBottom;
@@ -152,7 +131,7 @@ final public class BezierChartRender {
         return center - mTextPaint.measureText(valueStr) / 2;
     }
 
-    private PointF getChildPointF(RecyclerView parent, View child, YAxis mYAxis, BarChartAttrs mBarChartAttrs) {
+    private <T extends BaseYAxis>PointF getChildPointF(RecyclerView parent, View child, T mYAxis, BarChartAttrs mBarChartAttrs) {
         BarEntry barEntry = (BarEntry) child.getTag();
         RectF rectF = ChartComputeUtil.getBarChartRectF(child, parent, mYAxis, mBarChartAttrs, barEntry);
         float pointX = (rectF.left + rectF.right) / 2;
@@ -162,7 +141,7 @@ final public class BezierChartRender {
     }
 
 //    LinearGradient mLinearGradient;
-    public void drawBezierChart(Canvas canvas, RecyclerView parent, YAxis mYAxis) {
+    public <T extends BaseYAxis>void drawBezierChart(Canvas canvas, RecyclerView parent, T mYAxis) {
         float bottom = parent.getHeight() - parent.getPaddingBottom() - mBarChartAttrs.contentPaddingBottom;
         final int childCount = parent.getChildCount();
         List<PointF> originPointFList = new ArrayList<>();
@@ -173,22 +152,6 @@ final public class BezierChartRender {
         }
 
         List<ControlPoint> controlList = ControlPoint.getControlPointList(originPointFList, mBarChartAttrs.bezierIntensity);
-
-        mLinearGradient = new LinearGradient(
-                0,
-                0,
-                0,
-                parent.getMeasuredHeight(),
-                new int[]{
-                        0xffffffff,
-                        ColorUtil.getResourcesColor(parent.getContext(), R.color.pink),
-                        ColorUtil.getResourcesColor(parent.getContext(), R.color.colorPrimary),
-                        ColorUtil.getResourcesColor(parent.getContext(), R.color.colorPrimary),
-                        ColorUtil.getResourcesColor(parent.getContext(), R.color.colorPrimary)},
-                null,
-                Shader.TileMode.CLAMP
-        );
-
         Path cubicPath = new Path();
         Path cubicFillPath = new Path();
         //贝塞尔曲线获取控制点
@@ -203,49 +166,45 @@ final public class BezierChartRender {
                     originPointFList.get(i + 1).x, originPointFList.get(i + 1).y
             );
         }
-
-
         if (mBarChartAttrs.enableBezierLineFill) {
             cubicFillPath.reset();
             cubicFillPath.moveTo(originPointFList.get(0).x, originPointFList.get(0).y);
             cubicFillPath.addPath(cubicPath);
             // create a new path, this is bad for performance
-            drawCubicFill(canvas,  originPointFList, cubicFillPath, bottom);
+            drawCubicFill(parent, canvas,  originPointFList, cubicFillPath, bottom);
         }
-//        mBarChartPaint.setShader(mLinearGradient);
         canvas.drawPath(cubicPath, mBarChartPaint);
         canvas.save();
     }
 
-    LinearGradient mLinearGradient;
-
-    private void drawCubicFill(Canvas c, List<PointF> pointFList, Path spline, float bottom) {
+    private void drawCubicFill(RecyclerView parent, Canvas c, List<PointF> pointFList, Path spline, float bottom) {
         spline.lineTo(pointFList.get(pointFList.size() - 1).x, bottom);
         spline.lineTo(pointFList.get(0).x, bottom);
         spline.close();
-        drawFilledPath(c, spline, mBarChartAttrs.bezierFillColor, mBarChartAttrs.bezierFillAlpha);
+        drawFilledPath(parent, c, spline);
     }
-
 
     /**
      * Draws the provided path in filled mode with the provided color and alpha.
      * Special thanks to Angelo Suzuki (https://github.com/tinsukE) for this.
 
      */
-    private void drawFilledPath(Canvas canvas, Path filledPath, int fillColor, int fillAlpha) {
-        int color = (fillAlpha << 24) | (fillColor & 0xffffff);
-        // save
+    private void drawFilledPath(RecyclerView parent, Canvas canvas, Path filledPath) {
+        float yBottom = parent.getBottom() - parent.getPaddingBottom();
+        float yTop = parent.getTop() + parent.getPaddingTop();
         Paint.Style previous = mBezierFillPaint.getStyle();
-        int previousColor = mBezierFillPaint.getColor();
-        // set
         mBezierFillPaint.setStyle(Paint.Style.FILL);
-        mBezierFillPaint.setColor(color);
-
-        mBezierFillPaint.setShader(mLinearGradient);
         canvas.drawPath(filledPath, mBezierFillPaint);
-
-        // restore
-        mBezierFillPaint.setColor(previousColor);
+        LinearGradient mLinearGradient = new LinearGradient(
+                0,
+                yBottom,
+                0,
+                yTop,
+                new int[]{mBarChartAttrs.lineShaderBeginColor, mBarChartAttrs.lineShaderEndColor},
+                null,
+                Shader.TileMode.CLAMP
+        );
+        mBezierFillPaint.setShader(mLinearGradient);
         mBezierFillPaint.setStyle(previous);
     }
 

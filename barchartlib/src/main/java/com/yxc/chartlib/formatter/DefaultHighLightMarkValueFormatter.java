@@ -1,7 +1,7 @@
 package com.yxc.chartlib.formatter;
 
 import com.yxc.chartlib.entrys.BarEntry;
-import com.yxc.commonlib.util.TimeUtil;
+import com.yxc.commonlib.util.TimeDateUtil;
 
 /**
  * @author yxc
@@ -26,8 +26,8 @@ public class DefaultHighLightMarkValueFormatter extends DefaultValueFormatter {
 
     @Override
     public String getBarLabel(BarEntry barEntry) {
-        String str1 = TimeUtil.getDateStr(barEntry.timestamp, "M月d日");
-        String str2 = TimeUtil.getDateStr(barEntry.timestamp, "yyyy年");
+        String str1 = TimeDateUtil.getDateStr(barEntry.timestamp, "M月d日");
+        String str2 = TimeDateUtil.getDateStr(barEntry.timestamp, "yyyy年");
         String str3 = getFormattedValue(barEntry.getY());
         String resultStr = str1 + CONNECT_STR + str2 + CONNECT_STR + str3;
         return barEntry.getY() > 0 ? resultStr : "";
