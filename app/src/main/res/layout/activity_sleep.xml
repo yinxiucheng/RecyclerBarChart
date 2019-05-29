@@ -48,8 +48,8 @@
         app:layout_scrollFlags="scroll"
         app:solarTextColor="@color/white"/>
 
-    <FrameLayout
-        android:id="@+id/container"
+    <com.yxc.widgetlib.viewpager2.ViewPager2
+        android:id="@+id/view_pager"
         android:layout_width="match_parent"
         android:layout_height="200dp"/>
 
