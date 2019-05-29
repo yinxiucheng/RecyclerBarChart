@@ -71,6 +71,8 @@ public class SleepActivity extends AppCompatActivity implements DayCalendarView.
             @Override
             public void onPageSelected(int position) {
                 super.onPageSelected(position);
+               LocalDate localDate = mLocalDate.minusDays(position);
+               mCalendarView.setSelectDateInvalidate(localDate);
             }
 
             @Override
@@ -98,6 +100,8 @@ public class SleepActivity extends AppCompatActivity implements DayCalendarView.
 
     @Override
     public void onDayItemSelect(LocalDate localDate) {
+        int position = TimeUtil.getIntervalDay(localDate, mLocalDate);
+        viewPager2.setCurrentItem(position, true);
 //        switchTab(SleepFragment.class, "SleepFragment", localDate);
     }
 
