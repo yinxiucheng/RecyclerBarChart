@@ -1,15 +1,14 @@
 <?xml version="1.0" encoding="utf-8"?>
 
-<com.yxc.chartlib.view.SleepChartRecyclerView
-    xmlns:android="http://schemas.android.com/apk/res/android"
+
+<com.yxc.chartlib.view.SleepChartRecyclerView xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    xmlns:layout="http://schemas.android.com/tools"
     android:id="@+id/recycler"
     android:layout_width="match_parent"
-    android:paddingTop="80dp"
     android:layout_height="245dp"
-    android:layout_marginEnd="10dp"
-    android:layout_marginStart="10dp"
-    android:orientation="vertical">
-
-</com.yxc.chartlib.view.SleepChartRecyclerView>
+    android:paddingStart="20dp"
+    android:paddingTop="85dp"
+    android:paddingEnd="20dp"
+    app:sr_contentPaddingBottom="6dp"
+    app:sr_contentPaddingTop="0dp"
+    app:sr_txtColor="@color/white"/>

@@ -49,7 +49,7 @@ final public class SleepChartRender {
         mTextPaint.setStyle(Paint.Style.FILL);
         mTextPaint.setTextSize(mChartAttrs.txtSize);
         mTextPaint.setTypeface(Typeface.DEFAULT_BOLD);
-        mTextPaint.setColor(mChartAttrs.txtColor);
+        mTextPaint.setColor(Color.WHITE);
     }
 
     private void initBarChartPaint() {
