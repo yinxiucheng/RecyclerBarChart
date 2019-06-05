@@ -1,0 +1,67 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <com.amap.api.maps2d.MapView
+        android:id="@+id/map"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent" />
+
+    <RadioGroup
+        android:id="@+id/check_language"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="40dp"
+        android:background="@drawable/border_bg"
+        android:orientation="vertical"
+        android:paddingRight="4dp">
+
+        <RadioButton
+            android:id="@+id/radio_ch"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:checked="true"
+            android:text="中文地图"
+            android:textSize="12sp" />
+
+        <RadioButton
+            android:id="@+id/radio_en"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="英文地图"
+            android:textSize="12sp" />
+
+    </RadioGroup>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_alignTop="@id/map"
+        android:layout_marginTop="40dp"
+        android:layout_marginLeft="10dp"
+        android:layout_toRightOf="@id/check_language"
+        android:orientation="horizontal">
+
+        <Button
+            android:id="@+id/basicmap"
+            android:layout_width="80dp"
+            android:layout_height="40dp"
+            android:background="@drawable/btn_map_poi"
+            android:gravity="center"
+            android:text="标准地图"
+            android:textColor="@color/black" />
+
+        <Button
+            android:id="@+id/rsmap"
+            android:layout_width="80dp"
+            android:layout_height="40dp"
+            android:background="@drawable/btn_map_poi"
+            android:gravity="center"
+            android:text="卫星地图"
+            android:textColor="@color/black" />
+
+    </LinearLayout>
+
+
+</RelativeLayout> 

@@ -1,0 +1,68 @@
+<?xml version="1.0" encoding="utf-8"?>
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical" >
+
+    <com.amap.api.maps2d.MapView
+        android:id="@+id/map"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent" >
+    </com.amap.api.maps2d.MapView>
+
+    <TextView
+        android:id="@+id/location_errInfo_text"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_gravity="bottom|left"
+        android:layout_marginBottom="10dp"
+        android:layout_marginLeft="10dp"
+        android:textColor="@android:color/black"
+        android:text="TextView" 
+        android:visibility="gone"/>
+
+    <RadioGroup
+        android:id="@+id/gps_radio_group"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="top|left"
+        android:layout_marginLeft="10dp"
+        android:layout_marginTop="10dp"
+        android:orientation="vertical" >
+
+        <RadioButton
+            android:id="@+id/gps_show_button"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="展示"
+            android:textSize="12sp"
+            android:textColor="@android:color/black" />
+
+        <RadioButton
+            android:id="@+id/gps_locate_button"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="定位"
+            android:textSize="12sp"
+            android:checked="true"
+            android:textColor="@android:color/black" />
+
+        <RadioButton
+            android:id="@+id/gps_follow_button"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="追随"
+            android:textSize="12sp"
+            android:textColor="@android:color/black" />
+
+        <RadioButton
+            android:id="@+id/gps_follow_button_nocenter"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="跟随不移动中心点"
+            android:textSize="12sp"
+            android:textColor="@android:color/black" />
+
+    </RadioGroup>
+
+</FrameLayout>

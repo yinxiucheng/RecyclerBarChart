@@ -4,4 +4,5 @@
 
     <string name="str_count_step">平均 %s 步‍</string>
     <string name="str_month_formatter">%d日</string>
+    <string name="title_activity_maps">Map</string>
 </resources>
