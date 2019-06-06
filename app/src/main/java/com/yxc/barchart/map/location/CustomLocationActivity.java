@@ -2,7 +2,6 @@ package com.yxc.barchart.map.location;
 
 
 import android.app.Activity;
-import android.content.pm.PackageManager;
 import android.graphics.Color;
 import android.os.Bundle;
 import android.util.Log;
@@ -10,8 +9,6 @@ import android.view.View;
 import android.view.Window;
 import android.widget.RadioGroup;
 import android.widget.TextView;
-
-import androidx.core.app.ActivityCompat;
 
 import com.amap.api.location.AMapLocation;
 import com.amap.api.location.AMapLocationClient;
@@ -43,7 +40,6 @@ public class CustomLocationActivity extends Activity implements LocationSource,
 	private static final int FILL_COLOR = Color.argb(10, 0, 0, 180);
 
 
-	private static final int LOCATION_PERMISSION_REQUEST_CODE = 1;
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -72,13 +68,6 @@ public class CustomLocationActivity extends Activity implements LocationSource,
 	 * 设置一些amap的属性
 	 */
 	private void setUpMap() {
-		if (ActivityCompat.checkSelfPermission(this,
-				android.Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
-			ActivityCompat.requestPermissions(this, new String[]
-					{android.Manifest.permission.ACCESS_FINE_LOCATION},LOCATION_PERMISSION_REQUEST_CODE);
-			return;
-		}
-
 		aMap.setLocationSource(this);// 设置定位监听
 		aMap.getUiSettings().setMyLocationButtonEnabled(true);// 设置默认定位按钮是否显示
 		aMap.setMyLocationEnabled(true);// 设置为true表示显示定位层并可触发定位，false表示隐藏定位层并不可触发定位，默认是false
@@ -166,12 +155,6 @@ public class CustomLocationActivity extends Activity implements LocationSource,
 	@Override
 	public void activate(OnLocationChangedListener listener) {
 		mListener = listener;
-		if (ActivityCompat.checkSelfPermission(this,
-				android.Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED){
-			ActivityCompat.requestPermissions(this,
-					new String[]{android.Manifest.permission.ACCESS_FINE_LOCATION}, LOCATION_PERMISSION_REQUEST_CODE);
-			return;
-		}
 		if (mlocationClient == null) {
 			mlocationClient = new AMapLocationClient(this);
 			mLocationOption = new AMapLocationClientOption();

@@ -2,7 +2,6 @@ package com.yxc.barchart.map.location;
 
 
 import android.app.Activity;
-import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Color;
@@ -10,8 +9,6 @@ import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
 import android.widget.TextView;
-
-import androidx.core.app.ActivityCompat;
 
 import com.amap.api.location.AMapLocation;
 import com.amap.api.location.AMapLocationClient;
@@ -44,8 +41,7 @@ public class LocationMarkerActivity extends Activity implements LocationSource,
 	private AMapLocationClient mlocationClient;
 	private AMapLocationClientOption mLocationOption;
 
-	private static final int LOCATION_PERMISSION_REQUEST_CODE = 1;
-	
+
 	private TextView mLocationErrText;
 	private static final int STROKE_COLOR = Color.argb(180, 3, 145, 255);
 	private static final int FILL_COLOR = Color.argb(10, 0, 0, 180);
@@ -86,12 +82,6 @@ public class LocationMarkerActivity extends Activity implements LocationSource,
 	 * 设置一些amap的属性
 	 */
 	private void setUpMap() {
-		if (ActivityCompat.checkSelfPermission(this,
-				android.Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
-			ActivityCompat.requestPermissions(this, new String[]
-					{android.Manifest.permission.ACCESS_FINE_LOCATION}, LOCATION_PERMISSION_REQUEST_CODE);
-			return;
-		}
 		aMap.setLocationSource(this);// 设置定位监听
 		aMap.getUiSettings().setMyLocationButtonEnabled(true);// 设置默认定位按钮是否显示
 		aMap.setMyLocationEnabled(true);// 设置为true表示显示定位层并可触发定位，false表示隐藏定位层并不可触发定位，默认是false
