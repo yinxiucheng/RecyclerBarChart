@@ -59,7 +59,7 @@ public class LocationModeSourceActivity extends Activity implements AMap.OnMyLoc
 
 		// 如果要设置定位的默认状态，可以在此处进行设置
 		myLocationStyle = new MyLocationStyle();
-		myLocationStyle.myLocationIcon(BitmapDescriptorFactory.fromResource(R.drawable.location_marker));
+		myLocationStyle.myLocationIcon(BitmapDescriptorFactory.fromResource(R.mipmap.location_marker));
 		aMap.setMyLocationStyle(myLocationStyle);
 
 		aMap.getUiSettings().setMyLocationButtonEnabled(true);// 设置默认定位按钮是否显示

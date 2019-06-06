@@ -3,26 +3,23 @@ package com.yxc.barchart.ui;
 
 import android.content.Intent;
 import android.os.Bundle;
-import androidx.appcompat.app.AppCompatActivity;
-import androidx.appcompat.widget.Toolbar;
 import android.view.MenuItem;
 import android.view.View;
 
-import com.yxc.barchart.map.BasicMapActivity;
-import com.yxc.barchart.map.MapsActivity;
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.widget.Toolbar;
+
 import com.yxc.barchart.R;
-import com.yxc.barchart.map.location.CustomLocationActivity;
+import com.yxc.barchart.map.MapsGoogleActivity;
 import com.yxc.barchart.map.location.LocationMarkerActivity;
+import com.yxc.barchart.ui.bezier.BezierActivity;
 import com.yxc.barchart.ui.line.LineActivity;
 import com.yxc.barchart.ui.sleep.SleepActivity;
 import com.yxc.barchart.ui.step.StepActivity;
-import com.yxc.barchart.ui.bezier.BezierActivity;
 import com.yxc.barchart.ui.waterdrop.WaterDropActivity;
 import com.yxc.commonlib.util.TimeDateUtil;
 
 import org.joda.time.LocalDate;
-
-import java.util.Map;
 
 public class MainActivity extends AppCompatActivity {
     Toolbar toolbar;
@@ -75,12 +72,12 @@ public class MainActivity extends AppCompatActivity {
         startActivity(new Intent(this, WaterDropActivity.class));
     }
 
-    public void clickGaoDeMap(){
-        startActivity(new Intent(this, CustomLocationActivity.class));
+    public void clickGaoDeMap(View view){
+        startActivity(new Intent(this, LocationMarkerActivity.class));
     }
 
     public void clickGoogleMap(View view) {
-        startActivity(new Intent(this, MapsActivity.class));
+        startActivity(new Intent(this, MapsGoogleActivity.class));
     }
 
 }

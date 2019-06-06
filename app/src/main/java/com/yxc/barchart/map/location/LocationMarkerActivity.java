@@ -2,14 +2,16 @@ package com.yxc.barchart.map.location;
 
 
 import android.app.Activity;
+import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Color;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
-import android.view.Window;
 import android.widget.TextView;
+
+import androidx.core.app.ActivityCompat;
 
 import com.amap.api.location.AMapLocation;
 import com.amap.api.location.AMapLocationClient;
@@ -29,6 +31,7 @@ import com.amap.api.maps2d.model.Marker;
 import com.amap.api.maps2d.model.MarkerOptions;
 import com.yxc.barchart.R;
 import com.yxc.barchart.map.util.SensorEventHelper;
+import com.yxc.barchart.util.Util;
 
 /**
  * AMapV2地图中介绍自定义可旋转的定位图标
@@ -40,6 +43,8 @@ public class LocationMarkerActivity extends Activity implements LocationSource,
 	private OnLocationChangedListener mListener;
 	private AMapLocationClient mlocationClient;
 	private AMapLocationClientOption mLocationOption;
+
+	private static final int LOCATION_PERMISSION_REQUEST_CODE = 1;
 	
 	private TextView mLocationErrText;
 	private static final int STROKE_COLOR = Color.argb(180, 3, 145, 255);
@@ -52,11 +57,13 @@ public class LocationMarkerActivity extends Activity implements LocationSource,
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
-		requestWindowFeature(Window.FEATURE_NO_TITLE);// 不显示程序的标题栏
+//		requestWindowFeature(Window.FEATURE_NO_TITLE);// 不显示程序的标题栏
 		setContentView(R.layout.locationsource_activity);
 		mapView = (MapView) findViewById(R.id.map);
 		mapView.onCreate(savedInstanceState);// 此方法必须重写
 		init();
+		Log.d("LocationMark", " Sha1-1:"+ Util.sHA1(this));
+		Log.d("LocationMark", " Sha1-2:"+ Util.getCertificateSHA1Fingerprint(this));
 	}
 
 	/**
@@ -71,7 +78,7 @@ public class LocationMarkerActivity extends Activity implements LocationSource,
 		if (mSensorHelper != null) {
 			mSensorHelper.registerSensorListener();
 		}
-		mLocationErrText = (TextView)findViewById(R.id.location_errInfo_text);
+		mLocationErrText = findViewById(R.id.location_errInfo_text);
 		mLocationErrText.setVisibility(View.GONE);
 	}
 
@@ -79,6 +86,12 @@ public class LocationMarkerActivity extends Activity implements LocationSource,
 	 * 设置一些amap的属性
 	 */
 	private void setUpMap() {
+		if (ActivityCompat.checkSelfPermission(this,
+				android.Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+			ActivityCompat.requestPermissions(this, new String[]
+					{android.Manifest.permission.ACCESS_FINE_LOCATION}, LOCATION_PERMISSION_REQUEST_CODE);
+			return;
+		}
 		aMap.setLocationSource(this);// 设置定位监听
 		aMap.getUiSettings().setMyLocationButtonEnabled(true);// 设置默认定位按钮是否显示
 		aMap.setMyLocationEnabled(true);// 设置为true表示显示定位层并可触发定位，false表示隐藏定位层并不可触发定位，默认是false
@@ -213,7 +226,7 @@ public class LocationMarkerActivity extends Activity implements LocationSource,
 			return;
 		}
 		Bitmap bMap = BitmapFactory.decodeResource(this.getResources(),
-				R.drawable.navi_map_gps_locked);
+				R.mipmap.navi_map_gps_locked);
 		BitmapDescriptor des = BitmapDescriptorFactory.fromBitmap(bMap);
 		
 //		BitmapDescriptor des = BitmapDescriptorFactory.fromResource(R.drawable.navi_map_gps_locked);
