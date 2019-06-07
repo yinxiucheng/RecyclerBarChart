@@ -1,6 +1,7 @@
 
 package com.yxc.barchart.ui;
 
+import android.Manifest;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.os.Bundle;
@@ -12,8 +13,8 @@ import androidx.appcompat.widget.Toolbar;
 import androidx.core.app.ActivityCompat;
 
 import com.yxc.barchart.R;
-import com.yxc.barchart.map.MapsGoogleActivity;
-import com.yxc.barchart.map.location.LocationMarkerActivity;
+import com.yxc.barchart.map.basic.CameraActivity;
+import com.yxc.barchart.map.location.LocationActivity;
 import com.yxc.barchart.ui.bezier.BezierActivity;
 import com.yxc.barchart.ui.line.LineActivity;
 import com.yxc.barchart.ui.sleep.SleepActivity;
@@ -42,7 +43,7 @@ public class MainActivity extends AppCompatActivity {
         if (ActivityCompat.checkSelfPermission(this,
                 android.Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
             ActivityCompat.requestPermissions(this, new String[]
-                    {android.Manifest.permission.ACCESS_FINE_LOCATION}, LOCATION_PERMISSION_REQUEST_CODE);
+                    {android.Manifest.permission.ACCESS_FINE_LOCATION, Manifest.permission.WRITE_EXTERNAL_STORAGE}, LOCATION_PERMISSION_REQUEST_CODE);
             return;
         }
     }
@@ -89,11 +90,11 @@ public class MainActivity extends AppCompatActivity {
     }
 
     public void clickGaoDeMap(View view){
-        startActivity(new Intent(this, LocationMarkerActivity.class));
+        startActivity(new Intent(this, LocationActivity.class));
     }
 
     public void clickGoogleMap(View view) {
-        startActivity(new Intent(this, MapsGoogleActivity.class));
+        startActivity(new Intent(this, CameraActivity.class));
     }
 
 }

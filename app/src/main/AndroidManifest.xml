@@ -29,7 +29,7 @@
         android:label="@string/app_name"
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
-        android:theme="@style/AppTheme2">
+        android:theme="@style/AppTheme">
 
         <!--
              The API key for Google Maps-based APIs is defined as a string resource.
@@ -84,12 +84,30 @@
         <activity
             android:name=".map.location.CustomLocationActivity"
             android:screenOrientation="portrait" />
-        <activity android:name=".map.location.LocationModeSourceActivity" android:screenOrientation="portrait"/>
-        <activity android:name=".map.location.LocationSourceActivity" android:screenOrientation="portrait"/>
-        <activity android:name=".map.location.LocationMarkerActivity" android:screenOrientation="portrait"/>
+
+        <activity android:name=".map.overlay.LocationModeSourceActivity" android:screenOrientation="portrait"/>
+        <activity android:name=".map.overlay.LocationSourceActivity" android:screenOrientation="portrait"/>
+        <activity android:name=".map.overlay.LocationMarkerActivity" android:screenOrientation="portrait"/>
+
+        <activity android:name=".map.overlay.PolylineActivity" android:screenOrientation="portrait"/>
+        <activity android:name=".map.overlay.MarkerActivity" android:screenOrientation="portrait"/>
+        <activity android:name=".map.overlay.CustomMarkerActivity" android:screenOrientation="portrait"/>
+        <activity android:name=".map.overlay.GroundOverlayActivity" android:screenOrientation="portrait"/>
+        <activity android:name=".map.overlay.TileOverlayActivity" android:screenOrientation="portrait"/>
+        <activity android:name=".map.overlay.InfoWindowActivity" android:screenOrientation="portrait"/>
+        <activity android:name=".map.overlay.PolygonActivity" android:screenOrientation="portrait"/>
+
+        <activity android:name=".map.basic.LayersActivity" android:screenOrientation="portrait"/>
+        <activity android:name=".map.basic.OsmMapActivity" android:screenOrientation="portrait"/>
+        <activity android:name=".map.basic.UiSettingsActivity" android:screenOrientation="portrait"/>
+        <activity android:name=".map.basic.CameraActivity" android:screenOrientation="portrait"/>
 
         <!-- 定位需要的服务 使用2.0的定位需要加上这个 -->
         <service android:name="com.amap.api.location.APSService"/>
+
+        <activity android:name=".map.location.LocationActivity" android:screenOrientation="portrait"/>
+        <activity android:name=".map.location.RecordActivity" android:screenOrientation="portrait"/>
+        <activity android:name=".map.location.RecordShowActivity" android:screenOrientation="portrait"/>
 
     </application>
 

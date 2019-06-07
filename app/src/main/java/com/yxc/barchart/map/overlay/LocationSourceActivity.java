@@ -1,4 +1,4 @@
-package com.yxc.barchart.map.location;
+package com.yxc.barchart.map.overlay;
 
 import android.app.Activity;
 import android.graphics.Color;

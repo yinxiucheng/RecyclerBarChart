@@ -1,4 +1,4 @@
-package com.yxc.barchart.map.location;
+package com.yxc.barchart.map.overlay;
 
 
 import android.app.Activity;
@@ -145,6 +145,9 @@ public class LocationMarkerActivity extends Activity implements LocationSource,
 			if (amapLocation != null
 					&& amapLocation.getErrorCode() == 0) {
 				mLocationErrText.setVisibility(View.GONE);
+				Log.d("LocationMark1", "location Latitude:" +
+						amapLocation.getLatitude() + " Longitude:" + amapLocation.getLongitude());
+
 				LatLng location = new LatLng(amapLocation.getLatitude(), amapLocation.getLongitude());
 				if (!mFirstFix) {
 					mFirstFix = true;
@@ -173,12 +176,14 @@ public class LocationMarkerActivity extends Activity implements LocationSource,
 	public void activate(OnLocationChangedListener listener) {
 		mListener = listener;
 		if (mlocationClient == null) {
+
 			mlocationClient = new AMapLocationClient(this);
 			mLocationOption = new AMapLocationClientOption();
 			//设置定位监听
 			mlocationClient.setLocationListener(this);
 			//设置为高精度定位模式
 			mLocationOption.setLocationMode(AMapLocationMode.Hight_Accuracy);
+			mLocationOption.setInterval(5000);
 			//设置定位参数
 			mlocationClient.setLocationOption(mLocationOption);
 			// 此方法为每隔固定时间会发起一次定位请求，为了减少电量消耗或网络流量消耗，
@@ -188,6 +193,8 @@ public class LocationMarkerActivity extends Activity implements LocationSource,
 			mlocationClient.startLocation();
 		}
 	}
+
+
 
 	/**
 	 * 停止定位
