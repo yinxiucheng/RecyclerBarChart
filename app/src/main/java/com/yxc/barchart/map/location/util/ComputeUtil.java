@@ -7,7 +7,7 @@ import com.amap.api.trace.TraceLocation;
 import java.util.ArrayList;
 import java.util.List;
 
-public class Util {
+public class ComputeUtil {
 	/**
 	 * 将AMapLocation List 转为TraceLocation list
 	 * 
@@ -89,7 +89,7 @@ public class Util {
 		ArrayList<AMapLocation> locations = new ArrayList<AMapLocation>();
 		String[] latLonStrs = latLonStr.split(";");
 		for (int i = 0; i < latLonStrs.length; i++) {
-			AMapLocation location = Util.parseLocation(latLonStrs[i]);
+			AMapLocation location = ComputeUtil.parseLocation(latLonStrs[i]);
 			if (location != null) {
 				locations.add(location);
 			}

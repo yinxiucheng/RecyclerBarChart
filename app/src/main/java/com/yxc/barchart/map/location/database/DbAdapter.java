@@ -9,7 +9,7 @@ import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 
 import com.yxc.barchart.map.location.PathRecord;
-import com.yxc.barchart.map.location.util.Util;
+import com.yxc.barchart.map.location.util.ComputeUtil;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -136,11 +136,11 @@ public class DbAdapter {
 					.getColumnIndex(DbAdapter.KEY_DATE)));
 			String lines = allRecordCursor.getString(allRecordCursor
 					.getColumnIndex(DbAdapter.KEY_LINE));
-			record.setPathline(Util.parseLocations(lines));
-			record.setStartpoint(Util.parseLocation(allRecordCursor
+			record.setPathline(ComputeUtil.parseLocations(lines));
+			record.setStartpoint(ComputeUtil.parseLocation(allRecordCursor
 					.getString(allRecordCursor
 							.getColumnIndex(DbAdapter.KEY_STRAT))));
-			record.setEndpoint(Util.parseLocation(allRecordCursor
+			record.setEndpoint(ComputeUtil.parseLocation(allRecordCursor
 					.getString(allRecordCursor
 							.getColumnIndex(DbAdapter.KEY_END))));
 			allRecord.add(record);
@@ -172,10 +172,10 @@ public class DbAdapter {
 					.getColumnIndex(DbAdapter.KEY_DATE)));
 			String lines = cursor.getString(cursor
 					.getColumnIndex(DbAdapter.KEY_LINE));
-			record.setPathline(Util.parseLocations(lines));
-			record.setStartpoint(Util.parseLocation(cursor.getString(cursor
+			record.setPathline(ComputeUtil.parseLocations(lines));
+			record.setStartpoint(ComputeUtil.parseLocation(cursor.getString(cursor
 					.getColumnIndex(DbAdapter.KEY_STRAT))));
-			record.setEndpoint(Util.parseLocation(cursor.getString(cursor
+			record.setEndpoint(ComputeUtil.parseLocation(cursor.getString(cursor
 					.getColumnIndex(DbAdapter.KEY_END))));
 		}
 		return record;

@@ -3,7 +3,10 @@ package com.yxc.barchart.map.location;
 import android.Manifest;
 import android.annotation.SuppressLint;
 import android.app.Activity;
+import android.content.BroadcastReceiver;
+import android.content.Context;
 import android.content.Intent;
+import android.content.IntentFilter;
 import android.content.pm.PackageManager;
 import android.graphics.Color;
 import android.os.Bundle;
@@ -37,8 +40,10 @@ import com.amap.api.trace.TraceLocation;
 import com.amap.api.trace.TraceOverlay;
 import com.yxc.barchart.R;
 import com.yxc.barchart.map.location.database.DbAdapter;
+import com.yxc.barchart.map.location.service.LocationService;
+import com.yxc.barchart.map.location.util.ComputeUtil;
 import com.yxc.barchart.map.location.util.LocationUtil;
-import com.yxc.barchart.map.location.util.Util;
+import com.yxc.barchart.map.location.util.Utils;
 
 import java.text.DecimalFormat;
 import java.text.SimpleDateFormat;
@@ -71,6 +76,8 @@ public class LocationActivity extends Activity implements LocationSource,
 	private TextView mResultShow;
 	private Marker mlocMarker;
 
+	public static final String RECEIVER_ACTION = "location_in_background";
+
 	private static final int LOCATION_PERMISSION_REQUEST_CODE = 1;
 
 	@Override
@@ -81,8 +88,15 @@ public class LocationActivity extends Activity implements LocationSource,
 		mMapView.onCreate(savedInstanceState);// 此方法必须重写
 		init();
 		initPolyline();
+
+		IntentFilter intentFilter = new IntentFilter();
+		intentFilter.addAction(RECEIVER_ACTION);
+		registerReceiver(locationChangeBroadcastReceiver, intentFilter);
+
 		permissionApply();
 	}
+
+
 
 	private void permissionApply(){
 		if (ActivityCompat.checkSelfPermission(this,
@@ -122,7 +136,7 @@ public class LocationActivity extends Activity implements LocationSource,
 					mResultShow.setText(
 							decimalFormat.format(getTotalDistance() / 1000d) + "KM");
 					LBSTraceClient mTraceClient = new LBSTraceClient(getApplicationContext());
-					mTraceClient.queryProcessedTrace(2, Util.parseTraceLocationList(record.getPathline()) ,
+					mTraceClient.queryProcessedTrace(2, ComputeUtil.parseTraceLocationList(record.getPathline()) ,
 							LBSTraceClient.TYPE_AMAP, LocationActivity.this);
 					saveRecord(record.getPathline(), record.getDate());
 				}
@@ -215,8 +229,41 @@ public class LocationActivity extends Activity implements LocationSource,
 	 */
 	@Override
 	protected void onDestroy() {
+		if (locationChangeBroadcastReceiver != null)
+			unregisterReceiver(locationChangeBroadcastReceiver);
 		super.onDestroy();
 		mMapView.onDestroy();
+	}
+
+	private BroadcastReceiver locationChangeBroadcastReceiver = new BroadcastReceiver() {
+
+		@Override
+		public void onReceive(Context context, Intent intent) {
+			String action = intent.getAction();
+			if (action.equals(RECEIVER_ACTION)) {
+				String locationResult = intent.getStringExtra("result");
+				if (null != locationResult && !locationResult.trim().equals("")) {
+
+//					tvResult.setText(locationResult);
+				}
+			}
+		}
+	};
+
+
+	/**
+	 * 开始定位服务
+	 */
+	private void startLocationService(){
+		getApplicationContext().startService(new Intent(this, LocationService.class));
+	}
+
+	/**
+	 * 关闭服务
+	 * 先关闭守护进程，再关闭定位服务
+	 */
+	private void stopLocationService(){
+		sendBroadcast(Utils.getCloseBrodecastIntent());
 	}
 
 	@Override
@@ -251,7 +298,7 @@ public class LocationActivity extends Activity implements LocationSource,
 					Log.d("Location", "record " + myLocation);
 					record.addpoint(amapLocation);
 					mPolyoptions.add(myLocation);
-					mTracelocationlist.add(Util.parseTraceLocation(amapLocation));
+					mTracelocationlist.add(ComputeUtil.parseTraceLocation(amapLocation));
 					redRawLine();
 					if (mTracelocationlist.size() > tracesize - 1) {
 						trace();

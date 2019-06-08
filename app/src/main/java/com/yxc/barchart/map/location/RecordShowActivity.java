@@ -33,7 +33,7 @@ import com.yxc.barchart.R;
 import com.yxc.barchart.map.location.database.DbAdapter;
 import com.yxc.barchart.map.location.tracereplay.TraceRePlay;
 import com.yxc.barchart.map.location.tracereplay.TraceRePlay.TraceRePlayListener;
-import com.yxc.barchart.map.location.util.Util;
+import com.yxc.barchart.map.location.util.ComputeUtil;
 
 import java.util.List;
 import java.util.concurrent.ExecutorService;
@@ -222,10 +222,10 @@ public class RecordShowActivity extends Activity implements
 					startLoc.getLongitude());
 			LatLng endLatLng = new LatLng(endLoc.getLatitude(),
 					endLoc.getLongitude());
-			mOriginLatLngList = Util.parseLatLngList(recordList);
+			mOriginLatLngList = ComputeUtil.parseLatLngList(recordList);
 			addOriginTrace(startLatLng, endLatLng, mOriginLatLngList);
 
-			List<TraceLocation> mGraspTraceLocationList = Util
+			List<TraceLocation> mGraspTraceLocationList = ComputeUtil
 					.parseTraceLocationList(recordList);
 			// 调用轨迹纠偏，将mGraspTraceLocationList进行轨迹纠偏处理
 			mTraceClient.queryProcessedTrace(1, mGraspTraceLocationList,
