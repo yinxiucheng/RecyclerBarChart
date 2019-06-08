@@ -109,6 +109,22 @@
         <activity android:name=".map.location.RecordActivity" android:screenOrientation="portrait"/>
         <activity android:name=".map.location.RecordShowActivity" android:screenOrientation="portrait"/>
 
+
+        <service
+            android:name=".map.location.service.LocationService"
+            android:process=":remote1">
+            <intent-filter>
+                <action android:name="com.amap.locationservicedemo.LocationService"></action>
+            </intent-filter>
+        </service>
+        <service
+            android:name=".map.location.service.LocationHelperService"
+            android:process=":remote2">
+            <intent-filter>
+                <action android:name="com.amap.locationservicedemo.LocationHelperService"></action>
+            </intent-filter>
+        </service>
+
     </application>
 
 </manifest>
