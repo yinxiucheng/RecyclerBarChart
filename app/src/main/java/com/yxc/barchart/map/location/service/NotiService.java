@@ -13,7 +13,9 @@ import com.yxc.barchart.map.location.util.Utils;
 /**
  * Created by liangchao_suxun on 17/1/16.
  * 利用双service进行notification绑定，进而将Service的OOM_ADJ提高到1
- * 同时利用LocationHelperService充当守护进程，在NotiService被关闭后，重启他。（如果LocationHelperService被停止，NotiService不负责唤醒)
+ * 同时利用LocationHelperService充当守护进程，在NotiService被关闭后，重启他。
+ * （如果LocationHelperService被停止，NotiService不负责唤醒)
+ *
  */
 
 
@@ -45,7 +47,7 @@ public class NotiService extends Service {
     }
 
 
-    private final String mHelperServiceName = "com.amap.locationservicedemo.LocationHelperService";
+    private final String mHelperServiceName = "com.yxc.barchart.map.location.service.LocationHelperService";
     /**
      * 触发利用notification增加进程优先级
      */
@@ -66,6 +68,7 @@ public class NotiService extends Service {
     }
 
     private ILocationHelperServiceAIDL mHelperAIDL;
+
     private void startBindHelperService() {
         connection = new ServiceConnection() {
             @Override

@@ -48,7 +48,7 @@ public class LocationHelperService extends Service {
 
     private ServiceConnection mInnerConnection;
     private void startBind() {
-        final String locationServiceName = "com.amap.locationservicedemo.LocationService";
+        final String locationServiceName = "com.yxc.barchart.map.location.service.LocationService";
         mInnerConnection = new ServiceConnection() {
 
             @Override
