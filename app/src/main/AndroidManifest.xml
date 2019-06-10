@@ -23,40 +23,16 @@
     <!--允许程序访问CellID或WiFi热点来获取粗略的位置-->
     <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
 
+    <uses-permission android:name="android.permission.FOREGROUND_SERVICE" />
+
     <application
+        android:name=".ChartApplication"
         android:allowBackup="true"
         android:icon="@mipmap/ic_launcher"
         android:label="@string/app_name"
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
-        android:theme="@style/AppTheme">
-
-        <!--
-             The API key for Google Maps-based APIs is defined as a string resource.
-             (See the file "res/values/google_maps_api.xml").
-             Note that the API key is linked to the encryption key used to sign the APK.
-             You need a different API key for each encryption key, including the release key that is used to
-             sign the APK for publishing.
-             You can define the keys for the debug and release targets in src/debug/ and src/release/.
-        -->
-        <meta-data
-            android:name="com.google.android.geo.API_KEY"
-            android:value="@string/google_maps_key" />
-
-        <activity
-            android:name=".map.MapsGoogleActivity"
-            android:label="@string/title_activity_maps_google"></activity>
-        <!--
-             The API key for Google Maps-based APIs is defined as a string resource.
-             (See the file "res/values/google_maps_api.xml").
-             Note that the API key is linked to the encryption key used to sign the APK.
-             You need a different API key for each encryption key, including the release key that is used to
-             sign the APK for publishing.
-             You can define the keys for the debug and release targets in src/debug/ and src/release/.
-        -->
-        <uses-library
-            android:name="org.apache.http.legacy"
-            android:required="false" />
+        android:theme="@style/AppTheme2">
 
         <meta-data android:name="com.amap.api.v2.apikey" android:value="e1332bdc1e52860fca40d226137e69f2"/>
 
@@ -105,23 +81,25 @@
         <!-- 定位需要的服务 使用2.0的定位需要加上这个 -->
         <service android:name="com.amap.api.location.APSService"/>
 
-        <activity android:name=".map.location.LocationActivity" android:screenOrientation="portrait"/>
-        <activity android:name=".map.location.RecordActivity" android:screenOrientation="portrait"/>
-        <activity android:name=".map.location.RecordShowActivity" android:screenOrientation="portrait"/>
-
+        <activity android:name=".map.location.LocationActivity" android:screenOrientation="portrait"
+            android:theme="@style/AppTheme"/>
+        <activity android:name=".map.location.RecordActivity" android:screenOrientation="portrait"
+            android:theme="@style/AppTheme"/>
+        <activity android:name=".map.location.RecordShowActivity" android:screenOrientation="portrait"
+            android:theme="@style/AppTheme"/>
 
         <service
-            android:name=".map.location.service.LocationService"
-            android:process=":remote1">
+            android:name=".map.location.service.LocationService">
             <intent-filter>
-                <action android:name="com.amap.locationservicedemo.LocationService"></action>
+                <action android:name="com.yxc.barchart.map.location.service.LocationService"></action>
             </intent-filter>
         </service>
+
         <service
             android:name=".map.location.service.LocationHelperService"
             android:process=":remote2">
             <intent-filter>
-                <action android:name="com.amap.locationservicedemo.LocationHelperService"></action>
+                <action android:name="com.yxc.barchart.map.location.service.LocationHelperService"></action>
             </intent-filter>
         </service>
 

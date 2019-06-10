@@ -45,17 +45,24 @@ public class LocationUtil {
         if (list == null || list.size() == 0) {
             return distance;
         }
-        for (int i = 0; i < list.size() - 1; i++) {
-            AMapLocation firstpoint = list.get(i);
-            AMapLocation secondpoint = list.get(i + 1);
-            LatLng firstLatLng = new LatLng(firstpoint.getLatitude(),
-                    firstpoint.getLongitude());
-            LatLng secondLatLng = new LatLng(secondpoint.getLatitude(),
-                    secondpoint.getLongitude());
-            double betweenDis = AMapUtils.calculateLineDistance(firstLatLng,
-                    secondLatLng);
+        for (int i = 0; i < list.size() - 1; i++) {//取到最后一个点
+            double betweenDis = getDistance(list.get(i + 1), list.get(i));
             distance = (float) (distance + betweenDis);
         }
         return distance;
+    }
+
+    //获取两点的距离
+    public static double getDistance(AMapLocation location, AMapLocation lastLocation){
+        if (lastLocation == null){
+            return 0;
+        }
+        LatLng firstLatLng = new LatLng(location.getLatitude(),
+                location.getLongitude());
+        LatLng secondLatLng = new LatLng(lastLocation.getLatitude(),
+                lastLocation.getLongitude());
+        double betweenDis = AMapUtils.calculateLineDistance(firstLatLng,
+                secondLatLng);
+        return betweenDis;
     }
 }

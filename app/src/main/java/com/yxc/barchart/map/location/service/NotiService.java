@@ -17,8 +17,6 @@ import com.yxc.barchart.map.location.util.Utils;
  * （如果LocationHelperService被停止，NotiService不负责唤醒)
  *
  */
-
-
 public class NotiService extends Service {
 
     /**i

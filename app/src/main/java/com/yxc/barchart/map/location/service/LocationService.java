@@ -1,6 +1,7 @@
 package com.yxc.barchart.map.location.service;
 
 import android.content.Intent;
+import android.os.Bundle;
 import android.util.Log;
 
 import com.amap.api.location.AMapLocation;
@@ -8,11 +9,15 @@ import com.amap.api.location.AMapLocationClient;
 import com.amap.api.location.AMapLocationClientOption;
 import com.amap.api.location.AMapLocationListener;
 import com.yxc.barchart.map.location.LocationActivity;
+import com.yxc.barchart.map.location.database.LocationDBHelper;
 import com.yxc.barchart.map.location.util.IWifiAutoCloseDelegate;
+import com.yxc.barchart.map.location.util.LocationUtil;
 import com.yxc.barchart.map.location.util.NetUtil;
 import com.yxc.barchart.map.location.util.PowerManagerUtil;
 import com.yxc.barchart.map.location.util.Utils;
 import com.yxc.barchart.map.location.util.WifiAutoCloseDelegate;
+import com.yxc.barchart.map.model.Record;
+import com.yxc.barchart.map.model.RecordLocation;
 
 /**
  * 包名： com.amap.locationservicedemo
@@ -26,10 +31,10 @@ import com.yxc.barchart.map.location.util.WifiAutoCloseDelegate;
  * 类说明：后台服务定位
  *
  * <p>
- *     modeified by liangchao , on 2017/01/17
- *     update:
- *     1. 只有在由息屏造成的网络断开造成的定位失败时才点亮屏幕
- *     2. 利用notification机制增加进程优先级
+ * modeified by liangchao , on 2017/01/17
+ * update:
+ * 1. 只有在由息屏造成的网络断开造成的定位失败时才点亮屏幕
+ * 2. 利用notification机制增加进程优先级
  * </p>
  */
 public class LocationService extends NotiService {
@@ -49,19 +54,17 @@ public class LocationService extends NotiService {
      */
     private boolean mIsWifiCloseable = false;
 
-
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
         super.onStartCommand(intent, flags, startId);
         applyNotiKeepMech(); //开启利用notification提高进程优先级的机制
-
         Log.d("LocationService", "service start!");
+        getRecordId();//获取recordId
 
         if (mWifiAutoCloseDelegate.isUseful(getApplicationContext())) {
             mIsWifiCloseable = true;
             mWifiAutoCloseDelegate.initOnServiceStarted(getApplicationContext());
         }
-
         startLocation();
 
         return START_STICKY;
@@ -92,7 +95,7 @@ public class LocationService extends NotiService {
         mLocationOption.setOnceLocation(false);
         mLocationOption.setLocationCacheEnable(false);
         // 每10秒定位一次
-        mLocationOption.setInterval(10 * 1000);
+        mLocationOption.setInterval(2 * 1000);
         // 地址信息
         mLocationOption.setNeedAddress(true);
         mLocationClient.setLocationOption(mLocationOption);
@@ -109,21 +112,59 @@ public class LocationService extends NotiService {
         }
     }
 
+    private AMapLocation lastLocation;
+
+    private int recordType = 1;
+    private String recordId;
+
+    private String getRecordId() {
+        Record record = LocationDBHelper.getLastRecord();
+        recordId = record == null ? "0" : Integer.toString(record.id + 1);
+        Log.d("LocationService", "recordId = " + recordId);
+        return recordId;
+    }
+
     AMapLocationListener locationListener = new AMapLocationListener() {
         @Override
         public void onLocationChanged(AMapLocation aMapLocation) {
+            //插入数据库
+            double itemDistance = LocationUtil.getDistance(aMapLocation, lastLocation);
+            if (lastLocation == null) {//record的第一个埋点，插入数据库
+                String locationStr = LocationUtil.amapLocationToString(aMapLocation);
+                double distance = 0;
+                RecordLocation recordLocation = RecordLocation.createLocation(aMapLocation, recordId, recordType,
+                        itemDistance, distance, locationStr);
+                LocationDBHelper.insertRecordLocation(recordLocation);
+                lastLocation = aMapLocation;
+            } else if (itemDistance > aMapLocation.getAccuracy() / 4.0f){//条件 itemDistance > aMapLocation.getAccuracy() / 4.0f 视为原点
+                String locationStr = LocationUtil.amapLocationToString(aMapLocation);
+                RecordLocation lastRecordLocation = LocationDBHelper.getLastItem(recordId);
+
+                if (lastRecordLocation != null) {
+                    double distance = lastRecordLocation.distance + itemDistance;
+                    RecordLocation recordLocation = RecordLocation.createLocation(aMapLocation, recordId, recordType,
+                            itemDistance, distance, locationStr);
+                    LocationDBHelper.insertRecordLocation(recordLocation);
+                    lastLocation = aMapLocation;
+                }
+            } else {//可能在原地打点，不存入数据库。
+
+            }
             //发送结果的通知
             sendLocationBroadcast(aMapLocation);
             Log.d("LocationService", "onLocationChanged");
-
             if (!mIsWifiCloseable) {
                 return;
             }
 
             if (aMapLocation.getErrorCode() == AMapLocation.LOCATION_SUCCESS) {
-                mWifiAutoCloseDelegate.onLocateSuccess(getApplicationContext(), PowerManagerUtil.getInstance().isScreenOn(getApplicationContext()), NetUtil.getInstance().isMobileAva(getApplicationContext()));
+                mWifiAutoCloseDelegate.onLocateSuccess(getApplicationContext(),
+                        PowerManagerUtil.getInstance().isScreenOn(getApplicationContext()),
+                        NetUtil.getInstance().isMobileAva(getApplicationContext()));
             } else {
-                mWifiAutoCloseDelegate.onLocateFail(getApplicationContext() , aMapLocation.getErrorCode() , PowerManagerUtil.getInstance().isScreenOn(getApplicationContext()), NetUtil.getInstance().isWifiCon(getApplicationContext()));
+                mWifiAutoCloseDelegate.onLocateFail(getApplicationContext(),
+                        aMapLocation.getErrorCode(), PowerManagerUtil.getInstance().isScreenOn(getApplicationContext()),
+                        NetUtil.getInstance().isWifiCon(getApplicationContext()));
             }
 
         }
@@ -142,12 +183,13 @@ public class LocationService extends NotiService {
                 sb.append(Utils.getLocationStr(aMapLocation));
                 Log.d("LocationService", "sendLocationBroadcast");
             }
-
-            Intent mIntent = new Intent(LocationActivity.RECEIVER_ACTION);
-            mIntent.putExtra("result", sb.toString());
-
+            Intent intent = new Intent(LocationActivity.RECEIVER_ACTION);
+            Bundle bundle = new Bundle();
+            bundle.putString("result", sb.toString());
+            bundle.putParcelable("location", aMapLocation);
+            intent.putExtras(bundle);
             //发送广播
-            sendBroadcast(mIntent);
+            sendBroadcast(intent);
         }
 
     };

@@ -20,18 +20,12 @@ import android.widget.ToggleButton;
 import androidx.core.app.ActivityCompat;
 
 import com.amap.api.location.AMapLocation;
-import com.amap.api.location.AMapLocationClient;
-import com.amap.api.location.AMapLocationClientOption;
-import com.amap.api.location.AMapLocationClientOption.AMapLocationMode;
-import com.amap.api.location.AMapLocationListener;
 import com.amap.api.maps.AMap;
 import com.amap.api.maps.CameraUpdateFactory;
-import com.amap.api.maps.LocationSource;
 import com.amap.api.maps.MapView;
 import com.amap.api.maps.model.BitmapDescriptorFactory;
 import com.amap.api.maps.model.LatLng;
 import com.amap.api.maps.model.Marker;
-import com.amap.api.maps.model.MarkerOptions;
 import com.amap.api.maps.model.Polyline;
 import com.amap.api.maps.model.PolylineOptions;
 import com.amap.api.trace.LBSTraceClient;
@@ -40,10 +34,12 @@ import com.amap.api.trace.TraceLocation;
 import com.amap.api.trace.TraceOverlay;
 import com.yxc.barchart.R;
 import com.yxc.barchart.map.location.database.DbAdapter;
+import com.yxc.barchart.map.location.database.LocationDBHelper;
 import com.yxc.barchart.map.location.service.LocationService;
 import com.yxc.barchart.map.location.util.ComputeUtil;
 import com.yxc.barchart.map.location.util.LocationUtil;
 import com.yxc.barchart.map.location.util.Utils;
+import com.yxc.barchart.map.model.Record;
 
 import java.text.DecimalFormat;
 import java.text.SimpleDateFormat;
@@ -52,14 +48,10 @@ import java.util.Date;
 import java.util.List;
 
 
-public class LocationActivity extends Activity implements LocationSource,
-        AMapLocationListener, TraceListener {
+public class LocationActivity extends Activity implements  TraceListener {
 	private final static int CALLTRACE = 0;
 	private MapView mMapView;
 	private AMap mAMap;
-	private OnLocationChangedListener mListener;
-	private AMapLocationClient mLocationClient;
-	private AMapLocationClientOption mLocationOption;
 	private PolylineOptions mPolyoptions, tracePolytion;
 	private Polyline mpolyline;
 	private PathRecord record;
@@ -129,6 +121,7 @@ public class LocationActivity extends Activity implements LocationSource,
 					mStartTime = System.currentTimeMillis();
 					record.setDate(getcueDate(mStartTime));
 					mResultShow.setText("总距离");
+					startLocationService();
 				} else {
 					mEndTime = System.currentTimeMillis();
 					mOverlayList.add(mTraceoverlay);
@@ -139,9 +132,11 @@ public class LocationActivity extends Activity implements LocationSource,
 					mTraceClient.queryProcessedTrace(2, ComputeUtil.parseTraceLocationList(record.getPathline()) ,
 							LBSTraceClient.TYPE_AMAP, LocationActivity.this);
 					saveRecord(record.getPathline(), record.getDate());
+					stopLocationService();
 				}
 			}
 		});
+
 		mResultShow = (TextView) findViewById(R.id.show_all_dis);
 		mTraceoverlay = new TraceOverlay(mAMap);
 	}
@@ -152,13 +147,17 @@ public class LocationActivity extends Activity implements LocationSource,
 			DbHepler.open();
 			String duration = getDuration();
 			float distance = LocationUtil.getDistance(list);
-			String average = getAverage(distance);
+			String averageSpeed = getAverage(distance);
 			String pathlineSring = LocationUtil.getPathLineString(list);
 			AMapLocation firstLocaiton = list.get(0);
 			AMapLocation lastLocaiton = list.get(list.size() - 1);
 			String stratpoint = LocationUtil.amapLocationToString(firstLocaiton);
 			String endpoint = LocationUtil.amapLocationToString(lastLocaiton);
-			DbHepler.createrecord(String.valueOf(distance), duration, average,
+
+			Record record = Record.createRecord(Float.toString(distance), duration, averageSpeed, pathlineSring, stratpoint, endpoint, time);
+			LocationDBHelper.insertRecord(record);
+
+			DbHepler.createrecord(String.valueOf(distance), duration, averageSpeed,
 					pathlineSring, stratpoint, endpoint, time);
 
 			DbHepler.close();
@@ -190,7 +189,6 @@ public class LocationActivity extends Activity implements LocationSource,
 	 * 设置一些amap的属性
 	 */
 	private void setUpMap() {
-		mAMap.setLocationSource(this);// 设置定位监听
 		mAMap.getUiSettings().setMyLocationButtonEnabled(true);// 设置默认定位按钮是否显示
 		mAMap.setMyLocationEnabled(true);// 设置为true表示显示定位层并可触发定位，false表示隐藏定位层并不可触发定位，默认是false
 		// 设置定位的类型为定位模式 ，可以由定位、跟随或地图根据面向方向旋转几种
@@ -241,10 +239,14 @@ public class LocationActivity extends Activity implements LocationSource,
 		public void onReceive(Context context, Intent intent) {
 			String action = intent.getAction();
 			if (action.equals(RECEIVER_ACTION)) {
-				String locationResult = intent.getStringExtra("result");
-				if (null != locationResult && !locationResult.trim().equals("")) {
+				Bundle bundle = intent.getExtras();
+				if (bundle != null){
+					String locationResult = bundle.getString("result");
+					if (null != locationResult && !locationResult.trim().equals("")) {
 
-//					tvResult.setText(locationResult);
+					}
+					AMapLocation aMLocation = bundle.getParcelable("location");
+					onLocationChanged(aMLocation);
 				}
 			}
 		}
@@ -266,32 +268,15 @@ public class LocationActivity extends Activity implements LocationSource,
 		sendBroadcast(Utils.getCloseBrodecastIntent());
 	}
 
-	@Override
-	public void activate(OnLocationChangedListener listener) {
-		mListener = listener;
-		startLocation();
-	}
-
-	@Override
-	public void deactivate() {
-		mListener = null;
-		if (mLocationClient != null) {
-			mLocationClient.stopLocation();
-			mLocationClient.onDestroy();
-
-		}
-		mLocationClient = null;
-	}
 
 	/**
 	 * 定位结果回调
 	 * @param amapLocation 位置信息类
+	 *
      */
-	@Override
 	public void onLocationChanged(AMapLocation amapLocation) {
-		if (mListener != null && amapLocation != null) {
 			if (amapLocation != null && amapLocation.getErrorCode() == 0) {
-				mListener.onLocationChanged(amapLocation);// 显示系统小蓝点
+//				mListener.onLocationChanged(amapLocation);// 显示系统小蓝点
 				LatLng myLocation = new LatLng(amapLocation.getLatitude(), amapLocation.getLongitude());
 				mAMap.moveCamera(CameraUpdateFactory.changeLatLng(myLocation));
 				if (btn.isChecked()) {
@@ -309,32 +294,6 @@ public class LocationActivity extends Activity implements LocationSource,
 						+ amapLocation.getErrorInfo();
 				Log.e("AmapErr", errText);
 			}
-		}
-	}
-
-	/**
-	 * 开始定位。
-	 */
-	private void startLocation() {
-		if (mLocationClient == null) {
-			mLocationClient = new AMapLocationClient(this);
-			mLocationOption = new AMapLocationClientOption();
-			// 设置定位监听
-			mLocationClient.setLocationListener(this);
-			// 设置为高精度定位模式
-			mLocationOption.setLocationMode(AMapLocationMode.Hight_Accuracy);
-
-			mLocationOption.setInterval(2000);
-
-			// 设置定位参数
-			mLocationClient.setLocationOption(mLocationOption);
-			// 此方法为每隔固定时间会发起一次定位请求，为了减少电量消耗或网络流量消耗，
-			// 注意设置合适的定位时间的间隔（最小间隔支持为2000ms），并且在合适时间调用stopLocation()方法来取消定位请求
-			// 在定位结束后，在合适的生命周期调用onDestroy()方法
-			// 在单次定位情况下，定位无论成功与否，都无需调用stopLocation()方法移除请求，定位sdk内部会移除
-			mLocationClient.startLocation();
-
-		}
 	}
 
 	/**
@@ -411,18 +370,18 @@ public class LocationActivity extends Activity implements LocationSource,
 				mTraceoverlay.add(linepoints);
 				mDistance += distance;
 				mTraceoverlay.setDistance(mTraceoverlay.getDistance()+distance);
-				if (mlocMarker == null) {
-					mlocMarker = mAMap.addMarker(new MarkerOptions().position(linepoints.get(linepoints.size() - 1))
-							.icon(BitmapDescriptorFactory
-									.fromResource(R.drawable.point))
-							.title("距离：" + mDistance+"米"));
-					mlocMarker.showInfoWindow();
-				} else {
-					mlocMarker.setTitle("距离：" + mDistance+"米");
-					Toast.makeText(LocationActivity.this, "距离"+mDistance, Toast.LENGTH_SHORT).show();
-					mlocMarker.setPosition(linepoints.get(linepoints.size() - 1));
-					mlocMarker.showInfoWindow();
-				}
+//				if (mlocMarker == null) {
+//					mlocMarker = mAMap.addMarker(new MarkerOptions().position(linepoints.get(linepoints.size() - 1))
+//							.icon(BitmapDescriptorFactory
+//									.fromResource(R.drawable.point))
+//							.title("距离：" + mDistance+"米"));
+//					mlocMarker.showInfoWindow();
+//				} else {
+//					mlocMarker.setTitle("距离：" + mDistance+"米");
+//					Toast.makeText(LocationActivity.this, "距离"+mDistance, Toast.LENGTH_SHORT).show();
+//					mlocMarker.setPosition(linepoints.get(linepoints.size() - 1));
+//					mlocMarker.showInfoWindow();
+//				}
 			}
 		} else if (lineID == 2) {
 			if (linepoints != null && linepoints.size()>0) {

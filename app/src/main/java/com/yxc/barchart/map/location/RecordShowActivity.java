@@ -20,17 +20,17 @@ import com.amap.api.maps.AMap.OnMapLoadedListener;
 import com.amap.api.maps.CameraUpdateFactory;
 import com.amap.api.maps.MapView;
 import com.amap.api.maps.model.BitmapDescriptorFactory;
+import com.amap.api.maps.model.LatLng;
 import com.amap.api.maps.model.LatLngBounds;
 import com.amap.api.maps.model.Marker;
 import com.amap.api.maps.model.MarkerOptions;
 import com.amap.api.maps.model.Polyline;
 import com.amap.api.maps.model.PolylineOptions;
-import com.amap.api.maps.model.LatLng;
 import com.amap.api.trace.LBSTraceClient;
 import com.amap.api.trace.TraceListener;
 import com.amap.api.trace.TraceLocation;
 import com.yxc.barchart.R;
-import com.yxc.barchart.map.location.database.DbAdapter;
+import com.yxc.barchart.map.location.database.LocationDBHelper;
 import com.yxc.barchart.map.location.tracereplay.TraceRePlay;
 import com.yxc.barchart.map.location.tracereplay.TraceRePlay.TraceRePlayListener;
 import com.yxc.barchart.map.location.util.ComputeUtil;
@@ -207,10 +207,13 @@ public class RecordShowActivity extends Activity implements
 		// 轨迹纠偏初始化
 		LBSTraceClient mTraceClient = new LBSTraceClient(
 				getApplicationContext());
-		DbAdapter dbhelper = new DbAdapter(this.getApplicationContext());
-		dbhelper.open();
-		PathRecord mRecord = dbhelper.queryRecordById(mRecordItemId);
-		dbhelper.close();
+
+//		DbAdapter dbhelper = new DbAdapter(this.getApplicationContext());
+//		dbhelper.open();
+//		PathRecord mRecord = dbhelper.queryRecordById(mRecordItemId);
+//		dbhelper.close();
+
+		PathRecord mRecord = LocationDBHelper.queryRecordById(mRecordItemId);
 		if (mRecord != null) {
 			List<AMapLocation> recordList = mRecord.getPathline();
 			AMapLocation startLoc = mRecord.getStartpoint();

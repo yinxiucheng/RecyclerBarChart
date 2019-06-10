@@ -10,6 +10,7 @@ import android.widget.ListView;
 
 import com.yxc.barchart.R;
 import com.yxc.barchart.map.location.database.DbAdapter;
+import com.yxc.barchart.map.location.database.LocationDBHelper;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -23,7 +24,9 @@ public class RecordActivity extends Activity implements OnItemClickListener {
 	private RecordAdapter mAdapter;
 	private ListView mAllRecordListView;
 	private DbAdapter mDataBaseHelper;
+
 	private List<PathRecord> mAllRecord = new ArrayList<PathRecord>();
+
 	public static final String RECORD_ID = "record_id";
 
 	@Override
@@ -40,7 +43,8 @@ public class RecordActivity extends Activity implements OnItemClickListener {
 	}
 
 	private void searchAllRecordFromDB() {
-		mAllRecord = mDataBaseHelper.queryRecordAll();
+//		mAllRecord = mDataBaseHelper.queryRecordAll();
+		mAllRecord = LocationDBHelper.queryRecordAll();
 	}
 
 	public void onBackClick(View view) {
