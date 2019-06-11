@@ -12,6 +12,8 @@ public class Record extends RealmObject {
     @PrimaryKey
     public int id;
 
+    public int recordType;
+
     public String distance;
 
     public String duration;
@@ -28,12 +30,15 @@ public class Record extends RealmObject {
 
 
     public Record() {
+
     }
 
-    public static Record createRecord(String distance, String duration, String speed,
+    public static Record createRecord(int recordType, String distance, String duration, String speed,
                                String pathLine, String startPoint,
                                String endPoint, String date){
+
         Record record = new Record();
+        record.recordType = recordType;
         record.distance = distance;
         record.duration = duration;
         record.speed = speed;

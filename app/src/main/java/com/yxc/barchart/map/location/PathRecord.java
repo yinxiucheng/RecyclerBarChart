@@ -15,9 +15,10 @@ public class PathRecord {
 	private AMapLocation mStartPoint;
 	private AMapLocation mEndPoint;
 	private List<AMapLocation> mPathLinePoints = new ArrayList<AMapLocation>();
+	private int recordType;
 	private String mDistance;
 	private String mDuration;
-	private String mAveragespeed;
+	private String mAverageSpeed;
 	private String mDate;
 	private int mId = 0;
 
@@ -33,12 +34,12 @@ public class PathRecord {
 		this.mId = id;
 	}
 
-	public AMapLocation getStartpoint() {
+	public AMapLocation getStartPoint() {
 		return mStartPoint;
 	}
 
-	public void setStartpoint(AMapLocation startpoint) {
-		this.mStartPoint = startpoint;
+	public void setStartPoint(AMapLocation startPoint) {
+		this.mStartPoint = startPoint;
 	}
 
 	public AMapLocation getEndpoint() {
@@ -49,12 +50,12 @@ public class PathRecord {
 		this.mEndPoint = endpoint;
 	}
 
-	public List<AMapLocation> getPathline() {
+	public List<AMapLocation> getPathLine() {
 		return mPathLinePoints;
 	}
 
-	public void setPathline(List<AMapLocation> pathline) {
-		this.mPathLinePoints = pathline;
+	public void setPathLine(List<AMapLocation> pathLine) {
+		this.mPathLinePoints = pathLine;
 	}
 
 	public String getDistance() {
@@ -73,12 +74,12 @@ public class PathRecord {
 		this.mDuration = duration;
 	}
 
-	public String getAveragespeed() {
-		return mAveragespeed;
+	public String getAverageSpeed() {
+		return mAverageSpeed;
 	}
 
-	public void setAveragespeed(String averagespeed) {
-		this.mAveragespeed = averagespeed;
+	public void setAverageSpeed(String averageSpeed) {
+		this.mAverageSpeed = averageSpeed;
 	}
 
 	public String getDate() {
@@ -89,14 +90,18 @@ public class PathRecord {
 		this.mDate = date;
 	}
 
-	public void addpoint(AMapLocation point) {
+	public void addPoint(AMapLocation point) {
 		mPathLinePoints.add(point);
+	}
+
+	public void addPointList(List<AMapLocation> pointList) {
+		mPathLinePoints.addAll(pointList);
 	}
 
 	@Override
 	public String toString() {
 		StringBuilder record = new StringBuilder();
-		record.append("recordSize:" + getPathline().size() + ", ");
+		record.append("recordSize:" + getPathLine().size() + ", ");
 		record.append("distance:" + getDistance() + "m, ");
 		record.append("duration:" + getDuration() + "s");
 		return record.toString();

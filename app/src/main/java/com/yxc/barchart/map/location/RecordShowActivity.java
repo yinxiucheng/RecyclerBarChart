@@ -34,6 +34,7 @@ import com.yxc.barchart.map.location.database.LocationDBHelper;
 import com.yxc.barchart.map.location.tracereplay.TraceRePlay;
 import com.yxc.barchart.map.location.tracereplay.TraceRePlay.TraceRePlayListener;
 import com.yxc.barchart.map.location.util.ComputeUtil;
+import com.yxc.barchart.map.location.util.LocationConstants;
 
 import java.util.List;
 import java.util.concurrent.ExecutorService;
@@ -58,6 +59,7 @@ public class RecordShowActivity extends Activity implements
 	private Polyline mOriginPolyline, mGraspPolyline;
 
 	private int mRecordItemId;
+	private int recordType;
 	private List<LatLng> mOriginLatLngList;
 	private List<LatLng> mGraspLatLngList;
 	private boolean mGraspChecked = false;
@@ -83,6 +85,7 @@ public class RecordShowActivity extends Activity implements
 		if (recordIntent != null) {
 			mRecordItemId = recordIntent.getIntExtra(RecordActivity.RECORD_ID,
 					-1);
+			recordType = recordIntent.getIntExtra(LocationConstants.KEY_RECORD_TYPE, -1);
 		}
 		initMap();
 	}
@@ -207,16 +210,10 @@ public class RecordShowActivity extends Activity implements
 		// 轨迹纠偏初始化
 		LBSTraceClient mTraceClient = new LBSTraceClient(
 				getApplicationContext());
-
-//		DbAdapter dbhelper = new DbAdapter(this.getApplicationContext());
-//		dbhelper.open();
-//		PathRecord mRecord = dbhelper.queryRecordById(mRecordItemId);
-//		dbhelper.close();
-
-		PathRecord mRecord = LocationDBHelper.queryRecordById(mRecordItemId);
+		PathRecord mRecord = LocationDBHelper.queryRecordById(mRecordItemId, recordType);
 		if (mRecord != null) {
-			List<AMapLocation> recordList = mRecord.getPathline();
-			AMapLocation startLoc = mRecord.getStartpoint();
+			List<AMapLocation> recordList = mRecord.getPathLine();
+			AMapLocation startLoc = mRecord.getStartPoint();
 			AMapLocation endLoc = mRecord.getEndpoint();
 			if (recordList == null || startLoc == null || endLoc == null) {
 				return;

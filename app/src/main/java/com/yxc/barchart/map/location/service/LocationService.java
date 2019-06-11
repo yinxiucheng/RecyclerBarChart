@@ -10,8 +10,9 @@ import com.amap.api.location.AMapLocationClientOption;
 import com.amap.api.location.AMapLocationListener;
 import com.yxc.barchart.map.location.LocationActivity;
 import com.yxc.barchart.map.location.database.LocationDBHelper;
+import com.yxc.barchart.map.location.util.ComputeUtil;
+import com.yxc.barchart.map.location.util.LocationConstants;
 import com.yxc.barchart.map.location.util.IWifiAutoCloseDelegate;
-import com.yxc.barchart.map.location.util.LocationUtil;
 import com.yxc.barchart.map.location.util.NetUtil;
 import com.yxc.barchart.map.location.util.PowerManagerUtil;
 import com.yxc.barchart.map.location.util.Utils;
@@ -54,19 +55,22 @@ public class LocationService extends NotiService {
      */
     private boolean mIsWifiCloseable = false;
 
+    private long intervalTime = LocationConstants.DEFAULT_INTERVAL_TIME;
+
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
         super.onStartCommand(intent, flags, startId);
         applyNotiKeepMech(); //开启利用notification提高进程优先级的机制
         Log.d("LocationService", "service start!");
-        getRecordId();//获取recordId
+
+        recordType = intent.getIntExtra("recordType", LocationConstants.SPORT_TYPE_RUNNING);
+        getRecordId(recordType);//获取recordId
 
         if (mWifiAutoCloseDelegate.isUseful(getApplicationContext())) {
             mIsWifiCloseable = true;
             mWifiAutoCloseDelegate.initOnServiceStarted(getApplicationContext());
         }
         startLocation();
-
         return START_STICKY;
     }
 
@@ -95,7 +99,7 @@ public class LocationService extends NotiService {
         mLocationOption.setOnceLocation(false);
         mLocationOption.setLocationCacheEnable(false);
         // 每10秒定位一次
-        mLocationOption.setInterval(2 * 1000);
+        mLocationOption.setInterval(LocationConstants.DEFAULT_INTERVAL_TIME);
         // 地址信息
         mLocationOption.setNeedAddress(true);
         mLocationClient.setLocationOption(mLocationOption);
@@ -112,13 +116,14 @@ public class LocationService extends NotiService {
         }
     }
 
-    private AMapLocation lastLocation;
+    private AMapLocation lastLocation;//用于计算speed，排除异常点。
+    private AMapLocation lastSaveLocation;
 
-    private int recordType = 1;
+    private int recordType = LocationConstants.SPORT_TYPE_RUNNING;
     private String recordId;
 
-    private String getRecordId() {
-        Record record = LocationDBHelper.getLastRecord();
+    private String getRecordId(int recordType) {
+        Record record = LocationDBHelper.getLastRecord(recordType);
         recordId = record == null ? "0" : Integer.toString(record.id + 1);
         Log.d("LocationService", "recordId = " + recordId);
         return recordId;
@@ -128,30 +133,47 @@ public class LocationService extends NotiService {
         @Override
         public void onLocationChanged(AMapLocation aMapLocation) {
             //插入数据库
-            double itemDistance = LocationUtil.getDistance(aMapLocation, lastLocation);
+            double itemDistance = ComputeUtil.getDistance(aMapLocation, lastLocation);
             if (lastLocation == null) {//record的第一个埋点，插入数据库
-                String locationStr = LocationUtil.amapLocationToString(aMapLocation);
+                Log.d("LocationService", "第一个点。。。");
+                String locationStr = ComputeUtil.amapLocationToString(aMapLocation);
                 double distance = 0;
                 RecordLocation recordLocation = RecordLocation.createLocation(aMapLocation, recordId, recordType,
                         itemDistance, distance, locationStr);
                 LocationDBHelper.insertRecordLocation(recordLocation);
-                lastLocation = aMapLocation;
-            } else if (itemDistance > aMapLocation.getAccuracy() / 4.0f){//条件 itemDistance > aMapLocation.getAccuracy() / 4.0f 视为原点
-                String locationStr = LocationUtil.amapLocationToString(aMapLocation);
+                Log.d("LocationService", "first insert recordLocation:" + recordLocation.toString());
+                sendLocationBroadcast(aMapLocation);
+                lastSaveLocation = aMapLocation;
+            } else if (itemDistance > aMapLocation.getAccuracy() / 4.0f &&
+                    ComputeUtil.isExceptPoint(lastSaveLocation, aMapLocation, recordType, intervalTime)) {
+                //条件1 itemDistance < aMapLocation.getAccuracy() / 4.0f 视为原点
+                String locationStr = ComputeUtil.amapLocationToString(aMapLocation);
                 RecordLocation lastRecordLocation = LocationDBHelper.getLastItem(recordId);
-
                 if (lastRecordLocation != null) {
                     double distance = lastRecordLocation.distance + itemDistance;
                     RecordLocation recordLocation = RecordLocation.createLocation(aMapLocation, recordId, recordType,
                             itemDistance, distance, locationStr);
                     LocationDBHelper.insertRecordLocation(recordLocation);
-                    lastLocation = aMapLocation;
+                    Log.d("LocationService", "insert recordLocation:" + recordLocation.toString());
+                    resetIntervalTimes(recordLocation.duration);
                 }
-            } else {//可能在原地打点，不存入数据库。
-
+                sendLocationBroadcast(aMapLocation);
+                lastSaveLocation = aMapLocation;
+            } else {//可能在原地打点，不存入新数据，update endTime。
+                long timestamp = lastSaveLocation.getTime();
+                RecordLocation recordLocation = new RecordLocation();
+                Log.d("LocationService", "update recordLocation1:" + aMapLocation.getTime());
+                long endTime = System.currentTimeMillis();//todo 需要考虑定位时间跟系统时间的差值。
+                recordLocation.timestamp = timestamp;
+                recordLocation.setEndTime(endTime);
+                long duration = endTime - recordLocation.timestamp;
+                recordLocation.setDuration(duration);
+                Log.d("LocationService", "update recordLocation2:" + recordLocation.toString());
+                LocationDBHelper.updateRecordLocation(recordLocation);//这里调用的是update.
+                resetIntervalTimes(duration);
             }
+            lastLocation = aMapLocation;
             //发送结果的通知
-            sendLocationBroadcast(aMapLocation);
             Log.d("LocationService", "onLocationChanged");
             if (!mIsWifiCloseable) {
                 return;
@@ -166,7 +188,13 @@ public class LocationService extends NotiService {
                         aMapLocation.getErrorCode(), PowerManagerUtil.getInstance().isScreenOn(getApplicationContext()),
                         NetUtil.getInstance().isWifiCon(getApplicationContext()));
             }
+        }
 
+        private void resetIntervalTimes(long duration){
+            int intervalTimes = ComputeUtil.computeIntervalTimes(duration);
+            intervalTime = intervalTimes * LocationConstants.DEFAULT_INTERVAL_TIME;
+            mLocationOption.setInterval(intervalTime);
+            mLocationClient.setLocationOption(mLocationOption);
         }
 
         private void sendLocationBroadcast(AMapLocation aMapLocation) {
@@ -186,6 +214,7 @@ public class LocationService extends NotiService {
             Intent intent = new Intent(LocationActivity.RECEIVER_ACTION);
             Bundle bundle = new Bundle();
             bundle.putString("result", sb.toString());
+            bundle.putString("recordId", recordId);
             bundle.putParcelable("location", aMapLocation);
             intent.putExtras(bundle);
             //发送广播

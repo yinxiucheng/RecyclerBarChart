@@ -4,6 +4,7 @@ import com.amap.api.location.AMapLocation;
 
 import io.realm.RealmObject;
 import io.realm.annotations.Ignore;
+import io.realm.annotations.PrimaryKey;
 
 /**
  * @author yxc
@@ -15,7 +16,19 @@ public class RecordLocation extends RealmObject implements Comparable<RecordLoca
     @Ignore
     public AMapLocation location;
 
+    @PrimaryKey
     public long timestamp;//时间戳
+
+    public void setEndTime(long endTime) {
+        this.endTime = endTime;
+    }
+
+    public void setDuration(long duration) {
+        this.duration = duration;
+    }
+
+    public long endTime;//当前点待了多久，用 endTime - timestamp = duration。
+    public long duration;
     public double longitude;//精度
     public double latitude;//维度
     public float speed;//速度
@@ -42,6 +55,8 @@ public class RecordLocation extends RealmObject implements Comparable<RecordLoca
                                                 double distance, String locationStr){
         RecordLocation recordLocation = new RecordLocation(location);
         recordLocation.timestamp = location.getTime();
+        recordLocation.endTime = recordLocation.timestamp;
+        recordLocation.duration = 0;
         recordLocation.latitude = location.getLatitude();
         recordLocation.longitude = location.getLongitude();
         recordLocation.speed = location.getSpeed();
@@ -53,4 +68,21 @@ public class RecordLocation extends RealmObject implements Comparable<RecordLoca
         return recordLocation;
     }
 
+    @Override
+    public String toString() {
+        return "RecordLocation{" +
+                "location=" + location +
+                ", timestamp=" + timestamp +
+                ", endTime=" + endTime +
+                ", duration=" + duration +
+                ", longitude=" + longitude +
+                ", latitude=" + latitude +
+                ", speed=" + speed +
+                ", itemDistance=" + itemDistance +
+                ", distance=" + distance +
+                ", recordId='" + recordId + '\'' +
+                ", recordType=" + recordType +
+                ", locationStr='" + locationStr + '\'' +
+                '}';
+    }
 }

@@ -9,8 +9,8 @@ import android.widget.AdapterView.OnItemClickListener;
 import android.widget.ListView;
 
 import com.yxc.barchart.R;
-import com.yxc.barchart.map.location.database.DbAdapter;
 import com.yxc.barchart.map.location.database.LocationDBHelper;
+import com.yxc.barchart.map.location.util.LocationConstants;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -23,28 +23,33 @@ public class RecordActivity extends Activity implements OnItemClickListener {
 
 	private RecordAdapter mAdapter;
 	private ListView mAllRecordListView;
-	private DbAdapter mDataBaseHelper;
 
 	private List<PathRecord> mAllRecord = new ArrayList<PathRecord>();
 
 	public static final String RECORD_ID = "record_id";
 
+	public int recordType = LocationConstants.SPORT_TYPE_RUNNING;
+
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.recordlist);
+
 		mAllRecordListView = (ListView) findViewById(R.id.recordlist);
-		mDataBaseHelper = new DbAdapter(this);
-		mDataBaseHelper.open();
 		searchAllRecordFromDB();
 		mAdapter = new RecordAdapter(this, mAllRecord);
 		mAllRecordListView.setAdapter(mAdapter);
 		mAllRecordListView.setOnItemClickListener(this);
 	}
 
+	@Override
+	protected void onStart() {
+		super.onStart();
+		recordType = getIntent().getIntExtra(LocationConstants.KEY_RECORD_TYPE, LocationConstants.SPORT_TYPE_RUNNING);
+	}
+
 	private void searchAllRecordFromDB() {
-//		mAllRecord = mDataBaseHelper.queryRecordAll();
-		mAllRecord = LocationDBHelper.queryRecordAll();
+		mAllRecord = LocationDBHelper.queryRecordAll(recordType);
 	}
 
 	public void onBackClick(View view) {
@@ -54,11 +59,11 @@ public class RecordActivity extends Activity implements OnItemClickListener {
 	@Override
 	public void onItemClick(AdapterView<?> parent, View view, int position,
 			long id) {
-		PathRecord recorditem = (PathRecord) parent.getAdapter().getItem(
+		PathRecord recordItem = (PathRecord) parent.getAdapter().getItem(
 				position);
 		Intent intent = new Intent(RecordActivity.this,
 				RecordShowActivity.class);
-		intent.putExtra(RECORD_ID, recorditem.getId());
+		intent.putExtra(RECORD_ID, recordItem.getId());
 		startActivity(intent);
 	}
 }
