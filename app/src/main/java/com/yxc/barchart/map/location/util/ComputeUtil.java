@@ -1,8 +1,8 @@
 package com.yxc.barchart.map.location.util;
 
 import com.amap.api.location.AMapLocation;
+import com.amap.api.maps.AMapUtils;
 import com.amap.api.maps.model.LatLng;
-import com.amap.api.maps2d.AMapUtils;
 import com.amap.api.trace.TraceLocation;
 import com.yxc.barchart.map.location.database.LocationDBHelper;
 import com.yxc.barchart.map.model.RecordLocation;
@@ -148,9 +148,9 @@ public class ComputeUtil {
         if (lastLocation == null) {
             return 0;
         }
-        com.amap.api.maps2d.model.LatLng firstLatLng = new com.amap.api.maps2d.model.LatLng(location.getLatitude(),
+        LatLng firstLatLng = new LatLng(location.getLatitude(),
                 location.getLongitude());
-        com.amap.api.maps2d.model.LatLng secondLatLng = new com.amap.api.maps2d.model.LatLng(lastLocation.getLatitude(),
+        LatLng secondLatLng = new LatLng(lastLocation.getLatitude(),
                 lastLocation.getLongitude());
         double betweenDis = AMapUtils.calculateLineDistance(firstLatLng,
                 secondLatLng);

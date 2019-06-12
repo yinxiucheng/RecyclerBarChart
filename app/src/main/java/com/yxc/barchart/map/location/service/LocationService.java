@@ -3,6 +3,7 @@ package com.yxc.barchart.map.location.service;
 import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
+import android.widget.Toast;
 
 import com.amap.api.location.AMapLocation;
 import com.amap.api.location.AMapLocationClient;
@@ -134,20 +135,22 @@ public class LocationService extends NotiService {
         @Override
         public void onLocationChanged(AMapLocation aMapLocation) {
             //插入数据库
-            double itemDistance = ComputeUtil.getDistance(aMapLocation, lastLocation);
+            double itemDistance = ComputeUtil.getDistance(aMapLocation, lastSaveLocation);
             if (lastLocation == null) {//record的第一个埋点，插入数据库
                 Log.d("LocationService", "第一个点。。。");
+                Toast.makeText(LocationService.this, "Service first insert Point", Toast.LENGTH_SHORT).show();
+                LocationDBHelper.deleteRecordLocationList(recordType, recordId);
                 String locationStr = ComputeUtil.amapLocationToString(aMapLocation);
                 double distance = 0;
-                RecordLocation recordLocation = RecordLocation.createLocation(aMapLocation, recordId, recordType,
-                        itemDistance, distance, locationStr);
+                RecordLocation recordLocation = RecordLocation.createLocation(aMapLocation, recordId, recordType, itemDistance, distance, locationStr);
                 LocationDBHelper.insertRecordLocation(recordLocation);
                 Log.d("LocationService", "first insert recordLocation:" + recordLocation.toString());
                 sendLocationBroadcast(aMapLocation);
                 lastSaveLocation = aMapLocation;
                 lastRecordLocation = recordLocation;
-            } else if (itemDistance > aMapLocation.getAccuracy() / 6.0f) {
+            } else if (itemDistance > aMapLocation.getAccuracy() / 24.0f) {
                 //条件1 itemDistance < aMapLocation.getAccuracy() / 4.0f 视为原点
+                Toast.makeText(LocationService.this, "Service insert Point", Toast.LENGTH_SHORT).show();
                 String locationStr = ComputeUtil.amapLocationToString(aMapLocation);
                 RecordLocation lastDBLocation = LocationDBHelper.getLastItem(recordId);
                 if (lastDBLocation != null) {
@@ -162,6 +165,7 @@ public class LocationService extends NotiService {
                 sendLocationBroadcast(aMapLocation);
                 lastSaveLocation = aMapLocation;
             } else {//可能在原地打点，不存入新数据，update endTime。
+                Toast.makeText(LocationService.this, "Service update Point", Toast.LENGTH_SHORT).show();
                 long timestamp = lastSaveLocation.getTime();
                 long endTime = System.currentTimeMillis();//todo 需要考虑定位时间跟系统时间的差值。
                 long duration = endTime - timestamp;

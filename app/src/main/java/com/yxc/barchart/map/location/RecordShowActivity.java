@@ -40,6 +40,8 @@ import java.util.List;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
+//import com.amap.api.maps.model.LatLng;
+
 
 /**
  * 实现轨迹回放、纠偏后轨迹回放

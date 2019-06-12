@@ -22,6 +22,24 @@ import io.realm.RealmResults;
  */
 public class LocationDBHelper {
 
+    public static void deleteRecordLocationList(final int recordType, final String recordId){
+        Realm realm = RealmDbHelper.createRealm();
+        realm.executeTransaction(new Realm.Transaction() { // must be in transaction for this to work
+            @Override
+            public void execute(Realm realm) {
+
+                RealmResults<RecordLocation> locations = realm.where(RecordLocation.class)
+                        .equalTo("recordType", recordType)
+                        .and()
+                        .equalTo("recordId", recordId)
+                        .findAll();
+
+                locations.deleteAllFromRealm();
+            }
+        });
+
+    }
+
     //获取数据库中最近的时间戳
     public static Record getLastRecord(int recordType) {
         Realm realm = RealmDbHelper.createRealm();
