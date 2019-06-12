@@ -210,7 +210,7 @@ public class RecordShowActivity extends Activity implements
 		// 轨迹纠偏初始化
 		LBSTraceClient mTraceClient = new LBSTraceClient(
 				getApplicationContext());
-		PathRecord mRecord = LocationDBHelper.queryRecordById(mRecordItemId, recordType);
+		PathRecord mRecord = LocationDBHelper.queryRecordById(recordType, mRecordItemId);
 		if (mRecord != null) {
 			List<AMapLocation> recordList = mRecord.getPathLine();
 			AMapLocation startLoc = mRecord.getStartPoint();

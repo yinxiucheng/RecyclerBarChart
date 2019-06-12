@@ -1,5 +1,7 @@
 package com.yxc.barchart.map.location.database;
 
+import android.util.Log;
+
 import com.amap.api.location.AMapLocation;
 import com.yxc.barchart.map.location.PathRecord;
 import com.yxc.barchart.map.location.util.ComputeUtil;
@@ -117,7 +119,6 @@ public class LocationDBHelper {
      * @return
      */
     public static PathRecord queryRecordById(int recordType, int mRecordItemId) {
-
         Realm realm = RealmDbHelper.createRealm();
         Record record = realm.where(Record.class)
                 .equalTo("recordType", recordType)
@@ -168,25 +169,28 @@ public class LocationDBHelper {
                 realm.insertOrUpdate(recordLocation); // using insert API
             }
         });
-
     }
 
-
-    public static void  updateRecordLocation(final RecordLocation recordLocation){
+    public static void  updateRecordLocation(final long timestamp, final long endTime, final long duration){
         Realm realm = RealmDbHelper.createRealm();
         realm.executeTransaction(new Realm.Transaction() { // must be in transaction for this to work
             @Override
             public void execute(Realm realm) {
-                realm.copyToRealmOrUpdate(recordLocation); // using insert API
+
+                RecordLocation recordLocation =realm.where(RecordLocation.class).equalTo("timestamp", timestamp).findFirst();
+                Log.d("LocationService", " saveLocation:" + recordLocation);
+                recordLocation.setEndTime(endTime);
+                recordLocation.setDuration(duration);
             }
         });
-
+        realm = null;
     }
 
     public static RecordLocation queryRecordLocation(long timestamp){
         Realm realm = RealmDbHelper.createRealm();
-        RecordLocation recordLocation = realm.where(RecordLocation.class).equalTo("timestamp", timestamp).findFirst();
-        return recordLocation;
+        RealmResults<RecordLocation> realmResults = realm.where(RecordLocation.class).equalTo("timestamp", timestamp).findAll();
+        Log.d("LocationService", "realmResults'size:" + realmResults.size());
+        return realmResults.first();
     }
 
 }

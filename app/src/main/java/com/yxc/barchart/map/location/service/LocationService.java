@@ -117,14 +117,15 @@ public class LocationService extends NotiService {
     }
 
     private AMapLocation lastLocation;//用于计算speed，排除异常点。
-    private AMapLocation lastSaveLocation;
+    private AMapLocation lastSaveLocation;//用于计算speed，排除异常点。
+    private RecordLocation lastRecordLocation;
 
     private int recordType = LocationConstants.SPORT_TYPE_RUNNING;
     private String recordId;
 
     private String getRecordId(int recordType) {
         Record record = LocationDBHelper.getLastRecord(recordType);
-        recordId = record == null ? "0" : Integer.toString(record.id + 1);
+        recordId = (record == null) ? "0" : Integer.toString(record.id + 1);
         Log.d("LocationService", "recordId = " + recordId);
         return recordId;
     }
@@ -144,37 +145,31 @@ public class LocationService extends NotiService {
                 Log.d("LocationService", "first insert recordLocation:" + recordLocation.toString());
                 sendLocationBroadcast(aMapLocation);
                 lastSaveLocation = aMapLocation;
-            } else if (itemDistance > aMapLocation.getAccuracy() / 4.0f &&
-                    ComputeUtil.isExceptPoint(lastSaveLocation, aMapLocation, recordType, intervalTime)) {
+                lastRecordLocation = recordLocation;
+            } else if (itemDistance > aMapLocation.getAccuracy() / 6.0f) {
                 //条件1 itemDistance < aMapLocation.getAccuracy() / 4.0f 视为原点
                 String locationStr = ComputeUtil.amapLocationToString(aMapLocation);
-                RecordLocation lastRecordLocation = LocationDBHelper.getLastItem(recordId);
-                if (lastRecordLocation != null) {
-                    double distance = lastRecordLocation.distance + itemDistance;
+                RecordLocation lastDBLocation = LocationDBHelper.getLastItem(recordId);
+                if (lastDBLocation != null) {
+                    double distance = lastDBLocation.distance + itemDistance;
                     RecordLocation recordLocation = RecordLocation.createLocation(aMapLocation, recordId, recordType,
                             itemDistance, distance, locationStr);
                     LocationDBHelper.insertRecordLocation(recordLocation);
                     Log.d("LocationService", "insert recordLocation:" + recordLocation.toString());
                     resetIntervalTimes(recordLocation.duration);
+                    lastRecordLocation = recordLocation;
                 }
                 sendLocationBroadcast(aMapLocation);
                 lastSaveLocation = aMapLocation;
             } else {//可能在原地打点，不存入新数据，update endTime。
                 long timestamp = lastSaveLocation.getTime();
-                RecordLocation recordLocation = new RecordLocation();
-                Log.d("LocationService", "update recordLocation1:" + aMapLocation.getTime());
                 long endTime = System.currentTimeMillis();//todo 需要考虑定位时间跟系统时间的差值。
-                recordLocation.timestamp = timestamp;
-                recordLocation.setEndTime(endTime);
-                long duration = endTime - recordLocation.timestamp;
-                recordLocation.setDuration(duration);
-                Log.d("LocationService", "update recordLocation2:" + recordLocation.toString());
-                LocationDBHelper.updateRecordLocation(recordLocation);//这里调用的是update.
+                long duration = endTime - timestamp;
+                LocationDBHelper.updateRecordLocation(timestamp, endTime, duration);
                 resetIntervalTimes(duration);
             }
             lastLocation = aMapLocation;
             //发送结果的通知
-            Log.d("LocationService", "onLocationChanged");
             if (!mIsWifiCloseable) {
                 return;
             }

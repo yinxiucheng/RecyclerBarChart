@@ -18,7 +18,8 @@ public class RealmDbHelper {
     public static void init(String dbName,  int dbVersion) {
         Realm.init(ChartApplication.getInstance());
         mDefaultConfig = new RealmConfiguration.Builder()
-                .schemaVersion(dbVersion).deleteRealmIfMigrationNeeded()
+                .schemaVersion(dbVersion)
+                .deleteRealmIfMigrationNeeded()
 //                .encryptionKey(key.getBytes())
 //                .migration(migration)
                 .name(dbName)

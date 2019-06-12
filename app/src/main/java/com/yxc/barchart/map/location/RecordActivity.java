@@ -64,6 +64,7 @@ public class RecordActivity extends Activity implements OnItemClickListener {
 		Intent intent = new Intent(RecordActivity.this,
 				RecordShowActivity.class);
 		intent.putExtra(RECORD_ID, recordItem.getId());
+		intent.putExtra(LocationConstants.KEY_RECORD_TYPE, recordType );
 		startActivity(intent);
 	}
 }
