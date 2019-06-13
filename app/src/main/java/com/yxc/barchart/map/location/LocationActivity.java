@@ -40,6 +40,7 @@ import com.yxc.barchart.map.location.service.LocationService;
 import com.yxc.barchart.map.location.util.ComputeUtil;
 import com.yxc.barchart.map.location.util.LocationConstants;
 import com.yxc.barchart.map.location.util.Utils;
+import com.yxc.barchart.map.model.PathRecord;
 import com.yxc.barchart.map.model.Record;
 
 import java.text.DecimalFormat;
@@ -281,7 +282,6 @@ public class LocationActivity extends Activity implements TraceListener {
         if (amapLocation != null && amapLocation.getErrorCode() == 0) {
 //				mListener.onLocationChanged(amapLocation);// 显示系统小蓝点
             if (lastLocation != null) {
-                Toast.makeText(LocationActivity.this, "receive Broadcast!!", Toast.LENGTH_SHORT).show();
                 long timestamp = lastLocation.getTime();
                 //从数据库里拿点
                 List<AMapLocation> locationList = LocationDBHelper.getLateLocationList(recordId, timestamp);

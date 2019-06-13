@@ -1,4 +1,4 @@
-package com.yxc.barchart.map.location;
+package com.yxc.barchart.map.model;
 
 import com.amap.api.location.AMapLocation;
 

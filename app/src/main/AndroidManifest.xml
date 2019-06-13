@@ -61,18 +61,6 @@
             android:name=".map.location.CustomLocationActivity"
             android:screenOrientation="portrait" />
 
-        <activity android:name=".map.overlay.LocationModeSourceActivity" android:screenOrientation="portrait"/>
-        <activity android:name=".map.overlay.LocationSourceActivity" android:screenOrientation="portrait"/>
-        <activity android:name=".map.overlay.LocationMarkerActivity" android:screenOrientation="portrait"/>
-
-        <activity android:name=".map.overlay.PolylineActivity" android:screenOrientation="portrait"/>
-        <activity android:name=".map.overlay.MarkerActivity" android:screenOrientation="portrait"/>
-        <activity android:name=".map.overlay.CustomMarkerActivity" android:screenOrientation="portrait"/>
-        <activity android:name=".map.overlay.GroundOverlayActivity" android:screenOrientation="portrait"/>
-        <activity android:name=".map.overlay.TileOverlayActivity" android:screenOrientation="portrait"/>
-        <activity android:name=".map.overlay.InfoWindowActivity" android:screenOrientation="portrait"/>
-        <activity android:name=".map.overlay.PolygonActivity" android:screenOrientation="portrait"/>
-
         <activity android:name=".map.basic.LayersActivity" android:screenOrientation="portrait"/>
         <activity android:name=".map.basic.OsmMapActivity" android:screenOrientation="portrait"/>
         <activity android:name=".map.basic.UiSettingsActivity" android:screenOrientation="portrait"/>

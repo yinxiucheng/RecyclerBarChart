@@ -3,11 +3,10 @@ package com.yxc.barchart.map.location.database;
 import android.util.Log;
 
 import com.amap.api.location.AMapLocation;
-import com.yxc.barchart.map.location.PathRecord;
+import com.yxc.barchart.map.model.PathRecord;
 import com.yxc.barchart.map.location.util.ComputeUtil;
 import com.yxc.barchart.map.model.Record;
 import com.yxc.barchart.map.model.RecordLocation;
-import com.yxc.barchart.util.RealmDbHelper;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -61,6 +60,19 @@ public class LocationDBHelper {
             return list.get(list.size() - 1);
         }
         return null;
+    }
+
+
+    public static List<RecordLocation> getLocationList(int recordType, String recordId){
+        Realm realm = RealmDbHelper.createRealm();
+        RealmResults<RecordLocation> list = realm.where(RecordLocation.class)
+                .equalTo("recordType", recordType)
+                .and()
+                .equalTo("recordId", recordId)
+                .findAll();
+
+        list.sort("timestamp");
+        return list;
     }
 
 

@@ -13,7 +13,7 @@ import androidx.appcompat.widget.Toolbar;
 import androidx.core.app.ActivityCompat;
 
 import com.yxc.barchart.R;
-import com.yxc.barchart.map.basic.CameraActivity;
+import com.yxc.barchart.map.BasicMapActivity;
 import com.yxc.barchart.map.location.LocationActivity;
 import com.yxc.barchart.ui.bezier.BezierActivity;
 import com.yxc.barchart.ui.line.LineActivity;
@@ -94,7 +94,7 @@ public class MainActivity extends AppCompatActivity {
     }
 
     public void clickGoogleMap(View view) {
-        startActivity(new Intent(this, CameraActivity.class));
+        startActivity(new Intent(this, BasicMapActivity.class));
     }
 
 }

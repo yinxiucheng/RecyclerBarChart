@@ -11,6 +11,7 @@ import android.widget.ListView;
 import com.yxc.barchart.R;
 import com.yxc.barchart.map.location.database.LocationDBHelper;
 import com.yxc.barchart.map.location.util.LocationConstants;
+import com.yxc.barchart.map.model.PathRecord;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -35,7 +36,8 @@ public class RecordActivity extends Activity implements OnItemClickListener {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.recordlist);
 
-		mAllRecordListView = (ListView) findViewById(R.id.recordlist);
+		mAllRecordListView = findViewById(R.id.recordlist);
+		recordType = getIntent().getIntExtra(LocationConstants.KEY_RECORD_TYPE, -1);
 		searchAllRecordFromDB();
 		mAdapter = new RecordAdapter(this, mAllRecord);
 		mAllRecordListView.setAdapter(mAdapter);
@@ -45,7 +47,6 @@ public class RecordActivity extends Activity implements OnItemClickListener {
 	@Override
 	protected void onStart() {
 		super.onStart();
-		recordType = getIntent().getIntExtra(LocationConstants.KEY_RECORD_TYPE, LocationConstants.SPORT_TYPE_RUNNING);
 	}
 
 	private void searchAllRecordFromDB() {

@@ -134,9 +134,13 @@ public class LocationService extends NotiService {
     AMapLocationListener locationListener = new AMapLocationListener() {
         @Override
         public void onLocationChanged(AMapLocation aMapLocation) {
+
+            if (aMapLocation.getLatitude() == 0f || aMapLocation.getLongitude() <= 0.001f) {
+                return;
+            }
             //插入数据库
             double itemDistance = ComputeUtil.getDistance(aMapLocation, lastSaveLocation);
-            if (lastLocation == null) {//record的第一个埋点，插入数据库
+            if (lastSaveLocation == null && aMapLocation.getLatitude() > 0f) {//record的第一个埋点，插入数据库
                 Log.d("LocationService", "第一个点。。。");
                 Toast.makeText(LocationService.this, "Service first insert Point", Toast.LENGTH_SHORT).show();
                 LocationDBHelper.deleteRecordLocationList(recordType, recordId);
@@ -148,9 +152,9 @@ public class LocationService extends NotiService {
                 sendLocationBroadcast(aMapLocation);
                 lastSaveLocation = aMapLocation;
                 lastRecordLocation = recordLocation;
-            } else if (itemDistance > aMapLocation.getAccuracy() / 24.0f) {
+            } else if (itemDistance > 1.0f) {
                 //条件1 itemDistance < aMapLocation.getAccuracy() / 4.0f 视为原点
-                Toast.makeText(LocationService.this, "Service insert Point", Toast.LENGTH_SHORT).show();
+                Toast.makeText(LocationService.this, "save Point:" + aMapLocation.getLatitude(), Toast.LENGTH_SHORT).show();
                 String locationStr = ComputeUtil.amapLocationToString(aMapLocation);
                 RecordLocation lastDBLocation = LocationDBHelper.getLastItem(recordId);
                 if (lastDBLocation != null) {
@@ -165,7 +169,7 @@ public class LocationService extends NotiService {
                 sendLocationBroadcast(aMapLocation);
                 lastSaveLocation = aMapLocation;
             } else {//可能在原地打点，不存入新数据，update endTime。
-                Toast.makeText(LocationService.this, "Service update Point", Toast.LENGTH_SHORT).show();
+                Toast.makeText(LocationService.this, "update Point:" + aMapLocation.getLatitude(), Toast.LENGTH_SHORT).show();
                 long timestamp = lastSaveLocation.getTime();
                 long endTime = System.currentTimeMillis();//todo 需要考虑定位时间跟系统时间的差值。
                 long duration = endTime - timestamp;
@@ -189,7 +193,7 @@ public class LocationService extends NotiService {
             }
         }
 
-        private void resetIntervalTimes(long duration){
+        private void resetIntervalTimes(long duration) {
             int intervalTimes = ComputeUtil.computeIntervalTimes(duration);
             intervalTime = intervalTimes * LocationConstants.DEFAULT_INTERVAL_TIME;
             mLocationOption.setInterval(intervalTime);

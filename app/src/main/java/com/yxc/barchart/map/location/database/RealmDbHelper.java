@@ -1,4 +1,4 @@
-package com.yxc.barchart.util;
+package com.yxc.barchart.map.location.database;
 
 import com.yxc.barchart.ChartApplication;
 

@@ -35,6 +35,7 @@ import com.yxc.barchart.map.location.tracereplay.TraceRePlay;
 import com.yxc.barchart.map.location.tracereplay.TraceRePlay.TraceRePlayListener;
 import com.yxc.barchart.map.location.util.ComputeUtil;
 import com.yxc.barchart.map.location.util.LocationConstants;
+import com.yxc.barchart.map.model.PathRecord;
 
 import java.util.List;
 import java.util.concurrent.ExecutorService;

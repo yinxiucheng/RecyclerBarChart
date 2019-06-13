@@ -7,6 +7,7 @@ import android.widget.BaseAdapter;
 import android.widget.TextView;
 
 import com.yxc.barchart.R;
+import com.yxc.barchart.map.model.PathRecord;
 
 import java.util.List;
 

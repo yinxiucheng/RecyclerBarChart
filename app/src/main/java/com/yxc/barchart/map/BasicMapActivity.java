@@ -9,8 +9,8 @@ import android.widget.Button;
 import android.widget.RadioGroup;
 
 
-import com.amap.api.maps2d.AMap;
-import com.amap.api.maps2d.MapView;
+import com.amap.api.maps.AMap;
+import com.amap.api.maps.MapView;
 import com.yxc.barchart.R;
 
 
