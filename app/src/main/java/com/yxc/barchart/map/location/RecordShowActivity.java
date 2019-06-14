@@ -29,7 +29,7 @@ import com.yxc.barchart.map.location.tracereplay.TraceRePlay;
 import com.yxc.barchart.map.location.tracereplay.TraceRePlay.TraceRePlayListener;
 import com.yxc.barchart.map.location.util.ComputeUtil;
 import com.yxc.barchart.map.location.util.LocationConstants;
-import com.yxc.barchart.map.model.PathRecord;
+import com.yxc.barchart.map.model.Record;
 
 import java.util.List;
 import java.util.concurrent.ExecutorService;
@@ -176,7 +176,7 @@ public class RecordShowActivity extends Activity implements
 	 * 
 	 */
 	private void setupRecord() {
-		PathRecord mRecord = LocationDBHelper.queryRecordById(recordType, mRecordItemId);
+		Record mRecord = LocationDBHelper.queryRecordById(recordType, mRecordItemId);
 		if (mRecord != null) {
 			List<AMapLocation> recordList = mRecord.getPathLine();
 			AMapLocation startLoc = mRecord.getStartPoint();

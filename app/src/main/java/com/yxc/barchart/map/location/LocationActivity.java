@@ -15,7 +15,6 @@ import android.widget.Toast;
 import android.widget.ToggleButton;
 
 import androidx.core.app.ActivityCompat;
-
 import com.amap.api.location.AMapLocation;
 import com.amap.api.maps.AMap;
 import com.amap.api.maps.CameraUpdateFactory;
@@ -32,22 +31,19 @@ import com.yxc.barchart.map.location.service.LocationService;
 import com.yxc.barchart.map.location.util.ComputeUtil;
 import com.yxc.barchart.map.location.util.LocationConstants;
 import com.yxc.barchart.map.location.util.Utils;
-import com.yxc.barchart.map.model.PathRecord;
 import com.yxc.barchart.map.model.Record;
 import com.yxc.commonlib.util.TimeDateUtil;
 
 import org.greenrobot.eventbus.EventBus;
 import org.greenrobot.eventbus.Subscribe;
-
 import java.util.List;
-
 
 public class LocationActivity extends Activity {
     private MapView mMapView;
     private AMap mAMap;
     private PolylineOptions mPolyOptions, tracePolyOption;
     private Polyline mPolyline;
-    private PathRecord record;
+    private Record record;
     private long mStartTime;
     private long mEndTime;
     private ToggleButton btn;
@@ -113,7 +109,7 @@ public class LocationActivity extends Activity {
                     if (record != null) {
                         record = null;
                     }
-                    record = new PathRecord();
+                    record = new Record();
                     mStartTime = System.currentTimeMillis();
                     record.setDate(TimeDateUtil.getDateStrMinSecond(mStartTime));
                     startLocationService();
@@ -122,7 +118,7 @@ public class LocationActivity extends Activity {
                     mEndTime = System.currentTimeMillis();
                     if (!TextUtils.isEmpty(recordId)){
                         List<AMapLocation> locationList = LocationDBHelper.getLocationList(recordId);
-                        saveRecord(locationList, record.getDate());
+                        saveRecord(locationList, record.date);
                     }
                     stopLocationService();
                 }

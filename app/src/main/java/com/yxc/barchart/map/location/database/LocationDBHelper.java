@@ -3,7 +3,6 @@ package com.yxc.barchart.map.location.database;
 import android.util.Log;
 
 import com.amap.api.location.AMapLocation;
-import com.yxc.barchart.map.model.PathRecord;
 import com.yxc.barchart.map.location.util.ComputeUtil;
 import com.yxc.barchart.map.model.Record;
 import com.yxc.barchart.map.model.RecordLocation;
@@ -120,22 +119,17 @@ public class LocationDBHelper {
      *
      * @return
      */
-    public static List<PathRecord> queryRecordAll(int recordType) {
-        List<PathRecord> allRecord = new ArrayList<PathRecord>();
+    public static List<Record> queryRecordAll(int recordType) {
+        List<Record> allRecord = new ArrayList<>();
         Realm realm = RealmDbHelper.createRealm();
         RealmResults<Record> realmResults = realm.where(Record.class).equalTo("recordType", recordType).findAll();
         for (int i = 0; i < realmResults.size(); i++) {
-            PathRecord pathRecord = new PathRecord();
             Record record = realmResults.get(i);
-            pathRecord.setId(record.id);
-            pathRecord.setDistance(record.distance);
-            pathRecord.setDuration(record.duration);
-            pathRecord.setDate(record.date);
             String lines = record.pathLine;
-            pathRecord.setPathLine(ComputeUtil.parseLocations(lines));
-            pathRecord.setStartPoint(ComputeUtil.parseLocation(record.startPoint));
-            pathRecord.setEndpoint(ComputeUtil.parseLocation(record.endPoint));
-            allRecord.add(pathRecord);
+            record.setPathLine(ComputeUtil.parseLocations(lines));
+            record.setStartPoint(ComputeUtil.parseLocation(record.startPoint));
+            record.setEndpoint(ComputeUtil.parseLocation(record.endPoint));
+            allRecord.add(record);
         }
         Collections.reverse(allRecord);
         return allRecord;
@@ -148,7 +142,7 @@ public class LocationDBHelper {
      * @param mRecordItemId
      * @return
      */
-    public static PathRecord queryRecordById(int recordType, int mRecordItemId) {
+    public static Record queryRecordById(int recordType, int mRecordItemId) {
         Realm realm = RealmDbHelper.createRealm();
         Record record = realm.where(Record.class)
                 .equalTo("recordType", recordType)
@@ -156,18 +150,13 @@ public class LocationDBHelper {
                 .equalTo("id", mRecordItemId)
                 .findFirst();
 
-        PathRecord pathRecord = new PathRecord();
         if (null != record) {
-            pathRecord.setId(record.id);
-            pathRecord.setDistance(record.distance);
-            pathRecord.setDuration(record.duration);
-            pathRecord.setDate(record.date);
             String lines = record.pathLine;
-            pathRecord.setPathLine(ComputeUtil.parseLocations(lines));
-            pathRecord.setStartPoint(ComputeUtil.parseLocation(record.startPoint));
-            pathRecord.setEndpoint(ComputeUtil.parseLocation(record.endPoint));
+            record.setPathLine(ComputeUtil.parseLocations(lines));
+            record.setStartPoint(ComputeUtil.parseLocation(record.startPoint));
+            record.setEndpoint(ComputeUtil.parseLocation(record.endPoint));
         }
-        return pathRecord;
+        return record;
     }
 
 

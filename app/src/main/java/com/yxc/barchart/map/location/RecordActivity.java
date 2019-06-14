@@ -11,7 +11,7 @@ import android.widget.ListView;
 import com.yxc.barchart.R;
 import com.yxc.barchart.map.location.database.LocationDBHelper;
 import com.yxc.barchart.map.location.util.LocationConstants;
-import com.yxc.barchart.map.model.PathRecord;
+import com.yxc.barchart.map.model.Record;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -25,7 +25,7 @@ public class RecordActivity extends Activity implements OnItemClickListener {
 	private RecordAdapter mAdapter;
 	private ListView mAllRecordListView;
 
-	private List<PathRecord> mAllRecord = new ArrayList<PathRecord>();
+	private List<Record> mAllRecord = new ArrayList<>();
 
 	public static final String RECORD_ID = "record_id";
 
@@ -63,10 +63,8 @@ public class RecordActivity extends Activity implements OnItemClickListener {
 	}
 
 	@Override
-	public void onItemClick(AdapterView<?> parent, View view, int position,
-			long id) {
-		PathRecord recordItem = (PathRecord) parent.getAdapter().getItem(
-				position);
+	public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+		Record recordItem = (Record) parent.getAdapter().getItem(position);
 		Intent intent = new Intent(RecordActivity.this,
 				RecordShowActivity.class);
 		intent.putExtra(RECORD_ID, recordItem.getId());
