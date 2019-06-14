@@ -6,7 +6,6 @@ import android.app.Activity;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
-import android.content.IntentFilter;
 import android.content.pm.PackageManager;
 import android.graphics.Color;
 import android.os.Bundle;
@@ -36,6 +35,7 @@ import com.amap.api.trace.TraceLocation;
 import com.amap.api.trace.TraceOverlay;
 import com.yxc.barchart.R;
 import com.yxc.barchart.map.location.database.LocationDBHelper;
+import com.yxc.barchart.map.location.service.LocalLocationService;
 import com.yxc.barchart.map.location.service.LocationService;
 import com.yxc.barchart.map.location.util.ComputeUtil;
 import com.yxc.barchart.map.location.util.LocationConstants;
@@ -84,9 +84,9 @@ public class LocationActivity extends Activity implements TraceListener {
         init();
         initPolyline();
 
-        IntentFilter intentFilter = new IntentFilter();
-        intentFilter.addAction(RECEIVER_ACTION);
-        registerReceiver(locationChangeBroadcastReceiver, intentFilter);
+//        IntentFilter intentFilter = new IntentFilter();
+//        intentFilter.addAction(RECEIVER_ACTION);
+//        registerReceiver(locationChangeBroadcastReceiver, intentFilter);
 
         permissionApply();
     }
@@ -227,8 +227,8 @@ public class LocationActivity extends Activity implements TraceListener {
      */
     @Override
     protected void onDestroy() {
-        if (locationChangeBroadcastReceiver != null)
-            unregisterReceiver(locationChangeBroadcastReceiver);
+//        if (locationChangeBroadcastReceiver != null)
+//            unregisterReceiver(locationChangeBroadcastReceiver);
         super.onDestroy();
         mMapView.onDestroy();
     }
@@ -259,8 +259,11 @@ public class LocationActivity extends Activity implements TraceListener {
      * 开始定位服务
      */
     private void startLocationService() {
+        Intent intent1 = new Intent(this, LocalLocationService.class);
+        intent1.putExtra("recordType", recordType);
+        startService(intent1);
+
         Intent intent = new Intent(this, LocationService.class);
-        intent.putExtra("recordType", recordType);
         getApplicationContext().startService(intent);
     }
 

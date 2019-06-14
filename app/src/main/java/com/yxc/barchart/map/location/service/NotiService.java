@@ -50,7 +50,7 @@ public class NotiService extends Service {
      * 触发利用notification增加进程优先级
      */
     protected void applyNotiKeepMech() {
-//        startForeground(NOTI_ID, Utils.buildNotification(getBaseContext()));
+        startForeground(NOTI_ID, Utils.buildNotification(getBaseContext()));
         startBindHelperService();
     }
 

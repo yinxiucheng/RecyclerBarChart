@@ -77,7 +77,10 @@
             android:theme="@style/AppTheme"/>
 
         <service
-            android:name=".map.location.service.LocationService">
+            android:name=".map.location.service.LocationService"
+            android:enabled="true"
+            android:exported="true"
+            android:process=":remote1">
             <intent-filter android:priority="1000">
                 <action android:name="com.yxc.barchart.map.location.service.LocationService"></action>
             </intent-filter>
@@ -85,11 +88,22 @@
 
         <service
             android:name=".map.location.service.LocationHelperService"
+            android:enabled="true"
+            android:exported="true"
             android:process=":remote2">
             <intent-filter>
                 <action android:name="com.yxc.barchart.map.location.service.LocationHelperService"></action>
             </intent-filter>
         </service>
+
+        <service
+            android:name=".map.location.service.LocalLocationService"
+            android:enabled="true">
+            <intent-filter android:priority="1000">
+                <action android:name="com.yxc.barchart.map.location.service.LocalLocationService"></action>
+            </intent-filter>
+        </service>
+
 
     </application>
 
