@@ -23,25 +23,15 @@ import com.yxc.barchart.map.model.RecordLocation;
 import org.greenrobot.eventbus.EventBus;
 
 /**
- * 包名： com.amap.locationservicedemo
- * <p>
- * 创建时间：2016/10/27
- * 项目名称：LocationServiceDemo
- *
- * @author guibao.ggb
- * @email guibao.ggb@alibaba-inc.com
- * <p>
  * 类说明：后台服务定位
- *
- * <p>
- * modeified by liangchao , on 2017/01/17
- * update:
  * 1. 只有在由息屏造成的网络断开造成的定位失败时才点亮屏幕
  * 2. 利用notification机制增加进程优先级
- * </p>
  */
 public class LocalLocationService extends Service {
+
     private Utils.CloseServiceReceiver mCloseReceiver;
+
+    private double milePost = 1000;
 
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
@@ -96,9 +86,10 @@ public class LocalLocationService extends Service {
     }
 
     private AMapLocation lastSaveLocation;//用于计算speed，排除异常点。
-
+    private RecordLocation lastRecordLocation;
     private int recordType = LocationConstants.SPORT_TYPE_RUNNING;
     private String recordId;
+
     public void onLocationChanged(AMapLocation aMapLocation) {
 
         if (aMapLocation.getLatitude() == 0f || aMapLocation.getLongitude() <= 0.001f) {
@@ -114,10 +105,11 @@ public class LocalLocationService extends Service {
             double distance = 0;
             RecordLocation recordLocation = RecordLocation.createLocation(aMapLocation, recordId, recordType, itemDistance, distance, locationStr);
             LocationDBHelper.insertRecordLocation(recordLocation);
-            EventBus.getDefault().post(new LocationEvent(aMapLocation));
+
             Log.d("LocationService", "first insert recordLocation:" + recordLocation.toString());
-            sendLocationBroadcast(aMapLocation);
+            sendEventBus(aMapLocation);
             lastSaveLocation = aMapLocation;
+            lastRecordLocation = recordLocation;
         } else if (itemDistance > 1.0f) {
             //条件1 itemDistance < aMapLocation.getAccuracy() / 4.0f 视为原点
             Toast.makeText(LocalLocationService.this, "save Point:" + aMapLocation.getLatitude(), Toast.LENGTH_SHORT).show();
@@ -127,11 +119,18 @@ public class LocalLocationService extends Service {
                 double distance = lastDBLocation.distance + itemDistance;
                 RecordLocation recordLocation = RecordLocation.createLocation(aMapLocation, recordId, recordType,
                         itemDistance, distance, locationStr);
+                long time = (aMapLocation.getTime() - lastRecordLocation.endTime)/1000;
+                float speed = (float) (itemDistance * 1.0f/time);
+                if (distance > milePost){
+                    recordLocation.milePost = milePost;
+                    milePost += 1000;
+                }
+                recordLocation.speed = speed;
+                lastRecordLocation = recordLocation;
                 LocationDBHelper.insertRecordLocation(recordLocation);
-                EventBus.getDefault().post(new LocationEvent(aMapLocation));
+                sendEventBus(aMapLocation);
                 Log.d("LocationService", "insert recordLocation:" + recordLocation.toString());
             }
-            sendLocationBroadcast(aMapLocation);
             lastSaveLocation = aMapLocation;
         } else {//可能在原地打点，不存入新数据，update endTime。
             Toast.makeText(LocalLocationService.this, "update Point:" + aMapLocation.getLatitude(), Toast.LENGTH_SHORT).show();
@@ -142,9 +141,9 @@ public class LocalLocationService extends Service {
         }
     }
 
-
-    private void sendLocationBroadcast(AMapLocation aMapLocation) {
+    private void sendEventBus(AMapLocation aMapLocation) {
         //改成发送eventBus
+        EventBus.getDefault().post(new LocationEvent(aMapLocation));
     }
 
 }

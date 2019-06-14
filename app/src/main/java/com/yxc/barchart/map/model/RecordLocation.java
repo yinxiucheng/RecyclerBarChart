@@ -31,12 +31,13 @@ public class RecordLocation extends RealmObject implements Comparable<RecordLoca
     public long duration;
     public double longitude;//精度
     public double latitude;//维度
-    public float speed;//速度
+    public float speed;//单点的速度，用来划线的时候上不同的颜色
     public double itemDistance;//距离上一个点的距离
     public double distance;//距离起始点的距离
     public String recordId;//运动记录 id(用于聚合查询)
     public int recordType;//运动类型，跑步，骑行，驾驶。
     public String locationStr;//包含AMapLocation的字段
+    public double milePost = 0;//里程碑
 
     @Override
     public int compareTo(RecordLocation o) {

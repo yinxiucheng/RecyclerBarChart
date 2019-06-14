@@ -1,6 +1,10 @@
 package com.yxc.barchart.map.model;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import io.realm.RealmObject;
+import io.realm.annotations.Ignore;
 import io.realm.annotations.PrimaryKey;
 
 /**
@@ -28,6 +32,8 @@ public class Record extends RealmObject {
 
     public String date;
 
+    @Ignore
+    public List<RecordLocation> mPathLocationList = new ArrayList<>();
 
     public Record() {
 

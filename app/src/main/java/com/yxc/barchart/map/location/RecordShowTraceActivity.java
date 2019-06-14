@@ -10,6 +10,8 @@ import android.os.Handler;
 import android.os.Message;
 import android.view.View;
 import android.view.View.OnClickListener;
+import android.widget.RadioButton;
+import android.widget.Toast;
 import android.widget.ToggleButton;
 
 import com.amap.api.location.AMapLocation;
@@ -22,7 +24,11 @@ import com.amap.api.maps.model.LatLng;
 import com.amap.api.maps.model.LatLngBounds;
 import com.amap.api.maps.model.Marker;
 import com.amap.api.maps.model.MarkerOptions;
+import com.amap.api.maps.model.Polyline;
 import com.amap.api.maps.model.PolylineOptions;
+import com.amap.api.trace.LBSTraceClient;
+import com.amap.api.trace.TraceListener;
+import com.amap.api.trace.TraceLocation;
 import com.yxc.barchart.R;
 import com.yxc.barchart.map.location.database.LocationDBHelper;
 import com.yxc.barchart.map.location.tracereplay.TraceRePlay;
@@ -35,22 +41,31 @@ import java.util.List;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
+//import com.amap.api.maps.model.LatLng;
+
+
 /**
  * 实现轨迹回放、纠偏后轨迹回放
  * 
  */
-public class RecordShowActivity extends Activity implements
-		OnMapLoadedListener, OnClickListener {
+public class RecordShowTraceActivity extends Activity implements
+		OnMapLoadedListener, TraceListener, OnClickListener {
 	private final static int AMAP_LOADED = 2;
 
+	private RadioButton mOriginRadioButton, mGraspRadioButton;
 	private ToggleButton mDisplaybtn;
 
 	private MapView mMapView;
 	private AMap mAMap;
 	private Marker mOriginStartMarker, mOriginEndMarker, mOriginRoleMarker;
+	private Marker mGraspStartMarker, mGraspEndMarker, mGraspRoleMarker;
+	private Polyline mOriginPolyline, mGraspPolyline;
+
 	private int mRecordItemId;
 	private int recordType;
 	private List<LatLng> mOriginLatLngList;
+	private List<LatLng> mGraspLatLngList;
+	private boolean mGraspChecked = false;
 	private boolean mOriginChecked = true;
 	private ExecutorService mThreadPool;
 	private TraceRePlay mRePlay;
@@ -58,10 +73,14 @@ public class RecordShowActivity extends Activity implements
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
-		setContentView(R.layout.activity_record_item);
-		mMapView = findViewById(R.id.map);
+		setContentView(R.layout.recorddisplay_activity);
+		mMapView = (MapView) findViewById(R.id.map);
 		mMapView.onCreate(savedInstanceState);// 此方法必须重写
-		mDisplaybtn = findViewById(R.id.displaybtn);
+		mGraspRadioButton = (RadioButton) findViewById(R.id.record_show_activity_grasp_radio_button);
+		mOriginRadioButton = (RadioButton) findViewById(R.id.record_show_activity_origin_radio_button);
+		mOriginRadioButton.setOnClickListener(this);
+		mGraspRadioButton.setOnClickListener(this);
+		mDisplaybtn = (ToggleButton) findViewById(R.id.displaybtn);
 		mDisplaybtn.setOnClickListener(this);
 		Intent recordIntent = getIntent();
 		int threadPoolSize = Runtime.getRuntime().availableProcessors() * 2 + 3;
@@ -88,6 +107,8 @@ public class RecordShowActivity extends Activity implements
 		}
 		if (mOriginChecked) {
 			mRePlay = rePlayTrace(mOriginLatLngList, mOriginRoleMarker);
+		} else if (mGraspChecked) {
+			mRePlay = rePlayTrace(mGraspLatLngList, mGraspRoleMarker);
 		}
 	}
 
@@ -115,6 +136,18 @@ public class RecordShowActivity extends Activity implements
 		return replay;
 	}
 
+	/**
+	 * 将纠偏后轨迹小人设置到起点
+	 */
+	private void resetGraspRole() {
+		if (mGraspLatLngList == null) {
+			return;
+		}
+		LatLng startLatLng = mGraspLatLngList.get(0);
+		if (mGraspRoleMarker != null) {
+			mGraspRoleMarker.setPosition(startLatLng);
+		}
+	}
 
 	/**
 	 * 将原始轨迹小人设置到起点
@@ -129,9 +162,9 @@ public class RecordShowActivity extends Activity implements
 		}
 	}
 
-
 	@SuppressLint("HandlerLeak")
 	private Handler handler = new Handler() {
+
 		@Override
 		public void handleMessage(Message msg) {
 			super.handleMessage(msg);
@@ -143,6 +176,7 @@ public class RecordShowActivity extends Activity implements
 				break;
 			}
 		}
+
 	};
 
 	public void onBackClick(View view) {
@@ -176,6 +210,9 @@ public class RecordShowActivity extends Activity implements
 	 * 
 	 */
 	private void setupRecord() {
+		// 轨迹纠偏初始化
+		LBSTraceClient mTraceClient = new LBSTraceClient(
+				getApplicationContext());
 		PathRecord mRecord = LocationDBHelper.queryRecordById(recordType, mRecordItemId);
 		if (mRecord != null) {
 			List<AMapLocation> recordList = mRecord.getPathLine();
@@ -190,6 +227,12 @@ public class RecordShowActivity extends Activity implements
 					endLoc.getLongitude());
 			mOriginLatLngList = ComputeUtil.parseLatLngList(recordList);
 			addOriginTrace(startLatLng, endLatLng, mOriginLatLngList);
+
+			List<TraceLocation> mGraspTraceLocationList = ComputeUtil
+					.parseTraceLocationList(recordList);
+			// 调用轨迹纠偏，将mGraspTraceLocationList进行轨迹纠偏处理
+			mTraceClient.queryProcessedTrace(1, mGraspTraceLocationList,
+					LBSTraceClient.TYPE_AMAP, this);
 		} else {
 		}
 
@@ -204,12 +247,12 @@ public class RecordShowActivity extends Activity implements
 	 */
 	private void addOriginTrace(LatLng startPoint, LatLng endPoint,
 			List<LatLng> originList) {
-		mAMap.addPolyline(new PolylineOptions().color(
+		mOriginPolyline = mAMap.addPolyline(new PolylineOptions().color(
 				Color.BLUE).addAll(originList));
 		mOriginStartMarker = mAMap.addMarker(new MarkerOptions().position(
 				startPoint).icon(
 				BitmapDescriptorFactory.fromResource(R.drawable.start)));
-		mAMap.addMarker(new MarkerOptions().position(
+		mOriginEndMarker = mAMap.addMarker(new MarkerOptions().position(
 				endPoint).icon(
 				BitmapDescriptorFactory.fromResource(R.drawable.end)));
 
@@ -220,10 +263,91 @@ public class RecordShowActivity extends Activity implements
 			e.printStackTrace();
 		}
 
-		mAMap.addMarker(new MarkerOptions().position(
+		mOriginRoleMarker = mAMap.addMarker(new MarkerOptions().position(
 				startPoint).icon(
 				BitmapDescriptorFactory.fromBitmap(BitmapFactory
 						.decodeResource(getResources(), R.drawable.walk))));
+	}
+
+	/**
+	 * 设置是否显示原始轨迹
+	 * 
+	 * @param enable
+	 */
+	private void setOriginEnable(boolean enable) {
+		mDisplaybtn.setClickable(true);
+		if (mOriginPolyline == null || mOriginStartMarker == null
+				|| mOriginEndMarker == null || mOriginRoleMarker == null) {
+			return;
+		}
+		if (enable) {
+			mOriginPolyline.setVisible(true);
+			mOriginStartMarker.setVisible(true);
+			mOriginEndMarker.setVisible(true);
+			mOriginRoleMarker.setVisible(true);
+		} else {
+			mOriginPolyline.setVisible(false);
+			mOriginStartMarker.setVisible(false);
+			mOriginEndMarker.setVisible(false);
+			mOriginRoleMarker.setVisible(false);
+		}
+	}
+
+	/**
+	 * 地图上添加纠偏后轨迹线路及起终点、轨迹动画小人
+	 *
+	 */
+	private void addGraspTrace(List<LatLng> graspList, boolean mGraspChecked) {
+		if (graspList == null || graspList.size() < 2) {
+			return;
+		}
+		LatLng startPoint = graspList.get(0);
+		LatLng endPoint = graspList.get(graspList.size() - 1);
+		mGraspPolyline = mAMap.addPolyline(new PolylineOptions()
+				.setCustomTexture(
+						BitmapDescriptorFactory
+								.fromResource(R.drawable.grasp_trace_line))
+				.width(40).addAll(graspList));
+		mGraspStartMarker = mAMap.addMarker(new MarkerOptions().position(
+				startPoint).icon(
+				BitmapDescriptorFactory.fromResource(R.drawable.start)));
+		mGraspEndMarker = mAMap.addMarker(new MarkerOptions()
+				.position(endPoint).icon(
+						BitmapDescriptorFactory.fromResource(R.drawable.end)));
+		mGraspRoleMarker = mAMap.addMarker(new MarkerOptions().position(
+				startPoint).icon(
+				BitmapDescriptorFactory.fromBitmap(BitmapFactory
+						.decodeResource(getResources(), R.drawable.walk))));
+		if (!mGraspChecked) {
+			mGraspPolyline.setVisible(false);
+			mGraspStartMarker.setVisible(false);
+			mGraspEndMarker.setVisible(false);
+			mGraspRoleMarker.setVisible(false);
+		}
+	}
+
+	/**
+	 * 设置是否显示纠偏后轨迹
+	 * 
+	 * @param enable
+	 */
+	private void setGraspEnable(boolean enable) {
+		mDisplaybtn.setClickable(true);
+		if (mGraspPolyline == null || mGraspStartMarker == null
+				|| mGraspEndMarker == null || mGraspRoleMarker == null) {
+			return;
+		}
+		if (enable) {
+			mGraspPolyline.setVisible(true);
+			mGraspStartMarker.setVisible(true);
+			mGraspEndMarker.setVisible(true);
+			mGraspRoleMarker.setVisible(true);
+		} else {
+			mGraspPolyline.setVisible(false);
+			mGraspStartMarker.setVisible(false);
+			mGraspEndMarker.setVisible(false);
+			mGraspRoleMarker.setVisible(false);
+		}
 	}
 
 	@Override
@@ -231,6 +355,27 @@ public class RecordShowActivity extends Activity implements
 		Message msg = handler.obtainMessage();
 		msg.what = AMAP_LOADED;
 		handler.sendMessage(msg);
+	}
+
+	/**
+	 * 轨迹纠偏完成数据回调
+	 */
+	@Override
+	public void onFinished(int arg0, List<LatLng> list, int arg2, int arg3) {
+		addGraspTrace(list, mGraspChecked);
+		mGraspLatLngList = list;
+	}
+
+	@Override
+	public void onRequestFailed(int arg0, String arg1) {
+		Toast.makeText(this.getApplicationContext(), "轨迹纠偏失败:" + arg1,
+				Toast.LENGTH_SHORT).show();
+
+	}
+
+	@Override
+	public void onTraceProcessing(int arg0, int arg1, List<LatLng> arg2) {
+
 	}
 
 	@Override
@@ -242,6 +387,26 @@ public class RecordShowActivity extends Activity implements
 				startMove();
 				mDisplaybtn.setClickable(false);
 			}
+			break;
+		case R.id.record_show_activity_grasp_radio_button:
+			mGraspChecked = true;
+			mOriginChecked = false;
+			mGraspRadioButton.setChecked(true);
+			mOriginRadioButton.setChecked(false);
+			setGraspEnable(true);
+			setOriginEnable(false);
+			mDisplaybtn.setChecked(false);
+			resetGraspRole();
+			break;
+		case R.id.record_show_activity_origin_radio_button:
+			mOriginChecked = true;
+			mGraspChecked = false;
+			mGraspRadioButton.setChecked(false);
+			mOriginRadioButton.setChecked(true);
+			setGraspEnable(false);
+			setOriginEnable(true);
+			mDisplaybtn.setChecked(false);
+			resetOriginRole();
 			break;
 		}
 	}

@@ -45,8 +45,8 @@ import java.util.List;
 public class LocationActivity extends Activity {
     private MapView mMapView;
     private AMap mAMap;
-    private PolylineOptions mPolyoptions, tracePolytion;
-    private Polyline mpolyline;
+    private PolylineOptions mPolyOptions, tracePolyOption;
+    private Polyline mPolyline;
     private PathRecord record;
     private long mStartTime;
     private long mEndTime;
@@ -141,10 +141,8 @@ public class LocationActivity extends Activity {
             AMapLocation lastLocation = list.get(list.size() - 1);
             String startPoint = ComputeUtil.amapLocationToString(firstLocation);
             String endPoint = ComputeUtil.amapLocationToString(lastLocation);
-
             Record record = Record.createRecord(recordType, Float.toString(distance),
                     duration, averageSpeed, pathLineStr, startPoint, endPoint, time);
-
             LocationDBHelper.insertRecord(record);
         } else {
             Toast.makeText(LocationActivity.this, "没有记录到路径", Toast.LENGTH_SHORT)
@@ -161,13 +159,13 @@ public class LocationActivity extends Activity {
     }
 
     private void initPolyline() {
-        mPolyoptions = new PolylineOptions();
-        mPolyoptions.width(10f);
-        mPolyoptions.color(Color.GRAY);
-        mPolyoptions.useGradient(true);
-        tracePolytion = new PolylineOptions();
-        tracePolytion.width(40);
-        tracePolytion.setCustomTexture(BitmapDescriptorFactory.fromResource(R.drawable.grasp_trace_line));
+        mPolyOptions = new PolylineOptions();
+        mPolyOptions.width(10f);
+        mPolyOptions.color(Color.GRAY);
+        mPolyOptions.useGradient(true);
+        tracePolyOption = new PolylineOptions();
+        tracePolyOption.width(40);
+        tracePolyOption.setCustomTexture(BitmapDescriptorFactory.fromResource(R.drawable.grasp_trace_line));
     }
 
     /**
@@ -253,7 +251,7 @@ public class LocationActivity extends Activity {
                 for (int i = 0; i < locationList.size(); i++) {
                     AMapLocation aMapLocation = locationList.get(i);
                     LatLng myLocation = new LatLng(aMapLocation.getLatitude(), aMapLocation.getLongitude());
-                    mPolyoptions.add(myLocation);
+                    mPolyOptions.add(myLocation);
                 }
                 redRawLine();
             } else {
@@ -262,7 +260,7 @@ public class LocationActivity extends Activity {
                 if (btn.isChecked()) {
                     Log.d("Location", "record " + myLocation);
                     record.addPoint(amapLocation);
-                    mPolyoptions.add(myLocation);
+                    mPolyOptions.add(myLocation);
                     redRawLine();
                 }
             }
@@ -287,6 +285,7 @@ public class LocationActivity extends Activity {
         EventBus.getDefault().unregister(this);
     }
 
+    //eventBus 接受 LocalService 传过来的数据
     @Subscribe
     public void onLocationSaved(LocationEvent locationEvent){
         if (locationEvent.mapLocation != null){
@@ -299,11 +298,11 @@ public class LocationActivity extends Activity {
      * 实时轨迹画线
      */
     private void redRawLine() {
-        if (mPolyoptions.getPoints().size() > 1) {
-            if (mpolyline != null) {
-                mpolyline.setPoints(mPolyoptions.getPoints());
+        if (mPolyOptions.getPoints().size() > 1) {
+            if (mPolyline != null) {
+                mPolyline.setPoints(mPolyOptions.getPoints());
             } else {
-                mpolyline = mAMap.addPolyline(mPolyoptions);
+                mPolyline = mAMap.addPolyline(mPolyOptions);
             }
         }
     }

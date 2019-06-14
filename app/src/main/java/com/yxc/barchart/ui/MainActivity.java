@@ -15,6 +15,7 @@ import androidx.core.app.ActivityCompat;
 import com.yxc.barchart.R;
 import com.yxc.barchart.map.location.LocationActivity;
 import com.yxc.barchart.map.location.RecordActivity;
+import com.yxc.barchart.map.location.util.LocationConstants;
 import com.yxc.barchart.ui.bezier.BezierActivity;
 import com.yxc.barchart.ui.line.LineActivity;
 import com.yxc.barchart.ui.sleep.SleepActivity;
@@ -94,7 +95,9 @@ public class MainActivity extends AppCompatActivity {
     }
 
     public void clickGoogleMap(View view) {
-        startActivity(new Intent(this, RecordActivity.class));
+        Intent intent = new Intent(this, RecordActivity.class);
+        intent.putExtra(LocationConstants.KEY_RECORD_TYPE, LocationConstants.SPORT_TYPE_RUNNING);
+        startActivity(intent);
     }
 
 }
