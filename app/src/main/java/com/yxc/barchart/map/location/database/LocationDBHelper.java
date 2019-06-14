@@ -2,10 +2,12 @@ package com.yxc.barchart.map.location.database;
 
 import android.util.Log;
 
-import com.amap.api.location.AMapLocation;
+import com.google.gson.Gson;
+import com.google.gson.reflect.TypeToken;
 import com.yxc.barchart.map.location.util.ComputeUtil;
 import com.yxc.barchart.map.model.Record;
 import com.yxc.barchart.map.model.RecordLocation;
+import com.yxc.barchart.util.Util;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -69,50 +71,24 @@ public class LocationDBHelper {
                 .and()
                 .equalTo("recordId", recordId)
                 .findAll();
-
         list.sort("timestamp");
-        return list;
+
+        ArrayList<RecordLocation> recordLocationList = new ArrayList<>();
+        for (int i = 0; i < list.size(); i++) {
+            RecordLocation originLocation = list.get(i);
+            RecordLocation recordLocation = RecordLocation.copyLocation(originLocation);
+            recordLocationList.add(recordLocation);
+        }
+        return recordLocationList;
     }
 
-
-    private static List<RecordLocation> getLateLocationListInner(String recordId){
-        Realm realm = RealmDbHelper.createRealm();
-        RealmResults<RecordLocation> list = realm.where(RecordLocation.class).equalTo("recordId", recordId).findAll();
-        list.sort("timestamp");
-        return list;
-    }
-
-    private static List<RecordLocation> getLateLocationListInner(String recordId, long timestamp){
+    public static List<RecordLocation> getLateLocationList(String recordId, long timestamp){
         Realm realm = RealmDbHelper.createRealm();
         RealmResults<RecordLocation> list = realm.where(RecordLocation.class).equalTo("recordId", recordId)
                 .greaterThan("timestamp", timestamp).findAll();
         list.sort("timestamp");
         return list;
     }
-
-    private static List<AMapLocation> getLateLocationList(List<RecordLocation> locationList){
-        List<AMapLocation> resultList = new ArrayList<>();
-        for (int i = 0; i < locationList.size(); i++) {
-            RecordLocation recordLocation = locationList.get(i);
-            AMapLocation aMapLocation = ComputeUtil.parseLocation(recordLocation.locationStr);
-            resultList.add(aMapLocation);
-        }
-        return resultList;
-    }
-
-
-    public static List<AMapLocation> getLateLocationList(String recordId, long timestamp){
-        List<RecordLocation> locationList = getLateLocationListInner(recordId, timestamp);
-        List<AMapLocation> mapLocationList = getLateLocationList(locationList);
-        return mapLocationList;
-    }
-
-    public static List<AMapLocation> getLocationList(String recordId){
-        List<RecordLocation> locationList = getLateLocationListInner(recordId);
-        List<AMapLocation> mapLocationList = getLateLocationList(locationList);
-        return mapLocationList;
-    }
-
 
     /**
      * 查询所有轨迹记录
@@ -126,7 +102,9 @@ public class LocationDBHelper {
         for (int i = 0; i < realmResults.size(); i++) {
             Record record = realmResults.get(i);
             String lines = record.pathLine;
-            record.setPathLine(ComputeUtil.parseLocations(lines));
+            Gson gson = Util.createGson();
+            List<RecordLocation> recordLocationList = gson.fromJson(lines, new TypeToken<List<RecordLocation>>() {}.getType());
+            record.setPathLine(recordLocationList);
             record.setStartPoint(ComputeUtil.parseLocation(record.startPoint));
             record.setEndpoint(ComputeUtil.parseLocation(record.endPoint));
             allRecord.add(record);
@@ -134,7 +112,6 @@ public class LocationDBHelper {
         Collections.reverse(allRecord);
         return allRecord;
     }
-
 
     /**
      * 按照id查询
@@ -152,7 +129,9 @@ public class LocationDBHelper {
 
         if (null != record) {
             String lines = record.pathLine;
-            record.setPathLine(ComputeUtil.parseLocations(lines));
+            Gson gson = Util.createGson();
+            List<RecordLocation> recordLocationList = gson.fromJson(lines, new TypeToken<List<RecordLocation>>() {}.getType());
+            record.setPathLine(recordLocationList);
             record.setStartPoint(ComputeUtil.parseLocation(record.startPoint));
             record.setEndpoint(ComputeUtil.parseLocation(record.endPoint));
         }
@@ -195,7 +174,6 @@ public class LocationDBHelper {
         realm.executeTransaction(new Realm.Transaction() { // must be in transaction for this to work
             @Override
             public void execute(Realm realm) {
-
                 RecordLocation recordLocation =realm.where(RecordLocation.class).equalTo("timestamp", timestamp).findFirst();
                 Log.d("LocationService", " saveLocation:" + recordLocation);
                 recordLocation.setEndTime(endTime);

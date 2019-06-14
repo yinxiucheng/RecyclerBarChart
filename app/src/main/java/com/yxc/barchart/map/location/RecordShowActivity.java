@@ -30,6 +30,7 @@ import com.yxc.barchart.map.location.tracereplay.TraceRePlay.TraceRePlayListener
 import com.yxc.barchart.map.location.util.ComputeUtil;
 import com.yxc.barchart.map.location.util.LocationConstants;
 import com.yxc.barchart.map.model.Record;
+import com.yxc.barchart.map.model.RecordLocation;
 
 import java.util.List;
 import java.util.concurrent.ExecutorService;
@@ -178,7 +179,8 @@ public class RecordShowActivity extends Activity implements
 	private void setupRecord() {
 		Record mRecord = LocationDBHelper.queryRecordById(recordType, mRecordItemId);
 		if (mRecord != null) {
-			List<AMapLocation> recordList = mRecord.getPathLine();
+			List<RecordLocation> recordLocationList = mRecord.getPathLine();
+			List<AMapLocation> recordList = ComputeUtil.getAMapLocationList(recordLocationList);
 			AMapLocation startLoc = mRecord.getStartPoint();
 			AMapLocation endLoc = mRecord.getEndpoint();
 			if (recordList == null || startLoc == null || endLoc == null) {
@@ -190,10 +192,27 @@ public class RecordShowActivity extends Activity implements
 					endLoc.getLongitude());
 			mOriginLatLngList = ComputeUtil.parseLatLngList(recordList);
 			addOriginTrace(startLatLng, endLatLng, mOriginLatLngList);
+			addMilePost(recordLocationList);
 		} else {
-		}
 
+		}
 	}
+
+
+	private void addMilePost(List<RecordLocation> recordLocationList){
+
+		for (int i = 0; i < recordLocationList.size() ; i++) {
+			RecordLocation recordLocation = recordLocationList.get(i);
+			if (recordLocation.milePost > 0){
+				AMapLocation location = ComputeUtil.parseLocation(recordLocation.locationStr);
+				LatLng milePostPoint = new LatLng(location.getLatitude(), location.getLongitude());
+				mAMap.addMarker(new MarkerOptions().position(milePostPoint)
+						.icon(BitmapDescriptorFactory.fromResource(R.drawable.ic_mile_post_24dp)));
+			}
+		}
+	}
+
+
 
 	/**
 	 * 地图上添加原始轨迹线路及起终点、轨迹动画小人
@@ -202,28 +221,16 @@ public class RecordShowActivity extends Activity implements
 	 * @param endPoint
 	 * @param originList
 	 */
-	private void addOriginTrace(LatLng startPoint, LatLng endPoint,
-			List<LatLng> originList) {
-		mAMap.addPolyline(new PolylineOptions().color(
-				Color.BLUE).addAll(originList));
-		mOriginStartMarker = mAMap.addMarker(new MarkerOptions().position(
-				startPoint).icon(
-				BitmapDescriptorFactory.fromResource(R.drawable.start)));
-		mAMap.addMarker(new MarkerOptions().position(
-				endPoint).icon(
-				BitmapDescriptorFactory.fromResource(R.drawable.end)));
-
+	private void addOriginTrace(LatLng startPoint, LatLng endPoint, List<LatLng> originList) {
+		mAMap.addPolyline(new PolylineOptions().color(Color.BLUE).addAll(originList));
+		mOriginStartMarker = mAMap.addMarker(new MarkerOptions().position(startPoint).icon(BitmapDescriptorFactory.fromResource(R.drawable.start)));
+		mAMap.addMarker(new MarkerOptions().position(endPoint).icon(BitmapDescriptorFactory.fromResource(R.drawable.end)));
 		try {
-			mAMap.moveCamera(CameraUpdateFactory.newLatLngBounds(getBounds(),
-					50));
+			mAMap.moveCamera(CameraUpdateFactory.newLatLngBounds(getBounds(), 50));
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
-
-		mAMap.addMarker(new MarkerOptions().position(
-				startPoint).icon(
-				BitmapDescriptorFactory.fromBitmap(BitmapFactory
-						.decodeResource(getResources(), R.drawable.walk))));
+		mAMap.addMarker(new MarkerOptions().position(startPoint).icon(BitmapDescriptorFactory.fromBitmap(BitmapFactory.decodeResource(getResources(), R.drawable.walk))));
 	}
 
 	@Override

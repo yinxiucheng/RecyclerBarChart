@@ -3,7 +3,6 @@ package com.yxc.barchart.map.model;
 import com.amap.api.location.AMapLocation;
 
 import io.realm.RealmObject;
-import io.realm.annotations.Ignore;
 import io.realm.annotations.PrimaryKey;
 
 /**
@@ -12,22 +11,10 @@ import io.realm.annotations.PrimaryKey;
  *
  * 轨迹点
  */
-public class RecordLocation extends RealmObject implements Comparable<RecordLocation> {
-
-    @Ignore
-    public AMapLocation location;
+public class RecordLocation extends RealmObject {
 
     @PrimaryKey
     public long timestamp;//时间戳
-
-    public void setEndTime(long endTime) {
-        this.endTime = endTime;
-    }
-
-    public void setDuration(long duration) {
-        this.duration = duration;
-    }
-
     public long endTime;//当前点待了多久，用 endTime - timestamp = duration。
     public long duration;
     public double longitude;//精度
@@ -40,22 +27,30 @@ public class RecordLocation extends RealmObject implements Comparable<RecordLoca
     public String locationStr;//包含AMapLocation的字段
     public double milePost = 0;//里程碑
 
-    @Override
-    public int compareTo(RecordLocation o) {
-        return (int) (timestamp - o.timestamp);
-    }
-
     public RecordLocation() {
+
     }
 
-    public RecordLocation(AMapLocation location) {
-        this.location = location;
+    public static RecordLocation copyLocation(RecordLocation originalLocation){
+        RecordLocation recordLocation = new RecordLocation();
+        recordLocation.timestamp = originalLocation.getTimestamp();
+        recordLocation.endTime = originalLocation.getEndTime();
+        recordLocation.duration = originalLocation.getDuration();
+        recordLocation.latitude = originalLocation.getLatitude();
+        recordLocation.longitude = originalLocation.getLongitude();
+        recordLocation.speed = originalLocation.getSpeed();
+        recordLocation.recordId = originalLocation.getRecordId();
+        recordLocation.recordType = originalLocation.getRecordType();
+        recordLocation.itemDistance = originalLocation.getItemDistance();
+        recordLocation.distance = originalLocation.getDistance();
+        recordLocation.locationStr = originalLocation.getLocationStr();
+        return recordLocation;
     }
 
     public static RecordLocation createLocation(AMapLocation location, String recordId,
                                                 int recordType, double itemDistance,
                                                 double distance, String locationStr){
-        RecordLocation recordLocation = new RecordLocation(location);
+        RecordLocation recordLocation = new RecordLocation();
         recordLocation.timestamp = location.getTime();
         recordLocation.endTime = recordLocation.timestamp;
         recordLocation.duration = 0;
@@ -73,8 +68,7 @@ public class RecordLocation extends RealmObject implements Comparable<RecordLoca
     @Override
     public String toString() {
         return "RecordLocation{" +
-                "location=" + location +
-                ", timestamp=" + timestamp +
+                "timestamp=" + timestamp +
                 ", endTime=" + endTime +
                 ", duration=" + duration +
                 ", longitude=" + longitude +
@@ -89,4 +83,99 @@ public class RecordLocation extends RealmObject implements Comparable<RecordLoca
                 '}';
     }
 
+    public long getTimestamp() {
+        return timestamp;
+    }
+
+    public void setTimestamp(long timestamp) {
+        this.timestamp = timestamp;
+    }
+
+    public long getEndTime() {
+        return endTime;
+    }
+
+    public void setEndTime(long endTime) {
+        this.endTime = endTime;
+    }
+
+    public long getDuration() {
+        return duration;
+    }
+
+    public void setDuration(long duration) {
+        this.duration = duration;
+    }
+
+    public double getLongitude() {
+        return longitude;
+    }
+
+    public void setLongitude(double longitude) {
+        this.longitude = longitude;
+    }
+
+    public double getLatitude() {
+        return latitude;
+    }
+
+    public void setLatitude(double latitude) {
+        this.latitude = latitude;
+    }
+
+    public float getSpeed() {
+        return speed;
+    }
+
+    public void setSpeed(float speed) {
+        this.speed = speed;
+    }
+
+    public double getItemDistance() {
+        return itemDistance;
+    }
+
+    public void setItemDistance(double itemDistance) {
+        this.itemDistance = itemDistance;
+    }
+
+    public double getDistance() {
+        return distance;
+    }
+
+    public void setDistance(double distance) {
+        this.distance = distance;
+    }
+
+    public String getRecordId() {
+        return recordId;
+    }
+
+    public void setRecordId(String recordId) {
+        this.recordId = recordId;
+    }
+
+    public int getRecordType() {
+        return recordType;
+    }
+
+    public void setRecordType(int recordType) {
+        this.recordType = recordType;
+    }
+
+    public String getLocationStr() {
+        return locationStr;
+    }
+
+    public void setLocationStr(String locationStr) {
+        this.locationStr = locationStr;
+    }
+
+    public double getMilePost() {
+        return milePost;
+    }
+
+    public void setMilePost(double milePost) {
+        this.milePost = milePost;
+    }
 }

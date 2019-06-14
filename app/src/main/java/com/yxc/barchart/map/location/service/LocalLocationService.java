@@ -107,7 +107,7 @@ public class LocalLocationService extends Service {
             LocationDBHelper.insertRecordLocation(recordLocation);
 
             Log.d("LocationService", "first insert recordLocation:" + recordLocation.toString());
-            sendEventBus(aMapLocation);
+            sendEventBus(aMapLocation, recordLocation);
             lastSaveLocation = aMapLocation;
             lastRecordLocation = recordLocation;
         } else if (itemDistance > 1.0f) {
@@ -128,7 +128,7 @@ public class LocalLocationService extends Service {
                 recordLocation.speed = speed;
                 lastRecordLocation = recordLocation;
                 LocationDBHelper.insertRecordLocation(recordLocation);
-                sendEventBus(aMapLocation);
+                sendEventBus(aMapLocation, recordLocation);
                 Log.d("LocationService", "insert recordLocation:" + recordLocation.toString());
             }
             lastSaveLocation = aMapLocation;
@@ -141,9 +141,9 @@ public class LocalLocationService extends Service {
         }
     }
 
-    private void sendEventBus(AMapLocation aMapLocation) {
+    private void sendEventBus(AMapLocation aMapLocation, RecordLocation recordLocation) {
         //改成发送eventBus
-        EventBus.getDefault().post(new LocationEvent(aMapLocation));
+        EventBus.getDefault().post(new LocationEvent(aMapLocation, recordLocation));
     }
 
 }

@@ -5,6 +5,7 @@ import android.Manifest;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.MenuItem;
 import android.view.View;
 
@@ -12,18 +13,25 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
 import androidx.core.app.ActivityCompat;
 
+import com.google.gson.Gson;
+import com.google.gson.reflect.TypeToken;
 import com.yxc.barchart.R;
 import com.yxc.barchart.map.location.LocationActivity;
 import com.yxc.barchart.map.location.RecordActivity;
 import com.yxc.barchart.map.location.util.LocationConstants;
+import com.yxc.barchart.map.model.RecordLocation;
 import com.yxc.barchart.ui.bezier.BezierActivity;
 import com.yxc.barchart.ui.line.LineActivity;
 import com.yxc.barchart.ui.sleep.SleepActivity;
 import com.yxc.barchart.ui.step.StepActivity;
 import com.yxc.barchart.ui.waterdrop.WaterDropActivity;
+import com.yxc.barchart.util.Util;
 import com.yxc.commonlib.util.TimeDateUtil;
 
 import org.joda.time.LocalDate;
+
+import java.util.ArrayList;
+import java.util.List;
 
 public class MainActivity extends AppCompatActivity {
     Toolbar toolbar;
@@ -40,7 +48,7 @@ public class MainActivity extends AppCompatActivity {
     }
 
 
-    private void permissionApply(){
+    private void permissionApply() {
         if (ActivityCompat.checkSelfPermission(this,
                 android.Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
             ActivityCompat.requestPermissions(this, new String[]
@@ -58,7 +66,7 @@ public class MainActivity extends AppCompatActivity {
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
-        if(item.getItemId()==android.R.id.home){
+        if (item.getItemId() == android.R.id.home) {
             finish();
             return true;
         }
@@ -90,14 +98,79 @@ public class MainActivity extends AppCompatActivity {
         startActivity(new Intent(this, WaterDropActivity.class));
     }
 
-    public void clickGaoDeMap(View view){
+    public void clickGaoDeMap(View view) {
         startActivity(new Intent(this, LocationActivity.class));
     }
 
     public void clickGoogleMap(View view) {
+//        Gson gson = new GsonBuilder()
+//                .setExclusionStrategies(new ExclusionStrategy() {
+//                    @Override
+//                    public boolean shouldSkipField(FieldAttributes f) {
+//                        return f.getDeclaringClass().equals(RealmObject.class);
+//                    }
+//
+//                    @Override
+//                    public boolean shouldSkipClass(Class<?> clazz) {
+//                        return false;
+//                    }
+//                }).create();
+        Gson gson = Util.createGson();
+
+        List<RecordLocation> personList = createLocationList();
+        String result1 = gson.toJson(personList);
+        Log.d("LocationService", "result:" + result1);
+
+
+        List<RecordLocation> resultList = gson.fromJson(result1, new TypeToken<List<RecordLocation>>() {}.getType());
+        for (int i = 0; i < resultList.size(); i++) {
+            Log.d("LocationService", "i:" + i);
+            Log.d("LocationService", resultList.get(i).toString());
+        }
+
+    }
+
+    private void intentToRecord(){
         Intent intent = new Intent(this, RecordActivity.class);
         intent.putExtra(LocationConstants.KEY_RECORD_TYPE, LocationConstants.SPORT_TYPE_RUNNING);
         startActivity(intent);
+    }
+
+    public Person createPerson(){
+        Person recordLocation = new Person();
+        recordLocation.setDuration(123425514);
+        recordLocation.setEndTime(1514515145);
+        recordLocation.setDistance(1541485);
+        recordLocation.setLatitude(40.9142519475);
+        recordLocation.setLongitude(101.23114);
+        recordLocation.setItemDistance(13);
+        recordLocation.setLocationStr("asdjfoi, qoeurwqe");
+        recordLocation.setRecordType(1);
+        recordLocation.setRecordId("12");
+        recordLocation.setTimestamp(13225415);
+        recordLocation.setMilePost(2000);
+        return recordLocation;
+    }
+
+
+    public List<RecordLocation> createLocationList(){
+        List<RecordLocation> locationList = new ArrayList<>();
+        for (int i = 0; i < 5 ; i++) {
+            RecordLocation recordLocation = new RecordLocation();
+            recordLocation.setDuration(123425514);
+            recordLocation.setEndTime(1514515145);
+            recordLocation.setDistance(1541485);
+            recordLocation.setLatitude(40.9142519475);
+            recordLocation.setLongitude(101.23114);
+            recordLocation.setItemDistance(13);
+            recordLocation.setLocationStr("asdjfoi, qoeurwqe");
+            recordLocation.setRecordType(1);
+            recordLocation.setRecordId("12");
+            recordLocation.setTimestamp(13225415);
+            recordLocation.setMilePost(2000);
+            locationList.add(recordLocation);
+        }
+        return locationList;
     }
 
 }

@@ -4,8 +4,10 @@ import com.amap.api.location.AMapLocation;
 import com.amap.api.maps.AMapUtils;
 import com.amap.api.maps.model.LatLng;
 import com.amap.api.trace.TraceLocation;
+import com.google.gson.Gson;
 import com.yxc.barchart.map.location.database.LocationDBHelper;
 import com.yxc.barchart.map.model.RecordLocation;
+import com.yxc.barchart.util.Util;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -130,6 +132,14 @@ public class ComputeUtil {
         return pathLineString;
     }
 
+    public static String getPathLineStr(List<RecordLocation> locationList) {
+        if (locationList == null || locationList.size() == 0) {
+            return "";
+        }
+        Gson gson = Util.createGson();
+        String result = gson.toJson(locationList);
+        return result;
+    }
 
     public static float getDistance(List<AMapLocation> list) {
         float distance = 0;
@@ -212,6 +222,20 @@ public class ComputeUtil {
             return 5;
         }
         return 1;
+    }
+
+
+    public static List<AMapLocation> getAMapLocationList(List<RecordLocation> recordLocationList) {
+        List<AMapLocation> aMapLocationList = new ArrayList<>();
+        if (recordLocationList == null) {
+            return aMapLocationList;
+        }
+        for (int i = 0; i < recordLocationList.size(); i++) {
+            RecordLocation recordLocation = recordLocationList.get(i);
+            AMapLocation aMapLocation = ComputeUtil.parseLocation(recordLocation.locationStr);
+            aMapLocationList.add(aMapLocation);
+        }
+        return aMapLocationList;
     }
 
 

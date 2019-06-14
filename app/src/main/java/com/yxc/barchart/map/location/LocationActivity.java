@@ -15,6 +15,7 @@ import android.widget.Toast;
 import android.widget.ToggleButton;
 
 import androidx.core.app.ActivityCompat;
+
 import com.amap.api.location.AMapLocation;
 import com.amap.api.maps.AMap;
 import com.amap.api.maps.CameraUpdateFactory;
@@ -32,10 +33,12 @@ import com.yxc.barchart.map.location.util.ComputeUtil;
 import com.yxc.barchart.map.location.util.LocationConstants;
 import com.yxc.barchart.map.location.util.Utils;
 import com.yxc.barchart.map.model.Record;
+import com.yxc.barchart.map.model.RecordLocation;
 import com.yxc.commonlib.util.TimeDateUtil;
 
 import org.greenrobot.eventbus.EventBus;
 import org.greenrobot.eventbus.Subscribe;
+
 import java.util.List;
 
 public class LocationActivity extends Activity {
@@ -117,7 +120,7 @@ public class LocationActivity extends Activity {
                     rightBtn.setVisibility(View.VISIBLE);
                     mEndTime = System.currentTimeMillis();
                     if (!TextUtils.isEmpty(recordId)){
-                        List<AMapLocation> locationList = LocationDBHelper.getLocationList(recordId);
+                        List<RecordLocation> locationList = LocationDBHelper.getLocationList(recordType, recordId);
                         saveRecord(locationList, record.date);
                     }
                     stopLocationService();
@@ -127,22 +130,23 @@ public class LocationActivity extends Activity {
         btn.setOnClickListener(clickListener);
     }
 
-    protected void saveRecord(List<AMapLocation> list, String time) {
+    protected void saveRecord(List<RecordLocation> list, String time) {
+
         if (list != null && list.size() > 0) {
             String duration = getDuration();
-            float distance = ComputeUtil.getDistance(list);
+//            float distance = ComputeUtil.getDistance(list);
+            RecordLocation firstLocation = list.get(0);
+            RecordLocation lastLocation = list.get(list.size() - 1);
+            double distance = lastLocation.distance;
             String averageSpeed = getAverage(distance);
-            String pathLineStr = ComputeUtil.getPathLineString(list);
-            AMapLocation firstLocation = list.get(0);
-            AMapLocation lastLocation = list.get(list.size() - 1);
-            String startPoint = ComputeUtil.amapLocationToString(firstLocation);
-            String endPoint = ComputeUtil.amapLocationToString(lastLocation);
-            Record record = Record.createRecord(recordType, Float.toString(distance),
+            String pathLineStr = ComputeUtil.getPathLineStr(list);
+            String startPoint = firstLocation.locationStr;
+            String endPoint = lastLocation.locationStr;
+            Record record = Record.createRecord(recordType, Double.toString(distance),
                     duration, averageSpeed, pathLineStr, startPoint, endPoint, time);
             LocationDBHelper.insertRecord(record);
         } else {
-            Toast.makeText(LocationActivity.this, "没有记录到路径", Toast.LENGTH_SHORT)
-                    .show();
+            Toast.makeText(LocationActivity.this, "没有记录到路径", Toast.LENGTH_SHORT).show();
         }
     }
 
@@ -150,7 +154,7 @@ public class LocationActivity extends Activity {
         return String.valueOf((mEndTime - mStartTime) / 1000f);
     }
 
-    private String getAverage(float distance) {
+    private String getAverage(double distance) {
         return String.valueOf(distance / (float) (mEndTime - mStartTime));
     }
 
@@ -237,15 +241,17 @@ public class LocationActivity extends Activity {
      *
      * @param amapLocation 位置信息类
      */
-    public void onLocationChanged(AMapLocation amapLocation) {
+    public void onLocationChanged(AMapLocation amapLocation, RecordLocation sendRecordLocation) {
         if (amapLocation != null && amapLocation.getErrorCode() == 0) {
             if (lastLocation != null) {
                 long timestamp = lastLocation.getTime();
                 //从数据库里拿点
-                List<AMapLocation> locationList = LocationDBHelper.getLateLocationList(recordId, timestamp);
+                List<RecordLocation> locationList = LocationDBHelper.getLateLocationList(recordId, timestamp);
                 record.addPointList(locationList);
+
                 for (int i = 0; i < locationList.size(); i++) {
-                    AMapLocation aMapLocation = locationList.get(i);
+                    RecordLocation recordLocation = locationList.get(i);
+                    AMapLocation aMapLocation = ComputeUtil.parseLocation(recordLocation.locationStr);
                     LatLng myLocation = new LatLng(aMapLocation.getLatitude(), aMapLocation.getLongitude());
                     mPolyOptions.add(myLocation);
                 }
@@ -255,7 +261,7 @@ public class LocationActivity extends Activity {
                 mAMap.moveCamera(CameraUpdateFactory.changeLatLng(myLocation));
                 if (btn.isChecked()) {
                     Log.d("Location", "record " + myLocation);
-                    record.addPoint(amapLocation);
+                    record.addPoint(sendRecordLocation);
                     mPolyOptions.add(myLocation);
                     redRawLine();
                 }
@@ -285,7 +291,7 @@ public class LocationActivity extends Activity {
     @Subscribe
     public void onLocationSaved(LocationEvent locationEvent){
         if (locationEvent.mapLocation != null){
-            onLocationChanged(locationEvent.mapLocation);
+            onLocationChanged(locationEvent.mapLocation, locationEvent.recordLocation);
         }
     }
 

@@ -5,6 +5,13 @@ import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
 import android.content.pm.Signature;
 
+import com.google.gson.ExclusionStrategy;
+import com.google.gson.FieldAttributes;
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
+import com.yxc.barchart.map.model.RecordLocation;
+import com.yxc.barchart.map.model.RecordLocationSerializer;
+
 import java.io.ByteArrayInputStream;
 import java.io.InputStream;
 import java.security.MessageDigest;
@@ -13,6 +20,8 @@ import java.security.cert.CertificateEncodingException;
 import java.security.cert.CertificateFactory;
 import java.security.cert.X509Certificate;
 import java.util.Locale;
+
+import io.realm.RealmObject;
 
 /**
  * @author yxc
@@ -37,7 +46,7 @@ public class Util {
                 hexString.append(":");
             }
             String result = hexString.toString();
-            return result.substring(0, result.length()-1);
+            return result.substring(0, result.length() - 1);
         } catch (PackageManager.NameNotFoundException e) {
             e.printStackTrace();
         } catch (NoSuchAlgorithmException e) {
@@ -45,7 +54,6 @@ public class Util {
         }
         return null;
     }
-
 
 
     //这个是获取SHA1的方法
@@ -98,6 +106,7 @@ public class Util {
         }
         return hexString;
     }
+
     //这里是将获取到得编码进行16进制转换
     private static String byte2HexFormatted(byte[] arr) {
         StringBuilder str = new StringBuilder(arr.length * 2);
@@ -113,6 +122,25 @@ public class Util {
                 str.append(':');
         }
         return str.toString();
+    }
+
+    public static Gson createGson() {
+        Gson gson = null;
+        GsonBuilder gsonBuilder = new GsonBuilder();
+        gsonBuilder.setExclusionStrategies(new ExclusionStrategy() {
+            @Override
+            public boolean shouldSkipField(FieldAttributes f) {
+                return f.getDeclaringClass().equals(RealmObject.class);
+            }
+
+            @Override
+            public boolean shouldSkipClass(Class<?> clazz) {
+                return false;
+            }
+        });
+        gsonBuilder.registerTypeAdapter(RecordLocation.class, new RecordLocationSerializer());
+        gson = gsonBuilder.create();
+        return gson;
     }
 
 }

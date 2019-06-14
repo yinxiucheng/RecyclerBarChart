@@ -43,9 +43,6 @@ public class Record extends RealmObject {
     public String date;
 
     @Ignore
-    private List<AMapLocation> mPathLinePoints = new ArrayList<AMapLocation>();
-
-    @Ignore
     public List<RecordLocation> mPathLocationList = new ArrayList<>();
 
     public Record() {
@@ -83,20 +80,20 @@ public class Record extends RealmObject {
         return date;
     }
 
-    public void addPoint(AMapLocation point) {
-        mPathLinePoints.add(point);
+    public void addPoint(RecordLocation point) {
+        mPathLocationList.add(point);
     }
 
-    public void addPointList(List<AMapLocation> pointList) {
-        mPathLinePoints.addAll(pointList);
+    public void addPointList(List<RecordLocation> pointList) {
+        mPathLocationList.addAll(pointList);
     }
 
-    public List<AMapLocation> getPathLine() {
-        return mPathLinePoints;
+    public List<RecordLocation> getPathLine() {
+        return mPathLocationList;
     }
 
-    public void setPathLine(List<AMapLocation> pathLine) {
-        this.mPathLinePoints = pathLine;
+    public void setPathLine(List<RecordLocation> pathLine) {
+        this.mPathLocationList = pathLine;
     }
 
 
