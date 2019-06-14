@@ -11,7 +11,9 @@ import io.realm.annotations.PrimaryKey;
 
 /**
  * @author yxc
- * @date 2019-06-10
+ * @since 2019-06-10
+ *
+ * 轨迹路径
  */
 public class Record extends RealmObject {
 
@@ -113,7 +115,6 @@ public class Record extends RealmObject {
     public void setEndpoint(AMapLocation endpoint) {
         this.mEndPoint = endpoint;
     }
-
 
     @Override
     public String toString() {

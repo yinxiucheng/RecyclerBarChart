@@ -10,6 +10,7 @@ import io.realm.annotations.PrimaryKey;
  * @author yxc
  * @since 2019-06-10
  *
+ * 轨迹点
  */
 public class RecordLocation extends RealmObject implements Comparable<RecordLocation> {
 
