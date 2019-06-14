@@ -70,23 +70,6 @@ public class RecordLocation extends RealmObject implements Comparable<RecordLoca
         return recordLocation;
     }
 
-    public static RecordLocation copy(RecordLocation recordLocation){
-        RecordLocation result = new RecordLocation();
-        result.timestamp= recordLocation.timestamp;
-        result.duration = recordLocation.duration;
-        result.location = recordLocation.location;
-        result.endTime = recordLocation.endTime;
-        result.speed = recordLocation.speed;
-        result.recordType = recordLocation.recordType;
-        result.recordId = recordLocation.recordId;
-        result.distance = recordLocation.distance;
-        result.itemDistance = recordLocation.itemDistance;
-        result.locationStr = recordLocation.locationStr;
-        result.longitude = recordLocation.longitude;
-        result.latitude = recordLocation.latitude;
-        return result;
-    }
-
     @Override
     public String toString() {
         return "RecordLocation{" +
@@ -102,6 +85,8 @@ public class RecordLocation extends RealmObject implements Comparable<RecordLoca
                 ", recordId='" + recordId + '\'' +
                 ", recordType=" + recordType +
                 ", locationStr='" + locationStr + '\'' +
+                ", milePost=" + milePost +
                 '}';
     }
+
 }
