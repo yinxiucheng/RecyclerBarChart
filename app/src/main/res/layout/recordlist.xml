@@ -60,11 +60,14 @@
                 android:id="@+id/title_tv_option"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:clickable="false"
+                android:text="开启运动"
+                android:onClick="startSport"
                 android:enabled="true"
-                android:textSize="18dp" />
+                android:textSize="14sp" />
         </LinearLayout>
+
     </RelativeLayout>
+
     <ListView 
         android:id="@+id/recordlist"
         android:layout_width="match_parent"

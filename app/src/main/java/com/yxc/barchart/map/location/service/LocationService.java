@@ -8,7 +8,6 @@ import com.amap.api.location.AMapLocation;
 import com.amap.api.location.AMapLocationClient;
 import com.amap.api.location.AMapLocationClientOption;
 import com.amap.api.location.AMapLocationListener;
-import com.yxc.barchart.map.location.LocationActivity;
 import com.yxc.barchart.map.location.database.LocationDBHelper;
 import com.yxc.barchart.map.location.util.ComputeUtil;
 import com.yxc.barchart.map.location.util.IWifiAutoCloseDelegate;
@@ -148,10 +147,9 @@ public class LocationService extends NotiService {
             }
         }
 
-
         private long intervalTime = LocationConstants.DEFAULT_INTERVAL_TIME;
         private void resetIntervalTimes(long duration) {
-            if (duration >= 90 * 60 * 1000){// 90分钟停止自己的服务
+            if (duration >= 60 * 60 * 1000){// 90分钟停止自己的服务, 应该还要关闭守护进程
                 onDestroy();
                 return;
             }
@@ -174,7 +172,8 @@ public class LocationService extends NotiService {
             } else {
                 sb.append(Utils.getLocationStr(aMapLocation));
             }
-            Intent intent = new Intent(LocationActivity.RECEIVER_ACTION);
+
+            Intent intent = new Intent(LocationConstants.ACTION_LOCATION_BACKGROUND);
             Bundle bundle = new Bundle();
             bundle.putString("result", sb.toString());
             bundle.putParcelable("location", aMapLocation);

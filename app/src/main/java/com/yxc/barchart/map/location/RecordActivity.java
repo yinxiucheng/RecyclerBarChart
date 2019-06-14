@@ -57,6 +57,11 @@ public class RecordActivity extends Activity implements OnItemClickListener {
 		this.finish();
 	}
 
+	public void startSport(View view){
+		startActivity(new Intent(this, LocationActivity.class));
+		finish();
+	}
+
 	@Override
 	public void onItemClick(AdapterView<?> parent, View view, int position,
 			long id) {

@@ -1,10 +1,7 @@
 package com.yxc.barchart.map.location;
 
 import android.Manifest;
-import android.annotation.SuppressLint;
 import android.app.Activity;
-import android.content.BroadcastReceiver;
-import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.graphics.Color;
@@ -13,7 +10,7 @@ import android.text.TextUtils;
 import android.util.Log;
 import android.view.View;
 import android.view.View.OnClickListener;
-import android.widget.TextView;
+import android.widget.LinearLayout;
 import android.widget.Toast;
 import android.widget.ToggleButton;
 
@@ -25,16 +22,11 @@ import com.amap.api.maps.CameraUpdateFactory;
 import com.amap.api.maps.MapView;
 import com.amap.api.maps.model.BitmapDescriptorFactory;
 import com.amap.api.maps.model.LatLng;
-import com.amap.api.maps.model.Marker;
-import com.amap.api.maps.model.MarkerOptions;
 import com.amap.api.maps.model.Polyline;
 import com.amap.api.maps.model.PolylineOptions;
-import com.amap.api.trace.LBSTraceClient;
-import com.amap.api.trace.TraceListener;
-import com.amap.api.trace.TraceLocation;
-import com.amap.api.trace.TraceOverlay;
 import com.yxc.barchart.R;
 import com.yxc.barchart.map.location.database.LocationDBHelper;
+import com.yxc.barchart.map.location.event.LocationEvent;
 import com.yxc.barchart.map.location.service.LocalLocationService;
 import com.yxc.barchart.map.location.service.LocationService;
 import com.yxc.barchart.map.location.util.ComputeUtil;
@@ -42,16 +34,15 @@ import com.yxc.barchart.map.location.util.LocationConstants;
 import com.yxc.barchart.map.location.util.Utils;
 import com.yxc.barchart.map.model.PathRecord;
 import com.yxc.barchart.map.model.Record;
+import com.yxc.commonlib.util.TimeDateUtil;
 
-import java.text.DecimalFormat;
-import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.util.Date;
+import org.greenrobot.eventbus.EventBus;
+import org.greenrobot.eventbus.Subscribe;
+
 import java.util.List;
 
 
-public class LocationActivity extends Activity implements TraceListener {
-    private final static int CALLTRACE = 0;
+public class LocationActivity extends Activity {
     private MapView mMapView;
     private AMap mAMap;
     private PolylineOptions mPolyoptions, tracePolytion;
@@ -60,37 +51,37 @@ public class LocationActivity extends Activity implements TraceListener {
     private long mStartTime;
     private long mEndTime;
     private ToggleButton btn;
-    private List<TraceLocation> mTracelocationlist = new ArrayList<TraceLocation>();
-    private List<TraceOverlay> mOverlayList = new ArrayList<TraceOverlay>();
-    private List<AMapLocation> recordList = new ArrayList<AMapLocation>();
-    private int tracesize = 30;
-    private int mDistance = 0;
-    private TraceOverlay mTraceoverlay;
-    private TextView mResultShow;
-    private Marker mlocMarker;
 
-    public static final String RECEIVER_ACTION = "location_in_background";
+    private LinearLayout rightBtn;
 
     private static final int LOCATION_PERMISSION_REQUEST_CODE = 1;
-
     private int recordType = LocationConstants.SPORT_TYPE_RUNNING;
+    private String recordId = "";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.basic_location_map_activity);
-        mMapView = (MapView) findViewById(R.id.map);
+
+        mMapView = findViewById(R.id.map);
         mMapView.onCreate(savedInstanceState);// 此方法必须重写
+        rightBtn = findViewById(R.id.title_lly_right);
+
         init();
         initPolyline();
-
-//        IntentFilter intentFilter = new IntentFilter();
-//        intentFilter.addAction(RECEIVER_ACTION);
-//        registerReceiver(locationChangeBroadcastReceiver, intentFilter);
-
         permissionApply();
+
+        Intent intent = getIntent();
+        recordType = intent.getIntExtra("recordType", LocationConstants.SPORT_TYPE_RUNNING);
+        recordId = getRecordId(recordType);//获取recordId
     }
 
+    private String getRecordId(int recordType) {
+        Record record = LocationDBHelper.getLastRecord(recordType);
+        recordId = (record == null) ? "0" : Integer.toString(record.id + 1);
+        Log.d("LocationService", "recordId = " + recordId);
+        return recordId;
+    }
 
     private void permissionApply() {
         if (ActivityCompat.checkSelfPermission(this,
@@ -104,38 +95,31 @@ public class LocationActivity extends Activity implements TraceListener {
 
     /**
      * 初始化AMap对象
+     *
      */
     private void init() {
         if (mAMap == null) {
             mAMap = mMapView.getMap();
             setUpMap();
         }
-        btn = (ToggleButton) findViewById(R.id.locationbtn);
-        mResultShow = (TextView) findViewById(R.id.show_all_dis);
-        mTraceoverlay = new TraceOverlay(mAMap);
+        btn = findViewById(R.id.locationbtn);
 
         OnClickListener clickListener = new OnClickListener() {
             @Override
             public void onClick(View v) {
                 if (btn.isChecked()) {
+                    rightBtn.setVisibility(View.GONE);
                     mAMap.clear(true);
                     if (record != null) {
                         record = null;
                     }
                     record = new PathRecord();
                     mStartTime = System.currentTimeMillis();
-                    record.setDate(getDate(mStartTime));
-                    mResultShow.setText("总距离");
+                    record.setDate(TimeDateUtil.getDateStrMinSecond(mStartTime));
                     startLocationService();
                 } else {
+                    rightBtn.setVisibility(View.VISIBLE);
                     mEndTime = System.currentTimeMillis();
-                    mOverlayList.add(mTraceoverlay);
-                    DecimalFormat decimalFormat = new DecimalFormat("0.0");
-                    mResultShow.setText(decimalFormat.format(getTotalDistance() / 1000d) + "KM");
-                    LBSTraceClient mTraceClient = new LBSTraceClient(getApplicationContext());
-                    mTraceClient.queryProcessedTrace(2, ComputeUtil.parseTraceLocationList(record.getPathLine()),
-                            LBSTraceClient.TYPE_AMAP, LocationActivity.this);
-
                     if (!TextUtils.isEmpty(recordId)){
                         List<AMapLocation> locationList = LocationDBHelper.getLocationList(recordId);
                         saveRecord(locationList, record.getDate());
@@ -158,9 +142,10 @@ public class LocationActivity extends Activity implements TraceListener {
             String startPoint = ComputeUtil.amapLocationToString(firstLocation);
             String endPoint = ComputeUtil.amapLocationToString(lastLocation);
 
-            Record record = Record.createRecord(recordType, Float.toString(distance), duration, averageSpeed, pathLineStr, startPoint, endPoint, time);
-            LocationDBHelper.insertRecord(record);
+            Record record = Record.createRecord(recordType, Float.toString(distance),
+                    duration, averageSpeed, pathLineStr, startPoint, endPoint, time);
 
+            LocationDBHelper.insertRecord(record);
         } else {
             Toast.makeText(LocationActivity.this, "没有记录到路径", Toast.LENGTH_SHORT)
                     .show();
@@ -227,41 +212,18 @@ public class LocationActivity extends Activity implements TraceListener {
      */
     @Override
     protected void onDestroy() {
-//        if (locationChangeBroadcastReceiver != null)
-//            unregisterReceiver(locationChangeBroadcastReceiver);
         super.onDestroy();
         mMapView.onDestroy();
     }
-
-    private String recordId = "";
-
-    private BroadcastReceiver locationChangeBroadcastReceiver = new BroadcastReceiver() {
-
-        @Override
-        public void onReceive(Context context, Intent intent) {
-            String action = intent.getAction();
-            if (action.equals(RECEIVER_ACTION)) {
-                Bundle bundle = intent.getExtras();
-                if (bundle != null) {
-                    String locationResult = bundle.getString("result");
-                    if (null != locationResult && !locationResult.trim().equals("")) {
-                        AMapLocation aMLocation = bundle.getParcelable("location");
-                        recordId = bundle.getString("recordId");
-                        onLocationChanged(aMLocation, recordId);
-                    }
-                }
-            }
-        }
-    };
-
 
     /**
      * 开始定位服务
      */
     private void startLocationService() {
-        Intent intent1 = new Intent(this, LocalLocationService.class);
-        intent1.putExtra("recordType", recordType);
-        startService(intent1);
+        Intent intentLocalService = new Intent(this, LocalLocationService.class);
+        intentLocalService.putExtra(LocationConstants.KEY_RECORD_TYPE, recordType);
+        intentLocalService.putExtra(LocationConstants.KEY_RECORD_ID, recordId);
+        startService(intentLocalService);
 
         Intent intent = new Intent(this, LocationService.class);
         getApplicationContext().startService(intent);
@@ -281,9 +243,8 @@ public class LocationActivity extends Activity implements TraceListener {
      *
      * @param amapLocation 位置信息类
      */
-    public void onLocationChanged(AMapLocation amapLocation, String recordId) {
+    public void onLocationChanged(AMapLocation amapLocation) {
         if (amapLocation != null && amapLocation.getErrorCode() == 0) {
-//				mListener.onLocationChanged(amapLocation);// 显示系统小蓝点
             if (lastLocation != null) {
                 long timestamp = lastLocation.getTime();
                 //从数据库里拿点
@@ -294,10 +255,6 @@ public class LocationActivity extends Activity implements TraceListener {
                     LatLng myLocation = new LatLng(aMapLocation.getLatitude(), aMapLocation.getLongitude());
                     mPolyoptions.add(myLocation);
                 }
-                mTracelocationlist.addAll(ComputeUtil.parseTraceLocationList(locationList));
-                if (mTracelocationlist.size() > tracesize - 1) {
-                    trace();
-                }
                 redRawLine();
             } else {
                 LatLng myLocation = new LatLng(amapLocation.getLatitude(), amapLocation.getLongitude());
@@ -306,11 +263,7 @@ public class LocationActivity extends Activity implements TraceListener {
                     Log.d("Location", "record " + myLocation);
                     record.addPoint(amapLocation);
                     mPolyoptions.add(myLocation);
-                    mTracelocationlist.add(ComputeUtil.parseTraceLocation(amapLocation));
                     redRawLine();
-                    if (mTracelocationlist.size() > tracesize - 1) {
-                        trace();
-                    }
                 }
             }
             lastLocation = amapLocation;
@@ -322,8 +275,26 @@ public class LocationActivity extends Activity implements TraceListener {
     }
 
 
-    private AMapLocation lastLocation;
+    @Override
+    public void onStart() {
+        super.onStart();
+        EventBus.getDefault().register(this);
+    }
 
+    @Override
+    public void onStop() {
+        super.onStop();
+        EventBus.getDefault().unregister(this);
+    }
+
+    @Subscribe
+    public void onLocationSaved(LocationEvent locationEvent){
+        if (locationEvent.mapLocation != null){
+            onLocationChanged(locationEvent.mapLocation);
+        }
+    }
+
+    private AMapLocation lastLocation;
     /**
      * 实时轨迹画线
      */
@@ -335,104 +306,12 @@ public class LocationActivity extends Activity implements TraceListener {
                 mpolyline = mAMap.addPolyline(mPolyoptions);
             }
         }
-//		if (mpolyline != null) {
-//			mpolyline.remove();
-//		}
-//		mPolyoptions.visible(true);
-//		mpolyline = mAMap.addPolyline(mPolyoptions);
-//			PolylineOptions newpoly = new PolylineOptions();
-//			mpolyline = mAMap.addPolyline(newpoly.addAll(mPolyoptions.getPoints()));
-//		}
-    }
-
-    @SuppressLint("SimpleDateFormat")
-    private String getDate(long time) {
-        SimpleDateFormat formatter = new SimpleDateFormat(
-                "yyyy-MM-dd  HH:mm:ss ");
-        Date curDate = new Date(time);
-        String date = formatter.format(curDate);
-        return date;
     }
 
     public void record(View view) {
         Intent intent = new Intent(LocationActivity.this, RecordActivity.class);
         intent.putExtra(LocationConstants.KEY_RECORD_TYPE, recordType);
         startActivity(intent);
-    }
-
-    private void trace() {
-        List<TraceLocation> locationList = new ArrayList<>(mTracelocationlist);
-        LBSTraceClient mTraceClient = new LBSTraceClient(getApplicationContext());
-        mTraceClient.queryProcessedTrace(1, locationList, LBSTraceClient.TYPE_AMAP, this);
-        TraceLocation lastlocation = mTracelocationlist.get(mTracelocationlist.size() - 1);
-        mTracelocationlist.clear();
-        mTracelocationlist.add(lastlocation);
-    }
-
-    /**
-     * 轨迹纠偏失败回调。
-     *
-     * @param i
-     * @param s
-     */
-    @Override
-    public void onRequestFailed(int i, String s) {
-        mOverlayList.add(mTraceoverlay);
-        mTraceoverlay = new TraceOverlay(mAMap);
-    }
-
-    @Override
-    public void onTraceProcessing(int i, int i1, List<LatLng> list) {
-
-    }
-
-    /**
-     * 轨迹纠偏成功回调。
-     *
-     * @param lineID      纠偏的线路ID
-     * @param linepoints  纠偏结果
-     * @param distance    总距离
-     * @param waitingtime 等待时间
-     */
-    @Override
-    public void onFinished(int lineID, List<LatLng> linepoints, int distance, int waitingtime) {
-        if (lineID == 1) {
-            if (linepoints != null && linepoints.size() > 0) {
-                mTraceoverlay.add(linepoints);
-                mDistance += distance;
-                mTraceoverlay.setDistance(mTraceoverlay.getDistance() + distance);
-                if (mlocMarker == null) {
-                    mlocMarker = mAMap.addMarker(new MarkerOptions().position(linepoints.get(linepoints.size() - 1))
-                            .icon(BitmapDescriptorFactory
-                                    .fromResource(R.drawable.point))
-                            .title("距离：" + mDistance + "米"));
-                    mlocMarker.showInfoWindow();
-                } else {
-                    mlocMarker.setTitle("距离：" + mDistance + "米");
-                    Toast.makeText(LocationActivity.this, "距离" + mDistance, Toast.LENGTH_SHORT).show();
-                    mlocMarker.setPosition(linepoints.get(linepoints.size() - 1));
-                    mlocMarker.showInfoWindow();
-                }
-            }
-        } else if (lineID == 2) {
-            if (linepoints != null && linepoints.size() > 0) {
-                mAMap.addPolyline(new PolylineOptions()
-                        .color(Color.RED)
-                        .width(40).addAll(linepoints));
-            }
-        }
-    }
-
-    /**
-     * 最后获取总距离
-     *
-     * @return
-     */
-    private int getTotalDistance() {
-        int distance = 0;
-        for (TraceOverlay to : mOverlayList) {
-            distance = distance + to.getDistance();
-        }
-        return distance;
+        finish();
     }
 }

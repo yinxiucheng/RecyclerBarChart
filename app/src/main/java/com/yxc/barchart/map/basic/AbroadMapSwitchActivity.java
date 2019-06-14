@@ -13,7 +13,7 @@ import com.amap.api.maps2d.MapsInitializer;
 import com.amap.api.maps2d.model.CameraPosition;
 import com.amap.api.maps2d.model.LatLng;
 import com.yxc.barchart.R;
-import com.yxc.barchart.map.util.ToastUtil;
+import com.yxc.barchart.util.ToastUtil;
 
 
 /**

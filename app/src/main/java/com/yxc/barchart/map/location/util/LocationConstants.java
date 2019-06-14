@@ -2,7 +2,7 @@ package com.yxc.barchart.map.location.util;
 
 /**
  * @author yxc
- * @date 2019-06-11
+ * @since 2019-06-11
  */
 public class LocationConstants {
 
@@ -18,5 +18,10 @@ public class LocationConstants {
 
 
     public static final String KEY_RECORD_TYPE = "recordType";//
+
+
+    public static final String KEY_RECORD_ID = "recordId";//
+
+    public static final String ACTION_LOCATION_BACKGROUND = "location_in_background";
 
 }

@@ -21,7 +21,7 @@ import com.amap.api.maps2d.LocationSource;
 import com.amap.api.maps2d.MapView;
 import com.amap.api.maps2d.UiSettings;
 import com.yxc.barchart.R;
-import com.yxc.barchart.map.util.ToastUtil;
+import com.yxc.barchart.util.ToastUtil;
 
 /**
  * UI settings一些选项设置响应事件

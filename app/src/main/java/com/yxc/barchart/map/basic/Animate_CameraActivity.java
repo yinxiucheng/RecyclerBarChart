@@ -18,7 +18,7 @@ import com.amap.api.maps2d.model.CameraPosition;
 import com.amap.api.maps2d.model.MarkerOptions;
 import com.yxc.barchart.R;
 import com.yxc.barchart.map.util.Constants;
-import com.yxc.barchart.map.util.ToastUtil;
+import com.yxc.barchart.util.ToastUtil;
 
 /**
  * AMapV2地图中简单介绍一些Camera的用法.

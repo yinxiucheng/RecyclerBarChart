@@ -1,7 +1,7 @@
 /**
  * 
  */
-package com.yxc.barchart.map.util;
+package com.yxc.barchart.util;
 
 import android.content.Context;
 import android.graphics.Color;

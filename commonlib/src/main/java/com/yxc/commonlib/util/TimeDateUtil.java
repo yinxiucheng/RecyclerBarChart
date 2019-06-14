@@ -251,9 +251,17 @@ public class TimeDateUtil {
         return res;
     }
 
+    public static String getDateStrMinSecond(long timestamp) {
+        SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+        Date date = new Date(timestamp);
+        String res = simpleDateFormat.format(date);
+        return res;
+    }
+
     public static String getDateStr(LocalDate localDate, String patternStr) {
         return getDateStr(localDateToTimestamp(localDate), patternStr);
     }
+
     //下周一 0点0时0分
     public static long getNextWeekMondayTime(LocalDate localDate) {
         LocalDate mondayLocalDate = getNextWeekMonday(localDate);

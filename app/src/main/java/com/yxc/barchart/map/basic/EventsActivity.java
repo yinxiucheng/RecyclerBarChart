@@ -15,7 +15,7 @@ import com.amap.api.maps2d.model.LatLngBounds;
 import com.amap.api.maps2d.model.VisibleRegion;
 import com.yxc.barchart.R;
 import com.yxc.barchart.map.util.Constants;
-import com.yxc.barchart.map.util.ToastUtil;
+import com.yxc.barchart.util.ToastUtil;
 
 /**
  * AMapV1地图中简单介绍OnMapClickListener, OnMapLongClickListener,

@@ -48,7 +48,8 @@
             android:descendantFocusability="beforeDescendants"
             android:gravity="center_vertical|right"
             android:orientation="horizontal"
-            android:paddingRight="5dp" 
+            android:paddingRight="5dp"
+            android:visibility="invisible"
             android:onClick="record">
 
             <TextView
@@ -57,26 +58,18 @@
                 android:layout_height="wrap_content"
                 android:clickable="false"
                 android:enabled="true"
-                android:textSize="18dp"
+                android:textSize="16sp"
                 android:text="record" />
         </LinearLayout>
     </RelativeLayout>
 
     <com.amap.api.maps.MapView 
-        xmlns:android="http://schemas.android.com/apk/res/android"
         android:id="@+id/map"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:layout_below="@+id/title" >
     </com.amap.api.maps.MapView>
-    <TextView
-        android:id="@+id/show_all_dis"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="总距离："
-        android:textStyle="bold"
-        android:visibility="visible"
-        android:layout_below="@+id/title"/>
+
 </RelativeLayout>
 
 
