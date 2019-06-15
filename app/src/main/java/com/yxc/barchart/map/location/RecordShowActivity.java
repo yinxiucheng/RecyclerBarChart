@@ -205,11 +205,10 @@ public class RecordShowActivity extends Activity implements
 				AMapLocation location = ComputeUtil.parseLocation(recordLocation.locationStr);
 				LatLng milePostPoint = new LatLng(location.getLatitude(), location.getLongitude());
 				mAMap.addMarker(new MarkerOptions().position(milePostPoint)
-						.icon(BitmapDescriptorFactory.fromResource(R.drawable.end)));
+						.icon(BitmapDescriptorFactory.fromResource(R.drawable.ic_mile_post_24dp)));
 			}
 		}
 	}
-
 
 
 	/**
