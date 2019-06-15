@@ -53,9 +53,25 @@ public class LocationDBHelper {
 
 
     //获取数据库中最近的时间戳
-    public static RecordLocation getLastItem(String recordId) {
+    public static RecordLocation getLastItem(int recordType, String recordId) {
         Realm realm = RealmDbHelper.createRealm();
-        RealmResults<RecordLocation> list = realm.where(RecordLocation.class).equalTo("recordId", recordId).findAll();
+        RealmResults<RecordLocation> list = realm.where(RecordLocation.class).equalTo("recordType", recordType)
+                .and()
+                .equalTo("recordId", recordId)
+                .findAll();
+        list.sort("timestamp");
+        if (null != list && list.size() > 0) {
+            return list.get(list.size() - 1);
+        }
+        return null;
+    }
+
+
+    public static RecordLocation getLastItem(int recordType) {
+        Realm realm = RealmDbHelper.createRealm();
+        RealmResults<RecordLocation> list = realm.where(RecordLocation.class)
+                .equalTo("recordType", recordType)
+                .findAll();
         list.sort("timestamp");
         if (null != list && list.size() > 0) {
             return list.get(list.size() - 1);

@@ -53,14 +53,6 @@
         <activity android:name=".ui.waterdrop.WaterDropActivity" />
         <activity android:name=".ui.bezier.BezierActivity" />
 
-        <activity
-            android:name=".map.BasicMapActivity"
-            android:label="基本地图"
-            android:screenOrientation="portrait" />
-        <activity
-            android:name=".map.location.CustomLocationActivity"
-            android:screenOrientation="portrait" />
-
         <activity android:name=".map.basic.LayersActivity" android:screenOrientation="portrait"/>
         <activity android:name=".map.basic.OsmMapActivity" android:screenOrientation="portrait"/>
         <activity android:name=".map.basic.UiSettingsActivity" android:screenOrientation="portrait"/>

@@ -1,5 +1,7 @@
 package com.yxc.barchart.map.location.database;
 
+import android.os.Environment;
+
 import com.yxc.barchart.ChartApplication;
 
 import java.util.List;
@@ -15,8 +17,12 @@ import io.realm.RealmSchema;
 public class RealmDbHelper {
     protected static RealmConfiguration mDefaultConfig;
 
+
+    protected static RealmConfiguration mSDCardDefaultConfig;
+
     public static void init(String dbName,  int dbVersion) {
         Realm.init(ChartApplication.getInstance());
+
         mDefaultConfig = new RealmConfiguration.Builder()
                 .schemaVersion(dbVersion)
                 .deleteRealmIfMigrationNeeded()
@@ -24,13 +30,23 @@ public class RealmDbHelper {
 //                .migration(migration)
                 .name(dbName)
                 .build();
-        Realm.setDefaultConfiguration(mDefaultConfig);
 
+
+        mSDCardDefaultConfig = new RealmConfiguration.Builder()
+                .directory(Environment.getExternalStorageDirectory())
+                .schemaVersion(dbVersion)
+                .deleteRealmIfMigrationNeeded()
+//                .encryptionKey(key.getBytes())
+//                .migration(migration)
+                .name(dbName + ".realm")
+                .build();
+
+        Realm.setDefaultConfiguration(mSDCardDefaultConfig);
     }
 
     public static Realm createRealm() {
         //一个Realm只能在同一个线程中访问，在子线程中进行数据库操作必须重新获取Realm对象
-        return Realm.getInstance(mDefaultConfig);
+        return Realm.getInstance(mSDCardDefaultConfig);
     }
 
 

@@ -120,7 +120,7 @@ public class LocationActivity extends Activity {
                     rightBtn.setVisibility(View.VISIBLE);
                     mEndTime = System.currentTimeMillis();
                     if (!TextUtils.isEmpty(recordId)){
-                        List<RecordLocation> locationList = LocationDBHelper.getLocationList(recordType, recordId);
+                        List<RecordLocation> locationList = LocationDBHelper.getLocationList(recordType, "3");
                         saveRecord(locationList, record.date);
                     }
                     stopLocationService();

@@ -27,7 +27,7 @@
                 android:layout_height="match_parent"
                 android:clickable="false"
                 android:scaleType="center"
-                android:src="@drawable/back_btn_image" />
+                android:src="@drawable/ic_navigate_back_24dp" />
         </LinearLayout>
 
         <LinearLayout

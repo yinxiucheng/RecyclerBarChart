@@ -5,6 +5,7 @@ import android.Manifest;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.os.Bundle;
+import android.os.Environment;
 import android.util.Log;
 import android.view.MenuItem;
 import android.view.View;
@@ -13,8 +14,6 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
 import androidx.core.app.ActivityCompat;
 
-import com.google.gson.Gson;
-import com.google.gson.reflect.TypeToken;
 import com.yxc.barchart.R;
 import com.yxc.barchart.map.location.LocationActivity;
 import com.yxc.barchart.map.location.RecordActivity;
@@ -25,7 +24,6 @@ import com.yxc.barchart.ui.line.LineActivity;
 import com.yxc.barchart.ui.sleep.SleepActivity;
 import com.yxc.barchart.ui.step.StepActivity;
 import com.yxc.barchart.ui.waterdrop.WaterDropActivity;
-import com.yxc.barchart.util.Util;
 import com.yxc.commonlib.util.TimeDateUtil;
 
 import org.joda.time.LocalDate;
@@ -45,6 +43,7 @@ public class MainActivity extends AppCompatActivity {
         initView();
 
         permissionApply();
+        Log.d("MainActivity", "SDCard:" + Environment.getExternalStorageDirectory());
     }
 
 
@@ -103,31 +102,7 @@ public class MainActivity extends AppCompatActivity {
     }
 
     public void clickGoogleMap(View view) {
-//        Gson gson = new GsonBuilder()
-//                .setExclusionStrategies(new ExclusionStrategy() {
-//                    @Override
-//                    public boolean shouldSkipField(FieldAttributes f) {
-//                        return f.getDeclaringClass().equals(RealmObject.class);
-//                    }
-//
-//                    @Override
-//                    public boolean shouldSkipClass(Class<?> clazz) {
-//                        return false;
-//                    }
-//                }).create();
-        Gson gson = Util.createGson();
-
-        List<RecordLocation> personList = createLocationList();
-        String result1 = gson.toJson(personList);
-        Log.d("LocationService", "result:" + result1);
-
-
-        List<RecordLocation> resultList = gson.fromJson(result1, new TypeToken<List<RecordLocation>>() {}.getType());
-        for (int i = 0; i < resultList.size(); i++) {
-            Log.d("LocationService", "i:" + i);
-            Log.d("LocationService", resultList.get(i).toString());
-        }
-
+        intentToRecord();
     }
 
     private void intentToRecord(){

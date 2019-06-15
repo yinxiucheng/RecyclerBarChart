@@ -44,14 +44,12 @@ public class RecordAdapter extends BaseAdapter {
 			convertView = View.inflate(mContext, R.layout.recorditem, null);
 			holder.date = (TextView) convertView.findViewById(R.id.date);
 			holder.record = (TextView) convertView.findViewById(R.id.record);
-
 			convertView.setTag(holder);
 		} else {
 			holder = (ViewHolder) convertView.getTag();
 		}
-
 		Record item = mRecordList.get(position);
-		holder.date.setText(item.getDate());
+		holder.date.setText(item.getDate() + ":" + item.id);
 		holder.record.setText(item.toString());
 		return convertView;
 	}

@@ -3,7 +3,6 @@ package com.yxc.barchart.map.location;
 import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.content.Intent;
-import android.graphics.BitmapFactory;
 import android.graphics.Color;
 import android.os.Bundle;
 import android.os.Handler;
@@ -200,14 +199,13 @@ public class RecordShowActivity extends Activity implements
 
 
 	private void addMilePost(List<RecordLocation> recordLocationList){
-
 		for (int i = 0; i < recordLocationList.size() ; i++) {
 			RecordLocation recordLocation = recordLocationList.get(i);
 			if (recordLocation.milePost > 0){
 				AMapLocation location = ComputeUtil.parseLocation(recordLocation.locationStr);
 				LatLng milePostPoint = new LatLng(location.getLatitude(), location.getLongitude());
 				mAMap.addMarker(new MarkerOptions().position(milePostPoint)
-						.icon(BitmapDescriptorFactory.fromResource(R.drawable.ic_mile_post_24dp)));
+						.icon(BitmapDescriptorFactory.fromResource(R.drawable.end)));
 			}
 		}
 	}
@@ -223,14 +221,14 @@ public class RecordShowActivity extends Activity implements
 	 */
 	private void addOriginTrace(LatLng startPoint, LatLng endPoint, List<LatLng> originList) {
 		mAMap.addPolyline(new PolylineOptions().color(Color.BLUE).addAll(originList));
-		mOriginStartMarker = mAMap.addMarker(new MarkerOptions().position(startPoint).icon(BitmapDescriptorFactory.fromResource(R.drawable.start)));
+		mAMap.addMarker(new MarkerOptions().position(startPoint).icon(BitmapDescriptorFactory.fromResource(R.drawable.start)));
 		mAMap.addMarker(new MarkerOptions().position(endPoint).icon(BitmapDescriptorFactory.fromResource(R.drawable.end)));
 		try {
 			mAMap.moveCamera(CameraUpdateFactory.newLatLngBounds(getBounds(), 50));
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
-		mAMap.addMarker(new MarkerOptions().position(startPoint).icon(BitmapDescriptorFactory.fromBitmap(BitmapFactory.decodeResource(getResources(), R.drawable.walk))));
+		mAMap.addMarker(new MarkerOptions().position(startPoint).icon(BitmapDescriptorFactory.fromResource(R.drawable.walk)));
 	}
 
 	@Override

@@ -16,12 +16,12 @@ public class LocationConstants {
 
     public static final long DEFAULT_INTERVAL_TIME = 2 * 1000;
 
-
     public static final String KEY_RECORD_TYPE = "recordType";//
-
 
     public static final String KEY_RECORD_ID = "recordId";//
 
     public static final String ACTION_LOCATION_BACKGROUND = "location_in_background";
+
+    public static final long MILE_POST_ONE_KILOMETRE = 1000;
 
 }

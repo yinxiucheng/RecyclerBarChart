@@ -4,9 +4,9 @@ import android.app.Activity;
 import android.app.Application;
 import android.os.Bundle;
 
+import com.yxc.barchart.map.location.database.RealmDbHelper;
 import com.yxc.barchart.ui.MainActivity;
 import com.yxc.barchart.util.CommonUtil;
-import com.yxc.barchart.map.location.database.RealmDbHelper;
 
 import java.lang.ref.WeakReference;
 
@@ -76,7 +76,6 @@ public class ChartApplication extends Application {
 
         // db
         RealmDbHelper.init("chartdb", 1);
-
     }
 
     public static ChartApplication getInstance() {

@@ -25,7 +25,7 @@ public class RecordLocation extends RealmObject {
     public String recordId;//运动记录 id(用于聚合查询)
     public int recordType;//运动类型，跑步，骑行，驾驶。
     public String locationStr;//包含AMapLocation的字段
-    public double milePost = 0;//里程碑
+    public double milePost;//里程碑
 
     public RecordLocation() {
 
@@ -44,12 +44,13 @@ public class RecordLocation extends RealmObject {
         recordLocation.itemDistance = originalLocation.getItemDistance();
         recordLocation.distance = originalLocation.getDistance();
         recordLocation.locationStr = originalLocation.getLocationStr();
+        recordLocation.milePost=originalLocation.getMilePost();
         return recordLocation;
     }
 
     public static RecordLocation createLocation(AMapLocation location, String recordId,
                                                 int recordType, double itemDistance,
-                                                double distance, String locationStr){
+                                                double distance, String locationStr, double milePost){
         RecordLocation recordLocation = new RecordLocation();
         recordLocation.timestamp = location.getTime();
         recordLocation.endTime = recordLocation.timestamp;
@@ -62,6 +63,7 @@ public class RecordLocation extends RealmObject {
         recordLocation.itemDistance = itemDistance;
         recordLocation.distance = distance;
         recordLocation.locationStr = locationStr;
+        recordLocation.milePost = milePost;
         return recordLocation;
     }
 

@@ -31,7 +31,7 @@ public class LocalLocationService extends Service {
 
     private Utils.CloseServiceReceiver mCloseReceiver;
 
-    private double milePost = 1000;
+    private long mMilePost = LocationConstants.MILE_POST_ONE_KILOMETRE;
 
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
@@ -46,6 +46,8 @@ public class LocalLocationService extends Service {
 
         mCloseReceiver = new Utils.CloseServiceReceiver(this);
         registerReceiver(mCloseReceiver, Utils.getCloseServiceFilter());
+
+        mMilePost = LocationConstants.MILE_POST_ONE_KILOMETRE;
         return START_STICKY;
     }
 
@@ -71,10 +73,10 @@ public class LocalLocationService extends Service {
             unregisterReceiver(mCloseReceiver);
             mCloseReceiver = null;
         }
-
         if (locationChangeBroadcastReceiver != null){
             unregisterReceiver(locationChangeBroadcastReceiver);
         }
+        mMilePost = LocationConstants.MILE_POST_ONE_KILOMETRE;
         lastSaveLocation = null;
         super.onDestroy();
     }
@@ -97,38 +99,45 @@ public class LocalLocationService extends Service {
         }
         //插入数据库
         double itemDistance = ComputeUtil.getDistance(aMapLocation, lastSaveLocation);
-        if (lastSaveLocation == null && aMapLocation.getLatitude() > 0f) {//record的第一个埋点，插入数据库
+        if (lastSaveLocation == null && aMapLocation.getLatitude() > 0f) {
+            //record的第一个埋点，插入数据库
             Log.d("LocationService", "第一个点。。。");
             Toast.makeText(LocalLocationService.this, "Service first insert Point", Toast.LENGTH_SHORT).show();
             LocationDBHelper.deleteRecordLocationList(recordType, recordId);
             String locationStr = ComputeUtil.amapLocationToString(aMapLocation);
             double distance = 0;
-            RecordLocation recordLocation = RecordLocation.createLocation(aMapLocation, recordId, recordType, itemDistance, distance, locationStr);
+            double milePost = 0;
+            RecordLocation recordLocation = RecordLocation.createLocation(aMapLocation, recordId, recordType, itemDistance, distance, locationStr, milePost);
             LocationDBHelper.insertRecordLocation(recordLocation);
 
             Log.d("LocationService", "first insert recordLocation:" + recordLocation.toString());
-            sendEventBus(aMapLocation, recordLocation);
+            sendEventbus(aMapLocation, recordLocation);
             lastSaveLocation = aMapLocation;
             lastRecordLocation = recordLocation;
         } else if (itemDistance > 1.0f) {
-            //条件1 itemDistance < aMapLocation.getAccuracy() / 4.0f 视为原点
             Toast.makeText(LocalLocationService.this, "save Point:" + aMapLocation.getLatitude(), Toast.LENGTH_SHORT).show();
             String locationStr = ComputeUtil.amapLocationToString(aMapLocation);
-            RecordLocation lastDBLocation = LocationDBHelper.getLastItem(recordId);
-            if (lastDBLocation != null) {
-                double distance = lastDBLocation.distance + itemDistance;
+            if (lastRecordLocation != null) {
+                double distance = lastRecordLocation.distance + itemDistance;
+                double milePost = 0;
+                if (distance >= mMilePost){
+                    milePost = mMilePost;
+                    mMilePost += LocationConstants.MILE_POST_ONE_KILOMETRE;
+                }
                 RecordLocation recordLocation = RecordLocation.createLocation(aMapLocation, recordId, recordType,
-                        itemDistance, distance, locationStr);
+                        itemDistance, distance, locationStr, milePost);
                 long time = (aMapLocation.getTime() - lastRecordLocation.endTime)/1000;
                 float speed = (float) (itemDistance * 1.0f/time);
-                if (distance > milePost){
-                    recordLocation.milePost = milePost;
-                    milePost += 1000;
-                }
                 recordLocation.speed = speed;
                 lastRecordLocation = recordLocation;
                 LocationDBHelper.insertRecordLocation(recordLocation);
-                sendEventBus(aMapLocation, recordLocation);
+
+                //修改lastSaveLocation的endTime， duration。
+//                long lastSaveLocationEndTime = aMapLocation.getTime();
+//                long lastSaveLocationDuration = aMapLocation.getTime() - lastSaveLocation.getTime();
+//                LocationDBHelper.updateRecordLocation(lastSaveLocation.getTime(), lastSaveLocationEndTime, lastSaveLocationDuration);
+
+                sendEventbus(aMapLocation, recordLocation);
                 Log.d("LocationService", "insert recordLocation:" + recordLocation.toString());
             }
             lastSaveLocation = aMapLocation;
@@ -141,7 +150,7 @@ public class LocalLocationService extends Service {
         }
     }
 
-    private void sendEventBus(AMapLocation aMapLocation, RecordLocation recordLocation) {
+    private void sendEventbus(AMapLocation aMapLocation, RecordLocation recordLocation) {
         //改成发送eventBus
         EventBus.getDefault().post(new LocationEvent(aMapLocation, recordLocation));
     }

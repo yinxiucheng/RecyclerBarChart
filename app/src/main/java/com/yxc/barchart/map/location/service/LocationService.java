@@ -8,7 +8,6 @@ import com.amap.api.location.AMapLocation;
 import com.amap.api.location.AMapLocationClient;
 import com.amap.api.location.AMapLocationClientOption;
 import com.amap.api.location.AMapLocationListener;
-import com.yxc.barchart.map.location.database.LocationDBHelper;
 import com.yxc.barchart.map.location.util.ComputeUtil;
 import com.yxc.barchart.map.location.util.IWifiAutoCloseDelegate;
 import com.yxc.barchart.map.location.util.LocationConstants;
@@ -119,19 +118,17 @@ public class LocationService extends NotiService {
             double itemDistance = ComputeUtil.getDistance(aMapLocation, lastSaveLocation);
             if (lastSaveLocation == null && aMapLocation.getLatitude() > 0f) {
                 //record的第一个埋点，插入数据库
-                sendLocationBroadcast(aMapLocation);
                 lastSaveLocation = aMapLocation;
             } else if (itemDistance > 1.0f) {
                 resetIntervalTimes(0);//新的点
-                sendLocationBroadcast(aMapLocation);
                 lastSaveLocation = aMapLocation;
             } else {//可能在原地打点，不存入新数据，update endTime。
                 long timestamp = lastSaveLocation.getTime();
                 long endTime = System.currentTimeMillis();//todo 需要考虑定位时间跟系统时间的差值。
                 long duration = endTime - timestamp;
-                LocationDBHelper.updateRecordLocation(timestamp, endTime, duration);
                 resetIntervalTimes(duration);
             }
+            sendLocationBroadcast(aMapLocation);
             //发送结果的通知
             if (!mIsWifiCloseable) {
                 return;
@@ -172,7 +169,6 @@ public class LocationService extends NotiService {
             } else {
                 sb.append(Utils.getLocationStr(aMapLocation));
             }
-
             Intent intent = new Intent(LocationConstants.ACTION_LOCATION_BACKGROUND);
             Bundle bundle = new Bundle();
             bundle.putString("result", sb.toString());
