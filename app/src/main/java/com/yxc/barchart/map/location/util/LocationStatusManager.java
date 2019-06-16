@@ -11,6 +11,7 @@ import static android.content.Context.MODE_PRIVATE;
  * Created by liangchao_suxun on 17/1/16.
  * 在定位失败的情况下，用于判断当前定位错误是否是由于息屏导致的网络关闭引起的。
  * 判断逻辑仅限于处理设备仅有wifi信号的情况下
+ *
  */
 
 public class LocationStatusManager {
@@ -77,14 +78,15 @@ public class LocationStatusManager {
 
     /**
      * 判断是否由屏幕关闭导致的定位失败。
-     * 只有在 网络可访问&&errorCode==4&&（priorLocated&&locatableOnScreen) && !isScreenOn 才认为是有息屏引起的定位失败
+     * 只有在 网络可访问 && errorCode==4 &&（priorLocated && locatableOnScreen) && !isScreenOn 才认为是有息屏引起的定位失败
      * 如果判断条件较为严格，请按需要适当修改
      *
      * @param errorCode  定位错误码, 0=成功， 4=因为网络原因造成的失败
      * @param isScreenOn 当前屏幕是否为点亮状态
      */
     public boolean isFailOnScreenOff(Context context, int errorCode, boolean isScreenOn, boolean isWifiable) {
-        return !isWifiable && errorCode == AMapLocation.ERROR_CODE_FAILURE_CONNECTION && (mPriorSuccLocated && mPirorLocatableOnScreen) && !isScreenOn;
+        return !isWifiable && errorCode == AMapLocation.ERROR_CODE_FAILURE_CONNECTION && (mPriorSuccLocated &&
+                mPirorLocatableOnScreen) && !isScreenOn;
     }
 
 

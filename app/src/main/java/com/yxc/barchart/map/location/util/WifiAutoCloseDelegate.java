@@ -7,10 +7,6 @@ import com.amap.api.location.AMapLocation;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-/**
- * Created by liangchao_suxun on 17/1/19.
- */
-
 public class WifiAutoCloseDelegate implements IWifiAutoCloseDelegate {
 
     /**

@@ -33,7 +33,7 @@ import com.yxc.barchart.R;
 import com.yxc.barchart.map.location.database.LocationDBHelper;
 import com.yxc.barchart.map.location.tracereplay.TraceRePlay;
 import com.yxc.barchart.map.location.tracereplay.TraceRePlay.TraceRePlayListener;
-import com.yxc.barchart.map.location.util.ComputeUtil;
+import com.yxc.barchart.map.location.util.LocationComputeUtil;
 import com.yxc.barchart.map.location.util.LocationConstants;
 import com.yxc.barchart.map.model.Record;
 import com.yxc.barchart.map.model.RecordLocation;
@@ -217,7 +217,7 @@ public class RecordShowTraceActivity extends Activity implements
 		Record mRecord = LocationDBHelper.queryRecordById(recordType, mRecordItemId);
 		if (mRecord != null) {
 			List<RecordLocation> recordLocationList = mRecord.getPathLine();
-			List<AMapLocation> recordList = ComputeUtil.getAMapLocationList(recordLocationList);
+			List<AMapLocation> recordList = LocationComputeUtil.getAMapLocationList(recordLocationList);
 			AMapLocation startLoc = mRecord.getStartPoint();
 			AMapLocation endLoc = mRecord.getEndpoint();
 			if (recordList == null || startLoc == null || endLoc == null) {
@@ -227,10 +227,10 @@ public class RecordShowTraceActivity extends Activity implements
 					startLoc.getLongitude());
 			LatLng endLatLng = new LatLng(endLoc.getLatitude(),
 					endLoc.getLongitude());
-			mOriginLatLngList = ComputeUtil.parseLatLngList(recordList);
+			mOriginLatLngList = LocationComputeUtil.parseLatLngList(recordList);
 			addOriginTrace(startLatLng, endLatLng, mOriginLatLngList);
 			addMilePost(recordLocationList);
-			List<TraceLocation> mGraspTraceLocationList = ComputeUtil
+			List<TraceLocation> mGraspTraceLocationList = LocationComputeUtil
 					.parseTraceLocationList(recordList);
 			// 调用轨迹纠偏，将mGraspTraceLocationList进行轨迹纠偏处理
 			mTraceClient.queryProcessedTrace(1, mGraspTraceLocationList,
@@ -246,7 +246,7 @@ public class RecordShowTraceActivity extends Activity implements
 		for (int i = 0; i < recordLocationList.size() ; i++) {
 			RecordLocation recordLocation = recordLocationList.get(i);
 			if (recordLocation.milePost > 0){
-				AMapLocation location = ComputeUtil.parseLocation(recordLocation.locationStr);
+				AMapLocation location = LocationComputeUtil.parseLocation(recordLocation.locationStr);
 				LatLng milePostPoint = new LatLng(location.getLatitude(), location.getLongitude());
 				mAMap.addMarker(new MarkerOptions().position(milePostPoint)
 						.icon(BitmapDescriptorFactory.fromResource(R.drawable.ic_mile_post_24dp)));

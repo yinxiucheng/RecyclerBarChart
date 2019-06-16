@@ -8,7 +8,7 @@ import com.amap.api.location.AMapLocation;
 import com.amap.api.location.AMapLocationClient;
 import com.amap.api.location.AMapLocationClientOption;
 import com.amap.api.location.AMapLocationListener;
-import com.yxc.barchart.map.location.util.ComputeUtil;
+import com.yxc.barchart.map.location.util.LocationComputeUtil;
 import com.yxc.barchart.map.location.util.IWifiAutoCloseDelegate;
 import com.yxc.barchart.map.location.util.LocationConstants;
 import com.yxc.barchart.map.location.util.NetUtil;
@@ -115,7 +115,7 @@ public class LocationService extends NotiService {
             if (aMapLocation.getLatitude() == 0f || aMapLocation.getLongitude() <= 0.001f) {
                 return;
             }
-            double itemDistance = ComputeUtil.getDistance(aMapLocation, lastSaveLocation);
+            double itemDistance = LocationComputeUtil.getDistance(aMapLocation, lastSaveLocation);
             if (lastSaveLocation == null && aMapLocation.getLatitude() > 0f) {
                 //record的第一个埋点，插入数据库
                 lastSaveLocation = aMapLocation;
@@ -150,7 +150,7 @@ public class LocationService extends NotiService {
                 onDestroy();
                 return;
             }
-            int intervalTimes = ComputeUtil.computeIntervalTimes(duration);
+            int intervalTimes = LocationComputeUtil.computeIntervalTimes(duration);
             intervalTime = intervalTimes * LocationConstants.DEFAULT_INTERVAL_TIME;
             mLocationOption.setInterval(intervalTime);
             mLocationClient.setLocationOption(mLocationOption);

@@ -42,10 +42,16 @@ public class RealmDbHelper {
                 .build();
 
         Realm.setDefaultConfiguration(mSDCardDefaultConfig);
+        Realm.setDefaultConfiguration(mDefaultConfig);
     }
 
     public static Realm createRealm() {
         //一个Realm只能在同一个线程中访问，在子线程中进行数据库操作必须重新获取Realm对象
+        return Realm.getInstance(mSDCardDefaultConfig);
+    }
+
+
+    public static Realm getSDCardRealm(){
         return Realm.getInstance(mSDCardDefaultConfig);
     }
 

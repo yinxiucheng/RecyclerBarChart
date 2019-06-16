@@ -12,7 +12,7 @@ import android.widget.Toast;
 
 import com.yxc.barchart.R;
 import com.yxc.barchart.map.location.database.LocationDBHelper;
-import com.yxc.barchart.map.location.util.ComputeUtil;
+import com.yxc.barchart.map.location.util.LocationComputeUtil;
 import com.yxc.barchart.map.location.util.LocationConstants;
 import com.yxc.barchart.map.model.Record;
 import com.yxc.barchart.map.model.RecordLocation;
@@ -56,6 +56,10 @@ public class RecordActivity extends Activity implements OnItemClickListener {
     private void invokeRightBtn() {
         Record record = LocationDBHelper.getLastRecord(recordType);
         final RecordLocation recordLocation = LocationDBHelper.getLastItem(recordType);
+        if (record == null || recordLocation == null){
+            rightBtnStartSport();
+        }
+
         int saveId = Integer.parseInt(recordLocation.recordId);
         if (saveId >= record.id) {
             rightTitleBtn.setText("生成轨迹");
@@ -88,7 +92,7 @@ public class RecordActivity extends Activity implements OnItemClickListener {
             double duration = getDuration(firstLocation, lastLocation)/1000;
             double distance = lastLocation.distance;
             String averageSpeed = getAverageSpeed(distance, duration);
-            String pathLineStr = ComputeUtil.getPathLineStr(locationList);
+            String pathLineStr = LocationComputeUtil.getPathLineStr(locationList);
             String startPoint = firstLocation.locationStr;
             String endPoint = lastLocation.locationStr;
             String dateStr = TimeDateUtil.getDateStrMinSecond(firstLocation.getTimestamp());

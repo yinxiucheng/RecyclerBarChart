@@ -15,7 +15,7 @@ import androidx.annotation.Nullable;
 import com.amap.api.location.AMapLocation;
 import com.yxc.barchart.map.location.database.LocationDBHelper;
 import com.yxc.barchart.map.location.event.LocationEvent;
-import com.yxc.barchart.map.location.util.ComputeUtil;
+import com.yxc.barchart.map.location.util.LocationComputeUtil;
 import com.yxc.barchart.map.location.util.LocationConstants;
 import com.yxc.barchart.map.location.util.Utils;
 import com.yxc.barchart.map.model.RecordLocation;
@@ -26,6 +26,7 @@ import org.greenrobot.eventbus.EventBus;
  * 类说明：后台服务定位
  * 1. 只有在由息屏造成的网络断开造成的定位失败时才点亮屏幕
  * 2. 利用notification机制增加进程优先级
+ *
  */
 public class LocalLocationService extends Service {
 
@@ -98,13 +99,13 @@ public class LocalLocationService extends Service {
             return;
         }
         //插入数据库
-        double itemDistance = ComputeUtil.getDistance(aMapLocation, lastSaveLocation);
+        double itemDistance = LocationComputeUtil.getDistance(aMapLocation, lastSaveLocation);
         if (lastSaveLocation == null && aMapLocation.getLatitude() > 0f) {
             //record的第一个埋点，插入数据库
             Log.d("LocationService", "第一个点。。。");
             Toast.makeText(LocalLocationService.this, "Service first insert Point", Toast.LENGTH_SHORT).show();
             LocationDBHelper.deleteRecordLocationList(recordType, recordId);
-            String locationStr = ComputeUtil.amapLocationToString(aMapLocation);
+            String locationStr = LocationComputeUtil.amapLocationToString(aMapLocation);
             double distance = 0;
             double milePost = 0;
             RecordLocation recordLocation = RecordLocation.createLocation(aMapLocation, recordId, recordType, itemDistance, distance, locationStr, milePost);
@@ -116,7 +117,7 @@ public class LocalLocationService extends Service {
             lastRecordLocation = recordLocation;
         } else if (itemDistance > 1.0f) {
             Toast.makeText(LocalLocationService.this, "save Point:" + aMapLocation.getLatitude(), Toast.LENGTH_SHORT).show();
-            String locationStr = ComputeUtil.amapLocationToString(aMapLocation);
+            String locationStr = LocationComputeUtil.amapLocationToString(aMapLocation);
             if (lastRecordLocation != null) {
                 double distance = lastRecordLocation.distance + itemDistance;
                 double milePost = 0;

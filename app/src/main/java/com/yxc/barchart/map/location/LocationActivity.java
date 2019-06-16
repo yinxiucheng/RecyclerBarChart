@@ -29,7 +29,7 @@ import com.yxc.barchart.map.location.database.LocationDBHelper;
 import com.yxc.barchart.map.location.event.LocationEvent;
 import com.yxc.barchart.map.location.service.LocalLocationService;
 import com.yxc.barchart.map.location.service.LocationService;
-import com.yxc.barchart.map.location.util.ComputeUtil;
+import com.yxc.barchart.map.location.util.LocationComputeUtil;
 import com.yxc.barchart.map.location.util.LocationConstants;
 import com.yxc.barchart.map.location.util.Utils;
 import com.yxc.barchart.map.model.Record;
@@ -139,7 +139,7 @@ public class LocationActivity extends Activity {
             RecordLocation lastLocation = list.get(list.size() - 1);
             double distance = lastLocation.distance;
             String averageSpeed = getAverage(distance);
-            String pathLineStr = ComputeUtil.getPathLineStr(list);
+            String pathLineStr = LocationComputeUtil.getPathLineStr(list);
             String startPoint = firstLocation.locationStr;
             String endPoint = lastLocation.locationStr;
             Record record = Record.createRecord(recordType, Double.toString(distance),
@@ -251,7 +251,7 @@ public class LocationActivity extends Activity {
 
                 for (int i = 0; i < locationList.size(); i++) {
                     RecordLocation recordLocation = locationList.get(i);
-                    AMapLocation aMapLocation = ComputeUtil.parseLocation(recordLocation.locationStr);
+                    AMapLocation aMapLocation = LocationComputeUtil.parseLocation(recordLocation.locationStr);
                     LatLng myLocation = new LatLng(aMapLocation.getLatitude(), aMapLocation.getLongitude());
                     mPolyOptions.add(myLocation);
                 }

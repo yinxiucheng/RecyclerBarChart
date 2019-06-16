@@ -4,7 +4,7 @@ import android.util.Log;
 
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
-import com.yxc.barchart.map.location.util.ComputeUtil;
+import com.yxc.barchart.map.location.util.LocationComputeUtil;
 import com.yxc.barchart.map.model.Record;
 import com.yxc.barchart.map.model.RecordLocation;
 import com.yxc.barchart.util.Util;
@@ -22,7 +22,7 @@ import io.realm.RealmResults;
  */
 public class LocationDBHelper {
 
-    public static void deleteRecordLocationList(final int recordType, final String recordId){
+    public static void deleteRecordLocationList(final int recordType, final String recordId) {
         Realm realm = RealmDbHelper.createRealm();
         realm.executeTransaction(new Realm.Transaction() { // must be in transaction for this to work
             @Override
@@ -80,7 +80,7 @@ public class LocationDBHelper {
     }
 
 
-    public static List<RecordLocation> getLocationList(int recordType, String recordId){
+    public static List<RecordLocation> getLocationList(int recordType, String recordId) {
         Realm realm = RealmDbHelper.createRealm();
         RealmResults<RecordLocation> list = realm.where(RecordLocation.class)
                 .equalTo("recordType", recordType)
@@ -98,7 +98,7 @@ public class LocationDBHelper {
         return recordLocationList;
     }
 
-    public static List<RecordLocation> getLateLocationList(String recordId, long timestamp){
+    public static List<RecordLocation> getLateLocationList(String recordId, long timestamp) {
         Realm realm = RealmDbHelper.createRealm();
         RealmResults<RecordLocation> list = realm.where(RecordLocation.class).equalTo("recordId", recordId)
                 .greaterThan("timestamp", timestamp).findAll();
@@ -119,10 +119,11 @@ public class LocationDBHelper {
             Record record = realmResults.get(i);
             String lines = record.pathLine;
             Gson gson = Util.createGson();
-            List<RecordLocation> recordLocationList = gson.fromJson(lines, new TypeToken<List<RecordLocation>>() {}.getType());
+            List<RecordLocation> recordLocationList = gson.fromJson(lines, new TypeToken<List<RecordLocation>>() {
+            }.getType());
             record.setPathLine(recordLocationList);
-            record.setStartPoint(ComputeUtil.parseLocation(record.startPoint));
-            record.setEndpoint(ComputeUtil.parseLocation(record.endPoint));
+            record.setStartPoint(LocationComputeUtil.parseLocation(record.startPoint));
+            record.setEndpoint(LocationComputeUtil.parseLocation(record.endPoint));
             allRecord.add(record);
         }
         Collections.reverse(allRecord);
@@ -146,16 +147,17 @@ public class LocationDBHelper {
         if (null != record) {
             String lines = record.pathLine;
             Gson gson = Util.createGson();
-            List<RecordLocation> recordLocationList = gson.fromJson(lines, new TypeToken<List<RecordLocation>>() {}.getType());
+            List<RecordLocation> recordLocationList = gson.fromJson(lines, new TypeToken<List<RecordLocation>>() {
+            }.getType());
             record.setPathLine(recordLocationList);
-            record.setStartPoint(ComputeUtil.parseLocation(record.startPoint));
-            record.setEndpoint(ComputeUtil.parseLocation(record.endPoint));
+            record.setStartPoint(LocationComputeUtil.parseLocation(record.startPoint));
+            record.setEndpoint(LocationComputeUtil.parseLocation(record.endPoint));
         }
         return record;
     }
 
 
-    public static void insertRecord(final Record record){
+    public static void insertRecord(final Record record) {
         Realm realm = RealmDbHelper.createRealm();
         realm.executeTransaction(new Realm.Transaction() { // must be in transaction for this to work
             @Override
@@ -163,7 +165,7 @@ public class LocationDBHelper {
                 // increment index
                 Number currentIdNum = realm.where(Record.class).max("id");
                 int nextId;
-                if(currentIdNum == null) {
+                if (currentIdNum == null) {
                     nextId = 1;
                 } else {
                     nextId = currentIdNum.intValue() + 1;
@@ -175,7 +177,7 @@ public class LocationDBHelper {
     }
 
 
-    public static void  insertRecordLocation(final RecordLocation recordLocation ){
+    public static void insertRecordLocation(final RecordLocation recordLocation) {
         Realm realm = RealmDbHelper.createRealm();
         realm.executeTransaction(new Realm.Transaction() { // must be in transaction for this to work
             @Override
@@ -185,12 +187,12 @@ public class LocationDBHelper {
         });
     }
 
-    public static void  updateRecordLocation(final long timestamp, final long endTime, final long duration){
+    public static void updateRecordLocation(final long timestamp, final long endTime, final long duration) {
         Realm realm = RealmDbHelper.createRealm();
         realm.executeTransaction(new Realm.Transaction() { // must be in transaction for this to work
             @Override
             public void execute(Realm realm) {
-                RecordLocation recordLocation =realm.where(RecordLocation.class).equalTo("timestamp", timestamp).findFirst();
+                RecordLocation recordLocation = realm.where(RecordLocation.class).equalTo("timestamp", timestamp).findFirst();
                 Log.d("LocationService", " saveLocation:" + recordLocation);
                 recordLocation.setEndTime(endTime);
                 recordLocation.setDuration(duration);
@@ -199,11 +201,16 @@ public class LocationDBHelper {
         realm = null;
     }
 
-    public static RecordLocation queryRecordLocation(long timestamp){
+
+
+    public static RecordLocation queryRecordLocation(long timestamp) {
         Realm realm = RealmDbHelper.createRealm();
         RealmResults<RecordLocation> realmResults = realm.where(RecordLocation.class).equalTo("timestamp", timestamp).findAll();
         Log.d("LocationService", "realmResults'size:" + realmResults.size());
         return realmResults.first();
     }
+
+
+
 
 }

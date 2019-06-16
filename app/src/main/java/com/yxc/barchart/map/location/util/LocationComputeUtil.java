@@ -12,7 +12,7 @@ import com.yxc.barchart.util.Util;
 import java.util.ArrayList;
 import java.util.List;
 
-public class ComputeUtil {
+public class LocationComputeUtil {
     /**
      * 将AMapLocation List 转为TraceLocation list
      *
@@ -96,7 +96,7 @@ public class ComputeUtil {
         ArrayList<AMapLocation> locations = new ArrayList<AMapLocation>();
         String[] latLonStrs = latLonStr.split(";");
         for (int i = 0; i < latLonStrs.length; i++) {
-            AMapLocation location = ComputeUtil.parseLocation(latLonStrs[i]);
+            AMapLocation location = LocationComputeUtil.parseLocation(latLonStrs[i]);
             if (location != null) {
                 locations.add(location);
             }
@@ -185,11 +185,11 @@ public class ComputeUtil {
             //假如在改点连续打点三次，而且没有偏移处 精度，那么判断它不是异常点。
             return false;
         } else if (recordLocation == null) {
-            double distance = ComputeUtil.getDistance(lastSaveLocation, aMapLocation);
+            double distance = LocationComputeUtil.getDistance(lastSaveLocation, aMapLocation);
             RecordLocation savedLocation = LocationDBHelper.queryRecordLocation(lastSaveLocation.getTime());
             long time = (savedLocation.endTime - aMapLocation.getTime()) / 1000L;//单位s
             float speedActual = (float) (distance / time * 1.0f);
-            if (speedActual > ComputeUtil.getMaxSpeedByType(type)) {
+            if (speedActual > LocationComputeUtil.getMaxSpeedByType(type)) {
                 return true;
             }
         }
@@ -232,7 +232,7 @@ public class ComputeUtil {
         }
         for (int i = 0; i < recordLocationList.size(); i++) {
             RecordLocation recordLocation = recordLocationList.get(i);
-            AMapLocation aMapLocation = ComputeUtil.parseLocation(recordLocation.locationStr);
+            AMapLocation aMapLocation = LocationComputeUtil.parseLocation(recordLocation.locationStr);
             aMapLocationList.add(aMapLocation);
         }
         return aMapLocationList;
