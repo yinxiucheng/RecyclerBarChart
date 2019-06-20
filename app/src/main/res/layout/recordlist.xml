@@ -41,7 +41,7 @@
                 android:id="@+id/title_center"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text=""
+                android:text="运动记录"
                 android:textSize="18dp"
                 android:textStyle="bold" />
         </LinearLayout>
@@ -68,8 +68,8 @@
 
     </RelativeLayout>
 
-    <ListView 
-        android:id="@+id/recordlist"
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/record_recycler"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:layout_margin="5dp"/>

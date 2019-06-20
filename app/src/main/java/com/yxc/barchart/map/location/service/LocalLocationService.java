@@ -115,7 +115,7 @@ public class LocalLocationService extends Service {
             sendEventbus(aMapLocation, recordLocation);
             lastSaveLocation = aMapLocation;
             lastRecordLocation = recordLocation;
-        } else if (itemDistance > 1.0f && !isCellLocation(aMapLocation)) {//增加对Accuracy>500 以及 LocationType为5的过滤
+        } else if (itemDistance > 1.0f && isNotCellLocation(aMapLocation)) {//增加对Accuracy>500 以及 LocationType为5的过滤
             Toast.makeText(LocalLocationService.this, "save Point:" +
                     aMapLocation.getLatitude(), Toast.LENGTH_SHORT).show();
             String locationStr = LocationComputeUtil.amapLocationToString(aMapLocation);
@@ -153,8 +153,10 @@ public class LocalLocationService extends Service {
         }
     }
 
-    private boolean isCellLocation(AMapLocation aMapLocation){
-        return aMapLocation.getAccuracy() > 500 || aMapLocation.getLocationType() == AMapLocation.LOCATION_TYPE_CELL;
+
+    //排除基站定位点
+    private boolean isNotCellLocation(AMapLocation aMapLocation){
+        return aMapLocation.getAccuracy() < 200 && aMapLocation.getLocationType() != AMapLocation.LOCATION_TYPE_CELL;
     }
 
     private void sendEventbus(AMapLocation aMapLocation, RecordLocation recordLocation) {

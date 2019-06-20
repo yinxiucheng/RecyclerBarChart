@@ -6,16 +6,18 @@ import android.icu.text.SimpleDateFormat;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
-import android.widget.AdapterView;
-import android.widget.AdapterView.OnItemClickListener;
-import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
+
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
 
 import com.amap.api.maps.AMapUtils;
 import com.amap.api.maps.model.LatLng;
 import com.yxc.barchart.R;
 import com.yxc.barchart.map.location.database.LocationDBHelper;
+import com.yxc.barchart.map.location.recycler.RecordAdapter;
+import com.yxc.barchart.map.location.recycler.RecordItemDecoration;
 import com.yxc.barchart.map.location.util.LocationComputeUtil;
 import com.yxc.barchart.map.location.util.LocationConstants;
 import com.yxc.barchart.map.model.Record;
@@ -31,10 +33,10 @@ import java.util.Locale;
 /**
  * 所有轨迹list展示activity
  */
-public class RecordActivity extends Activity implements OnItemClickListener {
+public class RecordActivity extends Activity implements RecordAdapter.OnRecordItemClickListener {
 
     private RecordAdapter mAdapter;
-    private ListView mAllRecordListView;
+    private RecyclerView mRecordRcyclerView;
 
     private List<Record> mAllRecord = new ArrayList<>();
 
@@ -48,16 +50,27 @@ public class RecordActivity extends Activity implements OnItemClickListener {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.recordlist);
-        mAllRecordListView = findViewById(R.id.recordlist);
-        rightTitleBtn = findViewById(R.id.title_tv_option);
 
+        mRecordRcyclerView = findViewById(R.id.record_recycler);
+        rightTitleBtn = findViewById(R.id.title_tv_option);
         recordType = getIntent().getIntExtra(LocationConstants.KEY_RECORD_TYPE, -1);
         searchAllRecordFromDB();
-
         invokeRightBtn();
+        initRecycler();
+    }
+
+
+    private void initRecycler(){
         mAdapter = new RecordAdapter(this, mAllRecord);
-        mAllRecordListView.setAdapter(mAdapter);
-        mAllRecordListView.setOnItemClickListener(this);
+        mAdapter.setOnRecordItemClickListener(this);
+
+        LinearLayoutManager linearLayoutManager = new LinearLayoutManager(this);
+        mRecordRcyclerView.setLayoutManager(linearLayoutManager);
+
+        RecordItemDecoration itemDecoration = new RecordItemDecoration();
+        mRecordRcyclerView.addItemDecoration(itemDecoration);
+
+        mRecordRcyclerView.setAdapter(mAdapter);
     }
 
     private void invokeRightBtn() {
@@ -143,17 +156,6 @@ public class RecordActivity extends Activity implements OnItemClickListener {
         finish();
     }
 
-    @Override
-    public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-        Record recordItem = (Record) parent.getAdapter().getItem(position);
-        Intent intent = new Intent(RecordActivity.this,
-                RecordShowActivity.class);
-        intent.putExtra(RECORD_ID, recordItem.getId());
-        intent.putExtra(LocationConstants.KEY_RECORD_TYPE, recordType);
-        startActivity(intent);
-    }
-
-
     private List<RecordCorrect> mListPoint = new ArrayList<>();
     private Boolean isFirst = true;// 是否是第一次定位点
     private RecordCorrect weight1 = new RecordCorrect();// 权重点1
@@ -164,8 +166,8 @@ public class RecordActivity extends Activity implements OnItemClickListener {
     private String filterString;
     private int posCount = 0;
 
-    private Boolean filterPos(RecordLocation recordLocation) {
 
+    private Boolean filterPos(RecordLocation recordLocation) {
         SimpleDateFormat df = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.CHINA);
         Date date = new Date(recordLocation.getTimestamp());
         String time = df.format(date);//定位时间
@@ -298,5 +300,19 @@ public class RecordActivity extends Activity implements OnItemClickListener {
             //Log.d("hhh","finnaly");
             Log.d("RecordActivity", filterString);
         }
+    }
+
+    @Override
+    public void onItemClick(int position, Record recordItem) {
+        Intent intent = new Intent(RecordActivity.this,
+                RecordShowActivity.class);
+        intent.putExtra(RECORD_ID, recordItem.getId());
+        intent.putExtra(LocationConstants.KEY_RECORD_TYPE, recordType);
+        startActivity(intent);
+    }
+
+    @Override
+    public void onRecordCorrect(int position, Record record) {
+
     }
 }
