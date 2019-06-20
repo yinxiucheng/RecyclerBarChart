@@ -197,17 +197,17 @@ public class LocationComputeUtil {
     }
 
     //根据运动类型获取 该运动类型的 最大速率，以下值是用来排除异常点，跟真实运动类型数据不大相符，扩大了。
-    private static float getMaxSpeedByType(int type) {
+    public static long getMaxSpeedByType(int type) {
         switch (type) {
             case LocationConstants.SPORT_TYPE_STEP:
-                return 5.0f;//走路的上限5米每秒
+                return 5;//走路的上限5米每秒
             case LocationConstants.SPORT_TYPE_RUNNING:
-                return 15.0f;//跑步的上限15米每秒
+                return 15;//跑步的上限15米每秒
             case LocationConstants.SPORT_TYPE_DRIVE:
             case LocationConstants.SPORT_TYPE_RIDE:
-                return 50.0f;//骑行、驾驶 50米每秒。
+                return 50;//骑行、驾驶 50米每秒。
             default:
-                return 10.0f;
+                return 10;
         }
     }
 
