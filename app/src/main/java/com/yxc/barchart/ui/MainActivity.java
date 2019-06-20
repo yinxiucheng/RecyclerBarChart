@@ -50,7 +50,7 @@ public class MainActivity extends AppCompatActivity {
     private void permissionApply() {
         if (ActivityCompat.checkSelfPermission(this,
                 android.Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
-            ActivityCompat.requestPermissions(this, new String[]
+              ActivityCompat.requestPermissions(this, new String[]
                     {android.Manifest.permission.ACCESS_FINE_LOCATION, Manifest.permission.WRITE_EXTERNAL_STORAGE}, LOCATION_PERMISSION_REQUEST_CODE);
             return;
         }

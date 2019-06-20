@@ -28,4 +28,12 @@
     <color name="transparent">#00000000</color>
 
 
+    <color name="location_bottom_shader">#bebfc1</color>
+    <color name="location_end_circle">#fd7546</color>
+    <color name="location_end_wrapper">#fc5d21</color>
+
+    <color name="location_wrapper">#12BE7A</color>
+    <color name="location_inner_circle">#38CF8A</color>
+
+
 </resources>

@@ -189,6 +189,7 @@ public class Utils {
 			getNotificationManager(context).createNotificationChannel(channel);
 			Notification.Builder builder = new Notification.Builder(context,
 					PRIMARY_CHANNEL)
+					.setContentTitle("Chart")
 					.setContentText("轨迹记录中...")
 					.setSmallIcon(R.drawable.icon_location)
 					.setAutoCancel(true);
@@ -197,6 +198,7 @@ public class Utils {
 			Notification.Builder builder = new Notification.Builder(context);
 			builder.setSmallIcon(R.drawable.icon_location);
 			builder.setContentText("轨迹记录中..." )
+					.setContentTitle("Chart")
 					.setWhen(System.currentTimeMillis());
 			notification = builder.build();
 		}

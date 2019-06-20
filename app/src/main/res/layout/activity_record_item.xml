@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="@drawable/title_background" >
@@ -28,7 +29,7 @@
                 android:layout_height="match_parent"
                 android:clickable="false"
                 android:scaleType="center"
-                android:src="@drawable/back_btn_image" />
+                android:src="@drawable/ic_navigate_back_24dp" />
         </LinearLayout>
 
         <LinearLayout
@@ -42,7 +43,7 @@
                 android:id="@+id/title_center"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text=""
+                android:text="轨迹路径"
                 android:textSize="18dp"
                 android:textStyle="bold" />
         </LinearLayout>
@@ -64,11 +65,40 @@
     </RelativeLayout>
 
     <com.amap.api.maps.MapView
-        xmlns:android="http://schemas.android.com/apk/res/android"
         android:id="@+id/map"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:layout_below="@+id/title" >
+        android:layout_below="@+id/title">
     </com.amap.api.maps.MapView>
+
+    <ImageView
+        android:id="@+id/img_gps"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:scaleType="center"
+        android:layout_alignParentBottom="true"
+        android:layout_marginStart="13dp"
+        android:layout_marginBottom="17dp"
+        android:src="@drawable/gps"/>
+
+    <ImageView
+        android:id="@+id/img_marker"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:scaleType="center"
+        android:layout_above="@+id/img_gps"
+        android:layout_marginStart="13dp"
+        android:layout_marginBottom="13dp"
+        android:src="@drawable/marker"/>
+
+    <ImageView
+        android:id="@+id/img_location"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:scaleType="center"
+        android:layout_above="@+id/img_marker"
+        android:layout_marginStart="13dp"
+        android:layout_marginBottom="13dp"
+        android:src="@drawable/location"/>
 
 </RelativeLayout>

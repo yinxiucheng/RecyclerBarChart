@@ -87,6 +87,12 @@ public class LocationService extends NotiService {
         mLocationOption = new AMapLocationClientOption();
         // 使用连续
         mLocationOption.setOnceLocation(false);
+        mLocationOption.setSensorEnable(true);
+        mLocationOption.setWifiScan(true);
+        mLocationOption.setLocationMode(AMapLocationClientOption.AMapLocationMode.Hight_Accuracy);
+        mLocationOption.setGpsFirst(true);
+        mLocationOption.setGpsFirstTimeout(6 * 300000);
+        mLocationOption.setOnceLocationLatest(true);
         mLocationOption.setLocationCacheEnable(false);
         // 每10秒定位一次
         mLocationOption.setInterval(LocationConstants.DEFAULT_INTERVAL_TIME);
@@ -145,8 +151,9 @@ public class LocationService extends NotiService {
         }
 
         private long intervalTime = LocationConstants.DEFAULT_INTERVAL_TIME;
+
         private void resetIntervalTimes(long duration) {
-            if (duration >= 60 * 60 * 1000){// 90分钟停止自己的服务, 应该还要关闭守护进程
+            if (duration >= 60 * 60 * 1000) {// 90分钟停止自己的服务, 应该还要关闭守护进程
                 onDestroy();
                 return;
             }
