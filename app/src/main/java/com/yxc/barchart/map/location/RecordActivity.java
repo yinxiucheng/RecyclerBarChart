@@ -58,6 +58,7 @@ public class RecordActivity extends Activity implements OnItemClickListener {
         final RecordLocation recordLocation = LocationDBHelper.getLastItem(recordType);
         if (record == null || recordLocation == null){
             rightBtnStartSport();
+            return;
         }
 
         int saveId = Integer.parseInt(recordLocation.recordId);

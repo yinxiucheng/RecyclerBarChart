@@ -1,17 +1,15 @@
 package com.yxc.barchart.map.model;
 
-import com.amap.api.location.AMapLocation;
-
 import io.realm.RealmObject;
 import io.realm.annotations.PrimaryKey;
 
 /**
  * @author yxc
  * @since 2019-06-10
- *
+ * <p>
  * 轨迹点
  */
-public class RecordLocation extends RealmObject {
+public class RecordCorrect extends RealmObject {
 
     @PrimaryKey
     public long timestamp;//时间戳
@@ -30,72 +28,8 @@ public class RecordLocation extends RealmObject {
     public int locationType;//定位type
     public float accuracy;//精度
 
-    public RecordLocation() {
+    public RecordCorrect() {
 
-    }
-
-    public static RecordCorrect createRecordCorrect(RecordLocation recordLocation) {
-        RecordCorrect recordCorrect = new RecordCorrect();
-        recordCorrect.timestamp = recordLocation.getTimestamp();
-        recordCorrect.endTime = recordLocation.getEndTime();
-        recordCorrect.duration = recordLocation.getDuration();
-        recordCorrect.latitude = recordLocation.getLatitude();
-        recordCorrect.longitude = recordLocation.getLongitude();
-        recordCorrect.originalSpeed = recordLocation.getOriginalSpeed();
-        recordCorrect.speed = recordLocation.getSpeed();
-        recordCorrect.recordId = recordLocation.getRecordId();
-        recordCorrect.recordType = recordLocation.getRecordType();
-        recordCorrect.itemDistance = recordLocation.getItemDistance();
-        recordCorrect.distance = recordLocation.getDistance();
-        recordCorrect.locationStr = recordLocation.getLocationStr();
-        recordCorrect.milePost = recordLocation.getMilePost();
-        recordCorrect.locationType = recordLocation.getLocationType();
-        recordCorrect.accuracy = recordLocation.getAccuracy();
-        return recordCorrect;
-    }
-
-    public static RecordLocation copyLocation(RecordLocation originalLocation) {
-        RecordLocation recordLocation = new RecordLocation();
-        recordLocation.timestamp = originalLocation.getTimestamp();
-        recordLocation.endTime = originalLocation.getEndTime();
-        recordLocation.duration = originalLocation.getDuration();
-        recordLocation.latitude = originalLocation.getLatitude();
-        recordLocation.longitude = originalLocation.getLongitude();
-        recordLocation.originalSpeed = originalLocation.getOriginalSpeed();
-        recordLocation.speed = originalLocation.getSpeed();
-        recordLocation.recordId = originalLocation.getRecordId();
-        recordLocation.recordType = originalLocation.getRecordType();
-        recordLocation.itemDistance = originalLocation.getItemDistance();
-        recordLocation.distance = originalLocation.getDistance();
-        recordLocation.locationStr = originalLocation.getLocationStr();
-        recordLocation.milePost = originalLocation.getMilePost();
-        recordLocation.locationType = originalLocation.getLocationType();
-        recordLocation.accuracy = originalLocation.getAccuracy();
-
-        return recordLocation;
-    }
-
-    public static RecordLocation createLocation(AMapLocation location, String recordId,
-                                                int recordType, double itemDistance,
-                                                double distance, String locationStr, double milePost) {
-        RecordLocation recordLocation = new RecordLocation();
-        recordLocation.timestamp = location.getTime();
-        recordLocation.originalSpeed = location.getSpeed();
-        recordLocation.endTime = recordLocation.timestamp;
-        recordLocation.duration = 0;
-        recordLocation.latitude = location.getLatitude();
-        recordLocation.longitude = location.getLongitude();
-        recordLocation.speed = location.getSpeed();
-        recordLocation.recordId = recordId;
-        recordLocation.recordType = recordType;
-        recordLocation.itemDistance = itemDistance;
-        recordLocation.distance = distance;
-        recordLocation.locationStr = locationStr;
-        recordLocation.milePost = milePost;
-        recordLocation.locationType = location.getLocationType();
-        recordLocation.accuracy = location.getAccuracy();
-        location.getAccuracy();
-        return recordLocation;
     }
 
     @Override
