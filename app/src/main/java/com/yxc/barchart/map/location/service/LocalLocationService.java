@@ -100,7 +100,7 @@ public class LocalLocationService extends Service {
         }
         //插入数据库
         double itemDistance = LocationComputeUtil.getDistance(aMapLocation, lastSaveLocation);
-        if (lastSaveLocation == null && aMapLocation.getLatitude() > 0f) {
+        if (lastSaveLocation == null) {
             //record的第一个埋点，插入数据库
             Log.d("LocationService", "第一个点。。。");
             Toast.makeText(LocalLocationService.this, "Service first insert Point", Toast.LENGTH_SHORT).show();
@@ -115,8 +115,9 @@ public class LocalLocationService extends Service {
             sendEventbus(aMapLocation, recordLocation);
             lastSaveLocation = aMapLocation;
             lastRecordLocation = recordLocation;
-        } else if (itemDistance > 1.0f) {
-            Toast.makeText(LocalLocationService.this, "save Point:" + aMapLocation.getLatitude(), Toast.LENGTH_SHORT).show();
+        } else if (itemDistance > 1.0f && !isCellLocation(aMapLocation)) {//增加对Accuracy>500 以及 LocationType为5的过滤
+            Toast.makeText(LocalLocationService.this, "save Point:" +
+                    aMapLocation.getLatitude(), Toast.LENGTH_SHORT).show();
             String locationStr = LocationComputeUtil.amapLocationToString(aMapLocation);
             if (lastRecordLocation != null) {
                 double distance = lastRecordLocation.distance + itemDistance;
@@ -143,12 +144,17 @@ public class LocalLocationService extends Service {
             }
             lastSaveLocation = aMapLocation;
         } else {//可能在原地打点，不存入新数据，update endTime。
-            Toast.makeText(LocalLocationService.this, "update Point:" + aMapLocation.getLatitude(), Toast.LENGTH_SHORT).show();
+            Toast.makeText(LocalLocationService.this, "update Point:" + aMapLocation.getLatitude(),
+                    Toast.LENGTH_SHORT).show();
             long timestamp = lastSaveLocation.getTime();
             long endTime = System.currentTimeMillis();//todo 需要考虑定位时间跟系统时间的差值。
             long duration = endTime - timestamp;
             LocationDBHelper.updateRecordLocation(timestamp, endTime, duration);
         }
+    }
+
+    private boolean isCellLocation(AMapLocation aMapLocation){
+        return aMapLocation.getAccuracy() > 500 || aMapLocation.getLocationType() == AMapLocation.LOCATION_TYPE_CELL;
     }
 
     private void sendEventbus(AMapLocation aMapLocation, RecordLocation recordLocation) {
