@@ -129,7 +129,7 @@ public class LocationService extends NotiService {
                 return;
             }
             double itemDistance = LocationComputeUtil.getDistance(aMapLocation, lastSaveLocation);
-            if (lastSaveLocation == null && aMapLocation.getLatitude() > 0f) {
+            if (lastSaveLocation == null) {
                 //record的第一个埋点，插入数据库
                 lastSaveLocation = aMapLocation;
             } else if (itemDistance > 1.0f) {

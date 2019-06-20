@@ -10,6 +10,7 @@ import android.util.Log;
 import android.view.MenuItem;
 import android.view.View;
 
+import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
 import androidx.core.app.ActivityCompat;
@@ -17,8 +18,8 @@ import androidx.core.app.ActivityCompat;
 import com.yxc.barchart.R;
 import com.yxc.barchart.map.location.LocationActivity;
 import com.yxc.barchart.map.location.RecordActivity;
+import com.yxc.barchart.map.location.database.RealmDbHelper;
 import com.yxc.barchart.map.location.util.LocationConstants;
-import com.yxc.barchart.map.model.RecordLocation;
 import com.yxc.barchart.ui.bezier.BezierActivity;
 import com.yxc.barchart.ui.line.LineActivity;
 import com.yxc.barchart.ui.sleep.SleepActivity;
@@ -27,9 +28,6 @@ import com.yxc.barchart.ui.waterdrop.WaterDropActivity;
 import com.yxc.commonlib.util.TimeDateUtil;
 
 import org.joda.time.LocalDate;
-
-import java.util.ArrayList;
-import java.util.List;
 
 public class MainActivity extends AppCompatActivity {
     Toolbar toolbar;
@@ -41,7 +39,6 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         initView();
-
         permissionApply();
         Log.d("MainActivity", "SDCard:" + Environment.getExternalStorageDirectory());
     }
@@ -50,9 +47,11 @@ public class MainActivity extends AppCompatActivity {
     private void permissionApply() {
         if (ActivityCompat.checkSelfPermission(this,
                 android.Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
-              ActivityCompat.requestPermissions(this, new String[]
+            ActivityCompat.requestPermissions(this, new String[]
                     {android.Manifest.permission.ACCESS_FINE_LOCATION, Manifest.permission.WRITE_EXTERNAL_STORAGE}, LOCATION_PERMISSION_REQUEST_CODE);
             return;
+        } else {
+            RealmDbHelper.initSDCard("location", 1);
         }
     }
 
@@ -111,41 +110,10 @@ public class MainActivity extends AppCompatActivity {
         startActivity(intent);
     }
 
-    public Person createPerson(){
-        Person recordLocation = new Person();
-        recordLocation.setDuration(123425514);
-        recordLocation.setEndTime(1514515145);
-        recordLocation.setDistance(1541485);
-        recordLocation.setLatitude(40.9142519475);
-        recordLocation.setLongitude(101.23114);
-        recordLocation.setItemDistance(13);
-        recordLocation.setLocationStr("asdjfoi, qoeurwqe");
-        recordLocation.setRecordType(1);
-        recordLocation.setRecordId("12");
-        recordLocation.setTimestamp(13225415);
-        recordLocation.setMilePost(2000);
-        return recordLocation;
-    }
-
-
-    public List<RecordLocation> createLocationList(){
-        List<RecordLocation> locationList = new ArrayList<>();
-        for (int i = 0; i < 5 ; i++) {
-            RecordLocation recordLocation = new RecordLocation();
-            recordLocation.setDuration(123425514);
-            recordLocation.setEndTime(1514515145);
-            recordLocation.setDistance(1541485);
-            recordLocation.setLatitude(40.9142519475);
-            recordLocation.setLongitude(101.23114);
-            recordLocation.setItemDistance(13);
-            recordLocation.setLocationStr("asdjfoi, qoeurwqe");
-            recordLocation.setRecordType(1);
-            recordLocation.setRecordId("12");
-            recordLocation.setTimestamp(13225415);
-            recordLocation.setMilePost(2000);
-            locationList.add(recordLocation);
-        }
-        return locationList;
+    @Override
+    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
+        RealmDbHelper.initSDCard("location", 1);
     }
 
 }

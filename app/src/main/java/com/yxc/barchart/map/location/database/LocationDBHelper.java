@@ -23,7 +23,7 @@ import io.realm.RealmResults;
 public class LocationDBHelper {
 
     public static void deleteRecordLocationList(final int recordType, final String recordId) {
-        Realm realm = RealmDbHelper.createRealm();
+        Realm realm = RealmDbHelper.createSDRealm();
         realm.executeTransaction(new Realm.Transaction() { // must be in transaction for this to work
             @Override
             public void execute(Realm realm) {
@@ -42,7 +42,7 @@ public class LocationDBHelper {
 
     //获取数据库中最近的时间戳
     public static Record getLastRecord(int recordType) {
-        Realm realm = RealmDbHelper.createRealm();
+        Realm realm = RealmDbHelper.createSDRealm();
         RealmResults<Record> list = realm.where(Record.class).equalTo("recordType", recordType).findAll();
         list.sort("id");
         if (null != list && list.size() > 0) {
@@ -54,7 +54,7 @@ public class LocationDBHelper {
 
     //获取数据库中最近的时间戳
     public static RecordLocation getLastItem(int recordType, String recordId) {
-        Realm realm = RealmDbHelper.createRealm();
+        Realm realm = RealmDbHelper.createSDRealm();
         RealmResults<RecordLocation> list = realm.where(RecordLocation.class).equalTo("recordType", recordType)
                 .and()
                 .equalTo("recordId", recordId)
@@ -68,7 +68,7 @@ public class LocationDBHelper {
 
 
     public static RecordLocation getLastItem(int recordType) {
-        Realm realm = RealmDbHelper.createRealm();
+        Realm realm = RealmDbHelper.createSDRealm();
         RealmResults<RecordLocation> list = realm.where(RecordLocation.class)
                 .equalTo("recordType", recordType)
                 .findAll();
@@ -81,7 +81,7 @@ public class LocationDBHelper {
 
 
     public static List<RecordLocation> getLocationList(int recordType, String recordId) {
-        Realm realm = RealmDbHelper.createRealm();
+        Realm realm = RealmDbHelper.createSDRealm();
         RealmResults<RecordLocation> list = realm.where(RecordLocation.class)
                 .equalTo("recordType", recordType)
                 .and()
@@ -99,7 +99,7 @@ public class LocationDBHelper {
     }
 
     public static List<RecordLocation> getLateLocationList(String recordId, long timestamp) {
-        Realm realm = RealmDbHelper.createRealm();
+        Realm realm = RealmDbHelper.createSDRealm();
         RealmResults<RecordLocation> list = realm.where(RecordLocation.class).equalTo("recordId", recordId)
                 .greaterThan("timestamp", timestamp).findAll();
         list.sort("timestamp");
@@ -113,7 +113,7 @@ public class LocationDBHelper {
      */
     public static List<Record> queryRecordAll(int recordType) {
         List<Record> allRecord = new ArrayList<>();
-        Realm realm = RealmDbHelper.createRealm();
+        Realm realm = RealmDbHelper.createSDRealm();
         RealmResults<Record> realmResults = realm.where(Record.class).equalTo("recordType", recordType).findAll();
         for (int i = 0; i < realmResults.size(); i++) {
             Record record = realmResults.get(i);
@@ -137,7 +137,7 @@ public class LocationDBHelper {
      * @return
      */
     public static Record queryRecordById(int recordType, int mRecordItemId) {
-        Realm realm = RealmDbHelper.createRealm();
+        Realm realm = RealmDbHelper.createSDRealm();
         Record record = realm.where(Record.class)
                 .equalTo("recordType", recordType)
                 .and()
@@ -158,7 +158,7 @@ public class LocationDBHelper {
 
 
     public static void insertRecord(final Record record) {
-        Realm realm = RealmDbHelper.createRealm();
+        Realm realm = RealmDbHelper.createSDRealm();
         realm.executeTransaction(new Realm.Transaction() { // must be in transaction for this to work
             @Override
             public void execute(Realm realm) {
@@ -178,7 +178,7 @@ public class LocationDBHelper {
 
 
     public static void insertRecordLocation(final RecordLocation recordLocation) {
-        Realm realm = RealmDbHelper.createRealm();
+        Realm realm = RealmDbHelper.createSDRealm();
         realm.executeTransaction(new Realm.Transaction() { // must be in transaction for this to work
             @Override
             public void execute(Realm realm) {
@@ -188,7 +188,7 @@ public class LocationDBHelper {
     }
 
     public static void updateRecordLocation(final long timestamp, final long endTime, final long duration) {
-        Realm realm = RealmDbHelper.createRealm();
+        Realm realm = RealmDbHelper.createSDRealm();
         realm.executeTransaction(new Realm.Transaction() { // must be in transaction for this to work
             @Override
             public void execute(Realm realm) {
@@ -204,7 +204,7 @@ public class LocationDBHelper {
 
 
     public static RecordLocation queryRecordLocation(long timestamp) {
-        Realm realm = RealmDbHelper.createRealm();
+        Realm realm = RealmDbHelper.createSDRealm();
         RealmResults<RecordLocation> realmResults = realm.where(RecordLocation.class).equalTo("timestamp", timestamp).findAll();
         Log.d("LocationService", "realmResults'size:" + realmResults.size());
         return realmResults.first();

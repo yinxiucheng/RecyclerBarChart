@@ -74,7 +74,7 @@ public class ChartApplication extends Application {
 
         registerActivityLifecycleCallbacks(mLifecycleCallbacks);
 
-        // db
+        //db
         RealmDbHelper.init("chartdb", 1);
     }
 
