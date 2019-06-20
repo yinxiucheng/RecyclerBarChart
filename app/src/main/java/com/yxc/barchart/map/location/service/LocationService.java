@@ -85,19 +85,26 @@ public class LocationService extends NotiService {
         }
 
         mLocationOption = new AMapLocationClientOption();
-        // 使用连续
-        mLocationOption.setOnceLocation(false);
-        mLocationOption.setSensorEnable(true);
-        mLocationOption.setWifiScan(true);
+        //设置定位模式为高精度
         mLocationOption.setLocationMode(AMapLocationClientOption.AMapLocationMode.Hight_Accuracy);
+        //返回地址信息
+        mLocationOption.setNeedAddress(true);
+        //设置是否只定位一次,默认为false
+        mLocationOption.setOnceLocation(false);
+        //设置是否强制刷新WIFI，默认为强制刷新
+        mLocationOption.setWifiScan(true);
+        //设置是否允许模拟位置,默认为false，不允许模拟位置
+        mLocationOption.setMockEnable(false);
+        //关闭缓存
+        mLocationOption.setLocationCacheEnable(false);
+        // 每 DEFAULT_INTERVAL_TIME 秒定位一次
+        mLocationOption.setInterval(LocationConstants.DEFAULT_INTERVAL_TIME);
+        //设置setOnceLocationLatest(boolean b)接口为true，启动定位时SDK会返回最近3s内精度最高的一次定位结果
+        mLocationOption.setOnceLocationLatest(true);
+        //开启传感器定位（速度、海拔、角度）
+        mLocationOption.setSensorEnable(true);
         mLocationOption.setGpsFirst(true);
         mLocationOption.setGpsFirstTimeout(6 * 300000);
-        mLocationOption.setOnceLocationLatest(true);
-        mLocationOption.setLocationCacheEnable(false);
-        // 每10秒定位一次
-        mLocationOption.setInterval(LocationConstants.DEFAULT_INTERVAL_TIME);
-        // 地址信息
-        mLocationOption.setNeedAddress(true);
         mLocationClient.setLocationOption(mLocationOption);
         mLocationClient.setLocationListener(locationListener);
         mLocationClient.startLocation();
