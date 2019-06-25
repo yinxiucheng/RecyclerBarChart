@@ -1,13 +1,17 @@
 package com.yxc.barchart.map.location.database;
 
+import android.content.Context;
 import android.util.Log;
+import android.widget.Toast;
 
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
 import com.yxc.barchart.map.location.util.LocationComputeUtil;
 import com.yxc.barchart.map.model.Record;
+import com.yxc.barchart.map.model.RecordCorrect;
 import com.yxc.barchart.map.model.RecordLocation;
 import com.yxc.barchart.util.Util;
+import com.yxc.commonlib.util.TimeDateUtil;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -33,7 +37,6 @@ public class LocationDBHelper {
                         .and()
                         .equalTo("recordId", recordId)
                         .findAll();
-
                 locations.deleteAllFromRealm();
             }
         });
@@ -98,6 +101,30 @@ public class LocationDBHelper {
         return recordLocationList;
     }
 
+
+    public static List<RecordLocation> queryRecordLocationAll(int recordType, String recordId) {
+        Realm realm = RealmDbHelper.createSDRealm();
+        RealmResults<RecordLocation> list = realm.where(RecordLocation.class)
+                .equalTo("recordType", recordType)
+                .and()
+                .equalTo("recordId", recordId)
+                .findAll();
+        list.sort("timestamp");
+         return list;
+    }
+
+
+    public static List<RecordCorrect> queryRecordCorrectAll(int recordType, String recordId) {
+        Realm realm = RealmDbHelper.createSDRealm();
+        RealmResults<RecordCorrect> list = realm.where(RecordCorrect.class)
+                .equalTo("recordType", recordType)
+                .and()
+                .equalTo("recordId", recordId)
+                .findAll();
+        list.sort("timestamp");
+        return list;
+    }
+
     public static List<RecordLocation> getLateLocationList(String recordId, long timestamp) {
         Realm realm = RealmDbHelper.createSDRealm();
         RealmResults<RecordLocation> list = realm.where(RecordLocation.class).equalTo("recordId", recordId)
@@ -147,9 +174,15 @@ public class LocationDBHelper {
         if (null != record) {
             String lines = record.pathLine;
             Gson gson = Util.createGson();
-            List<RecordLocation> recordLocationList = gson.fromJson(lines, new TypeToken<List<RecordLocation>>() {
-            }.getType());
-            record.setPathLine(recordLocationList);
+            if (record.isCorrect) {
+                List<RecordCorrect> recordLocationList = gson.fromJson(lines, new TypeToken<List<RecordCorrect>>() {
+                }.getType());
+                record.setPathCorrectLine(recordLocationList);
+            } else {
+                List<RecordLocation> recordLocationList = gson.fromJson(lines, new TypeToken<List<RecordLocation>>() {
+                }.getType());
+                record.setPathLine(recordLocationList);
+            }
             record.setStartPoint(LocationComputeUtil.parseLocation(record.startPoint));
             record.setEndpoint(LocationComputeUtil.parseLocation(record.endPoint));
         }
@@ -201,8 +234,6 @@ public class LocationDBHelper {
         realm = null;
     }
 
-
-
     public static RecordLocation queryRecordLocation(long timestamp) {
         Realm realm = RealmDbHelper.createSDRealm();
         RealmResults<RecordLocation> realmResults = realm.where(RecordLocation.class).equalTo("timestamp", timestamp).findAll();
@@ -211,6 +242,61 @@ public class LocationDBHelper {
     }
 
 
+    public static void saveRecord(Context context, List<RecordLocation> list) {
+        if (list != null && list.size() > 0) {
+            RecordLocation firstLocation = list.get(0);
+            RecordLocation lastLocation = list.get(list.size() - 1);
+            int recordType = firstLocation.getRecordType();
+            double distance = lastLocation.distance;
+            long duration = getDuration(firstLocation, lastLocation);
+            String averageSpeed = getAverage(distance, duration);
+            String pathLineStr = LocationComputeUtil.getPathLineStr(list);
+            String dateStr = TimeDateUtil.getDateStrMinSecond(firstLocation.getTimestamp());
 
+            Record record = Record.createRecord(recordType, Double.toString(distance),
+                    Long.toString(duration), averageSpeed, pathLineStr,
+                    firstLocation.locationStr, lastLocation.locationStr, dateStr, false);
+            LocationDBHelper.insertRecord(record);
+        } else {
+            Toast.makeText(context, "没有记录到路径", Toast.LENGTH_SHORT).show();
+        }
+    }
+
+
+    private static long getDuration(RecordLocation firstLocation, RecordLocation lastLocation) {
+        return (lastLocation.getEndTime() - firstLocation.getTimestamp()) / 1000;
+    }
+
+    private static String getAverage(double distance, long duration) {
+        return String.valueOf(distance / duration);
+    }
+
+    public static void saveRecordCorrect(Context context, List<RecordCorrect> list) {
+        if (list != null && list.size() > 0) {
+            RecordCorrect firstLocation = list.get(0);
+            RecordCorrect lastLocation = list.get(list.size() - 1);
+
+            int recordType = firstLocation.getRecordType();
+            double distance = lastLocation.distance;
+
+            long duration = getDuration(firstLocation, lastLocation);
+            String averageSpeed = getAverage(distance, duration);
+
+            String pathLineStr = LocationComputeUtil.getPathLineCorrectStr(list);
+            String dateStr = TimeDateUtil.getDateStrMinSecond(firstLocation.getTimestamp());
+
+            Record record = Record.createRecord(recordType, Double.toString(distance),
+                    Long.toString(duration), averageSpeed, pathLineStr,
+                    firstLocation.locationStr, lastLocation.locationStr, dateStr, true);
+            LocationDBHelper.insertRecord(record);
+        } else {
+            Toast.makeText(context, "没有记录到路径", Toast.LENGTH_SHORT).show();
+        }
+    }
+
+
+    private static long getDuration(RecordCorrect firstLocation, RecordCorrect lastLocation) {
+        return (lastLocation.getEndTime() - firstLocation.getTimestamp()) / 1000;
+    }
 
 }

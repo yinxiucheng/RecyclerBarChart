@@ -8,19 +8,20 @@ import android.util.Log;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.yxc.chartlib.attrs.BarChartAttrs;
+import com.yxc.chartlib.attrs.BaseChartAttrs;
 import com.yxc.chartlib.component.BaseYAxis;
 import com.yxc.commonlib.util.DisplayUtil;
 
 import java.util.HashMap;
 import java.util.Map;
 
-public class YAxisRender<T extends BaseYAxis> {
+public class YAxisRender<T extends BaseYAxis, V extends BaseChartAttrs> {
 
     protected Paint mLinePaint;
     protected Paint mTextPaint;
-    protected BarChartAttrs mBarChartAttrs;
+    protected V mBarChartAttrs;
 
-    public YAxisRender(BarChartAttrs barChartAttrs) {
+    public YAxisRender(V barChartAttrs) {
         this.mBarChartAttrs = barChartAttrs;
         initPaint();
         initTextPaint();

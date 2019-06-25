@@ -229,19 +229,18 @@ public class ChartComputeUtil {
         return top;
     }
 
-    public static <T extends BarEntry, V extends BaseYAxis> RectF getBarChartRectF(View child, final RecyclerView parent, V mYAxis,
-                                                                                   BarChartAttrs mBarChartAttrs, T barEntry) {
+    public static <T extends BarEntry, V extends BaseYAxis, E extends BaseChartAttrs> RectF getBarChartRectF(View child, final RecyclerView parent, V mYAxis, E chartAttrs, T barEntry) {
         final RectF rectF = new RectF();
-        float contentBottom = parent.getHeight() - parent.getPaddingBottom() - mBarChartAttrs.contentPaddingBottom;
-        float realYAxisLabelHeight = contentBottom - parent.getPaddingTop() - mBarChartAttrs.contentPaddingTop;
+        float contentBottom = parent.getHeight() - parent.getPaddingBottom() - chartAttrs.contentPaddingBottom;
+        float realYAxisLabelHeight = contentBottom - parent.getPaddingTop() - chartAttrs.contentPaddingTop;
         float width = child.getWidth();
-        float barSpaceWidth = width * mBarChartAttrs.barSpace;
+        float barSpaceWidth = width * chartAttrs.barSpace;
         float barChartWidth = width - barSpaceWidth;//柱子的宽度
         final float left = child.getLeft() + barSpaceWidth / 2;
         final float right = left + barChartWidth;
         float height = barEntry.getY() / mYAxis.getAxisMaximum() * realYAxisLabelHeight;
 
-        if (mBarChartAttrs.yAxisReverse && barEntry.getY() > 0) {
+        if (chartAttrs.yAxisReverse && barEntry.getY() > 0) {
             float valueTemp = mYAxis.getAxisMaximum() - barEntry.getY();
             height = valueTemp / mYAxis.getAxisMaximum() * realYAxisLabelHeight;
         }

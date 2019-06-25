@@ -3,21 +3,21 @@ package com.yxc.chartlib.render;
 import android.graphics.Canvas;
 import android.graphics.Paint;
 import android.graphics.RectF;
+
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
-
-import com.yxc.chartlib.attrs.BarChartAttrs;
+import com.yxc.chartlib.attrs.BaseChartAttrs;
 
 /**
  * @author yxc
  * @date 2019/4/14
  */
-final public class BarBoardRender {
+final public class BarBoardRender<T extends BaseChartAttrs> {
 
-    BarChartAttrs mBarChartAttrs;
+    T mBarChartAttrs;
     Paint mBarBorderPaint;
 
-    public BarBoardRender(BarChartAttrs attrs) {
+    public BarBoardRender(T attrs) {
         this.mBarChartAttrs = attrs;
         initBarBorderPaint();
     }

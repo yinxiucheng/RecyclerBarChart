@@ -34,6 +34,25 @@
         android:background="@color/black_40_transparent" />
 
     <Button
+        android:id="@+id/map"
+        android:layout_width="100dp"
+        android:layout_height="50dp"
+        android:layout_gravity="center_horizontal"
+        android:text="轨迹地图"
+        android:layout_marginTop="30dp"
+        android:onClick="clickGaoDeMap"/>
+
+
+    <Button
+        android:id="@+id/map_google"
+        android:layout_width="100dp"
+        android:layout_height="50dp"
+        android:layout_gravity="center_horizontal"
+        android:text="运动轨迹"
+        android:layout_marginTop="30dp"
+        android:onClick="clickGoogleMap"/>
+
+    <Button
         android:id="@+id/step_btn"
         android:layout_width="100dp"
         android:layout_height="50dp"
@@ -78,24 +97,5 @@
         android:text="水滴图"
         android:layout_marginTop="30dp"
         android:onClick="clickWaterDrop"/>
-
-    <Button
-        android:id="@+id/map"
-        android:layout_width="100dp"
-        android:layout_height="50dp"
-        android:layout_gravity="center_horizontal"
-        android:text="轨迹地图"
-        android:layout_marginTop="30dp"
-        android:onClick="clickGaoDeMap"/>
-
-
-    <Button
-        android:id="@+id/map_google"
-        android:layout_width="100dp"
-        android:layout_height="50dp"
-        android:layout_gravity="center_horizontal"
-        android:text="Google"
-        android:layout_marginTop="30dp"
-        android:onClick="clickGoogleMap"/>
 
 </LinearLayout>

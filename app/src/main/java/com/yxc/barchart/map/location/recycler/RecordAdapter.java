@@ -83,7 +83,7 @@ public class RecordAdapter extends RecyclerView.Adapter<RecordAdapter.ViewHolder
 				@Override
 				public void onClick(View v) {
 					if (onRecordItemClickListener != null){
-						onRecordItemClickListener.onItemClick(position, item);
+						onRecordItemClickListener.onRecordCorrect(position, item);
 					}
 				}
 			});

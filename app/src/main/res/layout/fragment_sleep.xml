@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 
-
-<com.yxc.chartlib.view.SleepChartRecyclerView xmlns:android="http://schemas.android.com/apk/res/android"
+<com.yxc.chartlib.view.SleepChartRecyclerView
+    xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:id="@+id/recycler"
     android:layout_width="match_parent"
@@ -9,6 +9,6 @@
     android:paddingStart="20dp"
     android:paddingTop="85dp"
     android:paddingEnd="20dp"
-    app:sr_contentPaddingBottom="6dp"
-    app:sr_contentPaddingTop="0dp"
-    app:sr_txtColor="@color/white"/>
+    app:contentPaddingBottom="6dp"
+    app:contentPaddingTop="0dp"
+    app:txtColor="@color/white"/>

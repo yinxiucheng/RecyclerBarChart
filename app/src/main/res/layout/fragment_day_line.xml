@@ -12,16 +12,14 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content">
 
-        <com.yxc.chartlib.view.BarChartRecyclerView
-            android:id="@+id/recycler"
+        <com.yxc.chartlib.view.LineChartRecyclerView
+            android:id="@+id/line_recycler"
             android:layout_width="match_parent"
             android:layout_height="335dp"
             android:layout_alignParentTop="true"
             android:paddingLeft="3dp"
             android:paddingTop="38dp"
-            app:barChartRoundRectRadiusRatio="0.25"
             app:displayNumbers="24"
-            app:enableCharValueDisplay="false"
             app:enableLeftYAxisLabel="false"
             app:enableRightYAxisLabel="true"
             app:enableScrollToScale="true"

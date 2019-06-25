@@ -5,12 +5,11 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
-
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.yxc.chartlib.R;
-import com.yxc.chartlib.attrs.BarChartAttrs;
+import com.yxc.chartlib.attrs.BaseChartAttrs;
 import com.yxc.chartlib.component.BaseYAxis;
 import com.yxc.chartlib.component.XAxis;
 import com.yxc.chartlib.entrys.BarEntry;
@@ -29,10 +28,10 @@ public abstract class BaseBarChartAdapter<T extends BarEntry, V extends BaseYAxi
     protected RecyclerView mRecyclerView;
     protected XAxis mXAxis;
     protected V mYAxis;
-    protected BarChartAttrs mBarChartAttrs;
+    protected BaseChartAttrs mBarChartAttrs;
 
     public BaseBarChartAdapter(Context context, List<T> entries, RecyclerView recyclerView,
-                               XAxis xAxis, BarChartAttrs attrs) {
+                               XAxis xAxis, BaseChartAttrs attrs) {
         this.mContext = context;
         this.mEntries = entries;
         this.mRecyclerView = recyclerView;

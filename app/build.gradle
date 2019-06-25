@@ -4,13 +4,13 @@ apply plugin: 'realm-android'
 android {
     signingConfigs {
         debug {
-            storeFile file('/Users/xiuchengyin/Documents/opensource/RecyclerBarChart/chart.jks')
+            storeFile file('/Users/xiuchengyin/Documents/opensource/keystore/chart.jks')
             storePassword '861014'
             keyAlias = 'chart'
             keyPassword '861014'
         }
         release {
-            storeFile file('/Users/xiuchengyin/Documents/opensource/RecyclerBarChart/chart.jks')
+            storeFile file('/Users/xiuchengyin/Documents/opensource/keystore/chart.jks')
             storePassword '861014'
             keyAlias = 'chart'
             keyPassword '861014'

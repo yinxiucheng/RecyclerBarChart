@@ -6,6 +6,7 @@ import com.amap.api.maps.model.LatLng;
 import com.amap.api.trace.TraceLocation;
 import com.google.gson.Gson;
 import com.yxc.barchart.map.location.database.LocationDBHelper;
+import com.yxc.barchart.map.model.RecordCorrect;
 import com.yxc.barchart.map.model.RecordLocation;
 import com.yxc.barchart.util.Util;
 
@@ -116,6 +117,7 @@ public class LocationComputeUtil {
         return locString.toString();
     }
 
+
     public static String getPathLineString(List<AMapLocation> list) {
         if (list == null || list.size() == 0) {
             return "";
@@ -133,6 +135,15 @@ public class LocationComputeUtil {
     }
 
     public static String getPathLineStr(List<RecordLocation> locationList) {
+        if (locationList == null || locationList.size() == 0) {
+            return "";
+        }
+        Gson gson = Util.createGson();
+        String result = gson.toJson(locationList);
+        return result;
+    }
+
+    public static String getPathLineCorrectStr(List<RecordCorrect> locationList) {
         if (locationList == null || locationList.size() == 0) {
             return "";
         }
@@ -200,14 +211,14 @@ public class LocationComputeUtil {
     public static long getMaxSpeedByType(int type) {
         switch (type) {
             case LocationConstants.SPORT_TYPE_STEP:
-                return 5;//走路的上限5米每秒
+                return 2;//走路的上限5米每秒
             case LocationConstants.SPORT_TYPE_RUNNING:
-                return 15;//跑步的上限15米每秒
+                return 4;//跑步的上限15米每秒
             case LocationConstants.SPORT_TYPE_DRIVE:
             case LocationConstants.SPORT_TYPE_RIDE:
-                return 50;//骑行、驾驶 50米每秒。
+                return 10;//骑行、驾驶 50米每秒。
             default:
-                return 10;
+                return 5;
         }
     }
 
@@ -224,7 +235,6 @@ public class LocationComputeUtil {
         return 1;
     }
 
-
     public static List<AMapLocation> getAMapLocationList(List<RecordLocation> recordLocationList) {
         List<AMapLocation> aMapLocationList = new ArrayList<>();
         if (recordLocationList == null) {
@@ -238,5 +248,18 @@ public class LocationComputeUtil {
         return aMapLocationList;
     }
 
+
+    public static List<AMapLocation> getAMapLocationList2(List<RecordCorrect> recordLocationList) {
+        List<AMapLocation> aMapLocationList = new ArrayList<>();
+        if (recordLocationList == null) {
+            return aMapLocationList;
+        }
+        for (int i = 0; i < recordLocationList.size(); i++) {
+            RecordCorrect recordLocation = recordLocationList.get(i);
+            AMapLocation aMapLocation = LocationComputeUtil.parseLocation(recordLocation.locationStr);
+            aMapLocationList.add(aMapLocation);
+        }
+        return aMapLocationList;
+    }
 
 }

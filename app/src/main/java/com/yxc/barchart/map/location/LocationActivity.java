@@ -11,7 +11,6 @@ import android.util.Log;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.widget.LinearLayout;
-import android.widget.Toast;
 import android.widget.ToggleButton;
 
 import androidx.core.app.ActivityCompat;
@@ -34,7 +33,6 @@ import com.yxc.barchart.map.location.util.LocationConstants;
 import com.yxc.barchart.map.location.util.Utils;
 import com.yxc.barchart.map.model.Record;
 import com.yxc.barchart.map.model.RecordLocation;
-import com.yxc.commonlib.util.TimeDateUtil;
 
 import org.greenrobot.eventbus.EventBus;
 import org.greenrobot.eventbus.Subscribe;
@@ -47,8 +45,6 @@ public class LocationActivity extends Activity {
     private PolylineOptions mPolyOptions, tracePolyOption;
     private Polyline mPolyline;
     private Record record;
-    private long mStartTime;
-    private long mEndTime;
     private ToggleButton btn;
 
     private LinearLayout rightBtn;
@@ -77,7 +73,8 @@ public class LocationActivity extends Activity {
 
     private String getRecordId(int recordType) {
         Record record = LocationDBHelper.getLastRecord(recordType);
-        recordId = (record == null) ? "0" : Integer.toString(record.id + 1);
+        //从1开始存
+        recordId = (record == null) ? "1" : Integer.toString(record.id + 1);
         Log.d("LocationService", "recordId = " + recordId);
         return recordId;
     }
@@ -113,49 +110,18 @@ public class LocationActivity extends Activity {
                         record = null;
                     }
                     record = new Record();
-                    mStartTime = System.currentTimeMillis();
-                    record.setDate(TimeDateUtil.getDateStrMinSecond(mStartTime));
                     startLocationService();
                 } else {
                     rightBtn.setVisibility(View.VISIBLE);
-                    mEndTime = System.currentTimeMillis();
                     if (!TextUtils.isEmpty(recordId)){
                         List<RecordLocation> locationList = LocationDBHelper.getLocationList(recordType, recordId);
-                        saveRecord(locationList, record.date);
+                        LocationDBHelper.saveRecord(LocationActivity.this, locationList);
                     }
                     stopLocationService();
                 }
             }
         };
         btn.setOnClickListener(clickListener);
-    }
-
-    protected void saveRecord(List<RecordLocation> list, String time) {
-
-        if (list != null && list.size() > 0) {
-            String duration = getDuration();
-//            float distance = ComputeUtil.getDistance(list);
-            RecordLocation firstLocation = list.get(0);
-            RecordLocation lastLocation = list.get(list.size() - 1);
-            double distance = lastLocation.distance;
-            String averageSpeed = getAverage(distance);
-            String pathLineStr = LocationComputeUtil.getPathLineStr(list);
-            String startPoint = firstLocation.locationStr;
-            String endPoint = lastLocation.locationStr;
-            Record record = Record.createRecord(recordType, Double.toString(distance),
-                    duration, averageSpeed, pathLineStr, startPoint, endPoint, time);
-            LocationDBHelper.insertRecord(record);
-        } else {
-            Toast.makeText(LocationActivity.this, "没有记录到路径", Toast.LENGTH_SHORT).show();
-        }
-    }
-
-    private String getDuration() {
-        return String.valueOf((mEndTime - mStartTime) / 1000f);
-    }
-
-    private String getAverage(double distance) {
-        return String.valueOf(distance / (float) (mEndTime - mStartTime));
     }
 
     private void initPolyline() {

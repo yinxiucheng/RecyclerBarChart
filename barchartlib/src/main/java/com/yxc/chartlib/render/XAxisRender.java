@@ -14,6 +14,7 @@ import android.view.View;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.yxc.chartlib.attrs.BarChartAttrs;
+import com.yxc.chartlib.attrs.BaseChartAttrs;
 import com.yxc.chartlib.barchart.BaseBarChartAdapter;
 import com.yxc.chartlib.component.XAxis;
 import com.yxc.chartlib.entrys.BarEntry;
@@ -23,14 +24,14 @@ import com.yxc.commonlib.util.DisplayUtil;
 import java.util.List;
 
 
-final public class XAxisRender {
+final public class XAxisRender<T extends BaseChartAttrs> {
 
     private Paint mTextPaint;
     private Paint mDashPaint;
     private Paint mLinePaint;
-    private BarChartAttrs mBarChartAttrs;
+    private T mBarChartAttrs;
 
-    public XAxisRender(BarChartAttrs barChartAttrs) {
+    public XAxisRender(T barChartAttrs) {
         this.mBarChartAttrs = barChartAttrs;
         initTextPaint();
         initDathPaint();

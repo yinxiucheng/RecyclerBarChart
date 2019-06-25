@@ -1,9 +1,6 @@
 package com.yxc.barchart.ui.line;
 
 import android.os.Bundle;
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
-import androidx.recyclerview.widget.RecyclerView;
 import android.text.SpannableStringBuilder;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -12,23 +9,27 @@ import android.view.ViewGroup;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import androidx.recyclerview.widget.RecyclerView;
+
 import com.yxc.barchart.R;
 import com.yxc.barchart.RateTestData;
 import com.yxc.barchart.TestData;
 import com.yxc.barchart.formatter.XAxisYearFormatter;
-import com.yxc.chartlib.attrs.BarChartAttrs;
+import com.yxc.chartlib.attrs.LineChartAttrs;
 import com.yxc.chartlib.barchart.BarChartAdapter;
-import com.yxc.chartlib.view.BarChartRecyclerView;
 import com.yxc.chartlib.barchart.SpeedRatioLayoutManager;
-import com.yxc.chartlib.barchart.itemdecoration.LineChartItemDecoration;
 import com.yxc.chartlib.component.XAxis;
 import com.yxc.chartlib.component.YAxis;
 import com.yxc.chartlib.entrys.BarEntry;
 import com.yxc.chartlib.entrys.YAxisMaxEntries;
+import com.yxc.chartlib.itemdecoration.LineChartItemDecoration;
 import com.yxc.chartlib.listener.RecyclerItemGestureListener;
 import com.yxc.chartlib.listener.SimpleItemGestureListener;
 import com.yxc.chartlib.util.ChartComputeUtil;
 import com.yxc.chartlib.util.DecimalUtil;
+import com.yxc.chartlib.view.LineChartRecyclerView;
 import com.yxc.commonlib.util.TextUtil;
 import com.yxc.commonlib.util.TimeDateUtil;
 
@@ -39,7 +40,7 @@ import java.util.List;
 
 public class YearLineFragment extends BaseLineFragment {
 
-    BarChartRecyclerView recyclerView;
+    LineChartRecyclerView recyclerView;
     TextView txtLeftLocalDate;
     TextView txtRightLocalDate;
     TextView textTitle;
@@ -54,7 +55,7 @@ public class YearLineFragment extends BaseLineFragment {
     XAxis mXAxis;
 
     private int displayNumber;
-    private BarChartAttrs mBarChartAttrs;
+    private LineChartAttrs mLineChartAttrs;
     private LocalDate currentLocalDate;
     private int preEntrySize = 3;
 
@@ -89,18 +90,18 @@ public class YearLineFragment extends BaseLineFragment {
         txtCountStep = view.findViewById(R.id.txt_count_Step);
         recyclerView = view.findViewById(R.id.recycler);
 
-        mBarChartAttrs = recyclerView.mAttrs;
+        mLineChartAttrs = recyclerView.mAttrs;
     }
 
     private void initData() {
-        displayNumber = mBarChartAttrs.displayNumbers;
+        displayNumber = mLineChartAttrs.displayNumbers;
         mEntries = new ArrayList<>();
-        SpeedRatioLayoutManager layoutManager = new SpeedRatioLayoutManager(getActivity(), mBarChartAttrs);
-        mYAxis = new YAxis(mBarChartAttrs);
-        mXAxis = new XAxis(mBarChartAttrs, displayNumber, new XAxisYearFormatter());
-        mItemDecoration = new LineChartItemDecoration(mYAxis, mXAxis, mBarChartAttrs);
+        SpeedRatioLayoutManager layoutManager = new SpeedRatioLayoutManager(getActivity(), mLineChartAttrs);
+        mYAxis = new YAxis(mLineChartAttrs);
+        mXAxis = new XAxis(mLineChartAttrs, displayNumber, new XAxisYearFormatter());
+        mItemDecoration = new LineChartItemDecoration(mYAxis, mXAxis, mLineChartAttrs);
         recyclerView.addItemDecoration(mItemDecoration);
-        mBarChartAdapter = new BarChartAdapter(getActivity(), mEntries, recyclerView, mXAxis, mBarChartAttrs);
+        mBarChartAdapter = new BarChartAdapter(getActivity(), mEntries, recyclerView, mXAxis, mLineChartAttrs);
         recyclerView.setAdapter(mBarChartAdapter);
         recyclerView.setLayoutManager(layoutManager);
         currentLocalDate = TimeDateUtil.getLastMonthOfTheYear(LocalDate.now());
@@ -151,7 +152,7 @@ public class YearLineFragment extends BaseLineFragment {
                                 mBarChartAdapter.notifyDataSetChanged();
                             }
 
-                            if (mBarChartAttrs.enableScrollToScale) {
+                            if (mLineChartAttrs.enableScrollToScale) {
                                 int scrollByDx = ChartComputeUtil.computeScrollByXOffset(recyclerView, displayNumber, TestData.VIEW_YEAR);
                                 recyclerView.scrollBy(scrollByDx, 0);
                             }
@@ -175,7 +176,7 @@ public class YearLineFragment extends BaseLineFragment {
     private void resetYAxis(RecyclerView recyclerView) {
         YAxisMaxEntries yAxisMaxEntries = ChartComputeUtil.getVisibleEntries(recyclerView);
         setVisibleEntries(yAxisMaxEntries.visibleEntries);
-        mYAxis = YAxis.getYAxis(mBarChartAttrs, yAxisMaxEntries.yAxisMaximum);
+        mYAxis = YAxis.getYAxis(mLineChartAttrs, yAxisMaxEntries.yAxisMaximum);
         mItemDecoration.setYAxis(mYAxis);
     }
 
@@ -189,7 +190,7 @@ public class YearLineFragment extends BaseLineFragment {
     }
 
     private void setXAxis(int displayNumber) {
-        mXAxis = new XAxis(mBarChartAttrs, displayNumber);
+        mXAxis = new XAxis(mLineChartAttrs, displayNumber);
         mBarChartAdapter.setXAxis(mXAxis);
     }
 

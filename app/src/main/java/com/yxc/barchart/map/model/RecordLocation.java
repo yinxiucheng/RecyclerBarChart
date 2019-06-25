@@ -11,7 +11,7 @@ import io.realm.annotations.PrimaryKey;
  *
  * 轨迹点
  */
-public class RecordLocation extends RealmObject {
+public class RecordLocation extends RealmObject implements Comparable<RecordLocation>{
 
     @PrimaryKey
     public long timestamp;//时间戳
@@ -236,5 +236,10 @@ public class RecordLocation extends RealmObject {
 
     public void setAccuracy(float accuracy) {
         this.accuracy = accuracy;
+    }
+
+    @Override
+    public int compareTo(RecordLocation o) {
+        return (int) (timestamp - o.timestamp);
     }
 }

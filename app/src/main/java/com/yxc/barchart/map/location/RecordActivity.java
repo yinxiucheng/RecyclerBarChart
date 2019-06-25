@@ -12,10 +12,12 @@ import android.widget.Toast;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.amap.api.location.AMapLocation;
 import com.amap.api.maps.AMapUtils;
 import com.amap.api.maps.model.LatLng;
 import com.yxc.barchart.R;
 import com.yxc.barchart.map.location.database.LocationDBHelper;
+import com.yxc.barchart.map.location.database.RealmDbHelper;
 import com.yxc.barchart.map.location.recycler.RecordAdapter;
 import com.yxc.barchart.map.location.recycler.RecordItemDecoration;
 import com.yxc.barchart.map.location.util.LocationComputeUtil;
@@ -23,9 +25,9 @@ import com.yxc.barchart.map.location.util.LocationConstants;
 import com.yxc.barchart.map.model.Record;
 import com.yxc.barchart.map.model.RecordCorrect;
 import com.yxc.barchart.map.model.RecordLocation;
-import com.yxc.commonlib.util.TimeDateUtil;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 import java.util.Locale;
@@ -59,8 +61,7 @@ public class RecordActivity extends Activity implements RecordAdapter.OnRecordIt
         initRecycler();
     }
 
-
-    private void initRecycler(){
+    private void initRecycler() {
         mAdapter = new RecordAdapter(this, mAllRecord);
         mAdapter.setOnRecordItemClickListener(this);
 
@@ -76,7 +77,7 @@ public class RecordActivity extends Activity implements RecordAdapter.OnRecordIt
     private void invokeRightBtn() {
         Record record = LocationDBHelper.getLastRecord(recordType);
         final RecordLocation recordLocation = LocationDBHelper.getLastItem(recordType);
-        if (record == null || recordLocation == null){
+        if (record == null || recordLocation == null) {
             rightBtnStartSport();
             return;
         }
@@ -87,7 +88,8 @@ public class RecordActivity extends Activity implements RecordAdapter.OnRecordIt
             rightTitleBtn.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    saveRecord(recordLocation.recordId);
+                    List<RecordLocation> locationList = LocationDBHelper.getLocationList(recordType, recordLocation.recordId);
+                    LocationDBHelper.saveRecord(RecordActivity.this, locationList);
                 }
             });
         } else {
@@ -95,7 +97,7 @@ public class RecordActivity extends Activity implements RecordAdapter.OnRecordIt
         }
     }
 
-    private void rightBtnStartSport(){
+    private void rightBtnStartSport() {
         rightTitleBtn.setText("开启运动");
         rightTitleBtn.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -103,39 +105,6 @@ public class RecordActivity extends Activity implements RecordAdapter.OnRecordIt
                 startSport(v);
             }
         });
-    }
-
-    protected void saveRecord(String recordId) {
-        List<RecordLocation> locationList = LocationDBHelper.getLocationList(recordType, recordId);
-        if (locationList != null && locationList.size() > 0) {
-            RecordLocation firstLocation = locationList.get(0);
-            RecordLocation lastLocation = locationList.get(locationList.size() - 1);
-            double duration = getDuration(firstLocation, lastLocation)/1000;
-            double distance = lastLocation.distance;
-            String averageSpeed = getAverageSpeed(distance, duration);
-            String pathLineStr = LocationComputeUtil.getPathLineStr(locationList);
-            String startPoint = firstLocation.locationStr;
-            String endPoint = lastLocation.locationStr;
-            String dateStr = TimeDateUtil.getDateStrMinSecond(firstLocation.getTimestamp());
-            Record record = Record.createRecord(recordType,
-                    Double.toString(distance),
-                    String.valueOf(duration),
-                    averageSpeed, pathLineStr, startPoint, endPoint, dateStr);
-            LocationDBHelper.insertRecord(record);
-            mAllRecord.add(0, record);
-            mAdapter.notifyDataSetChanged();
-            rightBtnStartSport();
-        } else {
-            Toast.makeText(RecordActivity.this, "没有记录到路径", Toast.LENGTH_SHORT).show();
-        }
-    }
-
-    private long getDuration(RecordLocation firstLocation, RecordLocation endLocation) {
-        return (endLocation.endTime - firstLocation.timestamp);
-    }
-
-    private String getAverageSpeed(double distance, double duration) {
-        return String.valueOf(distance/duration);
     }
 
     @Override
@@ -166,7 +135,6 @@ public class RecordActivity extends Activity implements RecordAdapter.OnRecordIt
     private String filterString;
     private int posCount = 0;
 
-
     private Boolean filterPos(RecordLocation recordLocation) {
         SimpleDateFormat df = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.CHINA);
         Date date = new Date(recordLocation.getTimestamp());
@@ -176,9 +144,10 @@ public class RecordActivity extends Activity implements RecordAdapter.OnRecordIt
             // 获取的第一个定位点不进行过滤
             if (isFirst) {
                 isFirst = false;
+                w1TempList.clear();
+                w2TempList.clear();
                 weight1 = RecordLocation.createRecordCorrect(recordLocation);
                 /****************存储数据到文件中，后面好分析******************/
-
                 filterString += "第一次定位" + "\r\n";
                 /**********************************/
                 // 将得到的第一个点存储入w1的缓存集合
@@ -189,13 +158,8 @@ public class RecordActivity extends Activity implements RecordAdapter.OnRecordIt
 
             } else {
                 filterString += "非第一次定位" + "\r\n";
-//                // todo 过来 locationType == 6的，以及Accuracy > 500 的点， 过滤静止时的偏点，在静止时速度小于1米就算做静止状态
-//                if (recordLocation.getSpeed() < 1) {
-//                    return false;
-//                }
                 if (weight2 == null) {
                     filterString += "weight2 == null" + "\r\n";
-
                     // 计算w1与当前定位点p1的时间差并得到最大偏移距离D
                     long offsetTimeMils = recordLocation.getTimestamp() - weight1.getTimestamp();
                     long offsetTimes = (offsetTimeMils / 1000);
@@ -205,14 +169,12 @@ public class RecordActivity extends Activity implements RecordAdapter.OnRecordIt
                             new LatLng(recordLocation.getLatitude(), recordLocation.getLongitude()));
 
                     filterString += "distance = " + distance + ",MaxDistance = " + MaxDistance + "\r\n";
-
                     if (distance > MaxDistance) {
                         filterString += "distance > MaxDistance" + "\r\n";
                         // 将设置w2位新的点，并存储入w2临时缓存
                         weight2 = RecordLocation.createRecordCorrect(recordLocation);
                         w2TempList.add(weight2);
                         return false;
-
                     } else {
                         filterString += "distance < MaxDistance" + "\r\n";
                         // 将p1加入到做坐标集合w1TempList
@@ -224,6 +186,10 @@ public class RecordActivity extends Activity implements RecordAdapter.OnRecordIt
                         weight1.setLongitude(weight1.getLongitude() * 0.2 + recordLocation.getLongitude() * 0.8);
                         weight1.setTimestamp(recordLocation.getTimestamp());
                         weight1.setSpeed(recordLocation.getSpeed());
+                        AMapLocation aMapLocation = LocationComputeUtil.parseLocation(weight1.locationStr);
+                        aMapLocation.setLatitude(weight1.getLatitude());
+                        aMapLocation.setLongitude(weight1.getLongitude());
+                        weight1.setLocationStr(LocationComputeUtil.amapLocationToString(aMapLocation));
 
                         if (w1TempList.size() > 3) {
                             filterString += "d1TempList.size() > 3" + "\r\n";
@@ -241,7 +207,7 @@ public class RecordActivity extends Activity implements RecordAdapter.OnRecordIt
                     // 计算w2与当前定位点p1的时间差并得到最大偏移距离D
                     long offsetTimeMils = recordLocation.getTimestamp() - weight2.getTimestamp();
                     long offsetTimes = (offsetTimeMils / 1000);
-                    long MaxDistance = offsetTimes * 16;
+                    long MaxDistance = offsetTimes * LocationComputeUtil.getMaxSpeedByType(recordType);
                     float distance = AMapUtils.calculateLineDistance(
                             new LatLng(weight2.getLatitude(), weight2.getLongitude()),
                             new LatLng(recordLocation.getLatitude(), recordLocation.getLongitude()));
@@ -269,7 +235,10 @@ public class RecordActivity extends Activity implements RecordAdapter.OnRecordIt
                         weight2.setLongitude(weight2.getLongitude() * 0.2 + recordLocation.getLongitude() * 0.8);
                         weight2.setTimestamp(recordLocation.getTimestamp());
                         weight2.setSpeed(recordLocation.getSpeed());
-
+                        AMapLocation aMapLocation = LocationComputeUtil.parseLocation(weight2.locationStr);
+                        aMapLocation.setLatitude(weight2.getLatitude());
+                        aMapLocation.setLongitude(weight2.getLongitude());
+                        weight2.setLocationStr(LocationComputeUtil.amapLocationToString(aMapLocation));
                         if (w2TempList.size() > 4) {
                             filterString += "w2TempList.size() > 4" + "\r\n";
                             // 判断w1所代表的定位点数是否>4,小于说明w1之前的点为从一开始就有偏移的点
@@ -304,15 +273,43 @@ public class RecordActivity extends Activity implements RecordAdapter.OnRecordIt
 
     @Override
     public void onItemClick(int position, Record recordItem) {
-        Intent intent = new Intent(RecordActivity.this,
-                RecordShowActivity.class);
+        Class cls = RecordShowActivity.class;
+        if (recordItem.isCorrect){
+            cls = RecordCorrectShowActivity.class;
+        }
+        Intent intent = new Intent(this, cls);
         intent.putExtra(RECORD_ID, recordItem.getId());
         intent.putExtra(LocationConstants.KEY_RECORD_TYPE, recordType);
         startActivity(intent);
     }
 
     @Override
-    public void onRecordCorrect(int position, Record record) {
-
+    public void onRecordCorrect(int position, final Record record) {
+        runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                if (null != mListPoint){
+                    mListPoint.clear();
+                }
+                int recordType = record.recordType;
+                int recordId = record.getId();
+                List<RecordLocation> originalList = LocationDBHelper.queryRecordLocationAll(recordType, String.valueOf(recordId));
+                for (int i = 0; i < originalList.size(); i++) {
+                    RecordLocation recordLocation = originalList.get(i);
+                    if (i == 0) {
+                        isFirst = true;
+                    } else {
+                        isFirst = false;
+                    }
+                    filterPos(recordLocation);
+                }
+                if (null != mListPoint && mListPoint.size() > 0) {
+                    Collections.sort(mListPoint);
+                    RealmDbHelper.insertRealmObjects(mListPoint);
+                    LocationDBHelper.saveRecordCorrect(RecordActivity.this, mListPoint);
+                }
+                Toast.makeText(RecordActivity.this, "转化完毕", Toast.LENGTH_SHORT).show();
+            }
+        });
     }
 }

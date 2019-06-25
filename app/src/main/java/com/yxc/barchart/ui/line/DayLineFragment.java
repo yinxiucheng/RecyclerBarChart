@@ -19,21 +19,21 @@ import com.yxc.barchart.R;
 import com.yxc.barchart.RateTestData;
 import com.yxc.barchart.TestData;
 import com.yxc.barchart.formatter.XAxisDayFormatter;
-import com.yxc.chartlib.attrs.BarChartAttrs;
+import com.yxc.chartlib.attrs.LineChartAttrs;
 import com.yxc.chartlib.barchart.BarChartAdapter;
 import com.yxc.chartlib.barchart.SpeedRatioLayoutManager;
-import com.yxc.chartlib.barchart.itemdecoration.LineChartItemDecoration;
 import com.yxc.chartlib.component.XAxis;
 import com.yxc.chartlib.component.YAxis;
 import com.yxc.chartlib.entrys.BarEntry;
 import com.yxc.chartlib.entrys.YAxisMaxEntries;
 import com.yxc.chartlib.formatter.ValueFormatter;
+import com.yxc.chartlib.itemdecoration.LineChartItemDecoration;
 import com.yxc.chartlib.listener.RecyclerItemGestureListener;
 import com.yxc.chartlib.listener.SimpleItemGestureListener;
 import com.yxc.chartlib.util.ChartComputeUtil;
 import com.yxc.chartlib.util.DecimalUtil;
-import com.yxc.chartlib.view.BarChartRecyclerView;
 import com.yxc.chartlib.view.CustomAnimatedDecorator;
+import com.yxc.chartlib.view.LineChartRecyclerView;
 import com.yxc.commonlib.util.TextUtil;
 import com.yxc.commonlib.util.TimeDateUtil;
 
@@ -47,7 +47,7 @@ import java.util.List;
 
 public class DayLineFragment extends BaseLineFragment implements ViewTreeObserver.OnGlobalLayoutListener {
 
-    BarChartRecyclerView recyclerView;
+    LineChartRecyclerView recyclerView;
     TextView txtLeftLocalDate;
     TextView txtRightLocalDate;
     TextView textTitle;
@@ -66,9 +66,9 @@ public class DayLineFragment extends BaseLineFragment implements ViewTreeObserve
     ValueFormatter valueFormatter;
     public int mType;
     private int displayNumber;
-    private BarChartAttrs mBarChartAttrs;
+    private LineChartAttrs mBarChartAttrs;
     long currentTimestamp;
-    int preEntrySize = 4;
+    int preEntrySize = 0;
 
     //防止 Fragment重叠
     @Override
@@ -98,7 +98,7 @@ public class DayLineFragment extends BaseLineFragment implements ViewTreeObserve
         txtRightLocalDate = view.findViewById(R.id.txt_right_local_date);
         textTitle = view.findViewById(R.id.txt_layout);
         txtCountStep = view.findViewById(R.id.txt_count_Step);
-        recyclerView = view.findViewById(R.id.recycler);
+        recyclerView = view.findViewById(R.id.line_recycler);
         mBarChartAttrs = recyclerView.mAttrs;
     }
 

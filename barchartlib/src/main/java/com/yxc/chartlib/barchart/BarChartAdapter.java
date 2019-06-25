@@ -9,7 +9,7 @@ import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
-import com.yxc.chartlib.attrs.BarChartAttrs;
+import com.yxc.chartlib.attrs.BaseChartAttrs;
 import com.yxc.chartlib.component.BaseYAxis;
 import com.yxc.chartlib.component.XAxis;
 import com.yxc.chartlib.entrys.BarEntry;
@@ -23,7 +23,7 @@ import java.util.List;
 public class BarChartAdapter extends BaseBarChartAdapter<BarEntry, BaseYAxis>{
 
     public BarChartAdapter(Context context, List<BarEntry> entries,
-                           RecyclerView recyclerView, XAxis xAxis, BarChartAttrs attrs) {
+                           RecyclerView recyclerView, XAxis xAxis, BaseChartAttrs attrs) {
         super(context, entries, recyclerView, xAxis, attrs);
     }
 

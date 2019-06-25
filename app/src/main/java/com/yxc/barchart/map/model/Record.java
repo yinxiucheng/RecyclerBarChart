@@ -42,8 +42,14 @@ public class Record extends RealmObject {
 
     public String date;
 
+    public boolean isCorrect;
+
     @Ignore
     public List<RecordLocation> mPathLocationList = new ArrayList<>();
+
+    @Ignore
+    public List<RecordCorrect> mPathCorrectList = new ArrayList<>();
+
 
     public Record() {
 
@@ -51,7 +57,7 @@ public class Record extends RealmObject {
 
     public static Record createRecord(int recordType, String distance, String duration, String speed,
                                       String pathLine, String startPoint,
-                                      String endPoint, String date) {
+                                      String endPoint, String date, boolean isCorrect) {
         Record record = new Record();
         record.recordType = recordType;
         record.distance = distance;
@@ -61,6 +67,7 @@ public class Record extends RealmObject {
         record.startPoint = startPoint;
         record.endPoint = endPoint;
         record.date = date;
+        record.isCorrect = isCorrect;
         return record;
     }
 
@@ -96,6 +103,13 @@ public class Record extends RealmObject {
         this.mPathLocationList = pathLine;
     }
 
+    public List<RecordCorrect> getPathCorrectLine() {
+        return mPathCorrectList;
+    }
+
+    public void setPathCorrectLine(List<RecordCorrect> pathLine) {
+        this.mPathCorrectList = pathLine;
+    }
 
     public AMapLocation getStartPoint() {
         return mStartPoint;

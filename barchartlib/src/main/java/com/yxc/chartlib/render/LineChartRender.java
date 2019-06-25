@@ -15,8 +15,9 @@ import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.yxc.chartlib.attrs.BarChartAttrs;
+import com.yxc.chartlib.attrs.LineChartAttrs;
 import com.yxc.chartlib.barchart.BaseBarChartAdapter;
-import com.yxc.chartlib.barchart.itemdecoration.LineChartDrawable;
+import com.yxc.chartlib.itemdecoration.LineChartDrawable;
 import com.yxc.chartlib.component.YAxis;
 import com.yxc.chartlib.entrys.BarEntry;
 import com.yxc.chartlib.formatter.DefaultHighLightMarkValueFormatter;
@@ -32,16 +33,16 @@ import java.util.List;
  * @since 2019/4/14
  */
 final public class LineChartRender {
-    private BarChartAttrs mBarChartAttrs;
-    private Paint mBarChartPaint;
+    private LineChartAttrs mLineChartAttrs;
+    private Paint mLineChartPaint;
     private Paint mTextPaint;
     private Paint mLineFillPaint;
     protected Paint mHighLightValuePaint;
 
     protected ValueFormatter mHighLightValueFormatter;
 
-    public LineChartRender(BarChartAttrs barChartAttrs, ValueFormatter highLightValueFormatter) {
-        this.mBarChartAttrs = barChartAttrs;
+    public LineChartRender(LineChartAttrs barChartAttrs, ValueFormatter highLightValueFormatter) {
+        this.mLineChartAttrs = barChartAttrs;
         initBarChartPaint();
         initTextPaint();
         initLineFillPaint();
@@ -55,18 +56,18 @@ final public class LineChartRender {
         mTextPaint.setAntiAlias(true);
         mTextPaint.setStyle(Paint.Style.FILL);
         mTextPaint.setStrokeWidth(1);
-        mTextPaint.setColor(mBarChartAttrs.barChartValueTxtColor);
+        mTextPaint.setColor(mLineChartAttrs.txtColor);
         mTextPaint.setTextSize(DisplayUtil.dip2px(12));
     }
 
 
     private void initBarChartPaint() {
-        mBarChartPaint = new Paint();
-        mBarChartPaint.reset();
-        mBarChartPaint.setAntiAlias(true);
-        mBarChartPaint.setStyle(Paint.Style.FILL);
-        mBarChartPaint.setStrokeWidth(DisplayUtil.dip2px(1));
-        mBarChartPaint.setColor(mBarChartAttrs.barChartColor);
+        mLineChartPaint = new Paint();
+        mLineChartPaint.reset();
+        mLineChartPaint.setAntiAlias(true);
+        mLineChartPaint.setStyle(Paint.Style.FILL);
+        mLineChartPaint.setStrokeWidth(DisplayUtil.dip2px(1));
+        mLineChartPaint.setColor(mLineChartAttrs.lineColor);
     }
 
     private void initLineFillPaint() {
@@ -74,7 +75,7 @@ final public class LineChartRender {
         mLineFillPaint.reset();
         mLineFillPaint.setAntiAlias(true);
         mLineFillPaint.setStyle(Paint.Style.FILL);
-        mLineFillPaint.setColor(mBarChartAttrs.barChartColor);
+        mLineFillPaint.setColor(mLineChartAttrs.lineColor);
     }
 
     private void initHighLightPaint() {
@@ -93,9 +94,9 @@ final public class LineChartRender {
 
     //绘制选中时 highLight 标线及浮框。
     public void drawHighLight(Canvas canvas, @NonNull RecyclerView parent, YAxis yAxis) {
-        if (mBarChartAttrs.enableValueMark) {
+        if (mLineChartAttrs.enableValueMark) {
             float parentTop = parent.getPaddingTop();
-            float contentBottom = parent.getHeight() - parent.getPaddingBottom() - mBarChartAttrs.contentPaddingBottom;
+            float contentBottom = parent.getHeight() - parent.getPaddingBottom() - mLineChartAttrs.contentPaddingBottom;
             int childCount = parent.getChildCount();
             float contentRight = parent.getWidth() - parent.getPaddingRight();
             float contentLeft = parent.getPaddingLeft();
@@ -108,12 +109,12 @@ final public class LineChartRender {
                 float childCenter = child.getLeft() + width / 2;
                 String valueStr = mHighLightValueFormatter.getBarLabel(barEntry);
                 float[] points = new float[]{childCenter, contentBottom, childCenter, parentTop};
-                if (mBarChartAttrs.highLightLineType == BarChartAttrs.HIGH_LIGHT_LINE_Y) {
-                    float yPosition = ChartComputeUtil.getYPosition(barEntry, parent, yAxis, mBarChartAttrs);
-                    points = new float[]{childCenter, yPosition - mBarChartAttrs.linePointSelectRadius, childCenter, parentTop};
+                if (mLineChartAttrs.lineHighLightType == BarChartAttrs.HIGH_LIGHT_LINE_Y) {
+                    float yPosition = ChartComputeUtil.getYPosition(barEntry, parent, yAxis, mLineChartAttrs);
+                    points = new float[]{childCenter, yPosition - mLineChartAttrs.linePointSelectRadius, childCenter, parentTop};
                 }
                 if (barEntry.isSelected() && !TextUtils.isEmpty(valueStr)) {
-                    int chartColor = mBarChartAttrs.barChartColor;
+                    int chartColor = mLineChartAttrs.lineColor;
                     drawHighLightLine(canvas, points, chartColor);
                     drawHighLightValue(canvas, valueStr, childCenter, contentLeft, contentRight, parentTop, chartColor);
                 }
@@ -149,19 +150,19 @@ final public class LineChartRender {
 
         //绘制RectF
         RectF rectF = new RectF();
-        mBarChartPaint.setColor(barChartColor);
+        mLineChartPaint.setColor(barChartColor);
         if (leftEdgeDistance <= edgeDistance) {//矩形框靠左对齐
             rectF.set(contentLeft, rectTop, contentLeft + txtWidth, rectBottom);
             float radius = DisplayUtil.dip2px(8);
-            canvas.drawRoundRect(rectF, radius, radius, mBarChartPaint);
+            canvas.drawRoundRect(rectF, radius, radius, mLineChartPaint);
         } else if (rightEdgeDistance <= edgeDistance) {//矩形框靠右对齐
             rectF.set(contentRight - txtWidth, rectTop, contentRight, rectBottom);
             float radius = DisplayUtil.dip2px(8);
-            canvas.drawRoundRect(rectF, radius, radius, mBarChartPaint);
+            canvas.drawRoundRect(rectF, radius, radius, mLineChartPaint);
         } else {//居中对齐。
             rectF.set(childCenter - edgeDistance, rectTop, childCenter + edgeDistance, rectBottom);
             float radius = DisplayUtil.dip2px(8);
-            canvas.drawRoundRect(rectF, radius, radius, mBarChartPaint);
+            canvas.drawRoundRect(rectF, radius, radius, mLineChartPaint);
         }
 
         //绘文字
@@ -188,22 +189,22 @@ final public class LineChartRender {
 
 
     private void drawHighLightLine(Canvas canvas, float[] floats, int barChartColor) {
-        Paint.Style previous = mBarChartPaint.getStyle();
-        float strokeWidth = mBarChartPaint.getStrokeWidth();
-        int color = mBarChartPaint.getColor();
+        Paint.Style previous = mLineChartPaint.getStyle();
+        float strokeWidth = mLineChartPaint.getStrokeWidth();
+        int color = mLineChartPaint.getColor();
         // set
-        mBarChartPaint.setStyle(Paint.Style.FILL);
-        mBarChartPaint.setStrokeWidth(DisplayUtil.dip2px(1));
-        mBarChartPaint.setColor(barChartColor);
-        canvas.drawLines(floats, mBarChartPaint);
+        mLineChartPaint.setStyle(Paint.Style.FILL);
+        mLineChartPaint.setStrokeWidth(DisplayUtil.dip2px(1));
+        mLineChartPaint.setColor(barChartColor);
+        canvas.drawLines(floats, mLineChartPaint);
         // restore
-        mBarChartPaint.setStyle(previous);
-        mBarChartPaint.setStrokeWidth(strokeWidth);
-        mBarChartPaint.setColor(color);
+        mLineChartPaint.setStyle(previous);
+        mLineChartPaint.setStrokeWidth(strokeWidth);
+        mLineChartPaint.setColor(color);
     }
 
     public <T extends BarEntry> void drawLineChart(Canvas canvas, RecyclerView parent, YAxis mYAxis) {
-        if (mBarChartAttrs.enableXAxisLineCircle) {
+        if (mLineChartAttrs.enableXAxisLineCircle) {
             drawLineChartWithPoint(canvas, parent, mYAxis);
         } else {
             drawLineChartWithoutPoint(canvas, parent, mYAxis);
@@ -226,53 +227,54 @@ final public class LineChartRender {
                 continue;
             }
             adapterPosition = parent.getChildAdapterPosition(child);
-            RectF rectF = ChartComputeUtil.getBarChartRectF(child, parent, mYAxis, mBarChartAttrs, barEntry);
-            PointF pointF2 = new PointF((rectF.left + rectF.right) / 2, rectF.top);//pointF2 即为当前for 循环到的点，从左往右一共涉及到4个点 pointF0, pointF1, pointF2, pointF3; 其中 pointF1、pointF2为显示的。
+            RectF rectF = ChartComputeUtil.getBarChartRectF(child, parent, mYAxis, mLineChartAttrs, barEntry);
+            PointF pointF2 = new PointF((rectF.left + rectF.right) / 2, rectF.top);
+            //pointF2 即为当前for 循环到的点，从左往右一共涉及到4个点 pointF0, pointF1, pointF2, pointF3; 其中 pointF1、pointF2为显示的。
             if (i < childCount - 1) {
                 View pointF1Child = parent.getChildAt(i + 1);
                 T barEntryLeft = (T) pointF1Child.getTag();
-                RectF rectFLeft = ChartComputeUtil.getBarChartRectF(pointF1Child, parent, mYAxis, mBarChartAttrs, barEntryLeft);
+                RectF rectFLeft = ChartComputeUtil.getBarChartRectF(pointF1Child, parent, mYAxis, mLineChartAttrs, barEntryLeft);
                 PointF pointF1 = new PointF((rectFLeft.left + rectFLeft.right) / 2, rectFLeft.top);
 
                 if (pointF1.x >= parentLeft && pointF2.x <= parentRightBoard) {
                     float[] pointsOut = new float[]{pointF1.x, pointF1.y, pointF2.x, pointF2.y};
                     drawChartLine(canvas, pointsOut);
-                    drawFill(parent, mBarChartAttrs, canvas, pointF1, pointF2, rectF.bottom);
+                    drawFill(parent, mLineChartAttrs, canvas, pointF1, pointF2, rectF.bottom);
                     if (pointF1Child.getLeft() < parentLeft) {//左边界，处理pointF1值显示出来了的情况。
                         if (adapterPosition + 2 < entryList.size()) {
                             float x = pointF1.x - pointF1Child.getWidth();
                             T barEntry0 = entryList.get(adapterPosition + 2);
-                            float y = ChartComputeUtil.getYPosition(barEntry0, parent, mYAxis, mBarChartAttrs);
+                            float y = ChartComputeUtil.getYPosition(barEntry0, parent, mYAxis, mLineChartAttrs);
                             PointF pointF0 = new PointF(x, y);
                             PointF pointFIntercept = ChartComputeUtil.getInterceptPointF(pointF0, pointF1, parentLeft);
                             float[] points = new float[]{pointFIntercept.x, pointFIntercept.y, pointF1.x, pointF1.y};
                             drawChartLine(canvas, points);
-                            drawFill(parent, mBarChartAttrs, canvas, pointFIntercept, pointF1, rectF.bottom);
+                            drawFill(parent, mLineChartAttrs, canvas, pointFIntercept, pointF1, rectF.bottom);
                         }
                     } else if (child.getRight() < parentRightBoard && parentRightBoard - child.getRight() <= child.getWidth()) {
                         //右边界处理情况，pointF3显示出来跟没有显示出来。
                         if (adapterPosition - 1 > 0) {
                             T barEntryRight = entryList.get(adapterPosition - 1);
                             float x = pointF2.x + child.getWidth();
-                            float y = ChartComputeUtil.getYPosition(barEntryRight, parent, mYAxis, mBarChartAttrs);
+                            float y = ChartComputeUtil.getYPosition(barEntryRight, parent, mYAxis, mLineChartAttrs);
                             PointF pointF3 = new PointF(x, y);
 
                             if (pointF3.x > parentRightBoard) {
                                 PointF pointFIntercept = ChartComputeUtil.getInterceptPointF(pointF2, pointF3, parentRightBoard);
                                 float[] points = new float[]{pointF2.x, pointF2.y, pointFIntercept.x, pointFIntercept.y};
                                 drawChartLine(canvas, points);
-                                drawFill(parent, mBarChartAttrs, canvas, pointFIntercept, pointF2, rectF.bottom);
+                                drawFill(parent, mLineChartAttrs, canvas, pointFIntercept, pointF2, rectF.bottom);
                             } else if (pointF3.x < parentRightBoard) {
                                 if (adapterPosition - 2 > 0) {
                                     float xInner = pointF3.x + child.getWidth();
                                     T barEntry4 = entryList.get(adapterPosition - 2);
-                                    float yInner = ChartComputeUtil.getYPosition(barEntry4, parent, mYAxis, mBarChartAttrs);
+                                    float yInner = ChartComputeUtil.getYPosition(barEntry4, parent, mYAxis, mLineChartAttrs);
                                     PointF pointF4 = new PointF(xInner, yInner);
 
                                     PointF pointFInterceptInner = ChartComputeUtil.getInterceptPointF(pointF3, pointF4, parentRightBoard);
                                     float[] pointsInner = new float[]{pointF3.x, pointF3.y, pointFInterceptInner.x, pointFInterceptInner.y};
                                     drawChartLine(canvas, pointsInner);
-                                    drawFill(parent, mBarChartAttrs, canvas, pointF3, pointFInterceptInner, rectF.bottom);
+                                    drawFill(parent, mLineChartAttrs, canvas, pointF3, pointFInterceptInner, rectF.bottom);
                                 }
                             }
                         }
@@ -281,7 +283,7 @@ final public class LineChartRender {
                     PointF pointF = ChartComputeUtil.getInterceptPointF(pointF1, pointF2, parentLeft);
                     float[] points = new float[]{pointF.x, pointF.y, pointF2.x, pointF2.y};
                     drawChartLine(canvas, points);
-                    drawFill(parent, mBarChartAttrs, canvas, pointF, pointF2, rectF.bottom);
+                    drawFill(parent, mLineChartAttrs, canvas, pointF, pointF2, rectF.bottom);
                 }
             }
         }
@@ -301,51 +303,51 @@ final public class LineChartRender {
                 continue;
             }
             adapterPosition = parent.getChildAdapterPosition(child);
-            RectF rectF = ChartComputeUtil.getBarChartRectF(child, parent, mYAxis, mBarChartAttrs, barEntry);
+            RectF rectF = ChartComputeUtil.getBarChartRectF(child, parent, mYAxis, mLineChartAttrs, barEntry);
             PointF pointF2 = new PointF((rectF.left + rectF.right) / 2, rectF.top);
             //pointF2 即为当前for 循环到的点，从左往右一共涉及到4个点 pointF0, pointF1, pointF2, pointF3; 其中 pointF1、pointF2为显示的。
             if (i < childCount - 1) {
                 View pointF1Child = parent.getChildAt(i + 1);
                 T barEntryLeft = (T) pointF1Child.getTag();
-                RectF rectFLeft = ChartComputeUtil.getBarChartRectF(pointF1Child, parent, mYAxis, mBarChartAttrs, barEntryLeft);
+                RectF rectFLeft = ChartComputeUtil.getBarChartRectF(pointF1Child, parent, mYAxis, mLineChartAttrs, barEntryLeft);
                 PointF pointF1 = new PointF((rectFLeft.left + rectFLeft.right) / 2, rectFLeft.top);
 
                 if (pointF1.x >= parentLeft && pointF2.x <= parentRight) {
                     drawChartLine(canvas, pointF1, pointF2, barEntryLeft, barEntry);
-                    drawFill(parent, mBarChartAttrs, canvas, pointF1, pointF2, rectF.bottom);
+                    drawFill(parent, mLineChartAttrs, canvas, pointF1, pointF2, rectF.bottom);
 
                     if (pointF1Child.getLeft() < parentLeft) {//左边界，处理pointF1值显示出来了的情况。
                         if (adapterPosition + 2 < entryList.size()) {
                             float x = pointF1.x - pointF1Child.getWidth();
                             T barEntry0 = entryList.get(adapterPosition + 2);
-                            float y = ChartComputeUtil.getYPosition(barEntry0, parent, mYAxis, mBarChartAttrs);
+                            float y = ChartComputeUtil.getYPosition(barEntry0, parent, mYAxis, mLineChartAttrs);
                             PointF pointF0 = new PointF(x, y);
                             PointF pointFIntercept = ChartComputeUtil.getInterceptPointF(pointF0, pointF1, parentLeft);
                             drawChartLineCross(canvas, pointF0, pointF1, pointFIntercept, barEntry, false);
-                            drawFill(parent, mBarChartAttrs, canvas, pointFIntercept, pointF1, rectF.bottom);
+                            drawFill(parent, mLineChartAttrs, canvas, pointFIntercept, pointF1, rectF.bottom);
                         }
                     } else if (child.getRight() < parentRight && parentRight - child.getRight() <= child.getWidth()) {
                         //右边界处理情况，pointF3显示出来跟没有显示出来。
                         if (adapterPosition - 1 > 0) {
                             T barEntryRight = entryList.get(adapterPosition - 1);
                             float x = pointF2.x + child.getWidth();
-                            float y = ChartComputeUtil.getYPosition(barEntryRight, parent, mYAxis, mBarChartAttrs);
+                            float y = ChartComputeUtil.getYPosition(barEntryRight, parent, mYAxis, mLineChartAttrs);
                             PointF pointF3 = new PointF(x, y);
 
                             if (pointF3.x >= parentRight) {
                                 PointF pointFIntercept = ChartComputeUtil.getInterceptPointF(pointF2, pointF3, parentRight);
                                 drawChartLineCross(canvas, pointF2, pointF3, pointFIntercept, barEntry, true);
-                                drawFill(parent, mBarChartAttrs, canvas, pointFIntercept, pointF2, rectF.bottom);
+                                drawFill(parent, mLineChartAttrs, canvas, pointFIntercept, pointF2, rectF.bottom);
                             } else if (pointF3.x < parentRight) {
                                 if (adapterPosition - 2 > 0) {
                                     float xInner = pointF3.x + child.getWidth();
                                     T barEntry4 = entryList.get(adapterPosition - 2);
-                                    float yInner = ChartComputeUtil.getYPosition(barEntry4, parent, mYAxis, mBarChartAttrs);
+                                    float yInner = ChartComputeUtil.getYPosition(barEntry4, parent, mYAxis, mLineChartAttrs);
                                     PointF pointF4 = new PointF(xInner, yInner);
 
                                     PointF pointFInterceptInner = ChartComputeUtil.getInterceptPointF(pointF3, pointF4, parentRight);
                                     drawChartLineCross(canvas, pointF3, pointF4, pointFInterceptInner, barEntryRight, true);
-                                    drawFill(parent, mBarChartAttrs, canvas, pointF3, pointFInterceptInner, rectF.bottom);
+                                    drawFill(parent, mLineChartAttrs, canvas, pointF3, pointFInterceptInner, rectF.bottom);
                                 }
                             }
                         }
@@ -353,7 +355,7 @@ final public class LineChartRender {
                 } else if (pointF1.x < parentLeft && pointF1Child.getRight() >= parentLeft) {//左边界，处理pointF1值没有显示出来
                     PointF pointF = ChartComputeUtil.getInterceptPointF(pointF1, pointF2, parentLeft);
                     drawChartLineCross(canvas, pointF1, pointF2, pointF, barEntry, false);
-                    drawFill(parent, mBarChartAttrs, canvas, pointF, pointF2, rectF.bottom);
+                    drawFill(parent, mLineChartAttrs, canvas, pointF, pointF2, rectF.bottom);
                 }
 
                 drawCircle(canvas, pointF1, barEntryLeft, parentRight, parentLeft);
@@ -364,7 +366,7 @@ final public class LineChartRender {
 
     private <T extends BarEntry> void drawCircle(Canvas canvas, PointF pointF, T barEntry, float parentRight, float parentLeft) {
         if (pointF.x < parentRight && pointF.x > parentLeft){
-            canvas.drawCircle(pointF.x, pointF.y, mBarChartAttrs.linePointRadius, mBarChartPaint);
+            canvas.drawCircle(pointF.x, pointF.y, mLineChartAttrs.linePointRadius, mLineChartPaint);
             if (barEntry.isSelected()) {
                 drawSelectCircle(canvas, pointF);
             }
@@ -375,9 +377,9 @@ final public class LineChartRender {
                                                          PointF pointIntercept, T barEntry, boolean crossLeft) {
         float[] points;
         PointF pointF1Cross;
-        float radius = mBarChartAttrs.linePointRadius;
+        float radius = mLineChartAttrs.linePointRadius;
         if (barEntry.isSelected()) {//选中时的圆半径
-            radius = mBarChartAttrs.linePointSelectRadius + mBarChartAttrs.linePointSelectStrokeWidth;
+            radius = mLineChartAttrs.linePointSelectRadius + mLineChartAttrs.linePointSelectStrokeWidth;
         }
         if (crossLeft) {
             pointF1Cross = getTheCrossPointFLeft(pointF0, pointF1, radius);
@@ -394,14 +396,14 @@ final public class LineChartRender {
         PointF pointF1Cross;
         PointF pointF2Cross;
         if (barEntryLeft.isSelected()) {
-            pointF1Cross = getTheCrossPointFLeft(pointF1, pointF2, mBarChartAttrs.linePointSelectRadius);
-            pointF2Cross = getTheCrossPointFRight(pointF1, pointF2, mBarChartAttrs.linePointRadius);
+            pointF1Cross = getTheCrossPointFLeft(pointF1, pointF2, mLineChartAttrs.linePointSelectRadius);
+            pointF2Cross = getTheCrossPointFRight(pointF1, pointF2, mLineChartAttrs.linePointRadius);
         } else if (barEntry.isSelected()) {
-            pointF1Cross = getTheCrossPointFLeft(pointF1, pointF2, mBarChartAttrs.linePointRadius);
-            pointF2Cross = getTheCrossPointFRight(pointF1, pointF2, mBarChartAttrs.linePointSelectRadius);
+            pointF1Cross = getTheCrossPointFLeft(pointF1, pointF2, mLineChartAttrs.linePointRadius);
+            pointF2Cross = getTheCrossPointFRight(pointF1, pointF2, mLineChartAttrs.linePointSelectRadius);
         } else {
-            pointF1Cross = getTheCrossPointFLeft(pointF1, pointF2, mBarChartAttrs.linePointRadius);
-            pointF2Cross = getTheCrossPointFRight(pointF1, pointF2, mBarChartAttrs.linePointRadius);
+            pointF1Cross = getTheCrossPointFLeft(pointF1, pointF2, mLineChartAttrs.linePointRadius);
+            pointF2Cross = getTheCrossPointFRight(pointF1, pointF2, mLineChartAttrs.linePointRadius);
         }
         points = new float[]{pointF1Cross.x, pointF1Cross.y, pointF2Cross.x, pointF2Cross.y};
         drawChartLine(canvas, points);
@@ -455,28 +457,24 @@ final public class LineChartRender {
     }
 
     private void drawChartLine(Canvas canvas, float[] points) {
-        int color = mBarChartPaint.getColor();
-        if (mBarChartAttrs.lineColor == -1) {
-            mBarChartPaint.setColor(mBarChartAttrs.barChartColor);
-        } else {
-            mBarChartPaint.setColor(mBarChartAttrs.lineColor);
-        }
-        canvas.drawLines(points, mBarChartPaint);
-        mBarChartPaint.setColor(color);
+        int color = mLineChartPaint.getColor();
+        mLineChartPaint.setColor(mLineChartAttrs.lineColor);
+        canvas.drawLines(points, mLineChartPaint);
+        mLineChartPaint.setColor(color);
     }
 
     private void drawSelectCircle(Canvas canvas, PointF pointF) {
-        Paint.Style style = mBarChartPaint.getStyle();
-        float strokeWidth = mBarChartPaint.getStrokeWidth();
-        mBarChartPaint.setStyle(Paint.Style.STROKE);
-        mBarChartPaint.setStrokeWidth(mBarChartAttrs.linePointSelectStrokeWidth);
-        canvas.drawCircle(pointF.x, pointF.y, mBarChartAttrs.linePointSelectRadius, mBarChartPaint);
-        mBarChartPaint.setStyle(style);
-        mBarChartPaint.setStrokeWidth(strokeWidth);
+        Paint.Style style = mLineChartPaint.getStyle();
+        float strokeWidth = mLineChartPaint.getStrokeWidth();
+        mLineChartPaint.setStyle(Paint.Style.STROKE);
+        mLineChartPaint.setStrokeWidth(mLineChartAttrs.linePointSelectStrokeWidth);
+        canvas.drawCircle(pointF.x, pointF.y, mLineChartAttrs.linePointSelectRadius, mLineChartPaint);
+        mLineChartPaint.setStyle(style);
+        mLineChartPaint.setStrokeWidth(strokeWidth);
     }
 
 
-    private void drawFill(RecyclerView parent, BarChartAttrs mBarChartAttrs, Canvas canvas, PointF pointF, PointF pointF1, float bottom) {
+    private void drawFill(RecyclerView parent, LineChartAttrs mBarChartAttrs, Canvas canvas, PointF pointF, PointF pointF1, float bottom) {
         if (mBarChartAttrs.enableLineFill) {
             float yBottom = parent.getBottom() - parent.getPaddingBottom();
             float yTop = parent.getTop() + parent.getPaddingTop();

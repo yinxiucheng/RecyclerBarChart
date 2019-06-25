@@ -1,7 +1,6 @@
 package com.yxc.chartlib.component;
 
 
-import com.yxc.chartlib.attrs.BarChartAttrs;
 import com.yxc.chartlib.attrs.BaseChartAttrs;
 
 import java.util.ArrayList;
@@ -69,7 +68,7 @@ public class YAxis extends BaseYAxis {
 
 
     //获取Y轴刻度值
-    public static YAxis getYAxis(BarChartAttrs attrs, float max) {
+    public static YAxis getYAxis(BaseChartAttrs attrs, float max) {
         YAxis axis = new YAxis(attrs);
         if (max > 50000) {
             axis.mAxisMaximum = 80000;

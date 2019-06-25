@@ -2,7 +2,7 @@ package com.yxc.barchart;
 
 import android.util.Log;
 
-import com.yxc.chartlib.attrs.BarChartAttrs;
+import com.yxc.chartlib.attrs.BaseChartAttrs;
 import com.yxc.chartlib.entrys.BarEntry;
 import com.yxc.commonlib.util.TimeDateUtil;
 
@@ -19,7 +19,7 @@ import java.util.List;
 public class RateTestData {
 
     // 创建 月视图的数据
-    public static List<BarEntry> getMonthEntries(BarChartAttrs attrs, LocalDate localDate, int length, int originEntrySize) {
+    public static List<BarEntry> getMonthEntries(BaseChartAttrs attrs, LocalDate localDate, int length, int originEntrySize) {
         List<BarEntry> entries = new ArrayList<>();
         long timestamp = TimeDateUtil.changZeroOfTheDay(localDate);
         for (int i = originEntrySize; i < originEntrySize + length; i++) {
@@ -83,7 +83,7 @@ public class RateTestData {
 
 
     //创建 Day视图的数据
-    public static List<BarEntry> createDayEntries(BarChartAttrs attrs, long timestamp, int length, int originEntrySize, boolean zeroValue) {
+    public static List<BarEntry> createDayEntries(BaseChartAttrs attrs, long timestamp, int length, int originEntrySize, boolean zeroValue) {
         List<BarEntry> entries = new ArrayList<>();
         for (int i = originEntrySize; i < length + originEntrySize; i++) {
             if (i > originEntrySize){
