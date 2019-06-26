@@ -19,20 +19,20 @@ import com.yxc.barchart.R;
 import com.yxc.barchart.RateTestData;
 import com.yxc.barchart.TestData;
 import com.yxc.barchart.formatter.XAxisWeekFormatter;
-import com.yxc.chartlib.attrs.BarChartAttrs;
+import com.yxc.chartlib.attrs.BezierChartAttrs;
 import com.yxc.chartlib.barchart.BarChartAdapter;
 import com.yxc.chartlib.barchart.SpeedRatioLayoutManager;
-import com.yxc.chartlib.itemdecoration.BezierChartItemDecoration;
 import com.yxc.chartlib.component.XAxis;
 import com.yxc.chartlib.component.YAxis;
 import com.yxc.chartlib.entrys.BarEntry;
 import com.yxc.chartlib.entrys.YAxisMaxEntries;
 import com.yxc.chartlib.formatter.ValueFormatter;
+import com.yxc.chartlib.itemdecoration.BezierChartItemDecoration;
 import com.yxc.chartlib.listener.RecyclerItemGestureListener;
 import com.yxc.chartlib.listener.SimpleItemGestureListener;
 import com.yxc.chartlib.util.ChartComputeUtil;
 import com.yxc.chartlib.util.DecimalUtil;
-import com.yxc.chartlib.view.BarChartRecyclerView;
+import com.yxc.chartlib.view.BezierChartRecyclerView;
 import com.yxc.chartlib.view.CustomAnimatedDecorator;
 import com.yxc.commonlib.util.TextUtil;
 import com.yxc.commonlib.util.TimeDateUtil;
@@ -46,7 +46,7 @@ import java.util.List;
 
 public class WeekBezierFragment extends BaseBezierFragment implements ViewTreeObserver.OnGlobalLayoutListener {
 
-    BarChartRecyclerView recyclerView;
+    BezierChartRecyclerView recyclerView;
     TextView txtLeftLocalDate;
     TextView txtRightLocalDate;
     TextView textTitle;
@@ -62,7 +62,7 @@ public class WeekBezierFragment extends BaseBezierFragment implements ViewTreeOb
     ValueFormatter valueFormatter;
 
     private int displayNumber;
-    private BarChartAttrs mBarChartAttrs;
+    private BezierChartAttrs mBarChartAttrs;
     private LocalDate currentLocalDate;
 
     private int preEntries = 0;

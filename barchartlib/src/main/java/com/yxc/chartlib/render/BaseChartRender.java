@@ -75,7 +75,7 @@ public abstract class BaseChartRender<T extends BarEntry> {
         mBarChartPaint.reset();
         mBarChartPaint.setAntiAlias(true);
         mBarChartPaint.setStyle(Paint.Style.FILL);
-        mBarChartPaint.setColor(mBarChartAttrs.barChartColor);
+        mBarChartPaint.setColor(mBarChartAttrs.chartColor);
     }
 
     protected void initHighLightPaint() {

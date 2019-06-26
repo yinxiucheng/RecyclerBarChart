@@ -73,7 +73,6 @@ public class BarChartAdapter extends BaseBarChartAdapter<BarEntry, BaseYAxis>{
         contentView.setLayoutParams(lp);
     }
 
-
     private void resetRecyclerPadding(int reminderWidth) {
         if (mBarChartAttrs.enableLeftYAxisLabel && mBarChartAttrs.enableRightYAxisLabel) {
             mRecyclerView.setPadding(mRecyclerView.getPaddingLeft() + reminderWidth / 2, mRecyclerView.getPaddingTop(),

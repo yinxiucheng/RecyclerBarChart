@@ -8,7 +8,7 @@ import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
-import com.yxc.chartlib.attrs.BarChartAttrs;
+import com.yxc.chartlib.attrs.BezierChartAttrs;
 import com.yxc.chartlib.component.BaseYAxis;
 import com.yxc.chartlib.component.XAxis;
 import com.yxc.chartlib.formatter.DefaultBarChartValueFormatter;
@@ -30,7 +30,7 @@ public class BezierChartItemDecoration<T extends BaseYAxis> extends RecyclerView
     private int mOrientation;
     private T mYAxis;
     private XAxis mXAxis;
-    private BarChartAttrs mBarChartAttrs;
+    private BezierChartAttrs mBarChartAttrs;
     private YAxisRender yAxisRenderer;
     private XAxisRender xAxisRenderer;
     private BarBoardRender mBarBoardRender;
@@ -40,7 +40,7 @@ public class BezierChartItemDecoration<T extends BaseYAxis> extends RecyclerView
     public static final int HORIZONTAL_LIST = LinearLayoutManager.HORIZONTAL;
     public static final int VERTICAL_LIST = LinearLayoutManager.VERTICAL;
 
-    public BezierChartItemDecoration(T yAxis, XAxis xAxis, BarChartAttrs barChartAttrs) {
+    public BezierChartItemDecoration(T yAxis, XAxis xAxis, BezierChartAttrs barChartAttrs) {
         this.mOrientation = barChartAttrs.layoutManagerOrientation;
         this.mYAxis = yAxis;
         this.mXAxis = xAxis;

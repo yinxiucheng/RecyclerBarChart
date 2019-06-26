@@ -59,6 +59,8 @@ public class BaseChartAttrs {
     public float barBorderWidth;//边框的宽度
     public float barSpace;//chart item中 space 占比，能够控制barchart的宽度
 
+    public int chartColor; //图的基础颜色
+    public int chartEdgeColor;//边界 chart 滑入时的过度颜色，这里以后需要用渐变动画来控制。
     public int txtColor;
     public float txtSize;
 
@@ -68,5 +70,11 @@ public class BaseChartAttrs {
     public boolean enableLineFill;//底部fill
     public int fillAlpha;//
 
+    public int lineSelectCircles;//选中时绘制的 circles个数
+    public float yAxisHighStandardLine;//高的 标准线
+    public float yAxisMiddleStandardLine;// 中间的 标准线
+    public float yAxisLowStandardLine;//低的 标准线
+
+    public boolean isDisplay;//区分数据首页显示的简易Chart还是 二级页面中的Chart
 
 }

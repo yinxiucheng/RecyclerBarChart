@@ -29,7 +29,7 @@ public class SleepChartDayRender extends BaseChartRender<SleepEntry> {
 
     @Override
     protected <T extends BarEntry> int getChartColor(T entry) {
-        return mBarChartAttrs.barChartColor;
+        return mBarChartAttrs.chartColor;
     }
 
 
@@ -72,7 +72,7 @@ public class SleepChartDayRender extends BaseChartRender<SleepEntry> {
                 path = CanvasUtil.createRectPath(rectF);
             }
 
-            mBarChartPaint.setColor(mBarChartAttrs.barChartEdgeColor);
+            mBarChartPaint.setColor(mBarChartAttrs.chartEdgeColor);
             canvas.drawPath(path, mBarChartPaint);
         } else if (DecimalUtil.bigOrEquals(rectF.left, parentLeft) && DecimalUtil.smallOrEquals(rectF.right, parentRight)) {
             //中间的; 浮点数的 == 比较需要注意
@@ -95,7 +95,7 @@ public class SleepChartDayRender extends BaseChartRender<SleepEntry> {
                 path = CanvasUtil.createRectPath(rectF);
             }
 
-            mBarChartPaint.setColor(mBarChartAttrs.barChartEdgeColor);
+            mBarChartPaint.setColor(mBarChartAttrs.chartEdgeColor);
             canvas.drawPath(path, mBarChartPaint);
         }
     }

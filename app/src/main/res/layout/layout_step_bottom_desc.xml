@@ -15,7 +15,7 @@
         android:layout_alignParentLeft="true"
         android:layout_centerVertical="true"
         android:text="2019年03月09日0点0分"
-        android:textColor="@color/pink"
+        android:textColor="@color/bar_chart_pink"
         android:textSize="14sp" />
 
     <TextView
@@ -25,7 +25,7 @@
         android:layout_alignParentRight="true"
         android:layout_centerVertical="true"
         android:text="2019年04月09日0点0分"
-        android:textColor="@color/pink"
+        android:textColor="@color/bar_chart_pink"
         android:textSize="14sp" />
 </merge>
 

@@ -12,7 +12,7 @@ import android.view.View;
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
-import com.yxc.chartlib.attrs.BarChartAttrs;
+import com.yxc.chartlib.attrs.BezierChartAttrs;
 import com.yxc.chartlib.bezier.ControlPoint;
 import com.yxc.chartlib.component.BaseYAxis;
 import com.yxc.chartlib.entrys.BarEntry;
@@ -29,7 +29,7 @@ import java.util.List;
  * @since 2019/4/14
  */
 final public class BezierChartRender {
-    private BarChartAttrs mBarChartAttrs;
+    private BezierChartAttrs mBarChartAttrs;
     private Paint mBarChartPaint;
     private Paint mTextPaint;
     private Paint mBezierFillPaint;
@@ -39,7 +39,7 @@ final public class BezierChartRender {
         this.mBarChartValueFormatter = mBarChartValueFormatter;
     }
 
-    public BezierChartRender(BarChartAttrs barChartAttrs,
+    public BezierChartRender(BezierChartAttrs barChartAttrs,
                              ValueFormatter barChartValueFormatter) {
         this.mBarChartAttrs = barChartAttrs;
         initBarChartPaint();
@@ -54,7 +54,7 @@ final public class BezierChartRender {
         mTextPaint.setAntiAlias(true);
         mTextPaint.setStyle(Paint.Style.FILL);
         mTextPaint.setStrokeWidth(1);
-        mTextPaint.setColor(mBarChartAttrs.barChartValueTxtColor);
+        mTextPaint.setColor(mBarChartAttrs.txtColor);
         mTextPaint.setTextSize(DisplayUtil.dip2px(12));
     }
 
@@ -64,7 +64,7 @@ final public class BezierChartRender {
         mBarChartPaint.setAntiAlias(true);
         mBarChartPaint.setStyle(Paint.Style.STROKE);
         mBarChartPaint.setStrokeWidth(DisplayUtil.dip2px(1));
-        mBarChartPaint.setColor(mBarChartAttrs.barChartColor);
+        mBarChartPaint.setColor(mBarChartAttrs.chartColor);
     }
 
     private void initBezierFillPaint() {
@@ -72,7 +72,7 @@ final public class BezierChartRender {
         mBezierFillPaint.reset();
         mBezierFillPaint.setAntiAlias(true);
         mBezierFillPaint.setStyle(Paint.Style.FILL);
-        mBezierFillPaint.setColor(mBarChartAttrs.barChartColor);
+        mBezierFillPaint.setColor(mBarChartAttrs.chartColor);
         mBezierFillPaint.setAlpha(mBarChartAttrs.fillAlpha);
     }
 
@@ -94,7 +94,7 @@ final public class BezierChartRender {
                 int height = (int) (barEntry.getY() / yAxis.getAxisMaximum() * realYAxisLabelHeight);
                 float top = bottom - height;
                 String valueStr = mBarChartValueFormatter.getBarLabel(barEntry);
-                float txtY = top - mBarChartAttrs.barChartValuePaddingBottom;
+                float txtY = top - DisplayUtil.dip2px(3);
                 drawText(canvas, parentLeft, parentRight, valueStr, childCenter, txtY, mTextPaint);
             }
         }
@@ -131,7 +131,7 @@ final public class BezierChartRender {
         return center - mTextPaint.measureText(valueStr) / 2;
     }
 
-    private <T extends BaseYAxis>PointF getChildPointF(RecyclerView parent, View child, T mYAxis, BarChartAttrs mBarChartAttrs) {
+    private <T extends BaseYAxis>PointF getChildPointF(RecyclerView parent, View child, T mYAxis, BezierChartAttrs mBarChartAttrs) {
         BarEntry barEntry = (BarEntry) child.getTag();
         RectF rectF = ChartComputeUtil.getBarChartRectF(child, parent, mYAxis, mBarChartAttrs, barEntry);
         float pointX = (rectF.left + rectF.right) / 2;

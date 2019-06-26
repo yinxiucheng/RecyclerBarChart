@@ -43,7 +43,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_centerInParent="true"
-            android:textColor="@color/pink"
+            android:textColor="@color/bar_chart_pink"
             android:text="2019年04月09日"
             android:textStyle="bold"
             android:textSize="12sp" />
@@ -76,7 +76,7 @@
         android:paddingLeft="10dp"
         android:layout_marginTop="20dp"
         android:textSize="14sp"
-        android:textColor="@color/pink"/>
+        android:textColor="@color/bar_chart_pink"/>
 
     <RelativeLayout
         android:layout_width="match_parent"
@@ -92,7 +92,7 @@
             android:layout_height="wrap_content"
             android:layout_alignParentLeft="true"
             android:layout_centerVertical="true"
-            android:textColor="@color/pink"
+            android:textColor="@color/bar_chart_pink"
             android:text="2019年03月09日0点0分"
             android:textSize="14sp" />
 
@@ -102,7 +102,7 @@
             android:layout_height="wrap_content"
             android:layout_alignParentRight="true"
             android:layout_centerVertical="true"
-            android:textColor="@color/pink"
+            android:textColor="@color/bar_chart_pink"
             android:text="2019年04月09日0点0分"
             android:textSize="14sp"/>
     </RelativeLayout>

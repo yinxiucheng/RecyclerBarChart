@@ -35,7 +35,7 @@
     <color name="white_03_transparent">#08FFFFFF</color>
     <color name="white_00_transparent">#00FFFFFF</color>
 
-    <color name="pink">#FFF76E6E</color>
+    <color name="bar_chart_pink">#FFF76E6E</color>
     <color name="tab_checked">#FFF76E6E</color>
     <color name="tab_unchecked">#d5d5d5</color>
     <color name="transparent">#00000000</color>

@@ -14,14 +14,13 @@ import android.view.View;
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
-import com.yxc.chartlib.attrs.BarChartAttrs;
 import com.yxc.chartlib.attrs.LineChartAttrs;
 import com.yxc.chartlib.barchart.BaseBarChartAdapter;
-import com.yxc.chartlib.itemdecoration.LineChartDrawable;
 import com.yxc.chartlib.component.YAxis;
 import com.yxc.chartlib.entrys.BarEntry;
 import com.yxc.chartlib.formatter.DefaultHighLightMarkValueFormatter;
 import com.yxc.chartlib.formatter.ValueFormatter;
+import com.yxc.chartlib.itemdecoration.LineChartDrawable;
 import com.yxc.chartlib.util.ChartComputeUtil;
 import com.yxc.commonlib.util.DisplayUtil;
 import com.yxc.commonlib.util.TextUtil;
@@ -109,7 +108,7 @@ final public class LineChartRender {
                 float childCenter = child.getLeft() + width / 2;
                 String valueStr = mHighLightValueFormatter.getBarLabel(barEntry);
                 float[] points = new float[]{childCenter, contentBottom, childCenter, parentTop};
-                if (mLineChartAttrs.lineHighLightType == BarChartAttrs.HIGH_LIGHT_LINE_Y) {
+                if (mLineChartAttrs.lineHighLightType == LineChartAttrs.HIGH_LIGHT_LINE_Y) {
                     float yPosition = ChartComputeUtil.getYPosition(barEntry, parent, yAxis, mLineChartAttrs);
                     points = new float[]{childCenter, yPosition - mLineChartAttrs.linePointSelectRadius, childCenter, parentTop};
                 }

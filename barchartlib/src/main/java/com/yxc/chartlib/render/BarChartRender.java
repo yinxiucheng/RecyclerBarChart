@@ -38,7 +38,7 @@ public class BarChartRender extends BaseChartRender{
 
     @Override
     protected int getChartColor(BarEntry entry) {
-        return mBarChartAttrs.barChartColor;
+        return mBarChartAttrs.chartColor;
     }
 
     //绘制柱状图, mYAxis这个坐标会实时变动，所以通过 BarChartItemDecoration 传过来的精确值。
@@ -68,7 +68,7 @@ public class BarChartRender extends BaseChartRender{
 
             if (DecimalUtil.bigOrEquals(rectF.left, parentLeft) && DecimalUtil.smallOrEquals(rectF.right, parentRight)) {
                 //中间的; 浮点数的 == 比较需要注意
-                mBarChartPaint.setColor(mBarChartAttrs.barChartColor);
+                mBarChartPaint.setColor(mBarChartAttrs.chartColor);
                 Path path = CanvasUtil.createRectRoundPath(rectF, radius);
                 canvas.drawPath(path, mBarChartPaint);
             }
@@ -85,11 +85,11 @@ public class BarChartRender extends BaseChartRender{
             //左边部分滑入的时候，处理柱状图的显示
             rectF.left = parentLeft;
             Path path = CanvasUtil.createRectRoundPathRight(rectF, radius);
-            mBarChartPaint.setColor(mBarChartAttrs.barChartEdgeColor);
+            mBarChartPaint.setColor(mBarChartAttrs.chartEdgeColor);
             canvas.drawPath(path, mBarChartPaint);
         } else if (DecimalUtil.bigOrEquals(rectF.left, parentLeft) && DecimalUtil.smallOrEquals(rectF.right, parentRight)) {
             //中间的; 浮点数的 == 比较需要注意
-            mBarChartPaint.setColor(mBarChartAttrs.barChartColor);
+            mBarChartPaint.setColor(mBarChartAttrs.chartColor);
             Path path = CanvasUtil.createRectRoundPath(rectF, radius);
             canvas.drawPath(path, mBarChartPaint);
         } else if (DecimalUtil.smallOrEquals(rectF.left, parentRight) && rectF.right > parentRight) {
@@ -97,7 +97,7 @@ public class BarChartRender extends BaseChartRender{
             float distance = (parentRight - rectF.left);
             rectF.right = rectF.left + distance;
             Path path = CanvasUtil.createRectRoundPathLeft(rectF, radius);
-            mBarChartPaint.setColor(mBarChartAttrs.barChartEdgeColor);
+            mBarChartPaint.setColor(mBarChartAttrs.chartEdgeColor);
             canvas.drawPath(path, mBarChartPaint);
         }
     }
