@@ -2,9 +2,6 @@
 package com.yxc.barchart.ui.step;
 
 import android.os.Bundle;
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
-import androidx.recyclerview.widget.RecyclerView;
 import android.text.SpannableStringBuilder;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -14,6 +11,10 @@ import android.view.ViewTreeObserver;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import androidx.recyclerview.widget.RecyclerView;
+
 import com.yxc.barchart.R;
 import com.yxc.barchart.TestData;
 import com.yxc.barchart.formatter.DayHighLightMarkValueFormatter;
@@ -21,17 +22,17 @@ import com.yxc.barchart.formatter.XAxisDayFormatter;
 import com.yxc.chartlib.attrs.BarChartAttrs;
 import com.yxc.chartlib.barchart.BarChartAdapter;
 import com.yxc.chartlib.barchart.SpeedRatioLayoutManager;
-import com.yxc.chartlib.view.BarChartRecyclerView;
-import com.yxc.chartlib.itemdecoration.BarChartItemDecoration;
 import com.yxc.chartlib.component.XAxis;
 import com.yxc.chartlib.component.YAxis;
 import com.yxc.chartlib.entrys.BarEntry;
 import com.yxc.chartlib.entrys.YAxisMaxEntries;
 import com.yxc.chartlib.formatter.ValueFormatter;
+import com.yxc.chartlib.itemdecoration.BarChartItemDecoration;
 import com.yxc.chartlib.listener.RecyclerItemGestureListener;
 import com.yxc.chartlib.listener.SimpleItemGestureListener;
 import com.yxc.chartlib.util.ChartComputeUtil;
 import com.yxc.chartlib.util.DecimalUtil;
+import com.yxc.chartlib.view.BarChartRecyclerView;
 import com.yxc.chartlib.view.CustomAnimatedDecorator;
 import com.yxc.commonlib.util.TextUtil;
 import com.yxc.commonlib.util.TimeDateUtil;
@@ -171,7 +172,7 @@ public class StepDayFragment extends BaseStepFragment implements ViewTreeObserve
                             //回溯
                             if (mBarChartAttrs.enableScrollToScale) {
                                 int scrollToByDx = ChartComputeUtil.computeScrollByXOffset(recyclerView, displayNumber, TestData.VIEW_DAY);
-                                recyclerView.scrollBy(scrollToByDx, 0);
+                                recyclerView.smoothScrollBy(scrollToByDx, 0);
                             }
                             //重绘Y轴
                             resetYAxis(recyclerView);

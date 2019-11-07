@@ -43,6 +43,23 @@ public class MainActivity extends AppCompatActivity {
         Log.d("MainActivity", "SDCard:" + Environment.getExternalStorageDirectory());
     }
 
+    @Override
+    protected void onResume() {
+        super.onResume();
+        Log.d("MainActivity", "onResume");
+    }
+
+    @Override
+    protected void onPause() {
+        super.onPause();
+        Log.d("MainActivity", "onPause");
+    }
+
+    @Override
+    protected void onStop() {
+        super.onStop();
+        Log.d("MainActivity", "onStop");
+    }
 
     private void permissionApply() {
         if (ActivityCompat.checkSelfPermission(this,
@@ -59,6 +76,7 @@ public class MainActivity extends AppCompatActivity {
         toolbar = findViewById(R.id.toolBar);
         toolbar.setTitle(TimeDateUtil.getDateStr(TimeDateUtil.localDateToTimestamp(LocalDate.now()), "M月dd日"));
         toolbar.setNavigationIcon(R.drawable.ic_navigation_left_black_45dp);
+
         setSupportActionBar(toolbar);
     }
 
@@ -71,10 +89,7 @@ public class MainActivity extends AppCompatActivity {
         return super.onOptionsItemSelected(item);
     }
 
-    @Override
-    protected void onStop() {
-        super.onStop();
-    }
+
 
     public void clickStep(View view) {
         startActivity(new Intent(this, StepActivity.class));
@@ -104,7 +119,7 @@ public class MainActivity extends AppCompatActivity {
         intentToRecord();
     }
 
-    private void intentToRecord(){
+    private void intentToRecord() {
         Intent intent = new Intent(this, RecordActivity.class);
         intent.putExtra(LocationConstants.KEY_RECORD_TYPE, LocationConstants.SPORT_TYPE_RUNNING);
         startActivity(intent);

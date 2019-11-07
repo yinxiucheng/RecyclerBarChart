@@ -64,6 +64,8 @@ import static java.lang.annotation.RetentionPolicy.SOURCE;
  * @see androidx.viewpager.widget.ViewPager
  */
 public final class ViewPager2 extends ViewGroup {
+
+
     /** @hide */
     @Retention(SOURCE)
     @IntDef({ORIENTATION_HORIZONTAL, ORIENTATION_VERTICAL})
@@ -945,6 +947,10 @@ public final class ViewPager2 extends ViewGroup {
          *                 page position to the right, and -1 is one page position to the left.
          */
         void transformPage(@NonNull View page, float position);
+    }
+
+    public void addScrollListener(RecyclerView.OnScrollListener onScrollListener) {
+        mRecyclerView.addOnScrollListener(onScrollListener);
     }
 }
 

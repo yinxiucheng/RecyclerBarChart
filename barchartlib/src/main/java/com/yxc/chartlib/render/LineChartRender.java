@@ -66,7 +66,7 @@ final public class LineChartRender {
         mLineChartPaint.setAntiAlias(true);
         mLineChartPaint.setStyle(Paint.Style.FILL);
         mLineChartPaint.setStrokeWidth(DisplayUtil.dip2px(1));
-        mLineChartPaint.setColor(mLineChartAttrs.lineColor);
+        mLineChartPaint.setColor(mLineChartAttrs.chartColor);
     }
 
     private void initLineFillPaint() {
@@ -74,7 +74,7 @@ final public class LineChartRender {
         mLineFillPaint.reset();
         mLineFillPaint.setAntiAlias(true);
         mLineFillPaint.setStyle(Paint.Style.FILL);
-        mLineFillPaint.setColor(mLineChartAttrs.lineColor);
+        mLineFillPaint.setColor(mLineChartAttrs.chartColor);
     }
 
     private void initHighLightPaint() {
@@ -113,7 +113,7 @@ final public class LineChartRender {
                     points = new float[]{childCenter, yPosition - mLineChartAttrs.linePointSelectRadius, childCenter, parentTop};
                 }
                 if (barEntry.isSelected() && !TextUtils.isEmpty(valueStr)) {
-                    int chartColor = mLineChartAttrs.lineColor;
+                    int chartColor = mLineChartAttrs.chartColor;
                     drawHighLightLine(canvas, points, chartColor);
                     drawHighLightValue(canvas, valueStr, childCenter, contentLeft, contentRight, parentTop, chartColor);
                 }
@@ -457,7 +457,7 @@ final public class LineChartRender {
 
     private void drawChartLine(Canvas canvas, float[] points) {
         int color = mLineChartPaint.getColor();
-        mLineChartPaint.setColor(mLineChartAttrs.lineColor);
+        mLineChartPaint.setColor(mLineChartAttrs.chartColor);
         canvas.drawLines(points, mLineChartPaint);
         mLineChartPaint.setColor(color);
     }

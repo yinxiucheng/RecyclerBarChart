@@ -93,7 +93,7 @@ public class SleepFragment extends BaseFragment {
 
     private void initData() {
         Bundle bundle = getArguments();
-        if (null == bundle) {
+        if (null != bundle) {
             long timestamp = bundle.getLong("timestamp", -1);
             if (timestamp != -1) {
                 mLocalDate = TimeDateUtil.timestampToLocalDate(timestamp);

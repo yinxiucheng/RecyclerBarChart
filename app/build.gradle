@@ -4,13 +4,13 @@ apply plugin: 'realm-android'
 android {
     signingConfigs {
         debug {
-            storeFile file('/Users/xiuchengyin/Documents/opensource/keystore/chart.jks')
+            storeFile file('/Users/xiuchengyin/Documents/opensource/RecyclerBarChart/chart.jks')
             storePassword '861014'
             keyAlias = 'chart'
             keyPassword '861014'
         }
         release {
-            storeFile file('/Users/xiuchengyin/Documents/opensource/keystore/chart.jks')
+            storeFile file('/Users/xiuchengyin/Documents/opensource/RecyclerBarChart/chart.jks')
             storePassword '861014'
             keyAlias = 'chart'
             keyPassword '861014'
@@ -36,7 +36,7 @@ android {
     }
     buildTypes {
         release {
-            minifyEnabled false
+            minifyEnabled true
             proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
         }
     }
@@ -49,7 +49,7 @@ dependencies {
 
     implementation 'com.google.android.material:material:1.0.0'
     implementation 'org.greenrobot:eventbus:3.1.1'
-    implementation 'com.amap.api:3dmap:latest.integration'
+    implementation 'com.amap.api:3dmap:6.9.2'
     implementation 'com.google.code.gson:gson:2.8.5'
 
     testImplementation 'junit:junit:4.12'
