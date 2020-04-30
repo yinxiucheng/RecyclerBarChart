@@ -243,6 +243,10 @@ public class LocationComputeUtil {
         for (int i = 0; i < recordLocationList.size(); i++) {
             RecordLocation recordLocation = recordLocationList.get(i);
             AMapLocation aMapLocation = LocationComputeUtil.parseLocation(recordLocation.locationStr);
+            //todo gps84 坐标转 Gcj02坐标。
+            Gps gps = PositionUtil.gps84_To_Gcj02(aMapLocation.getLatitude(), aMapLocation.getLongitude());
+            aMapLocation.setLatitude(gps.getLatitude());
+            aMapLocation.setLongitude(gps.getLongitude());
             aMapLocationList.add(aMapLocation);
         }
         return aMapLocationList;
@@ -260,6 +264,15 @@ public class LocationComputeUtil {
             aMapLocationList.add(aMapLocation);
         }
         return aMapLocationList;
+    }
+
+//    public static LatLng createLatLng(AMapLocation location){
+//        return new LatLng(location.getLatitude(), location.getLongitude());
+//    }
+
+    public static LatLng createLatLng(AMapLocation location){
+        Gps gps = PositionUtil.gps84_To_Gcj02(location.getLatitude(), location.getLongitude());
+        return new LatLng(gps.getLatitude(), gps.getLongitude());
     }
 
 }

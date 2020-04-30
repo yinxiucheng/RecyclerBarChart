@@ -8,13 +8,10 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
 import android.view.View;
-import android.widget.ImageView;
 import android.widget.RelativeLayout;
-import android.widget.ToggleButton;
 
 import com.amap.api.location.AMapLocation;
 import com.amap.api.location.AMapLocationClient;
-import com.amap.api.location.AMapLocationClientOption;
 import com.amap.api.maps.AMap;
 import com.amap.api.maps.AMap.OnMapLoadedListener;
 import com.amap.api.maps.CameraUpdateFactory;
@@ -37,7 +34,6 @@ import com.yxc.barchart.map.model.Record;
 import com.yxc.barchart.map.model.RecordLocation;
 import com.yxc.barchart.view.LocationMarker;
 import com.yxc.commonlib.util.DisplayUtil;
-import com.yxc.commonlib.util.TimeDateUtil;
 
 import java.util.List;
 import java.util.concurrent.ExecutorService;
@@ -132,13 +128,11 @@ public class RecordShowActivity extends Activity implements OnMapLoadedListener 
 			if (recordList == null || startLoc == null || endLoc == null) {
 				return;
 			}
-			LatLng startLatLng = new LatLng(startLoc.getLatitude(), startLoc.getLongitude());
-			LatLng endLatLng = new LatLng(endLoc.getLatitude(), endLoc.getLongitude());
+			LatLng startLatLng = LocationComputeUtil.createLatLng(startLoc);
+			LatLng endLatLng = LocationComputeUtil.createLatLng(endLoc);
 			mOriginLatLngList = LocationComputeUtil.parseLatLngList(recordList);
 			addOriginTrace(startLatLng, endLatLng, mOriginLatLngList);
 			addMilePost(recordLocationList);
-		} else {
-
 		}
 	}
 
@@ -147,7 +141,7 @@ public class RecordShowActivity extends Activity implements OnMapLoadedListener 
 			RecordLocation recordLocation = recordLocationList.get(i);
 			if (recordLocation.milePost > 0) {
 				AMapLocation location = LocationComputeUtil.parseLocation(recordLocation.locationStr);
-				LatLng milePostPoint = new LatLng(location.getLatitude(), location.getLongitude());
+				LatLng milePostPoint = LocationComputeUtil.createLatLng(location);
 				String milePost = String.valueOf(Math.round(recordLocation.getMilePost() / 1000));
 				addMarker(milePostPoint, milePost, 16, 15, R.color.location_wrapper, R.color.location_inner_circle);
 			}
