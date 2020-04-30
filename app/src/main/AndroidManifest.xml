@@ -60,7 +60,7 @@
 
         <activity android:name=".map.location.LocationActivity" android:screenOrientation="portrait"
             android:theme="@style/AppTheme"/>
-        <activity android:name=".map.location.RecordActivity" android:screenOrientation="portrait"
+        <activity android:name=".map.location.RecordListActivity" android:screenOrientation="portrait"
             android:theme="@style/AppTheme"/>
         <activity android:name=".map.location.RecordShowActivity" android:screenOrientation="portrait"
             android:theme="@style/AppTheme"/>

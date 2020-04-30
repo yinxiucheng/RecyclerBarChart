@@ -75,7 +75,7 @@ public class RecordCorrectShowActivity extends Activity implements OnMapLoadedLi
 		int threadPoolSize = Runtime.getRuntime().availableProcessors() * 2 + 3;
 		mThreadPool = Executors.newFixedThreadPool(threadPoolSize);
 		if (recordIntent != null) {
-			mRecordItemId = recordIntent.getIntExtra(RecordActivity.RECORD_ID, -1);
+			mRecordItemId = recordIntent.getIntExtra(RecordListActivity.RECORD_ID, -1);
 			recordType = recordIntent.getIntExtra(LocationConstants.KEY_RECORD_TYPE, -1);
 		}
 		initMap();

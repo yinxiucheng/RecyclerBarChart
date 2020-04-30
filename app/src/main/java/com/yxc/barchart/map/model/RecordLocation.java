@@ -1,6 +1,11 @@
 package com.yxc.barchart.map.model;
 
+import android.location.Location;
+import android.text.TextUtils;
+
 import com.amap.api.location.AMapLocation;
+import com.yxc.barchart.map.location.util.Gps;
+import com.yxc.barchart.map.location.util.PositionUtil;
 
 import io.realm.RealmObject;
 import io.realm.annotations.PrimaryKey;
@@ -8,10 +13,10 @@ import io.realm.annotations.PrimaryKey;
 /**
  * @author yxc
  * @since 2019-06-10
- *
+ * <p>
  * 轨迹点
  */
-public class RecordLocation extends RealmObject implements Comparable<RecordLocation>{
+public class RecordLocation extends RealmObject implements Comparable<RecordLocation> {
 
     @PrimaryKey
     public long timestamp;//时间戳
@@ -93,6 +98,30 @@ public class RecordLocation extends RealmObject implements Comparable<RecordLoca
         recordLocation.locationStr = locationStr;
         recordLocation.milePost = milePost;
         recordLocation.locationType = location.getLocationType();
+        recordLocation.accuracy = location.getAccuracy();
+        location.getAccuracy();
+        return recordLocation;
+    }
+
+    public static RecordLocation createLocation(Location location, String recordId,
+                                                int recordType, double itemDistance,
+                                                double distance, String locationStr, double milePost) {
+        Gps gps = PositionUtil.gps84_To_Gcj02(location.getLatitude(), location.getLongitude());
+        RecordLocation recordLocation = new RecordLocation();
+        recordLocation.timestamp = location.getTime();
+        recordLocation.originalSpeed = location.getSpeed();
+        recordLocation.endTime = recordLocation.timestamp;
+        recordLocation.duration = 0;
+        recordLocation.latitude = gps.getLatitude();
+        recordLocation.longitude = gps.getLongitude();
+        recordLocation.speed = location.getSpeed();
+        recordLocation.recordId = recordId;
+        recordLocation.recordType = recordType;
+        recordLocation.itemDistance = itemDistance;
+        recordLocation.distance = distance;
+        recordLocation.locationStr = locationStr;
+        recordLocation.milePost = milePost;
+        recordLocation.locationType = TextUtils.equals(location.getProvider(), "gps") ? 1 : 0;
         recordLocation.accuracy = location.getAccuracy();
         location.getAccuracy();
         return recordLocation;

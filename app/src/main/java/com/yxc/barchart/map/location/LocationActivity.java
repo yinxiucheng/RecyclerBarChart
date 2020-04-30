@@ -276,7 +276,7 @@ public class LocationActivity extends Activity {
     }
 
     public void record(View view) {
-        Intent intent = new Intent(LocationActivity.this, RecordActivity.class);
+        Intent intent = new Intent(LocationActivity.this, RecordListActivity.class);
         intent.putExtra(LocationConstants.KEY_RECORD_TYPE, recordType);
         startActivity(intent);
         finish();

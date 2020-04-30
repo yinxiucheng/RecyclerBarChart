@@ -17,7 +17,7 @@ import androidx.core.app.ActivityCompat;
 
 import com.yxc.barchart.R;
 import com.yxc.barchart.map.location.LocationActivity;
-import com.yxc.barchart.map.location.RecordActivity;
+import com.yxc.barchart.map.location.RecordListActivity;
 import com.yxc.barchart.map.location.database.RealmDbHelper;
 import com.yxc.barchart.map.location.util.LocationConstants;
 import com.yxc.barchart.ui.bezier.BezierActivity;
@@ -120,7 +120,7 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void intentToRecord() {
-        Intent intent = new Intent(this, RecordActivity.class);
+        Intent intent = new Intent(this, RecordListActivity.class);
         intent.putExtra(LocationConstants.KEY_RECORD_TYPE, LocationConstants.SPORT_TYPE_RUNNING);
         startActivity(intent);
     }

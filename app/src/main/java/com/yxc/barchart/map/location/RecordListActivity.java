@@ -35,7 +35,7 @@ import java.util.Locale;
 /**
  * 所有轨迹list展示activity
  */
-public class RecordActivity extends Activity implements RecordAdapter.OnRecordItemClickListener {
+public class RecordListActivity extends Activity implements RecordAdapter.OnRecordItemClickListener {
 
     private RecordAdapter mAdapter;
     private RecyclerView mRecordRcyclerView;
@@ -89,7 +89,7 @@ public class RecordActivity extends Activity implements RecordAdapter.OnRecordIt
                 @Override
                 public void onClick(View v) {
                     List<RecordLocation> locationList = LocationDBHelper.getLocationList(recordType, recordLocation.recordId);
-                    LocationDBHelper.saveRecord(RecordActivity.this, locationList);
+                    LocationDBHelper.saveRecord(RecordListActivity.this, locationList);
                 }
             });
         } else {
@@ -306,9 +306,9 @@ public class RecordActivity extends Activity implements RecordAdapter.OnRecordIt
                 if (null != mListPoint && mListPoint.size() > 0) {
                     Collections.sort(mListPoint);
                     RealmDbHelper.insertRealmObjects(mListPoint);
-                    LocationDBHelper.saveRecordCorrect(RecordActivity.this, mListPoint);
+                    LocationDBHelper.saveRecordCorrect(RecordListActivity.this, mListPoint);
                 }
-                Toast.makeText(RecordActivity.this, "转化完毕", Toast.LENGTH_SHORT).show();
+                Toast.makeText(RecordListActivity.this, "转化完毕", Toast.LENGTH_SHORT).show();
             }
         });
     }
