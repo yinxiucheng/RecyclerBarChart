@@ -50,20 +50,12 @@ import java.util.concurrent.Executors;
 public class RecordCorrectShowActivity extends Activity implements OnMapLoadedListener {
 	private final static int AMAP_LOADED = 2;
 
-	private ToggleButton mDisplaybtn;
-
 	private MapView mMapView;
 	private AMap mAMap;
 	private int mRecordItemId;
 	private int recordType;
 	private List<LatLng> mOriginLatLngList;
 	private ExecutorService mThreadPool;
-	private ImageView imgGps;
-	private ImageView imgLocation;
-	private ImageView imgMarker;
-
-	private boolean enableMarker = true;
-
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -84,15 +76,6 @@ public class RecordCorrectShowActivity extends Activity implements OnMapLoadedLi
 	private void initView(Bundle savedInstanceState) {
 		mMapView = findViewById(R.id.map);
 		mMapView.onCreate(savedInstanceState);// 此方法必须重写
-		imgGps = findViewById(R.id.img_gps);
-		imgLocation = findViewById(R.id.img_location);
-		imgMarker = findViewById(R.id.img_marker);
-
-		imgLocation.setOnClickListener(new View.OnClickListener() {
-			@Override
-			public void onClick(View v) {
-			}
-		});
 	}
 
 	UiSettings uiSettings;
@@ -129,7 +112,6 @@ public class RecordCorrectShowActivity extends Activity implements OnMapLoadedLi
 		}
 	}
 
-
 	private LatLngBounds getBounds() {
 		LatLngBounds.Builder b = LatLngBounds.builder();
 		if (mOriginLatLngList == null) {
@@ -156,16 +138,12 @@ public class RecordCorrectShowActivity extends Activity implements OnMapLoadedLi
 			if (recordList == null || startLoc == null || endLoc == null) {
 				return;
 			}
-			LatLng startLatLng = new LatLng(startLoc.getLatitude(),
-					startLoc.getLongitude());
-			LatLng endLatLng = new LatLng(endLoc.getLatitude(),
-					endLoc.getLongitude());
+			LatLng startLatLng = new LatLng(startLoc.getLatitude(), startLoc.getLongitude());
+			LatLng endLatLng = new LatLng(endLoc.getLatitude(), endLoc.getLongitude());
 			mOriginLatLngList = LocationComputeUtil.parseLatLngList(recordList);
 			addOriginTrace(startLatLng, endLatLng, mOriginLatLngList);
 			addMilePost(recordLocationList);
 			addDurationPoint(recordLocationList);
-		} else {
-
 		}
 	}
 
@@ -240,7 +218,6 @@ public class RecordCorrectShowActivity extends Activity implements OnMapLoadedLi
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
-//		mAMap.addMarker(new MarkerOptions().position(startPoint).icon(BitmapDescriptorFactory.fromResource(R.drawable.walk)));
 	}
 
 	@Override
@@ -253,10 +230,6 @@ public class RecordCorrectShowActivity extends Activity implements OnMapLoadedLi
 
 	//声明AMapLocationClient类对象
 	public AMapLocationClient mLocationClient = null;
-
-	//声明mLocationOption对象
-	public AMapLocationClientOption mLocationOption = null;
-
 	@Override
 	protected void onPause() {
 		super.onPause();
@@ -274,7 +247,6 @@ public class RecordCorrectShowActivity extends Activity implements OnMapLoadedLi
 		super.onSaveInstanceState(outState);
 		mMapView.onSaveInstanceState(outState);
 	}
-
 
 	public void onDestroy() {
 		super.onDestroy();

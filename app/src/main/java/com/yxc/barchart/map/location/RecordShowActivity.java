@@ -43,14 +43,8 @@ import java.util.List;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
-/**
- * 实现轨迹回放、纠偏后轨迹回放
- * 
- */
 public class RecordShowActivity extends Activity implements OnMapLoadedListener {
 	private final static int AMAP_LOADED = 2;
-
-	private ToggleButton mDisplaybtn;
 
 	private MapView mMapView;
 	private AMap mAMap;
@@ -58,20 +52,11 @@ public class RecordShowActivity extends Activity implements OnMapLoadedListener 
 	private int recordType;
 	private List<LatLng> mOriginLatLngList;
 	private ExecutorService mThreadPool;
-	private ImageView imgGps;
-	private ImageView imgLocation;
-	private ImageView imgMarker;
-
-	private boolean enableMarker = true;
-
-	private Marker locationMarker;
-
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_record_item);
 		initView(savedInstanceState);
-
 		Intent recordIntent = getIntent();
 		int threadPoolSize = Runtime.getRuntime().availableProcessors() * 2 + 3;
 		mThreadPool = Executors.newFixedThreadPool(threadPoolSize);
@@ -85,15 +70,6 @@ public class RecordShowActivity extends Activity implements OnMapLoadedListener 
 	private void initView(Bundle savedInstanceState) {
 		mMapView = findViewById(R.id.map);
 		mMapView.onCreate(savedInstanceState);// 此方法必须重写
-		imgGps = findViewById(R.id.img_gps);
-		imgLocation = findViewById(R.id.img_location);
-		imgMarker = findViewById(R.id.img_marker);
-
-		imgLocation.setOnClickListener(new View.OnClickListener() {
-			@Override
-			public void onClick(View v) {
-			}
-		});
 	}
 
 	UiSettings uiSettings;
@@ -106,7 +82,6 @@ public class RecordShowActivity extends Activity implements OnMapLoadedListener 
 			uiSettings.setLogoBottomMargin(-50);
 		}
 	}
-
 
 	@SuppressLint("HandlerLeak")
 	private Handler handler = new Handler() {
@@ -157,10 +132,8 @@ public class RecordShowActivity extends Activity implements OnMapLoadedListener 
 			if (recordList == null || startLoc == null || endLoc == null) {
 				return;
 			}
-			LatLng startLatLng = new LatLng(startLoc.getLatitude(),
-					startLoc.getLongitude());
-			LatLng endLatLng = new LatLng(endLoc.getLatitude(),
-					endLoc.getLongitude());
+			LatLng startLatLng = new LatLng(startLoc.getLatitude(), startLoc.getLongitude());
+			LatLng endLatLng = new LatLng(endLoc.getLatitude(), endLoc.getLongitude());
 			mOriginLatLngList = LocationComputeUtil.parseLatLngList(recordList);
 			addOriginTrace(startLatLng, endLatLng, mOriginLatLngList);
 			addMilePost(recordLocationList);
@@ -168,7 +141,6 @@ public class RecordShowActivity extends Activity implements OnMapLoadedListener 
 
 		}
 	}
-
 
 	private void addMilePost(List<RecordLocation> recordLocationList) {
 		for (int i = 0; i < recordLocationList.size(); i++) {
@@ -178,21 +150,6 @@ public class RecordShowActivity extends Activity implements OnMapLoadedListener 
 				LatLng milePostPoint = new LatLng(location.getLatitude(), location.getLongitude());
 				String milePost = String.valueOf(Math.round(recordLocation.getMilePost() / 1000));
 				addMarker(milePostPoint, milePost, 16, 15, R.color.location_wrapper, R.color.location_inner_circle);
-			}
-		}
-	}
-
-	private void addDurationPoint(List<RecordLocation> recordLocationList) {
-		for (int i = 0; i < recordLocationList.size(); i++) {
-			RecordLocation recordLocation = recordLocationList.get(i);
-			if (recordLocation.duration > 1000) {
-				AMapLocation location = LocationComputeUtil.parseLocation(recordLocation.locationStr);
-				LatLng durationPoint = new LatLng(location.getLatitude(), location.getLongitude());
-				int time = Math.round(recordLocation.duration/1000);
-				String timeStr = TimeDateUtil.getTimeStrWithSec(time, "h", "m", "s");
-
-				addMarker(durationPoint, timeStr, 16, 12,
-						R.color.black_30_transparent, R.color.black_20_transparent);
 			}
 		}
 	}
@@ -241,7 +198,6 @@ public class RecordShowActivity extends Activity implements OnMapLoadedListener 
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
-//		mAMap.addMarker(new MarkerOptions().position(startPoint).icon(BitmapDescriptorFactory.fromResource(R.drawable.walk)));
 	}
 
 	@Override
@@ -254,9 +210,6 @@ public class RecordShowActivity extends Activity implements OnMapLoadedListener 
 
 	//声明AMapLocationClient类对象
 	public AMapLocationClient mLocationClient = null;
-
-	//声明mLocationOption对象
-	public AMapLocationClientOption mLocationOption = null;
 
 	@Override
 	protected void onPause() {
@@ -275,7 +228,6 @@ public class RecordShowActivity extends Activity implements OnMapLoadedListener 
 		super.onSaveInstanceState(outState);
 		mMapView.onSaveInstanceState(outState);
 	}
-
 
 	public void onDestroy() {
 		super.onDestroy();

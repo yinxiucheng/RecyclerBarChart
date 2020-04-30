@@ -8,10 +8,12 @@ import com.amap.api.location.AMapLocation;
 import com.amap.api.location.AMapLocationClient;
 import com.amap.api.location.AMapLocationClientOption;
 import com.amap.api.location.AMapLocationListener;
+import com.yxc.barchart.map.location.util.Gps;
 import com.yxc.barchart.map.location.util.LocationComputeUtil;
 import com.yxc.barchart.map.location.util.IWifiAutoCloseDelegate;
 import com.yxc.barchart.map.location.util.LocationConstants;
 import com.yxc.barchart.map.location.util.NetUtil;
+import com.yxc.barchart.map.location.util.PositionUtil;
 import com.yxc.barchart.map.location.util.PowerManagerUtil;
 import com.yxc.barchart.map.location.util.Utils;
 import com.yxc.barchart.map.location.util.WifiAutoCloseDelegate;
@@ -141,6 +143,12 @@ public class LocationService extends NotiService {
                 long duration = endTime - timestamp;
                 resetIntervalTimes(duration);
             }
+
+            //火星坐标gcj02 转 Gps84坐标
+            Gps gps = PositionUtil.gcj_To_Gps84(aMapLocation.getLatitude(), aMapLocation.getLongitude());
+            aMapLocation.setLatitude(gps.getLatitude());
+            aMapLocation.setLongitude(gps.getLongitude());
+
             sendLocationBroadcast(aMapLocation);
             //发送结果的通知
             if (!mIsWifiCloseable) {
