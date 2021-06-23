@@ -22,6 +22,7 @@ import com.yxc.barchart.map.location.database.RealmDbHelper;
 import com.yxc.barchart.map.location.util.LocationConstants;
 import com.yxc.barchart.ui.bezier.BezierActivity;
 import com.yxc.barchart.ui.line.LineActivity;
+import com.yxc.barchart.ui.rainbow.RainbowActivity;
 import com.yxc.barchart.ui.sleep.SleepActivity;
 import com.yxc.barchart.ui.step.StepActivity;
 import com.yxc.barchart.ui.waterdrop.WaterDropActivity;
@@ -89,8 +90,6 @@ public class MainActivity extends AppCompatActivity {
         return super.onOptionsItemSelected(item);
     }
 
-
-
     public void clickStep(View view) {
         startActivity(new Intent(this, StepActivity.class));
     }
@@ -111,17 +110,24 @@ public class MainActivity extends AppCompatActivity {
         startActivity(new Intent(this, WaterDropActivity.class));
     }
 
+    public void clickRainbow(View view){
+        startActivity(new Intent(this, RainbowActivity.class));
+    }
+
     public void clickGaoDeMap(View view) {
         startActivity(new Intent(this, LocationActivity.class));
     }
 
-    public void clickGoogleMap(View view) {
-        intentToRecord();
+    public void clickAMapRecord(View view) {
+        intentToRecord(true);
     }
 
-    private void intentToRecord() {
+    public void clickMapboxRecord(View view) {intentToRecord(false); }
+
+    private void intentToRecord(boolean useGaoDe) {
         Intent intent = new Intent(this, RecordListActivity.class);
         intent.putExtra(LocationConstants.KEY_RECORD_TYPE, LocationConstants.SPORT_TYPE_RUNNING);
+        intent.putExtra("useGaoDe", useGaoDe);
         startActivity(intent);
     }
 

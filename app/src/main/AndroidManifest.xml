@@ -54,6 +54,7 @@
         <activity android:name=".ui.line.LineActivity" />
         <activity android:name=".ui.waterdrop.WaterDropActivity" />
         <activity android:name=".ui.bezier.BezierActivity" />
+        <activity android:name=".ui.rainbow.RainbowActivity"/>
 
         <!-- 定位需要的服务 使用2.0的定位需要加上这个 -->
         <service android:name="com.amap.api.location.APSService"/>

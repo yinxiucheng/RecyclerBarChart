@@ -39,7 +39,7 @@ import java.util.List;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
-public class RecordShowActivity extends Activity implements OnMapLoadedListener {
+public class MapboxShowActivity extends Activity implements OnMapLoadedListener {
 	private final static int AMAP_LOADED = 2;
 
 	private MapView mMapView;
@@ -48,7 +48,6 @@ public class RecordShowActivity extends Activity implements OnMapLoadedListener 
 	private int recordType;
 	private List<LatLng> mOriginLatLngList;
 	private ExecutorService mThreadPool;
-
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
@@ -154,7 +153,7 @@ public class RecordShowActivity extends Activity implements OnMapLoadedListener 
 	}
 
 	private void addMarker(LatLng position, String displayStr,int radius, int textSize, int wrapperColor, int circleColor, boolean showBottomShader){
-		View view = View.inflate(RecordShowActivity.this, R.layout.custom_location_view, null);
+		View view = View.inflate(MapboxShowActivity.this, R.layout.custom_location_view, null);
 		RelativeLayout locationContainer = view.findViewById(R.id.locationContainer);
 		LocationMarker locationMarker = new LocationMarker(mMapView.getContext(),
 				DisplayUtil.dip2px(radius), displayStr, textSize);

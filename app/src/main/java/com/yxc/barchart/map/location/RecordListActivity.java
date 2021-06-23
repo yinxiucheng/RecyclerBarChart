@@ -47,15 +47,27 @@ public class RecordListActivity extends Activity implements RecordAdapter.OnReco
     public int recordType = LocationConstants.SPORT_TYPE_RUNNING;
 
     private TextView rightTitleBtn;
+    private TextView titleCenter;
+    private boolean useGaoDe = true;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.recordlist);
 
+        Intent intent = getIntent();
+        if (intent != null) {
+            useGaoDe = intent.getBooleanExtra("useGaoDe", true);
+            recordType = intent.getIntExtra(LocationConstants.KEY_RECORD_TYPE, -1);
+        }
         mRecordRcyclerView = findViewById(R.id.record_recycler);
+        titleCenter = findViewById(R.id.title_center);
+        if (useGaoDe) {
+            titleCenter.setText("高德运动记录");
+        } else {
+            titleCenter.setText("Mapbox运动记录");
+        }
         rightTitleBtn = findViewById(R.id.title_tv_option);
-        recordType = getIntent().getIntExtra(LocationConstants.KEY_RECORD_TYPE, -1);
         searchAllRecordFromDB();
         invokeRightBtn();
         initRecycler();
@@ -63,6 +75,7 @@ public class RecordListActivity extends Activity implements RecordAdapter.OnReco
 
     private void initRecycler() {
         mAdapter = new RecordAdapter(this, mAllRecord);
+        mAdapter.setUseGaoDe(useGaoDe);
         mAdapter.setOnRecordItemClickListener(this);
 
         LinearLayoutManager linearLayoutManager = new LinearLayoutManager(this);
@@ -273,10 +286,16 @@ public class RecordListActivity extends Activity implements RecordAdapter.OnReco
 
     @Override
     public void onItemClick(int position, Record recordItem) {
-        Class cls = RecordShowActivity.class;
-        if (recordItem.isCorrect){
-            cls = RecordCorrectShowActivity.class;
+        Class cls = null;
+        if (useGaoDe) {
+            cls = RecordShowActivity.class;
+            if (recordItem.isCorrect) {
+                cls = RecordCorrectShowActivity.class;
+            }
+        } else {
+            cls = MapboxShowActivity.class;
         }
+
         Intent intent = new Intent(this, cls);
         intent.putExtra(RECORD_ID, recordItem.getId());
         intent.putExtra(LocationConstants.KEY_RECORD_TYPE, recordType);
@@ -288,7 +307,7 @@ public class RecordListActivity extends Activity implements RecordAdapter.OnReco
         runOnUiThread(new Runnable() {
             @Override
             public void run() {
-                if (null != mListPoint){
+                if (null != mListPoint) {
                     mListPoint.clear();
                 }
                 int recordType = record.recordType;

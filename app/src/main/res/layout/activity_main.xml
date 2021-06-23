@@ -38,19 +38,28 @@
         android:layout_width="100dp"
         android:layout_height="50dp"
         android:layout_gravity="center_horizontal"
-        android:text="轨迹地图"
+        android:text="发起运动"
         android:layout_marginTop="30dp"
         android:onClick="clickGaoDeMap"/>
 
 
     <Button
         android:id="@+id/map_google"
-        android:layout_width="100dp"
+        android:layout_width="150dp"
         android:layout_height="50dp"
         android:layout_gravity="center_horizontal"
-        android:text="运动轨迹"
+        android:text="高德运动轨迹"
         android:layout_marginTop="30dp"
-        android:onClick="clickGoogleMap"/>
+        android:onClick="clickAMapRecord" />
+
+    <Button
+        android:id="@+id/map_mapbox"
+        android:layout_width="150dp"
+        android:layout_height="50dp"
+        android:layout_gravity="center_horizontal"
+        android:text="Mapbox运动轨迹"
+        android:layout_marginTop="30dp"
+        android:onClick="clickMapboxRecord" />
 
     <Button
         android:id="@+id/step_btn"
@@ -59,7 +68,7 @@
         android:layout_gravity="center_horizontal"
         android:text="步数图"
         android:layout_marginTop="30dp"
-        android:onClick="clickStep"/>
+        android:onClick="clickStep" />
 
     <Button
         android:id="@+id/line_btn"
@@ -68,7 +77,7 @@
         android:layout_gravity="center_horizontal"
         android:text="折线图"
         android:layout_marginTop="30dp"
-        android:onClick="clickLine"/>
+        android:onClick="clickLine" />
 
     <Button
         android:id="@+id/bezier_btn"
@@ -77,7 +86,7 @@
         android:layout_gravity="center_horizontal"
         android:text="曲线图"
         android:layout_marginTop="30dp"
-        android:onClick="clickBezier"/>
+        android:onClick="clickBezier" />
 
 
     <Button
@@ -87,7 +96,7 @@
         android:layout_gravity="center_horizontal"
         android:text="睡眠图"
         android:layout_marginTop="30dp"
-        android:onClick="clickSleep"/>
+        android:onClick="clickSleep" />
 
     <Button
         android:id="@+id/water_drop_btn"
@@ -96,6 +105,15 @@
         android:layout_gravity="center_horizontal"
         android:text="水滴图"
         android:layout_marginTop="30dp"
-        android:onClick="clickWaterDrop"/>
+        android:onClick="clickWaterDrop" />
+
+    <Button
+        android:id="@+id/rainbow_btn"
+        android:layout_width="100dp"
+        android:layout_height="50dp"
+        android:layout_gravity="center_horizontal"
+        android:text="彩虹"
+        android:layout_marginTop="30dp"
+        android:onClick="clickRainbow" />
 
 </LinearLayout>

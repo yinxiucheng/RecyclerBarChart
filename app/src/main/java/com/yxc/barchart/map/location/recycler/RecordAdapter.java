@@ -19,10 +19,16 @@ public class RecordAdapter extends RecyclerView.Adapter<RecordAdapter.ViewHolder
 
 	private Context mContext;
 	private List<Record> mRecordList;
+	private boolean useGaoDe;
 
 	public RecordAdapter(Context context, List<Record> list) {
 		this.mContext = context;
 		this.mRecordList = list;
+	}
+
+	public void setUseGaoDe(boolean useGaoDe){
+		this.useGaoDe = useGaoDe;
+		notifyDataSetChanged();
 	}
 
 	@NonNull

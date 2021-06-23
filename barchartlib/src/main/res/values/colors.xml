@@ -66,6 +66,10 @@
     <color name="water_n_drop7">#15151e</color>
     <color name="water_n_drop8">#050508</color>
 
+    <color name="rainbow_color1">#f95c38</color>
+    <color name="rainbow_color2">#FFB426</color>
+    <color name="rainbow_color3">#53B9FF</color>
+
 
     <color name="rate_shader_end">#FF9494</color>
     <color name="rate_shader_begin">#F54F66</color>
