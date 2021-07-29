@@ -33,9 +33,10 @@
         android:background="@color/white_80_transparent"
         android:layout_below="@+id/toolBar"/>
 
-    <com.yxc.barchart.view.Rainbow
-        android:id="@+id/rainbow"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent" />
+    <com.yxc.barchart.view.ThreeTargetView
+        android:id="@+id/targetView"
+        android:layout_width="300dp"
+        android:layout_height="300dp"
+        android:layout_centerInParent="true"/>
 
 </RelativeLayout>

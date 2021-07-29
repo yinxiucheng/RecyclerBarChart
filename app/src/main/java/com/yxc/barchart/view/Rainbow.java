@@ -83,13 +83,12 @@ public class Rainbow extends FrameLayout {
     }
 
     public void initWaterDropView() {
-        rainbowCircle1 = createWaterDrop(1, DisplayUtil.dip2px(8), 0, R.color.transparent);
-        rainbowCircle2 = createWaterDrop(2, DisplayUtil.dip2px(5) + DisplayUtil.dip2px(24), DisplayUtil.dip2px(5), R.color.rainbow_color3);
-        rainbowCircle3 = createWaterDrop(3, 2 * (DisplayUtil.dip2px(5) + DisplayUtil.dip2px(24)), 2 * DisplayUtil.dip2px(5) + DisplayUtil.dip2px(24),
-                R.color.rainbow_color2);
-        rainbowCircle4 = createWaterDrop(4, 3 * (DisplayUtil.dip2px(5) + DisplayUtil.dip2px(24)),
-                2 * (DisplayUtil.dip2px(5) + DisplayUtil.dip2px(24)) + DisplayUtil.dip2px(5),
-                R.color.rainbow_color1);
+        int itemWidth = DisplayUtil.dip2px(40);
+        int spaceWidth = DisplayUtil.dip2px(8);
+        rainbowCircle1 = createWaterDrop(1, DisplayUtil.dip2px(10), 0, R.color.transparent);
+        rainbowCircle2 = createWaterDrop(2,  spaceWidth + itemWidth, spaceWidth, R.color.rainbow_color3);
+        rainbowCircle3 = createWaterDrop(3, 2 * (spaceWidth + itemWidth), 2 * spaceWidth + itemWidth, R.color.rainbow_color2);
+        rainbowCircle4 = createWaterDrop(4, 3 * (spaceWidth + itemWidth), 2 * (spaceWidth + itemWidth) + spaceWidth, R.color.rainbow_color1);
     }
 
     public void resetWaterDrop() {
