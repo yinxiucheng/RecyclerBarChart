@@ -2,6 +2,7 @@ package com.yxc.barchart.view;
 
 import android.content.Context;
 import android.graphics.Canvas;
+import android.graphics.Matrix;
 import android.graphics.Paint;
 import android.graphics.Path;
 import android.graphics.PathMeasure;
@@ -67,7 +68,7 @@ public class ThreeTargetView extends View {
         float spaceWidth = itemWidth / 7.5f;
 //        float paintWidth = itemWidth - spaceWidth;
         float paintWidth = DisplayUtil.dip2px(2);
-        drawCircle(canvas, width, height, padding, itemWidth, paintWidth, spaceWidth);
+        drawCircleBg(canvas, width, height, padding, itemWidth, paintWidth, spaceWidth);
 //        drawCircle2(canvas, width, height, padding, itemWidth, paintWidth, spaceWidth);
 //        drawCircle3(canvas, width, height, padding, itemWidth, paintWidth, spaceWidth);
     }
@@ -90,7 +91,7 @@ public class ThreeTargetView extends View {
     }
 
     private void drawCircle(Canvas canvas, int width, int height, float padding,
-                            float itemWidth, float paintWidth, float spaceWidth) {
+                              float itemWidth, float paintWidth, float spaceWidth) {
         canvas.save();
         int originalColor = circlePaint.getColor();
         RectF bgRectF = new RectF(padding, padding, width - padding, height - padding);
@@ -101,21 +102,20 @@ public class ThreeTargetView extends View {
         PathModel pathModelInner = generalPathModelInner(innerRectF, 0.02f);
 
         float wrapperYHalfRectF = bgRectF.top + bgRectF.height()/2;
-        float wrapperHalfSquareWidth = wrapperYHalfRectF - pathModel.leftPointF.y;
-
+        float wrapperHalfSquareWidth = wrapperYHalfRectF - pathModel.startPointF.y;
         float innerYHalfRectF = innerRectF.top + innerRectF.height()/2;
-        float innerHalfSquareWidth = innerYHalfRectF - pathModelInner.leftPointF.y;
+        float innerHalfSquareWidth = innerYHalfRectF - pathModelInner.startPointF.y;
 
         Path path = new Path();
-        path.moveTo(pathModelInner.leftPointF.x - innerHalfSquareWidth, wrapperYHalfRectF);
-        path.lineTo(pathModel.leftPointF.x + wrapperHalfSquareWidth, wrapperYHalfRectF);
-        path.arcTo(pathModel.leftSmallRectF, 90, 90, false);
+        path.moveTo(pathModelInner.startPointF.x - innerHalfSquareWidth, wrapperYHalfRectF);
+        path.lineTo(pathModel.startPointF.x + wrapperHalfSquareWidth, wrapperYHalfRectF);
+        path.arcTo(pathModel.startSmallRectF, 90, 90, false);
         path.addPath(pathModel.pathArc);
-        path.arcTo(pathModel.rightSmallRectF, 0, 90, false);
+        path.arcTo(pathModel.endSmallRectF, 0, 90, false);
         path.lineTo(pathModelInner.endPointF.x + innerHalfSquareWidth, wrapperYHalfRectF);
-        path.arcTo(pathModelInner.rightSmallRectF, 90, 90, true);
+        path.arcTo(pathModelInner.endSmallRectF, 90, 90, true);
         path.addPath(pathModelInner.pathArc);
-        path.arcTo(pathModelInner.leftSmallRectF, 0, 90, true);
+        path.arcTo(pathModelInner.startSmallRectF, 0, 90, true);
 
         circlePaint.setColor(firstColor);
         circlePaint.setAlpha(transParentValue);
@@ -126,38 +126,112 @@ public class ThreeTargetView extends View {
     }
 
     private PathModel generalPathModelInner(RectF rectF, float fractionArc){
-        PathModel pathModel = generalPathModel(rectF, fractionArc);
+        PathModel pathModel = generalPathModel(rectF, fractionArc, 180, 60);
         float yHalfRectF = rectF.top + rectF.height()/2;
-        float halfSquareWidth = yHalfRectF - pathModel.leftPointF.y;
-        RectF smallLeftRectF = new RectF(pathModel.leftPointF.x - 2 * halfSquareWidth,
-                yHalfRectF - 2 * halfSquareWidth, pathModel.leftPointF.x, yHalfRectF);
-        pathModel.setLeftSmallRectF(smallLeftRectF);
+        float halfSquareWidth = yHalfRectF - pathModel.startPointF.y;
+        RectF smallLeftRectF = new RectF(pathModel.startPointF.x - 2 * halfSquareWidth,
+                yHalfRectF - 2 * halfSquareWidth, pathModel.startPointF.x, yHalfRectF);
+        pathModel.setStartSmallRectF(smallLeftRectF);
 
         RectF smallRightRectF = new RectF(pathModel.endPointF.x , yHalfRectF - 2 * halfSquareWidth,
                 pathModel.endPointF.x + 2 * halfSquareWidth, yHalfRectF);
-        pathModel.setRightSmallRectF(smallRightRectF);
+        pathModel.setEndSmallRectF(smallRightRectF);
         return pathModel;
     }
 
     private PathModel generalPathModelWrapper(RectF rectF, float fractionArc){
-        PathModel pathModel = generalPathModel(rectF, fractionArc);
+        PathModel pathModel = generalPathModel(rectF, fractionArc, 180, 60);
         float yHalfRectF = rectF.top + rectF.height()/2;
-        float halfSquareWidth = yHalfRectF - pathModel.leftPointF.y;
-        RectF smallLeftRectF = new RectF(pathModel.leftPointF.x, yHalfRectF - 2 * halfSquareWidth,
-                pathModel.leftPointF.x + 2 * halfSquareWidth, yHalfRectF);
-        pathModel.setLeftSmallRectF(smallLeftRectF);
+        float halfSquareWidth = yHalfRectF - pathModel.startPointF.y;
 
-        RectF smallRightRectF = new RectF(pathModel.endPointF.x - 2 * halfSquareWidth, yHalfRectF - 2 * halfSquareWidth,
-                pathModel.endPointF.x, yHalfRectF);
-        pathModel.setRightSmallRectF(smallRightRectF);
+        RectF smallStartRectF = new RectF(pathModel.startPointF.x, yHalfRectF - 2 * halfSquareWidth, pathModel.startPointF.x + 2 * halfSquareWidth, yHalfRectF);
+        pathModel.setStartSmallRectF(smallStartRectF);
+        Path startSmallPath = new Path();
+        startSmallPath.moveTo(pathModel.startPointF.x + halfSquareWidth, yHalfRectF);
+        startSmallPath.arcTo(smallStartRectF, 90, 90);
+        pathModel.setStartPathArc(startSmallPath);
+
+        float x = (float) (pathModel.endPointF.x * Math.cos(60));
+        float y = (float) (pathModel.endPointF.y * Math.sin(60));
+        RectF smallEndRectF = new RectF(x - halfSquareWidth, y - halfSquareWidth, x + halfSquareWidth, y + halfSquareWidth);
+        Path endSmallPath = new Path();
+        endSmallPath.moveTo(x, y - halfSquareWidth);
+        endSmallPath.arcTo(smallEndRectF, 270, 90);
+
+        Matrix matrix = new Matrix();
+        matrix.setRotate(-60);
+        endSmallPath.transform(matrix);
+        pathModel.setEndPathArc(endSmallPath);
+
+        pathModel.setHalfSquareWidth(halfSquareWidth);
         return pathModel;
     }
 
-    private PathModel generalPathModel(RectF rectF, float fractionArc) {
+    private void drawCircleBg(Canvas canvas, int width, int height, float padding,
+                            float itemWidth, float paintWidth, float spaceWidth) {
+        canvas.save();
+        int originalColor = circlePaint.getColor();
+        RectF bgRectF = new RectF(padding, padding, width - padding, height - padding);
+        RectF innerRectF = new RectF(padding + itemWidth, padding + itemWidth, width - padding - itemWidth,
+                height - padding - itemWidth);
+        PathModel pathModel = generalPathModelWrapperBg(bgRectF, 0.015f);
+        PathModel pathModelInner = generalPathModelInnerBg(innerRectF, 0.02f);
+        float wrapperYHalfRectF = bgRectF.top + bgRectF.height()/2;
+        float wrapperHalfSquareWidth = wrapperYHalfRectF - pathModel.startPointF.y;
+        float innerYHalfRectF = innerRectF.top + innerRectF.height()/2;
+        float innerHalfSquareWidth = innerYHalfRectF - pathModelInner.startPointF.y;
+
+        Path path = new Path();
+        path.moveTo(pathModelInner.startPointF.x - innerHalfSquareWidth, wrapperYHalfRectF);
+        path.lineTo(pathModel.startPointF.x + wrapperHalfSquareWidth, wrapperYHalfRectF);
+        path.arcTo(pathModel.startSmallRectF, 90, 90, false);
+        path.addPath(pathModel.pathArc);
+        path.arcTo(pathModel.endSmallRectF, 0, 90, false);
+        path.lineTo(pathModelInner.endPointF.x + innerHalfSquareWidth, wrapperYHalfRectF);
+        path.arcTo(pathModelInner.endSmallRectF, 90, 90, true);
+        path.addPath(pathModelInner.pathArc);
+        path.arcTo(pathModelInner.startSmallRectF, 0, 90, true);
+
+        circlePaint.setColor(firstColor);
+        circlePaint.setAlpha(transParentValue);
+        circlePaint.setStrokeWidth(paintWidth);
+        canvas.drawPath(path, circlePaint);
+        circlePaint.setColor(originalColor);
+        canvas.restore();
+    }
+
+    private PathModel generalPathModelInnerBg(RectF rectF, float fractionArc){
+        PathModel pathModel = generalPathModel(rectF, fractionArc, 180, 180);
+        float yHalfRectF = rectF.top + rectF.height()/2;
+        float halfSquareWidth = yHalfRectF - pathModel.startPointF.y;
+        RectF smallLeftRectF = new RectF(pathModel.startPointF.x - 2 * halfSquareWidth,
+                yHalfRectF - 2 * halfSquareWidth, pathModel.startPointF.x, yHalfRectF);
+        pathModel.setStartSmallRectF(smallLeftRectF);
+
+        RectF smallRightRectF = new RectF(pathModel.endPointF.x , yHalfRectF - 2 * halfSquareWidth,
+                pathModel.endPointF.x + 2 * halfSquareWidth, yHalfRectF);
+        pathModel.setEndSmallRectF(smallRightRectF);
+        return pathModel;
+    }
+
+    private PathModel generalPathModelWrapperBg(RectF rectF, float fractionArc){
+        PathModel pathModel = generalPathModel(rectF, fractionArc, 180, 180);
+        float yHalfRectF = rectF.top + rectF.height()/2;
+        float halfSquareWidth = yHalfRectF - pathModel.startPointF.y;
+        RectF smallLeftRectF = new RectF(pathModel.startPointF.x, yHalfRectF - 2 * halfSquareWidth, pathModel.startPointF.x + 2 * halfSquareWidth, yHalfRectF);
+        pathModel.setStartSmallRectF(smallLeftRectF);
+        RectF smallRightRectF = new RectF(pathModel.endPointF.x - 2 * halfSquareWidth, yHalfRectF - 2 * halfSquareWidth,
+                pathModel.endPointF.x, yHalfRectF);
+        pathModel.setEndSmallRectF(smallRightRectF);
+        pathModel.setHalfSquareWidth(halfSquareWidth);
+        return pathModel;
+    }
+
+    private PathModel generalPathModel(RectF rectF, float fractionArc, int startAngle, int sweepAngle) {
         Path pathOriginal = new Path();
         pathOriginal.moveTo(rectF.left, (rectF.top + rectF.bottom) / 2);
-        pathOriginal.arcTo(rectF, 180, 180, true);
-        PathMeasure pathMeasure = new PathMeasure(pathOriginal, true);
+        pathOriginal.arcTo(rectF, startAngle, sweepAngle, false);
+        PathMeasure pathMeasure = new PathMeasure(pathOriginal, false);
         float radius = rectF.width() / 2;
         float halfCircleLength = DecimalUtil.getDecimalFloat(DecimalUtil.THREE_LENGTH_DECIMAL,
                 (float) (Math.PI * radius));

@@ -5,32 +5,47 @@ import android.graphics.PointF;
 import android.graphics.RectF;
 
 public class PathModel {
-    PointF leftPointF;
+    PointF startPointF;
     PointF endPointF;
     Path pathArc;
-    RectF leftSmallRectF;
-    RectF rightSmallRectF;
+    Path startPathArc;
+    Path endPathArc;
+    RectF startSmallRectF;
+    RectF endSmallRectF;
+    float halfSquareWidth;
 
     public PathModel(PointF startPointF, PointF endPointF, Path pathArc) {
-        this.leftPointF = startPointF;
+        this.startPointF = startPointF;
         this.endPointF = endPointF;
         this.pathArc = pathArc;
     }
 
     public PathModel(PointF startPointF, PointF endPointF, Path pathArc,
                      RectF leftSmallRectF, RectF rightSmallRectF) {
-        this.leftPointF = startPointF;
+        this.startPointF = startPointF;
         this.endPointF = endPointF;
         this.pathArc = pathArc;
-        this.leftSmallRectF = leftSmallRectF;
-        this.rightSmallRectF = rightSmallRectF;
+        this.startSmallRectF = leftSmallRectF;
+        this.endSmallRectF = rightSmallRectF;
     }
 
-    public void setLeftSmallRectF(RectF leftSmallRectF) {
-        this.leftSmallRectF = leftSmallRectF;
+    public void setEndPathArc(Path endPathArc) {
+        this.endPathArc = endPathArc;
     }
 
-    public void setRightSmallRectF(RectF rightSmallRectF) {
-        this.rightSmallRectF = rightSmallRectF;
+    public void setStartPathArc(Path startPathArc) {
+        this.startPathArc = startPathArc;
+    }
+
+    public void setStartSmallRectF(RectF startSmallRectF) {
+        this.startSmallRectF = startSmallRectF;
+    }
+
+    public void setEndSmallRectF(RectF endSmallRectF) {
+        this.endSmallRectF = endSmallRectF;
+    }
+
+    public void setHalfSquareWidth(float halfSquareWidth) {
+        this.halfSquareWidth = halfSquareWidth;
     }
 }
