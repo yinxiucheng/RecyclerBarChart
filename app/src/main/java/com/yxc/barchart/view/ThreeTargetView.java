@@ -68,9 +68,7 @@ public class ThreeTargetView extends View {
 //        float paintWidth = itemWidth - spaceWidth;
         float paintWidth = DisplayUtil.dip2px(2);
         drawCircleBg(canvas, width, height, padding, itemWidth, paintWidth, spaceWidth);
-        drawCircle(canvas, width, height, padding, itemWidth, paintWidth, spaceWidth);
-//        drawCircle2(canvas, width, height, padding, itemWidth, paintWidth, spaceWidth);
-//        drawCircle3(canvas, width, height, padding, itemWidth, paintWidth, spaceWidth);
+//        drawCircle(canvas, width, height, padding, itemWidth, paintWidth, spaceWidth);
     }
 
     private float firstPercent = 0;

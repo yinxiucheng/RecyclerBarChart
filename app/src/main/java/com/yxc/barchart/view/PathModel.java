@@ -20,15 +20,6 @@ public class PathModel {
         this.pathArc = pathArc;
     }
 
-    public PathModel(PointF startPointF, PointF endPointF, Path pathArc,
-                     RectF leftSmallRectF, RectF rightSmallRectF) {
-        this.startPointF = startPointF;
-        this.endPointF = endPointF;
-        this.pathArc = pathArc;
-        this.startSmallRectF = leftSmallRectF;
-        this.endSmallRectF = rightSmallRectF;
-    }
-
     public void setEndPathArc(Path endPathArc) {
         this.endPathArc = endPathArc;
     }
