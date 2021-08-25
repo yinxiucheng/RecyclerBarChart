@@ -11,7 +11,6 @@ import androidx.appcompat.widget.Toolbar;
 
 import com.yxc.barchart.R;
 import com.yxc.barchart.view.Rainbow;
-import com.yxc.barchart.view.WaterDrop;
 import com.yxc.commonlib.util.ColorUtil;
 import com.yxc.commonlib.util.TimeDateUtil;
 

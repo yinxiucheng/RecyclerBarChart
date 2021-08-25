@@ -102,11 +102,11 @@ public class Rainbow extends FrameLayout {
     public void startLevelAnimator() {
 //        water1.setAlpha(0.f);
         addView(rainbowCircle1);
-        rainbowCircle2.setAlpha(0.f);
+//        rainbowCircle2.setAlpha(0.f);
         addView(rainbowCircle2);
-        rainbowCircle3.setAlpha(0.f);
+//        rainbowCircle3.setAlpha(0.f);
         addView(rainbowCircle3);
-        rainbowCircle4.setAlpha(0.f);
+//        rainbowCircle4.setAlpha(0.f);
         addView(rainbowCircle4);
         mAnimatorLevelSet.start();
     }
