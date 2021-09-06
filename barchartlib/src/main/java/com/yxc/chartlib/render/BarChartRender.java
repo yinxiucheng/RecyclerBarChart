@@ -15,6 +15,7 @@ import com.yxc.chartlib.formatter.ValueFormatter;
 import com.yxc.chartlib.util.CanvasUtil;
 import com.yxc.chartlib.util.ChartComputeUtil;
 import com.yxc.chartlib.util.DecimalUtil;
+import com.yxc.chartlib.util.RoundRectType;
 
 /**
  * @author yxc
@@ -84,7 +85,7 @@ public class BarChartRender extends BaseChartRender{
         } else if (rectF.left < parentLeft && rectF.right > parentLeft) {
             //左边部分滑入的时候，处理柱状图的显示
             rectF.left = parentLeft;
-            Path path = CanvasUtil.createRectRoundPathRight(rectF, radius);
+            Path path = CanvasUtil.createRectRoundPath(rectF, radius, RoundRectType.TYPE_RIGHT);
             mBarChartPaint.setColor(mBarChartAttrs.chartEdgeColor);
             canvas.drawPath(path, mBarChartPaint);
         } else if (DecimalUtil.bigOrEquals(rectF.left, parentLeft) && DecimalUtil.smallOrEquals(rectF.right, parentRight)) {
@@ -96,7 +97,7 @@ public class BarChartRender extends BaseChartRender{
             //右边部分滑出的时候，处理柱状图，文字的显示
             float distance = (parentRight - rectF.left);
             rectF.right = rectF.left + distance;
-            Path path = CanvasUtil.createRectRoundPathLeft(rectF, radius);
+            Path path = CanvasUtil.createRectRoundPath(rectF, radius, RoundRectType.TYPE_LEFT);
             mBarChartPaint.setColor(mBarChartAttrs.chartEdgeColor);
             canvas.drawPath(path, mBarChartPaint);
         }

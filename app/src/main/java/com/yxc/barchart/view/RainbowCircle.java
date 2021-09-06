@@ -96,7 +96,7 @@ public class RainbowCircle extends View {
         path.close();
 
         //去锯齿
-        canvas.setDrawFilter(new PaintFlagsDrawFilter(0, Paint.ANTI_ALIAS_FLAG | Paint.FILTER_BITMAP_FLAG));
+//        canvas.setDrawFilter(new PaintFlagsDrawFilter(0, Paint.ANTI_ALIAS_FLAG | Paint.FILTER_BITMAP_FLAG));
         drawBezierPath(canvas, ColorUtil.getResourcesColor(mContext, colorResource), path, rectF);
         canvas.restore();
     }

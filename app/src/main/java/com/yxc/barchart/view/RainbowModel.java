@@ -5,8 +5,6 @@ import android.graphics.PathMeasure;
 import android.graphics.PointF;
 import android.graphics.RectF;
 
-import com.yxc.chartlib.util.DecimalUtil;
-
 public class RainbowModel {
     PointF point1;
     PointF point2;
@@ -29,13 +27,10 @@ public class RainbowModel {
     Path pathArc5;
     Path pathArc6;
 
-    PathMeasure pathMeasureWrapper;
-    PathMeasure pathMeasureInner;
-
     public RainbowModel generalCommonModelBg(RainbowModel rainbowModel, RectF rectFWrapper, RectF rectInner,
                                              float fractionArcWrapper, float fractionInner){
-        generalCommonModel(rectFWrapper, fractionArcWrapper, 180, 180, true);
-        generalCommonModel(rectInner, fractionInner, 0, -180, false);
+        generalCommonModelLeft(rectFWrapper, fractionArcWrapper, 180, 90);
+        generalCommonModelRight(rectInner, fractionInner, 270, -90);
         generalPathModelWrapperBg(rectFWrapper);
         generalPathModelInnerBg(rectInner);
         return rainbowModel;
@@ -84,20 +79,15 @@ public class RainbowModel {
         return this;
     }
 
-
-
-    private RainbowModel generalCommonModel(RectF rectF, float fractionArc, int startAngle, int sweepAngle, boolean isFromLeft) {
+    private RainbowModel generalCommonModelLeft(RectF rectF, float fractionArc, int startAngle, int sweepAngle) {
         Path pathOriginal = new Path();
         float radius = rectF.height() / 2;
-        if (isFromLeft) {
-            pathOriginal.moveTo(rectF.left, (rectF.top + rectF.bottom) / 2);
-        } else {
-            pathOriginal.moveTo(rectF.right, (rectF.top + rectF.bottom) / 2);
-        }
+        PathMeasure pathMeasure;
+        float halfCircleLength = (float) (Math.PI * radius);
+        pathOriginal.moveTo(rectF.left, (rectF.top + rectF.bottom) / 2);
         pathOriginal.arcTo(rectF, startAngle, sweepAngle, false);
-        PathMeasure pathMeasure = new PathMeasure(pathOriginal, false);
+        pathMeasure = new PathMeasure(pathOriginal, false);
 
-        float halfCircleLength = DecimalUtil.getDecimalFloat(DecimalUtil.THREE_LENGTH_DECIMAL, (float) (Math.PI * radius));
         float[] dstPathFirstPoint = new float[2];
         float[] dstPathEndPoint = new float[2];
         float[] dstCtrlPoint1 = new float[2];
@@ -107,34 +97,51 @@ public class RainbowModel {
         pathMeasure.getPosTan(firstPointLength, dstPathFirstPoint, null);
         float endPointLength = pathMeasure.getLength() - firstPointLength;
         pathMeasure.getPosTan(endPointLength, dstPathEndPoint, null);
-
         float dstCtrlLength1 = 0;
         pathMeasure.getPosTan(dstCtrlLength1, dstCtrlPoint1, null);
         float dstCtrlLength2 = halfCircleLength * Math.abs(sweepAngle)/180.0f;
         pathMeasure.getPosTan(dstCtrlLength2, dstCtrlPoint2, null);
 
-        PointF startPointF = new PointF(dstPathFirstPoint[0], dstPathFirstPoint[1]);
-        PointF endPointF = new PointF(dstPathEndPoint[0], dstPathEndPoint[1]);
-        PointF pointCtrStart = new PointF(dstCtrlPoint1[0], dstCtrlPoint1[1]);
-        PointF pointCtrEnd = new PointF(dstCtrlPoint2[0], dstCtrlPoint2[1]);
+        point2 = new PointF(dstPathFirstPoint[0], dstPathFirstPoint[1]);
+        point3 = new PointF(dstPathEndPoint[0], dstPathEndPoint[1]);
+        pointCtr1 = new PointF(dstCtrlPoint1[0], dstCtrlPoint1[1]);
+        pointCtr2 = new PointF(dstCtrlPoint2[0], dstCtrlPoint2[1]);
+        pathArc2 = new Path();
+        pathMeasure.getSegment(firstPointLength, endPointLength, pathArc2, true);
+        return this;
+    }
 
-        Path clipCirclePath = new Path();
-        pathMeasure.getSegment(firstPointLength, endPointLength, clipCirclePath, true);
-        if (isFromLeft) {
-            point2 = startPointF;
-            point3 = endPointF;
-            pathArc2 = clipCirclePath;
-            pointCtr1 = pointCtrStart;
-            pointCtr2 = pointCtrEnd;
-            pathMeasureWrapper = pathMeasure;
-        } else {
-            point6 = startPointF;
-            point7 = endPointF;
-            pathArc5 = clipCirclePath;
-            pointCtr3 = pointCtrStart;
-            pointCtr4 = pointCtrEnd;
-            pathMeasureInner = pathMeasure;
-        }
+
+
+    private RainbowModel generalCommonModelRight(RectF rectF, float fractionArc, int startAngle, int sweepAngle) {
+        Path pathOriginal = new Path();
+        float radius = rectF.height() / 2;
+        PathMeasure pathMeasure;
+        float halfCircleLength = (float) (Math.PI * radius);
+        pathOriginal.moveTo(rectF.right, (rectF.top + rectF.bottom) / 2);
+        pathOriginal.arcTo(rectF, 0, -180, false);
+        pathMeasure = new PathMeasure(pathOriginal, false);
+
+        float[] dstPathFirstPoint = new float[2];
+        float[] dstPathEndPoint = new float[2];
+        float[] dstCtrlPoint1 = new float[2];
+        float[] dstCtrlPoint2 = new float[2];
+
+        float dstCtrlLength1 = halfCircleLength * (180 - Math.abs(sweepAngle)) / 180.f;
+        pathMeasure.getPosTan(dstCtrlLength1, dstCtrlPoint1, null);
+        pointCtr3 = new PointF(dstCtrlPoint1[0], dstCtrlPoint1[1]);
+        float dstCtrlLength2 = halfCircleLength;
+        pathMeasure.getPosTan(dstCtrlLength2, dstCtrlPoint2, null);
+        pointCtr4 = new PointF(dstCtrlPoint2[0], dstCtrlPoint2[1]);
+        float itemLength = halfCircleLength * fractionArc;
+        float firstPointLength = dstCtrlLength1 + itemLength;
+        pathMeasure.getPosTan(firstPointLength, dstPathFirstPoint, null);
+        point6 = new PointF(dstPathFirstPoint[0], dstPathFirstPoint[1]);
+        float endPointLength = halfCircleLength - itemLength;
+        pathMeasure.getPosTan(endPointLength, dstPathEndPoint, null);
+        point7 = new PointF(dstPathEndPoint[0], dstPathEndPoint[1]);
+        pathArc5 = new Path();
+        pathMeasure.getSegment(firstPointLength, endPointLength, pathArc5, true);
         return this;
     }
 

@@ -33,7 +33,7 @@
         android:background="@color/white_80_transparent"
         android:layout_below="@+id/toolBar"/>
 
-    <com.yxc.barchart.view.RainbowView
+    <com.yxc.barchart.view.ThreeTargetView3
         android:id="@+id/rainbowView"
         android:layout_width="300dp"
         android:layout_height="300dp"

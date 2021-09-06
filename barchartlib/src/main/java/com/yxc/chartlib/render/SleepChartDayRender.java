@@ -18,6 +18,7 @@ import com.yxc.chartlib.formatter.ValueFormatter;
 import com.yxc.chartlib.util.CanvasUtil;
 import com.yxc.chartlib.util.ChartComputeUtil;
 import com.yxc.chartlib.util.DecimalUtil;
+import com.yxc.chartlib.util.RoundRectType;
 
 import java.util.List;
 
@@ -67,7 +68,7 @@ public class SleepChartDayRender extends BaseChartRender<SleepEntry> {
             rectF.left = parentLeft;
             Path path;
             if (position == 0) {
-                path = CanvasUtil.createRectRoundPathRight(rectF, radius);
+                path = CanvasUtil.createRectRoundPath(rectF, radius, RoundRectType.TYPE_RIGHT);
             } else {
                 path = CanvasUtil.createRectPath(rectF);
             }
@@ -90,7 +91,7 @@ public class SleepChartDayRender extends BaseChartRender<SleepEntry> {
             rectF.right = rectF.left + distance;
             Path path;
             if (position == 0) {
-                path = CanvasUtil.createRectRoundPathLeft(rectF, radius);
+                path = CanvasUtil.createRectRoundPath(rectF, radius, RoundRectType.TYPE_LEFT);
             } else {
                 path = CanvasUtil.createRectPath(rectF);
             }

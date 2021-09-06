@@ -1,7 +1,10 @@
 package com.yxc.barchart.view;
 
 import android.content.Context;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.graphics.Canvas;
+import android.graphics.CornerPathEffect;
 import android.graphics.Paint;
 import android.graphics.Path;
 import android.graphics.RectF;
@@ -77,7 +80,8 @@ public class RainbowView extends View {
     private void init() {
         circlePaint = new Paint(Paint.ANTI_ALIAS_FLAG);
         circlePaint.setStyle(Paint.Style.STROKE);
-        circlePaint.setStrokeCap(Paint.Cap.BUTT);
+        circlePaint.setPathEffect(new CornerPathEffect(3));
+//        circlePaint.setStrokeCap(Paint.Cap.BUTT);
         transParentValue = (int) (255 * 0.8);
         firstColor = ColorUtil.getResourcesColor(mContext, R.color.rainbow_color1);
         secondColor = ColorUtil.getResourcesColor(mContext, R.color.rainbow_color2);
@@ -88,10 +92,24 @@ public class RainbowView extends View {
                             float itemWidth, float paintWidth, float spaceWidth) {
         canvas.save();
         int originalColor = circlePaint.getColor();
+        circlePaint.setColor(firstColor);
+        circlePaint.setAlpha(transParentValue);
+        circlePaint.setStrokeWidth(paintWidth);
+
+        Bitmap mBitmap = BitmapFactory.decodeResource(getResources(), R.drawable.test);
+        Path clipPath = createClipPath(width, height, padding, itemWidth);
+        canvas.clipPath(clipPath);
+        canvas.drawBitmap(mBitmap, 0, 0, circlePaint);
+//        canvas.drawPath(clipPath, circlePaint);
+//        circlePaint.setColor(originalColor);
+        canvas.restore();
+    }
+
+    private Path createClipPath(int width, int height, float padding, float itemWidth){
         RectF bgRectF = new RectF(padding, padding, width - padding, height - padding);
         RectF innerRectF = new RectF(padding + itemWidth, padding + itemWidth, width - padding - itemWidth, height - padding - itemWidth);
         RainbowModel rainbowModel = new RainbowModel();
-        rainbowModel.generalCommonModelBg(rainbowModel, bgRectF, innerRectF, 0.015f, 0.015f);
+        rainbowModel.generalCommonModelBg(rainbowModel, bgRectF, innerRectF, 0.012f, 0.014f);
         Path path = new Path();
         path.moveTo(rainbowModel.point8.x, rainbowModel.point8.y);
         path.lineTo(rainbowModel.point1.x, rainbowModel.point1.y);
@@ -102,12 +120,7 @@ public class RainbowView extends View {
         path.addPath(rainbowModel.pathArc4);
         path.addPath(rainbowModel.pathArc5);
         path.addPath(rainbowModel.pathArc6);
-        circlePaint.setColor(firstColor);
-        circlePaint.setAlpha(transParentValue);
-        circlePaint.setStrokeWidth(paintWidth);
-        canvas.drawPath(path, circlePaint);
-        circlePaint.setColor(originalColor);
-        canvas.restore();
+        return path;
     }
 
 }
