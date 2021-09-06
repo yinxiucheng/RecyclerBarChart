@@ -96,12 +96,12 @@ public class RainbowView extends View {
         circlePaint.setAlpha(transParentValue);
         circlePaint.setStrokeWidth(paintWidth);
 
-        Bitmap mBitmap = BitmapFactory.decodeResource(getResources(), R.drawable.test);
+//        Bitmap mBitmap = BitmapFactory.decodeResource(getResources(), R.drawable.test);
         Path clipPath = createClipPath(width, height, padding, itemWidth);
-        canvas.clipPath(clipPath);
-        canvas.drawBitmap(mBitmap, 0, 0, circlePaint);
-//        canvas.drawPath(clipPath, circlePaint);
-//        circlePaint.setColor(originalColor);
+//        canvas.clipPath(clipPath);
+//        canvas.drawBitmap(mBitmap, 0, 0, circlePaint);
+        canvas.drawPath(clipPath, circlePaint);
+        circlePaint.setColor(originalColor);
         canvas.restore();
     }
 
