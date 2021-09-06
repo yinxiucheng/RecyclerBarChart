@@ -3,8 +3,8 @@ package com.yxc.barchart.view;
 import android.graphics.Canvas;
 import android.graphics.Paint;
 import android.graphics.Path;
+import android.graphics.PointF;
 import android.graphics.RectF;
-
 import com.yxc.commonlib.util.DisplayUtil;
 
 public class ThreeTargetModel{
@@ -103,34 +103,41 @@ public class ThreeTargetModel{
     }
 
     private void createInnerPath() {
-        RectF leftRectF = new RectF(itemWidth - 2 * spaceWidth - reSize, height / 2 - 2 * spaceWidth - reSize,
-                itemWidth + DisplayUtil.dip2px(0.13f), height / 2);
+        RectF leftRectF = new RectF(itemWidth - spaceWidth - reSize, height / 2 - spaceWidth - reSize, itemWidth + DisplayUtil.dip2px(0.13f), height / 2);
         innerStartPath = new Path();
-        innerStartPath.addArc(leftRectF, 0, 90);
-        innerStartPath.lineTo((leftRectF.left + leftRectF.right) / 2, (leftRectF.top + leftRectF.bottom) / 2);
-        innerStartPath.close();
+        QuadModel startQuadModel = new QuadModel();
+        startQuadModel.centerPointF = new PointF(leftRectF.left, leftRectF.top);
+        startQuadModel.ctrlPointF = new PointF(leftRectF.right, leftRectF.bottom);
+        startQuadModel.startPointF = new PointF(leftRectF.right, leftRectF.top);
+        startQuadModel.endPointF = new PointF(leftRectF.left, leftRectF.bottom);
+        innerStartPath = startQuadModel.createQuadPath();
 
-        RectF rightRectF = new RectF(width - itemWidth, height / 2 - 2 * spaceWidth,
-                width - itemWidth + 2 * spaceWidth + reSize, height / 2);
-        innerEndPath = new Path();
-        innerEndPath.addArc(rightRectF, 90, 90);
-        innerEndPath.lineTo((rightRectF.left + rightRectF.right) / 2, (rightRectF.top + rightRectF.bottom) / 2);
-        innerEndPath.close();
+        RectF rightRectF = new RectF(width - itemWidth, height / 2 - spaceWidth, width - itemWidth + spaceWidth + reSize, height / 2);
+        QuadModel endQuadModel = new QuadModel();
+        endQuadModel.centerPointF = new PointF(rightRectF.right, rightRectF.top);
+        endQuadModel.ctrlPointF = new PointF(rightRectF.left, rightRectF.bottom);
+        endQuadModel.startPointF = new PointF(rightRectF.right, rightRectF.bottom);
+        endQuadModel.endPointF = new PointF(rightRectF.left, rightRectF.top);
+        innerEndPath = endQuadModel.createQuadPath();
     }
 
     private void createWrapperPath() {
-        RectF leftRectF = new RectF(0, height / 2 - 2 * spaceWidth - reSize, 2 * spaceWidth + reSize, height / 2);
-        wrapperStartPath = new Path();
-        wrapperStartPath.addArc(leftRectF, 90, 90);
-        wrapperStartPath.lineTo((leftRectF.left + leftRectF.right) / 2, (leftRectF.top + leftRectF.bottom) / 2);
-        wrapperStartPath.close();
+        RectF leftRectF = new RectF(0, height / 2 - spaceWidth - reSize, spaceWidth + reSize, height / 2);
 
-        RectF rightRectF = new RectF(width - 2 * spaceWidth - reSize, height / 2 - 2 * spaceWidth, width, height / 2);
-        wrapperEndPath = new Path();
-        wrapperEndPath.addArc(rightRectF, 0, 90);
-        wrapperEndPath.lineTo((rightRectF.left + rightRectF.right) / 2, (rightRectF.top + rightRectF.bottom) / 2);
-        wrapperEndPath.close();
+        QuadModel startQuadModel = new QuadModel();
+        startQuadModel.centerPointF = new PointF(leftRectF.right, leftRectF.top);
+        startQuadModel.ctrlPointF = new PointF(leftRectF.left, leftRectF.bottom);
+        startQuadModel.startPointF = new PointF(leftRectF.right, leftRectF.bottom);
+        startQuadModel.endPointF = new PointF(leftRectF.left, leftRectF.top);
+        wrapperStartPath = startQuadModel.createQuadPath();
 
+        RectF rightRectF = new RectF(width -  spaceWidth - reSize, height / 2 - spaceWidth, width, height / 2);
+        QuadModel endQuadModel = new QuadModel();
+        endQuadModel.centerPointF = new PointF(rightRectF.left, rightRectF.top);
+        endQuadModel.ctrlPointF = new PointF(rightRectF.right, rightRectF.bottom);
+        endQuadModel.startPointF = new PointF(rightRectF.right, rightRectF.top);
+        endQuadModel.endPointF = new PointF(rightRectF.left, rightRectF.bottom);
+        wrapperEndPath = endQuadModel.createQuadPath();
         //  Matrix matrix = new Matrix();
 //        matrix.setRotate(-90, (rightRectF.left + rightRectF.right)/2, (rightRectF.top + rightRectF.bottom)/2);
 //        roundRightArc.transform(matrix);
