@@ -113,24 +113,24 @@ public class ThreeTargetView extends View {
         RectF rectFWrapper = new RectF(0, 0, width, height);
         RectF rectFInner = new RectF(spaceWidth, spaceWidth,
                 width - spaceWidth, height - spaceWidth);
-        Path path = createCircle(rectFWrapper, rectFInner, 180 + 2.3f, 180 - 4.6f);
+        float centerX = width/2;
+        float centerY = height/2;
+        Path path = createCircle(rectFWrapper, rectFInner,
+                180 + 2.3f, 180 - 4.6f, centerX, centerY);
         canvas.drawPath(path, circlePaint);
     }
 
     private void drawCenterCircle(Canvas canvas, int width, int height, float itemWidth, float spaceWidth){
+
         RectF rectFWrapper = new RectF(spaceWidth, spaceWidth, width - spaceWidth, height - spaceWidth);
         RectF rectFInner = new RectF(itemWidth - spaceWidth, itemWidth - spaceWidth, width - itemWidth + spaceWidth,
                 height - itemWidth + spaceWidth);
-        Path path = new Path();
-        path.addArc(rectFWrapper, 180, 90);
-        path.lineTo(width/2, height/2);
-        path.close();
 
-        Path clipPath = new Path();
-        clipPath.addArc(rectFInner, 180, 90);
-        clipPath.lineTo(width/2, height/2);
-        clipPath.close();
-        path.op(clipPath, Path.Op.DIFFERENCE);
+        float centerX = width/2;
+        float centerY = height/2;
+
+        Path path = createCircle(rectFWrapper, rectFInner, 180, 90, centerX, centerY);
+
         int[] colors = new int[]{firstColor, secondColor, thirdColor, secondColor, firstColor};
         SweepGradient sweepGradient = new SweepGradient(width / 2, width / 2, colors, null);
         circlePaint.setShader(sweepGradient);
@@ -144,8 +144,11 @@ public class ThreeTargetView extends View {
     private void drawInnerCircle(Canvas canvas, int width, int height, float itemWidth, float spaceWidth){
         RectF rectFWrapper = new RectF(itemWidth - spaceWidth, itemWidth - spaceWidth,
                 width - itemWidth + spaceWidth, height - itemWidth + spaceWidth);
+        float centerX = width/2;
+        float centerY = height/2;
         RectF rectFInner = new RectF(itemWidth, itemWidth, width - itemWidth, height - itemWidth);
-        Path path = createCircle(rectFWrapper, rectFInner, 180 + 3.15f, 180 - 6.3f);
+        Path path = createCircle(rectFWrapper, rectFInner,
+                180 + 3.15f, 180 - 6.3f, centerX, centerY);
         canvas.drawPath(path, circlePaint);
     }
 
@@ -171,11 +174,17 @@ public class ThreeTargetView extends View {
         canvas.drawPath(roundRightRectF, circlePaint);
     }
 
-    private Path createCircle(RectF rectFWrapper, RectF rectFInner, float startAngle, float sweepAngle){
+    private Path createCircle(RectF rectFWrapper, RectF rectFInner,
+                              float startAngle, float sweepAngle, float centerX, float centerY){
         Path path = new Path();
         path.addArc(rectFWrapper, startAngle, sweepAngle);
+        path.lineTo(centerX, centerY);
+        path.close();
+
         Path clipPath = new Path();
         clipPath.addArc(rectFInner, startAngle, sweepAngle);
+        clipPath.lineTo(centerX, centerY);
+        clipPath.close();
         path.op(clipPath, Path.Op.DIFFERENCE);
         return path;
     }

@@ -5,7 +5,6 @@ import android.graphics.Canvas;
 import android.graphics.Paint;
 import android.graphics.Path;
 import android.graphics.RectF;
-import android.graphics.SweepGradient;
 import android.util.AttributeSet;
 import android.view.View;
 
@@ -75,6 +74,8 @@ public class ThreeTargetView3 extends View {
     private int firstColor = -1;
     private int secondColor = -1;
     private int thirdColor = -1;
+    private float centerX;
+    private float centerY;
 
     private void init() {
         circlePaint = new Paint(Paint.ANTI_ALIAS_FLAG);
@@ -108,7 +109,7 @@ public class ThreeTargetView3 extends View {
         spaceWidth = spaceWidth * 2/3;
         drawWrapperCircle(canvas, rectFFirst, spaceWidth, 180 + 3.8f, 180 - 7.6f);
         drawCenterCircle(canvas, rectFFirst, itemWidth, spaceWidth, 180, 180);
-        drawInnerCircle(canvas, rectFFirst, itemWidth, spaceWidth, 180 + 14f, 180 - 28f);
+        drawInnerCircle(canvas, rectFFirst, itemWidth, spaceWidth, 180 + 15f, 180 - 30f);
         drawWrapperRoundRect(canvas, rectFFirst, itemWidth, spaceWidth);
         drawInnerRoundRect(canvas, rectFFirst, itemWidth, spaceWidth);
         canvas.restore();
@@ -123,7 +124,7 @@ public class ThreeTargetView3 extends View {
         circlePaint.setAlpha(transParentValue);
         drawWrapperCircle(canvas, rectFFirst, spaceWidth, 180 + 3f, 180 - 6f);
         drawCenterCircle(canvas, rectFFirst, itemWidth, spaceWidth, 180, 180);
-        drawInnerCircle(canvas, rectFFirst, itemWidth, spaceWidth, 180 + 4.6f, 180 - 9.2f);
+        drawInnerCircle(canvas, rectFFirst, itemWidth, spaceWidth, 180 + 4.7f, 180 - 9.4f);
         drawWrapperRoundRect(canvas, rectFFirst, itemWidth, spaceWidth);
         drawInnerRoundRect(canvas, rectFFirst, itemWidth, spaceWidth);
         canvas.restore();
@@ -151,7 +152,7 @@ public class ThreeTargetView3 extends View {
         RectF rectFWrapper = new RectF(0, 0, width, height);
         RectF rectFInner = new RectF(spaceWidth + reSize, spaceWidth + reSize,
                 width - spaceWidth - reSize, height - spaceWidth - reSize);
-        Path path = createCircle(rectFWrapper, rectFInner, startAngle, sweepAngle);
+        Path path = createCircle(rectFWrapper, rectFInner, startAngle, sweepAngle, width/2, height/2);
         canvas.drawPath(path, circlePaint);
     }
 
@@ -161,7 +162,7 @@ public class ThreeTargetView3 extends View {
         RectF rectFWrapper = new RectF(spaceWidth, spaceWidth, width - spaceWidth, height - spaceWidth);
         RectF rectFInner = new RectF(itemWidth - spaceWidth, itemWidth - spaceWidth, width - itemWidth + spaceWidth,
                 height - itemWidth + spaceWidth);
-        Path path = createCircle(rectFWrapper, rectFInner, startAngle, sweepAngle);
+        Path path = createCircle(rectFWrapper, rectFInner, startAngle, sweepAngle, width/2, height/2);
         canvas.drawPath(path, circlePaint);
     }
 
@@ -171,7 +172,7 @@ public class ThreeTargetView3 extends View {
         RectF rectFWrapper = new RectF(itemWidth - spaceWidth - reSize, itemWidth - spaceWidth - reSize,
                 width - itemWidth + spaceWidth + reSize, height - itemWidth + spaceWidth + reSize);
         RectF rectFInner = new RectF(itemWidth, itemWidth, width - itemWidth, height - itemWidth);
-        Path path = createCircle(rectFWrapper, rectFInner, startAngle, sweepAngle);
+        Path path = createCircle(rectFWrapper, rectFInner, startAngle, sweepAngle, width/2, height/2);
         canvas.drawPath(path, circlePaint);
     }
 
@@ -202,11 +203,15 @@ public class ThreeTargetView3 extends View {
     }
 
 
-    private Path createCircle(RectF rectFWrapper, RectF rectFInner, float startAngle, float sweepAngle) {
+    private Path createCircle(RectF rectFWrapper, RectF rectFInner, float startAngle, float sweepAngle, float centerX, float centerY) {
         Path path = new Path();
         path.addArc(rectFWrapper, startAngle, sweepAngle);
+        path.lineTo(centerX, centerY);
+        path.close();
         Path clipPath = new Path();
         clipPath.addArc(rectFInner, startAngle, sweepAngle);
+        clipPath.lineTo(centerX, centerY);
+        clipPath.close();
         path.op(clipPath, Path.Op.DIFFERENCE);
         return path;
     }
