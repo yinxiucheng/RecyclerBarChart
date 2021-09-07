@@ -57,36 +57,39 @@ public class ThreeTargetView3 extends View {
         thirdColor = ColorUtil.getResourcesColor(mContext, R.color.rainbow_color3);
     }
 
-
     //固定宽高。
     @Override
     protected void onMeasure(int widthMeasureSpec, int heightMeasureSpec) {
         super.onMeasure(widthMeasureSpec, heightMeasureSpec);
-        int width = getMeasuredWidth();
-        setMeasuredDimension(width, width);
+        int measuredWidth = getMeasuredWidth();
+        setMeasuredDimension(measuredWidth, measuredWidth / 2);
     }
+
+    int width;
+    int height;
+    float itemWidth;
+    float spaceWidth;
 
     @Override
     protected void onDraw(Canvas canvas) {
         super.onDraw(canvas);
-        int width = getWidth();
-        int height = getHeight();
-        drawThreeCircle(canvas, width, height);
+        width = getWidth();
+        height = 2 * getHeight();
+        itemWidth = width / 7f;
+        spaceWidth = itemWidth / 8f;
+        drawThreeCircle(canvas);
     }
 
-    private void drawThreeCircle(Canvas canvas, int width, int height) {
-        float itemWidth = width / 7f;
-        float spaceWidth = itemWidth / 8f;
-
+    private void drawThreeCircle(Canvas canvas) {
         //int[] colors = new int[]{firstColor, secondColor, thirdColor, secondColor, firstColor};
 //        SweepGradient sweepGradient = new SweepGradient(width / 2, width / 2, colors, null);
 //        circlePaint.setShader(sweepGradient);
-        drawFirstCircle(canvas, width, height, itemWidth, spaceWidth);
-        drawSecondCircle(canvas, width, height, itemWidth, spaceWidth);
-        drawThirdCircle(canvas, width, height, itemWidth, spaceWidth);
+        drawFirstCircle(canvas);
+        drawSecondCircle(canvas);
+        drawThirdCircle(canvas);
     }
 
-    private void drawThirdCircle(Canvas canvas, int width, int height, float itemWidth, float spaceWidth) {
+    private void drawThirdCircle(Canvas canvas) {
         canvas.save();
         RectF rectFFirst = new RectF(2 * (itemWidth + spaceWidth), 2 * (itemWidth + spaceWidth),
                 width - 2 * (itemWidth + spaceWidth), height - 2 * (itemWidth + spaceWidth));
@@ -96,34 +99,31 @@ public class ThreeTargetView3 extends View {
         circlePaint.setAlpha(transParentValue);
         spaceWidth = spaceWidth * 2 / 3;
         ThreeTargetModel targetModel = new ThreeTargetModel(reSize, rectFFirst, itemWidth, spaceWidth,
-                180 + 3.8f, 180 - 7.6f, 180,
-                180 + 15f, 180 - 30f);
+                3.8f, 15f, 180);
         targetModel.drawComponents(canvas, circlePaint);
         canvas.restore();
     }
 
-    private void drawSecondCircle(Canvas canvas, int width, int height, float itemWidth, float spaceWidth) {
+    private void drawSecondCircle(Canvas canvas) {
         canvas.save();
-        RectF rectFFirst = new RectF(itemWidth + spaceWidth, itemWidth + spaceWidth,
+        RectF rectF = new RectF(itemWidth + spaceWidth, itemWidth + spaceWidth,
                 width - (itemWidth + spaceWidth), height - (itemWidth + spaceWidth));
-        canvas.translate(rectFFirst.left, rectFFirst.top);
+        canvas.translate(rectF.left, rectF.top);
         circlePaint.setColor(secondColor);
         circlePaint.setAlpha(transParentValue);
-        ThreeTargetModel targetModel = new ThreeTargetModel(reSize, rectFFirst, itemWidth, spaceWidth,
-                180 + 3f, 180 - 6f, 180,
-                180 + 4.7f, 180 - 9.4f);
+        ThreeTargetModel targetModel = new ThreeTargetModel(reSize, rectF, itemWidth, spaceWidth,
+                3f, 4.7f, 180);
         targetModel.drawComponents(canvas, circlePaint);
         canvas.restore();
     }
 
-    private void drawFirstCircle(Canvas canvas, int width, int height, float itemWidth, float spaceWidth) {
+    private void drawFirstCircle(Canvas canvas) {
         canvas.save();
         circlePaint.setColor(firstColor);
         circlePaint.setAlpha(transParentValue);
-        RectF rectFFirst = new RectF(0, 0, width, height);
-        ThreeTargetModel targetModel = new ThreeTargetModel(reSize, rectFFirst, itemWidth, spaceWidth,
-                180 + 2.05f, 180 - 4.1f, 180,
-                180 + 2.7f, 180 - 5.4f);
+        RectF rectF = new RectF(0, 0, width, height);
+        ThreeTargetModel targetModel = new ThreeTargetModel(reSize, rectF, itemWidth, spaceWidth,
+                2.05f, 2.7f, 180);
         targetModel.drawComponents(canvas, circlePaint);
         canvas.restore();
     }
