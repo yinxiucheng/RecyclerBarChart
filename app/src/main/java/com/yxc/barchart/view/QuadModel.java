@@ -23,19 +23,6 @@ public class QuadModel {
         return quadPath;
     }
 
-//    public PointF createStartPoint(RectF rectF, float fixAngel) {
-//        float radius = rectF.width() / 2;
-//        float halfCircleLength = (float) (Math.PI * radius);
-//        Path pathOriginal = new Path();
-//        pathOriginal.moveTo(rectF.left, (rectF.top + rectF.bottom) / 2);
-//        pathOriginal.arcTo(rectF, 180, 180, false);
-//        PathMeasure pathMeasure = new PathMeasure(pathOriginal, false);
-//        float[] points = new float[2];
-//        float pointLength = halfCircleLength * fixAngel / 180f;
-//        pathMeasure.getPosTan(pointLength, points, null);
-//        return new PointF(points[0], points[1]);
-//    }
-
     public PointF createCommonPoint(RectF rectF, float sweepAngel) {
         float radius = rectF.width() / 2;
         float halfCircleLength = (float) (Math.PI * radius);

@@ -1,10 +1,13 @@
 package com.yxc.barchart.view;
 
+import android.content.Context;
 import android.graphics.Canvas;
 import android.graphics.Paint;
 import android.graphics.Path;
-import android.graphics.PointF;
 import android.graphics.RectF;
+
+import com.yxc.barchart.R;
+import com.yxc.commonlib.util.ColorUtil;
 
 public class ThreeTargetModel {
     public float reSize;
@@ -18,10 +21,25 @@ public class ThreeTargetModel {
     public float wrapperFixAngel;
     public float innerFixAngel;
 
-    public ThreeTargetModel(float reSize, RectF rectF, float itemWidth, float spaceWidth,
+    public static ThreeTargetModel createTargetModel(int type, RectF rectF, float itemWidth, float spaceWidth, float sweepAngel) {
+        float wrapperFixAngel, innerFixAngel;
+        if (type == ThreeTargetConstant.TARGET_FIRST_TYPE) {
+            wrapperFixAngel = ThreeTargetConstant.FIRST_WRAPPER_FIX_ANGLE;
+            innerFixAngel = ThreeTargetConstant.FIRST_INNER_FIX_ANGLE;
+        } else if (type == ThreeTargetConstant.TARGET_SECOND_TYPE) {
+            wrapperFixAngel = ThreeTargetConstant.SECOND_WRAPPER_FIX_ANGLE;
+            innerFixAngel = ThreeTargetConstant.SECOND_INNER_FIX_ANGLE;
+        } else {
+            wrapperFixAngel = ThreeTargetConstant.THIRD_WRAPPER_FIX_ANGLE;
+            innerFixAngel = ThreeTargetConstant.THIRD_INNER_FIX_ANGLE;
+        }
+        return new ThreeTargetModel(rectF, itemWidth, spaceWidth, wrapperFixAngel, innerFixAngel, sweepAngel);
+    }
+
+    public ThreeTargetModel(RectF rectF, float itemWidth, float spaceWidth,
                             float wrapperFixAngel, float innerFixAngel,
                             float sweepAngel) {
-        this.reSize = reSize;
+        this.reSize = ThreeTargetConstant.RESIZE;
         this.rectF = rectF;
         this.width = rectF.width();
         this.height = rectF.height();
@@ -114,10 +132,10 @@ public class ThreeTargetModel {
         innerStartPath = startQuadModel.createQuadPath();
 
         QuadModel endQuadModel = new QuadModel();
-        endQuadModel.centerPointF = endQuadModel.createEndPoint(innerStartRectF, innerFixAngel);
+        endQuadModel.centerPointF = endQuadModel.createEndPoint(innerStartRectF, 180 - sweepAngel + innerFixAngel);
         endQuadModel.ctrlPointF = endQuadModel.createCommonPoint(innerEndRectF, sweepAngel);
         endQuadModel.startPointF = endQuadModel.createCommonPoint(innerStartRectF, sweepAngel);
-        endQuadModel.endPointF = endQuadModel.createEndPoint(innerEndRectF, innerFixAngel);
+        endQuadModel.endPointF = endQuadModel.createEndPoint(innerEndRectF, 180 - sweepAngel + innerFixAngel);
         innerEndPath = endQuadModel.createQuadPath();
     }
 
@@ -130,21 +148,20 @@ public class ThreeTargetModel {
         wrapperStartPath = startQuadModel.createQuadPath();
 
         QuadModel endQuadModel = new QuadModel();
-        endQuadModel.centerPointF = endQuadModel.createEndPoint(wrapperEndRectF, wrapperFixAngel);
+        endQuadModel.centerPointF = endQuadModel.createEndPoint(wrapperEndRectF, 180 - sweepAngel + wrapperFixAngel);
         endQuadModel.ctrlPointF = endQuadModel.createCommonPoint(wrapperStartRectF, sweepAngel);
-        endQuadModel.startPointF = endQuadModel.createEndPoint(wrapperStartRectF, wrapperFixAngel);
+        endQuadModel.startPointF = endQuadModel.createEndPoint(wrapperStartRectF, 180 - sweepAngel + wrapperFixAngel);
         endQuadModel.endPointF = endQuadModel.createCommonPoint(wrapperEndRectF, sweepAngel);
         wrapperEndPath = endQuadModel.createQuadPath();
+    }
 
-        //  Matrix matrix = new Matrix();
-//        matrix.setRotate(-90, (rightRectF.left + rightRectF.right)/2, (rightRectF.top + rightRectF.bottom)/2);
-//        roundRightArc.transform(matrix);
-
-//        canvas.drawArc(rightRectF, 0, 90, true, circlePaint);
-
-//        Path roundRightRectF = CanvasUtil.createRectRoundPath(rightRectF, spaceWidth, RoundRectType.TYPE_RIGHT_BOTTOM);
-//
-//        canvas.drawPath(roundRightRectF, circlePaint);
+    public int getColor(Context context, int type) {
+        if (type == ThreeTargetConstant.TARGET_THIRD_TYPE) {
+            return ColorUtil.getResourcesColor(context, R.color.rainbow_color3);
+        } else if (type == ThreeTargetConstant.TARGET_SECOND_TYPE) {
+            return ColorUtil.getResourcesColor(context, R.color.rainbow_color2);
+        }
+        return ColorUtil.getResourcesColor(context, R.color.rainbow_color1);
     }
 
 }

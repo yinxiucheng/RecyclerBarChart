@@ -7,16 +7,11 @@ import android.graphics.RectF;
 import android.util.AttributeSet;
 import android.view.View;
 
-import com.yxc.barchart.R;
-import com.yxc.commonlib.util.ColorUtil;
-import com.yxc.commonlib.util.DisplayUtil;
-
 /**
  * @author yxc
  * @date 2019-09-27
  */
 public class ThreeTargetView3 extends View {
-
     public static final int ANGLE = 0;
     private Context mContext;
     private Paint circlePaint;
@@ -43,18 +38,12 @@ public class ThreeTargetView3 extends View {
     private float firstPercent = 0;
     private float secondPercent = 0;
     private float thirdPercent = 0;
-    private int firstColor = -1;
-    private int secondColor = -1;
-    private int thirdColor = -1;
 
     private void init() {
         circlePaint = new Paint(Paint.ANTI_ALIAS_FLAG);
         circlePaint.setStyle(Paint.Style.FILL);
         circlePaint.setStrokeCap(Paint.Cap.BUTT);
-        transParentValue = (int) (255 * 0.4);
-        firstColor = ColorUtil.getResourcesColor(mContext, R.color.rainbow_color1);
-        secondColor = ColorUtil.getResourcesColor(mContext, R.color.rainbow_color2);
-        thirdColor = ColorUtil.getResourcesColor(mContext, R.color.rainbow_color3);
+        transParentValue = ThreeTargetConstant.TRANSPARENT_VALUE;
     }
 
     //固定宽高。
@@ -82,52 +71,46 @@ public class ThreeTargetView3 extends View {
 
     private void drawThreeCircle(Canvas canvas) {
         //int[] colors = new int[]{firstColor, secondColor, thirdColor, secondColor, firstColor};
-//        SweepGradient sweepGradient = new SweepGradient(width / 2, width / 2, colors, null);
-//        circlePaint.setShader(sweepGradient);
-        drawFirstCircle(canvas);
-        drawSecondCircle(canvas);
-        drawThirdCircle(canvas);
+//       SweepGradient sweepGradient = new SweepGradient(width / 2, width / 2, colors, null);
+//       circlePaint.setShader(sweepGradient);
+        drawThreeCircleBg(canvas);
+        drawCircle(canvas, ThreeTargetConstant.TARGET_FIRST_TYPE, 180 * 0.5f, spaceWidth);
+        drawCircle(canvas, ThreeTargetConstant.TARGET_SECOND_TYPE, 180 * 0.3f, spaceWidth);
+        drawCircle(canvas, ThreeTargetConstant.TARGET_THIRD_TYPE, 180 * 0.7f, spaceWidth / 2.0f);
     }
 
-    private void drawThirdCircle(Canvas canvas) {
-        canvas.save();
-        RectF rectFFirst = new RectF(2 * (itemWidth + spaceWidth), 2 * (itemWidth + spaceWidth),
-                width - 2 * (itemWidth + spaceWidth), height - 2 * (itemWidth + spaceWidth));
-        canvas.translate(rectFFirst.left, rectFFirst.top);
-        reSize = DisplayUtil.dip2px(0.14285712689f);
-        circlePaint.setColor(thirdColor);
-        circlePaint.setAlpha(transParentValue);
-        spaceWidth = spaceWidth * 2 / 3;
-        ThreeTargetModel targetModel = new ThreeTargetModel(reSize, rectFFirst, itemWidth, spaceWidth,
-                3.8f, 15f, 180);
-        targetModel.drawComponents(canvas, circlePaint);
-        canvas.restore();
+    private void drawThreeCircleBg(Canvas canvas) {
+        drawCircle(canvas, ThreeTargetConstant.TARGET_FIRST_TYPE, 180, spaceWidth, true);
+        drawCircle(canvas, ThreeTargetConstant.TARGET_SECOND_TYPE, 180, spaceWidth, true);
+        drawCircle(canvas, ThreeTargetConstant.TARGET_THIRD_TYPE, 180, spaceWidth / 2.0f, true);
+    }
+    private void drawCircle(Canvas canvas, int type, float sweepAngel, float spaceWidth) {
+        drawCircle(canvas, type, sweepAngel, spaceWidth, false);
     }
 
-    private void drawSecondCircle(Canvas canvas) {
+    private void drawCircle(Canvas canvas, int type, float sweepAngel, float spaceWidth, boolean isBg) {
         canvas.save();
-        RectF rectF = new RectF(itemWidth + spaceWidth, itemWidth + spaceWidth,
-                width - (itemWidth + spaceWidth), height - (itemWidth + spaceWidth));
+        RectF rectF = createTargetRectF(type);
         canvas.translate(rectF.left, rectF.top);
-        circlePaint.setColor(secondColor);
-        circlePaint.setAlpha(transParentValue);
-        ThreeTargetModel targetModel = new ThreeTargetModel(reSize, rectF, itemWidth, spaceWidth,
-                3f, 4.7f, 180);
+        ThreeTargetModel targetModel = ThreeTargetModel.createTargetModel(type, rectF, itemWidth, spaceWidth, sweepAngel);
+        circlePaint.setColor(targetModel.getColor(mContext, type));
+        if (isBg) {
+            circlePaint.setAlpha(transParentValue);
+        } else {
+            circlePaint.setAlpha(255);
+        }
         targetModel.drawComponents(canvas, circlePaint);
         canvas.restore();
     }
 
-    private void drawFirstCircle(Canvas canvas) {
-        canvas.save();
-        circlePaint.setColor(firstColor);
-        circlePaint.setAlpha(transParentValue);
-        RectF rectF = new RectF(0, 0, width, height);
-        ThreeTargetModel targetModel = new ThreeTargetModel(reSize, rectF, itemWidth, spaceWidth,
-                2.05f, 2.7f, 180);
-        targetModel.drawComponents(canvas, circlePaint);
-        canvas.restore();
+    private RectF createTargetRectF(int type) {
+        int times = 0;
+        if (type == ThreeTargetConstant.TARGET_THIRD_TYPE) {
+            times = 2;
+        } else if (type == ThreeTargetConstant.TARGET_SECOND_TYPE) {
+            times = 1;
+        }
+        return new RectF(times * (itemWidth + spaceWidth), times * (itemWidth + spaceWidth),
+                width - times * (itemWidth + spaceWidth), height - times * (itemWidth + spaceWidth));
     }
-
-    private float reSize = DisplayUtil.dip2px(0.14285712688f);
-//    private float reSize = DisplayUtil.dip2px(0.1429f);
 }
