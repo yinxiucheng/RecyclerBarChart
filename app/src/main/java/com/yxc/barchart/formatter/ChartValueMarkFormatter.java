@@ -1,7 +1,7 @@
 package com.yxc.barchart.formatter;
 
-import com.yxc.chartlib.entrys.BarEntry;
-import com.yxc.chartlib.formatter.DefaultBarChartValueFormatter;
+import com.yxc.chartlib.recyclerchart.entrys.BarEntry;
+import com.yxc.chartlib.recyclerchart.formatter.DefaultBarChartValueFormatter;
 
 /**
  * @author yxc

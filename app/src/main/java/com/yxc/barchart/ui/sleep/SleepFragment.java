@@ -13,14 +13,14 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.yxc.barchart.R;
 import com.yxc.barchart.ui.base.BaseFragment;
-import com.yxc.chartlib.attrs.SleepChartAttrs;
-import com.yxc.chartlib.barchart.SpeedRatioLayoutManager;
-import com.yxc.chartlib.entrys.SleepItemEntry;
-import com.yxc.chartlib.listener.RecyclerItemGestureListener;
-import com.yxc.chartlib.listener.SimpleItemGestureListener;
-import com.yxc.chartlib.sleepchart.SleepChartAdapter;
-import com.yxc.chartlib.sleepchart.SleepChartItemDecoration;
-import com.yxc.chartlib.view.SleepChartRecyclerView;
+import com.yxc.chartlib.recyclerchart.attrs.SleepChartAttrs;
+import com.yxc.chartlib.recyclerchart.barchart.SpeedRatioLayoutManager;
+import com.yxc.chartlib.recyclerchart.entrys.SleepItemEntry;
+import com.yxc.chartlib.recyclerchart.listener.RecyclerItemGestureListener;
+import com.yxc.chartlib.recyclerchart.listener.SimpleItemGestureListener;
+import com.yxc.chartlib.recyclerchart.sleepchart.SleepChartAdapter;
+import com.yxc.chartlib.recyclerchart.sleepchart.SleepChartItemDecoration;
+import com.yxc.chartlib.recyclerchart.view.SleepChartRecyclerView;
 import com.yxc.commonlib.util.TimeDateUtil;
 
 import org.joda.time.LocalDate;

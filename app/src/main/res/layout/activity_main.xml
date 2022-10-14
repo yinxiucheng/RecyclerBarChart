@@ -1,12 +1,11 @@
 <?xml version="1.0" encoding="utf-8"?>
 
-<LinearLayout
-    xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:fitsSystemWindows="true"
     android:background="@color/white"
+    android:fitsSystemWindows="true"
     android:orientation="vertical">
 
     <androidx.appcompat.widget.Toolbar
@@ -24,8 +23,8 @@
             android:layout_gravity="center"
             android:text="图表库"
             android:textColor="@color/black"
-            android:textStyle="bold"
-            android:textSize="18sp" />
+            android:textSize="18sp"
+            android:textStyle="bold" />
     </androidx.appcompat.widget.Toolbar>
 
     <View
@@ -33,87 +32,132 @@
         android:layout_height="1px"
         android:background="@color/black_40_transparent" />
 
-    <Button
-        android:id="@+id/map"
-        android:layout_width="100dp"
-        android:layout_height="50dp"
-        android:layout_gravity="center_horizontal"
-        android:text="发起运动"
-        android:layout_marginTop="30dp"
-        android:onClick="clickGaoDeMap"/>
+    <androidx.appcompat.widget.LinearLayoutCompat
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:paddingStart="30dp"
+        android:paddingEnd="30dp"
+        android:orientation="vertical">
 
 
-    <Button
-        android:id="@+id/map_google"
-        android:layout_width="150dp"
-        android:layout_height="50dp"
-        android:layout_gravity="center_horizontal"
-        android:text="高德运动轨迹"
-        android:layout_marginTop="30dp"
-        android:onClick="clickAMapRecord" />
+        <androidx.appcompat.widget.LinearLayoutCompat
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="30dp"
+            android:orientation="horizontal">
 
-    <Button
-        android:id="@+id/map_mapbox"
-        android:layout_width="150dp"
-        android:layout_height="50dp"
-        android:layout_gravity="center_horizontal"
-        android:text="Mapbox运动轨迹"
-        android:layout_marginTop="30dp"
-        android:onClick="clickMapboxRecord" />
+            <Button
+                android:id="@+id/map"
+                android:layout_width="100dp"
+                android:layout_height="50dp"
+                android:layout_gravity="center_horizontal"
+                android:onClick="clickGaoDeMap"
+                android:text="发起运动" />
 
-    <Button
-        android:id="@+id/step_btn"
-        android:layout_width="100dp"
-        android:layout_height="50dp"
-        android:layout_gravity="center_horizontal"
-        android:text="步数图"
-        android:layout_marginTop="30dp"
-        android:onClick="clickStep" />
+            <Button
+                android:id="@+id/map_google"
+                android:layout_width="150dp"
+                android:layout_height="50dp"
+                android:layout_gravity="center_horizontal"
+                android:onClick="clickAMapRecord"
+                android:text="高德运动轨迹" />
+        </androidx.appcompat.widget.LinearLayoutCompat>
 
-    <Button
-        android:id="@+id/line_btn"
-        android:layout_width="100dp"
-        android:layout_height="50dp"
-        android:layout_gravity="center_horizontal"
-        android:text="折线图"
-        android:layout_marginTop="30dp"
-        android:onClick="clickLine" />
+        <androidx.appcompat.widget.LinearLayoutCompat
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="30dp"
+            android:orientation="horizontal">
 
-    <Button
-        android:id="@+id/bezier_btn"
-        android:layout_width="100dp"
-        android:layout_height="50dp"
-        android:layout_gravity="center_horizontal"
-        android:text="曲线图"
-        android:layout_marginTop="30dp"
-        android:onClick="clickBezier" />
+            <Button
+                android:id="@+id/map_mapbox"
+                android:layout_width="150dp"
+                android:layout_height="50dp"
+                android:layout_gravity="center_horizontal"
+                android:onClick="clickMapboxRecord"
+                android:text="Mapbox运动轨迹" />
+
+            <Button
+                android:id="@+id/step_btn"
+                android:layout_width="100dp"
+                android:layout_height="50dp"
+                android:layout_gravity="center_horizontal"
+                android:onClick="clickStep"
+                android:text="步数图" />
+        </androidx.appcompat.widget.LinearLayoutCompat>
+
+        <androidx.appcompat.widget.LinearLayoutCompat
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="30dp"
+            android:orientation="horizontal">
+
+            <Button
+                android:id="@+id/line_btn"
+                android:layout_width="100dp"
+                android:layout_height="50dp"
+                android:layout_gravity="center_horizontal"
+                android:onClick="clickLine"
+                android:text="折线图" />
+
+            <Button
+                android:id="@+id/bezier_btn"
+                android:layout_width="100dp"
+                android:layout_height="50dp"
+                android:layout_gravity="center_horizontal"
+                android:onClick="clickBezier"
+                android:text="曲线图" />
+        </androidx.appcompat.widget.LinearLayoutCompat>
 
 
-    <Button
-        android:id="@+id/sleep_btn"
-        android:layout_width="100dp"
-        android:layout_height="50dp"
-        android:layout_gravity="center_horizontal"
-        android:text="睡眠图"
-        android:layout_marginTop="30dp"
-        android:onClick="clickSleep" />
+        <androidx.appcompat.widget.LinearLayoutCompat
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="30dp"
+            android:orientation="horizontal">
 
-    <Button
-        android:id="@+id/water_drop_btn"
-        android:layout_width="100dp"
-        android:layout_height="50dp"
-        android:layout_gravity="center_horizontal"
-        android:text="水滴图"
-        android:layout_marginTop="30dp"
-        android:onClick="clickWaterDrop" />
+            <Button
+                android:id="@+id/sleep_btn"
+                android:layout_width="100dp"
+                android:layout_height="50dp"
+                android:layout_gravity="center_horizontal"
+                android:onClick="clickSleep"
+                android:text="睡眠图" />
 
-    <Button
-        android:id="@+id/rainbow_btn"
-        android:layout_width="100dp"
-        android:layout_height="50dp"
-        android:layout_gravity="center_horizontal"
-        android:text="彩虹"
-        android:layout_marginTop="30dp"
-        android:onClick="clickRainbow" />
+            <Button
+                android:id="@+id/water_drop_btn"
+                android:layout_width="100dp"
+                android:layout_height="50dp"
+                android:layout_gravity="center_horizontal"
+                android:onClick="clickWaterDrop"
+                android:text="水滴图" />
+        </androidx.appcompat.widget.LinearLayoutCompat>
+
+        <androidx.appcompat.widget.LinearLayoutCompat
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="30dp"
+            android:orientation="horizontal">
+
+            <Button
+                android:id="@+id/rainbow_btn"
+                android:layout_width="100dp"
+                android:layout_height="50dp"
+                android:layout_gravity="center_horizontal"
+                android:layout_marginTop="30dp"
+                android:onClick="clickRainbow"
+                android:text="彩虹" />
+
+            <Button
+                android:id="@+id/hrm_chart_btn"
+                android:layout_width="100dp"
+                android:layout_height="50dp"
+                android:layout_gravity="center_horizontal"
+                android:layout_marginTop="30dp"
+                android:onClick="clickRainbow"
+                android:text="心电图" />
+
+        </androidx.appcompat.widget.LinearLayoutCompat>
+    </androidx.appcompat.widget.LinearLayoutCompat>
 
 </LinearLayout>

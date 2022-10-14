@@ -2,8 +2,8 @@ package com.yxc.barchart;
 
 import android.util.Log;
 
-import com.yxc.chartlib.attrs.BarChartAttrs;
-import com.yxc.chartlib.entrys.BarEntry;
+import com.yxc.chartlib.recyclerchart.attrs.BarChartAttrs;
+import com.yxc.chartlib.recyclerchart.entrys.BarEntry;
 import com.yxc.commonlib.util.TimeDateUtil;
 
 import org.joda.time.LocalDate;

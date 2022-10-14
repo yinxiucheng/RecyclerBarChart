@@ -11,7 +11,7 @@ import android.util.AttributeSet;
 import android.view.View;
 
 import com.yxc.barchart.R;
-import com.yxc.chartlib.util.DecimalUtil;
+import com.yxc.chartlib.recyclerchart.util.DecimalUtil;
 import com.yxc.commonlib.util.ColorUtil;
 import com.yxc.commonlib.util.DisplayUtil;
 

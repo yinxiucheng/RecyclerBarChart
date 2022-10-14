@@ -3,9 +3,8 @@ package com.yxc.barchart.ui.bezier;
 import android.view.View;
 
 import com.yxc.barchart.ui.base.BaseChartFragment;
-import com.yxc.barchart.ui.base.BaseFragment;
-import com.yxc.chartlib.entrys.BarEntry;
-import com.yxc.chartlib.listener.RecyclerItemGestureListener;
+import com.yxc.chartlib.recyclerchart.entrys.BarEntry;
+import com.yxc.chartlib.recyclerchart.listener.RecyclerItemGestureListener;
 
 import java.util.ArrayList;
 import java.util.List;

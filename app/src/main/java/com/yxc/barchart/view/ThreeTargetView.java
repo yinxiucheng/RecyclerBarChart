@@ -2,20 +2,16 @@ package com.yxc.barchart.view;
 
 import android.content.Context;
 import android.graphics.Canvas;
-import android.graphics.Color;
 import android.graphics.Paint;
 import android.graphics.Path;
-import android.graphics.PathMeasure;
-import android.graphics.PointF;
 import android.graphics.RectF;
 import android.graphics.SweepGradient;
 import android.util.AttributeSet;
 import android.view.View;
 
 import com.yxc.barchart.R;
-import com.yxc.chartlib.util.CanvasUtil;
-import com.yxc.chartlib.util.DecimalUtil;
-import com.yxc.chartlib.util.RoundRectType;
+import com.yxc.chartlib.recyclerchart.util.CanvasUtil;
+import com.yxc.chartlib.recyclerchart.util.RoundRectType;
 import com.yxc.commonlib.util.ColorUtil;
 import com.yxc.commonlib.util.DisplayUtil;
 

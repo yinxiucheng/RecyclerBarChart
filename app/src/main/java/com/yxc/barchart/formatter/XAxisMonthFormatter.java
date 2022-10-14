@@ -3,8 +3,8 @@ package com.yxc.barchart.formatter;
 import android.content.Context;
 
 import com.yxc.barchart.R;
-import com.yxc.chartlib.entrys.BarEntry;
-import com.yxc.chartlib.formatter.ValueFormatter;
+import com.yxc.chartlib.recyclerchart.entrys.BarEntry;
+import com.yxc.chartlib.recyclerchart.formatter.ValueFormatter;
 
 import org.joda.time.LocalDate;
 

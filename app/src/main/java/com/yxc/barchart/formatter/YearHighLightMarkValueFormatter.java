@@ -1,7 +1,7 @@
 package com.yxc.barchart.formatter;
 
-import com.yxc.chartlib.entrys.BarEntry;
-import com.yxc.chartlib.formatter.DefaultHighLightMarkValueFormatter;
+import com.yxc.chartlib.recyclerchart.entrys.BarEntry;
+import com.yxc.chartlib.recyclerchart.formatter.DefaultHighLightMarkValueFormatter;
 import com.yxc.commonlib.util.TimeDateUtil;
 
 /**
