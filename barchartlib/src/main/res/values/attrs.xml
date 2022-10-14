@@ -75,6 +75,13 @@
     <attr name="isDisplay" format="boolean" />
     <attr name="chartColor" format="color|reference" />
 
+    <!--high light-->
+    <attr name="lineHighLightType" format="integer" />
+    <attr name="linePointRadius" format="dimension" />
+    <attr name="linePointSelectStrokeWidth" format="dimension" />
+    <attr name="linePointSelectRadius" format="dimension" />
+    <attr name="lineSelectCircles" format="integer" />
+
 
     <declare-styleable name="BarChartRecyclerView">
 
