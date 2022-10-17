@@ -62,7 +62,7 @@ public class SleepChartDayItemDecoration<T extends BaseYAxis> extends RecyclerVi
 
         xAxisRenderer.drawVerticalLine(canvas, parent, mXAxis);//画竖的网格线
         xAxisRenderer.drawXAxis(canvas, parent, mXAxis);//画x轴坐标的刻度
-        xAxisRenderer.drawXAxisDisplay(canvas, parent, mBarChartAttrs);//绘制数据首页中的供显示用的非数据关联的坐标。
+//        xAxisRenderer.drawXAxisDisplay(canvas, parent, mBarChartAttrs);//绘制数据首页中的供显示用的非数据关联的坐标。
 
         mBarChartRender.drawSleepDayChart(canvas, parent, mYAxis);//draw BarChart
         mBarChartRender.drawHighLight(canvas, parent, mYAxis);

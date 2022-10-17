@@ -16,7 +16,7 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.yxc.barchart.R;
 import com.yxc.barchart.RateTestData;
 import com.yxc.barchart.TestData;
-import com.yxc.barchart.formatter.XAxisDayFormatter;
+import com.yxc.barchart.formatter.XAxisHrmFormatter;
 import com.yxc.barchart.ui.line.BaseLineFragment;
 import com.yxc.chartlib.recyclerchart.attrs.LineChartAttrs;
 import com.yxc.chartlib.recyclerchart.barchart.BarChartAdapter;
@@ -94,7 +94,7 @@ public class HrmDayFragment extends BaseLineFragment implements ViewTreeObserver
     private void initData() {
         displayNumber = mBarChartAttrs.displayNumbers;
         mType = TestData.VIEW_DAY;
-        valueFormatter = new XAxisDayFormatter();
+        valueFormatter = new XAxisHrmFormatter();
         mEntries = new ArrayList<>();
 
         SpeedRatioLayoutManager layoutManager = new SpeedRatioLayoutManager(getActivity(), mBarChartAttrs);
@@ -110,9 +110,9 @@ public class HrmDayFragment extends BaseLineFragment implements ViewTreeObserver
         currentTimestamp = TimeDateUtil.changZeroOfTheDay(LocalDate.now().plusDays(1));
 
         List<BarEntry> preEntries = RateTestData.createHrmEntries(mBarChartAttrs,
-                currentTimestamp + preEntrySize * TimeDateUtil.TIME_HOUR, preEntrySize, mEntries.size(), true);
+                currentTimestamp + preEntrySize * TimeDateUtil.TIME_HOUR, preEntrySize, mEntries.size());
         List<BarEntry> barEntries = RateTestData.createHrmEntries(mBarChartAttrs, currentTimestamp,
-                10 * displayNumber, mEntries.size(), false);
+                10 * displayNumber, mEntries.size());
 
         barEntries.addAll(0, preEntries);
         bindBarChartList(barEntries);
@@ -123,7 +123,7 @@ public class HrmDayFragment extends BaseLineFragment implements ViewTreeObserver
     private void reSizeYAxis() {
         recyclerView.scrollToPosition(preEntrySize + 1);
         List<BarEntry> visibleEntries = mEntries.subList(preEntrySize, preEntrySize + displayNumber + 1);
-        YAxis yAxis = mYAxis.resetYAxis(mYAxis, DecimalUtil.getTheMaxNumber(visibleEntries));
+        YAxis yAxis = mYAxis.resetHrmYAxis(mYAxis, DecimalUtil.getTheMaxNumber(visibleEntries) + 20);
         mBarChartAdapter.notifyDataSetChanged();
         if (yAxis != null) {
             mYAxis = yAxis;
@@ -149,7 +149,7 @@ public class HrmDayFragment extends BaseLineFragment implements ViewTreeObserver
                         if (newState == RecyclerView.SCROLL_STATE_IDLE) {
                             //加载更多
                             if (recyclerView.canScrollHorizontally(1) && isRightScroll) {
-                                List<BarEntry> entries = RateTestData.createHrmEntries(mBarChartAttrs, currentTimestamp, displayNumber, mEntries.size(), false);
+                                List<BarEntry> entries = RateTestData.createHrmEntries(mBarChartAttrs, currentTimestamp, displayNumber, mEntries.size());
                                 currentTimestamp = currentTimestamp - displayNumber * TimeDateUtil.TIME_HOUR;
                                 mEntries.addAll(entries);
                                 mBarChartAdapter.notifyDataSetChanged();
@@ -177,14 +177,14 @@ public class HrmDayFragment extends BaseLineFragment implements ViewTreeObserver
     private void resetYAxis(RecyclerView recyclerView) {
         YAxisMaxEntries yAxisMaxEntries = ChartComputeUtil.getVisibleEntries(recyclerView);
         setVisibleEntries(yAxisMaxEntries.visibleEntries);
-        mYAxis = YAxis.getYAxis(mBarChartAttrs, yAxisMaxEntries.yAxisMaximum);
-        YAxis yAxis = YAxis.getYAxis(mBarChartAttrs, yAxisMaxEntries.yAxisMaximum);
+        float max = yAxisMaxEntries.yAxisMaximum + 20;
+        mYAxis = YAxis.getHrmYAxis(mBarChartAttrs, max);
+        YAxis yAxis = YAxis.getHrmYAxis(mBarChartAttrs, max);
         if (yAxis != null) {
             mYAxis = yAxis;
             mBarChartAdapter.setYAxis(mYAxis);
             mItemDecoration.setYAxis(mYAxis);
         }
-
     }
 
     private void bindBarChartList(List<BarEntry> entries) {

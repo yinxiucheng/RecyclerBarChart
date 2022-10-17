@@ -19,7 +19,7 @@
             android:paddingLeft="30dp"
             android:paddingTop="38dp"
             app:contentPaddingTop="0dp"
-            app:displayNumbers="96"
+            app:displayNumbers="75"
             app:linePointRadius="0.1dp"
             app:enableLineFill="false"
             app:barBorderColor="@color/bar_chart_pink"

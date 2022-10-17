@@ -122,8 +122,8 @@ public class YAxis extends BaseYAxis {
             axis.mAxisMaximum = 200;
             axis.setLabelCount(4);
         } else if (max > 120) {
-            axis.mAxisMaximum = 140;
-            axis.setLabelCount(7);
+            axis.mAxisMaximum = 160;
+            axis.setLabelCount(8);
         } else if (max < 120 && max > 40) {
             axis.mAxisMaximum = 120;
             axis.setLabelCount(6);
@@ -201,8 +201,8 @@ public class YAxis extends BaseYAxis {
             axisMaximum = 200;
             layoutCount = 4;
         } else if (max > 120) {
-            axisMaximum = 140;
-            layoutCount = 7;
+            axisMaximum = 160;
+            layoutCount = 8;
         } else if (max < 120 && max > 40) {
             axisMaximum = 120;
             layoutCount = 6;
@@ -218,6 +218,24 @@ public class YAxis extends BaseYAxis {
             axisMaximum = maxInt + distance;
             layoutCount = 7;
         }
+        if (axisMaximum != mAxisMaximum) {
+            axis.setAxisMaximum(axisMaximum);
+            axis.setLabelCount(layoutCount);
+            return axis;
+        }
+        return null;
+    }
+
+    public static YAxis getHrmYAxis(BaseChartAttrs attrs, float max){
+        YAxis axis = new YAxis(attrs);
+        axis.mAxisMaximum = 240;
+        axis.setLabelCount(8);
+        return axis;
+    }
+
+    public YAxis resetHrmYAxis(YAxis axis, float max) {
+        float axisMaximum = 240;
+        int layoutCount = 8;
         if (axisMaximum != mAxisMaximum) {
             axis.setAxisMaximum(axisMaximum);
             axis.setLabelCount(layoutCount);
