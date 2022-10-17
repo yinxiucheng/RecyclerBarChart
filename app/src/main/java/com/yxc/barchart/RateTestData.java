@@ -83,6 +83,48 @@ public class RateTestData {
 
 
     //创建 Day视图的数据
+    public static List<BarEntry> createHrmEntries(BaseChartAttrs attrs, long timestamp, int length, int originEntrySize, boolean zeroValue) {
+        List<BarEntry> entries = new ArrayList<>();
+        for (int i = originEntrySize; i < length + originEntrySize; i++) {
+            if (i > originEntrySize){
+                timestamp = timestamp - TimeDateUtil.TIME_HOUR;
+            }
+            float mult = 60;
+            float random = (float) (Math.random() * 10);
+            int randomInt = (int)random;
+            float value = random + mult;
+            if (i % 12 == 0){
+                if (randomInt % 2== 0){
+                    value += 40;
+                }else {
+                    value -= 30;
+                }
+            }
+            value = Math.round(value);
+            int type = BarEntry.TYPE_XAXIS_THIRD;
+            boolean isLastHourOfTheDay = TimeDateUtil.isEndHourOfTheDay(timestamp);
+            LocalDate localDateEntry = TimeDateUtil.timestampToLocalDate(timestamp);
+            int hourOfTheDay = TimeDateUtil.getHourOfTheDay(timestamp);
+            if (isLastHourOfTheDay && (hourOfTheDay + 1) % attrs.xAxisScaleDistance == 0) {
+                type = BarEntry.TYPE_XAXIS_SPECIAL;
+            } else if (isLastHourOfTheDay) {
+                type = BarEntry.TYPE_XAXIS_FIRST;
+            } else if ((hourOfTheDay + 1) % attrs.xAxisScaleDistance == 0) {
+                type = BarEntry.TYPE_XAXIS_SECOND;
+            }
+            if (TimeDateUtil.isFuture(timestamp)){
+                value = 0;
+            }
+            BarEntry barEntry = new BarEntry(i, value, timestamp, type);
+            barEntry.localDate = localDateEntry;
+            entries.add(barEntry);
+        }
+        Collections.sort(entries);
+        return entries;
+    }
+
+
+    //创建 Day视图的数据
     public static List<BarEntry> createDayEntries(BaseChartAttrs attrs, long timestamp, int length, int originEntrySize, boolean zeroValue) {
         List<BarEntry> entries = new ArrayList<>();
         for (int i = originEntrySize; i < length + originEntrySize; i++) {

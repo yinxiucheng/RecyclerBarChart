@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:layout_marginTop="10dp"
+    android:orientation="vertical">
+
+    <FrameLayout
+        android:id="@+id/fl_chart"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+
+        <com.yxc.chartlib.recyclerchart.view.LineChartRecyclerView
+            android:id="@+id/line_recycler"
+            android:layout_width="match_parent"
+            android:layout_height="250dp"
+            android:layout_alignParentTop="true"
+            android:paddingLeft="30dp"
+            android:paddingTop="38dp"
+            app:contentPaddingTop="0dp"
+            app:displayNumbers="96"
+            app:linePointRadius="0.1dp"
+            app:enableLineFill="false"
+            app:barBorderColor="@color/bar_chart_pink"
+            app:xAxisFirstDividerColor="@color/bar_chart_pink"
+            app:xAxisSecondDividerColor="@color/bar_chart_pink"
+            app:chartColor="@color/black_80_transparent"
+            app:yAxisLineColor="@color/bar_chart_pink"
+            app:enableLeftYAxisLabel="false"
+            app:enableRightYAxisLabel="true"
+            app:enableScrollToScale="true"
+            app:recyclerPaddingRight="3dp"
+            app:xAxisScaleDistance="8" />
+    </FrameLayout>
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/txt_count_Step"
+        android:layout_marginLeft="10dp"
+        android:layout_marginTop="10dp"
+        android:layout_marginRight="10dp"
+        android:layout_marginBottom="15dp"
+        android:visibility="gone">
+
+        <include layout="@layout/layout_step_bottom_desc" />
+    </RelativeLayout>
+</RelativeLayout>

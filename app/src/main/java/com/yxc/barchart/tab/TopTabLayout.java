@@ -23,6 +23,8 @@ import android.widget.FrameLayout;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 import com.yxc.barchart.R;
+import com.yxc.commonlib.util.ColorUtil;
+
 import java.util.ArrayList;
 
 public class TopTabLayout extends FrameLayout implements ValueAnimator.AnimatorUpdateListener {
@@ -125,7 +127,7 @@ public class TopTabLayout extends FrameLayout implements ValueAnimator.AnimatorU
     private void obtainAttributes(Context context, AttributeSet attrs) {
         TypedArray ta = context.obtainStyledAttributes(attrs, R.styleable.TopTabLayout);
 
-        mIndicatorColor = ta.getColor(R.styleable.TopTabLayout_tl_indicator_color, Color.parseColor("#222831"));
+        mIndicatorColor = ta.getColor(R.styleable.TopTabLayout_tl_indicator_color, ColorUtil.getResourcesColor(context, R.color.black_80_transparent));
         mIndicatorHeight = ta.getDimension(R.styleable.TopTabLayout_tl_indicator_height, -1);
         mIndicatorCornerRadius = ta.getDimension(R.styleable.TopTabLayout_tl_indicator_corner_radius, -1);
         mIndicatorMarginLeft = ta.getDimension(R.styleable.TopTabLayout_tl_indicator_margin_left, dp2px(0));
@@ -141,7 +143,7 @@ public class TopTabLayout extends FrameLayout implements ValueAnimator.AnimatorU
         mDividerPadding = ta.getDimension(R.styleable.TopTabLayout_tl_divider_padding, 0);
 
         mTextsize = ta.getDimension(R.styleable.TopTabLayout_tl_textsize, sp2px(13f));
-        mTextSelectColor = ta.getColor(R.styleable.TopTabLayout_tl_textSelectColor, Color.parseColor("#ffffff"));
+        mTextSelectColor = ta.getColor(R.styleable.TopTabLayout_tl_textSelectColor, ColorUtil.getResourcesColor(context, R.color.black_80_transparent));
         mTextUnselectColor = ta.getColor(R.styleable.TopTabLayout_tl_textUnselectColor, mIndicatorColor);
         mTextBold = ta.getInt(R.styleable.TopTabLayout_tl_textBold, TEXT_BOLD_NONE);
         mTextAllCaps = ta.getBoolean(R.styleable.TopTabLayout_tl_textAllCaps, false);

@@ -76,5 +76,6 @@
 
     <color name="rate_title_select_color">#F54F66</color>
     <color name="rate_chart_color_light">#FFC5CE</color>
+    <color name="rate_chart_bg">#66FFC5CE</color>
 
 </resources>

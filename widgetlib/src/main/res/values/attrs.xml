@@ -75,33 +75,33 @@
 
     <declare-styleable name="TopTabLayout">
         <!-- indicator -->
-        <attr name="tl_indicator_color" />
-        <attr name="tl_indicator_height" />
-        <attr name="tl_indicator_margin_left" />
-        <attr name="tl_indicator_margin_top" />
-        <attr name="tl_indicator_margin_right" />
-        <attr name="tl_indicator_margin_bottom" />
-        <attr name="tl_indicator_corner_radius" />
-        <attr name="tl_indicator_anim_enable" />
-        <attr name="tl_indicator_anim_duration" />
-        <attr name="tl_indicator_bounce_enable" />
+        <attr name="tl_indicator_color" format="color"/>
+        <attr name="tl_indicator_height" format="dimension"/>
+        <attr name="tl_indicator_margin_left" format="dimension"/>
+        <attr name="tl_indicator_margin_top" format="dimension"/>
+        <attr name="tl_indicator_margin_right" format="dimension"/>
+        <attr name="tl_indicator_margin_bottom" format="dimension"/>
+        <attr name="tl_indicator_corner_radius" format="dimension"/>
+        <attr name="tl_indicator_anim_enable" format="boolean"/>
+        <attr name="tl_indicator_anim_duration" format="integer"/>
+        <attr name="tl_indicator_bounce_enable" format="boolean"/>
 
         <!-- divider -->
-        <attr name="tl_divider_color" />
-        <attr name="tl_divider_width" />
-        <attr name="tl_divider_padding" />
+        <attr name="tl_divider_color" format="color"/>
+        <attr name="tl_divider_width" format="dimension"/>
+        <attr name="tl_divider_padding" format="dimension"/>
 
         <!-- tab -->
-        <attr name="tl_tab_padding" />
-        <attr name="tl_tab_space_equal" />
-        <attr name="tl_tab_width" />
+        <attr name="tl_tab_padding" format="dimension"/>
+        <attr name="tl_tab_space_equal" format="boolean"/>
+        <attr name="tl_tab_width" format="dimension"/>
 
         <!-- title -->
-        <attr name="tl_textsize" />
-        <attr name="tl_textSelectColor" />
-        <attr name="tl_textUnselectColor" />
-        <attr name="tl_textBold" />
-        <attr name="tl_textAllCaps" />
+        <attr name="tl_textsize" format="dimension"/>
+        <attr name="tl_textSelectColor" format="color"/>
+        <attr name="tl_textUnselectColor" format="color"/>
+        <attr name="tl_textBold" format="integer"/>
+        <attr name="tl_textAllCaps" format="boolean"/>
 
         <attr name="tl_bar_color" format="color" />
         <attr name="tl_bar_stroke_color" format="color" />

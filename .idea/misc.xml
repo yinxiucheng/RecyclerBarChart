@@ -9,6 +9,7 @@
     <option name="filePathToZoomLevelMap">
       <map>
         <entry key="../../../../../layout/custom_preview.xml" value="0.1" />
+        <entry key="app/src/main/res/layout/activity_hrm.xml" value="0.3885416666666667" />
         <entry key="app/src/main/res/layout/activity_main.xml" value="0.21240942028985507" />
         <entry key="app/src/main/res/layout/activity_rainbow.xml" value="0.21240942028985507" />
         <entry key="app/src/main/res/layout/activity_rainbow2.xml" value="0.21240942028985507" />
@@ -17,7 +18,12 @@
         <entry key="app/src/main/res/layout/activity_touch.xml" value="0.21875" />
         <entry key="app/src/main/res/layout/activity_two_map.xml" value="0.21875" />
         <entry key="app/src/main/res/layout/activity_water_drop.xml" value="0.21875" />
+        <entry key="app/src/main/res/layout/barchart_main.xml" value="0.3885416666666667" />
+        <entry key="app/src/main/res/layout/fragment_day_hrm.xml" value="0.3885416666666667" />
+        <entry key="app/src/main/res/layout/fragment_day_line.xml" value="0.3885416666666667" />
         <entry key="app/src/main/res/layout/fragment_day_step.xml" value="0.2105978260869565" />
+        <entry key="app/src/main/res/layout/layout_step_bottom_desc.xml" value="0.3885416666666667" />
+        <entry key="app/src/main/res/layout/layout_step_date_title.xml" value="0.3885416666666667" />
         <entry key="app/src/main/res/layout/recordlist.xml" value="0.3885416666666667" />
       </map>
     </option>

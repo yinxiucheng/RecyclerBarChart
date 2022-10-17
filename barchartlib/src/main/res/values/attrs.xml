@@ -259,6 +259,7 @@
 
     <declare-styleable name="LineChartRecyclerView">
         <attr name="barBorderColor" />
+        <attr name="barBorderBgColor" format="color"/>
         <attr name="barBorderWidth" />
         <attr name="barSpace" />
         <attr name="chartColor" />

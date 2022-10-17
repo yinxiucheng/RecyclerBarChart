@@ -15,9 +15,6 @@ import java.util.List;
 public class YAxis extends BaseYAxis {
 
     protected BaseChartAttrs mAttrs;
-    public float labelHorizontalPadding;
-    public float labelVerticalPadding;//刻度 字跟刻度线的位置对齐的调整
-    public List<Float> scaleYLocationList;
     public HashMap<Float, Float> yAxisScaleMap;
 
     public YAxis(BaseChartAttrs barChartAttrs) {

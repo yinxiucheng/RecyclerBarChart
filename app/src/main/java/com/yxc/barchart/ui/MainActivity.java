@@ -21,6 +21,7 @@ import com.yxc.barchart.map.location.RecordListActivity;
 import com.yxc.barchart.map.location.database.RealmDbHelper;
 import com.yxc.barchart.map.location.util.LocationConstants;
 import com.yxc.barchart.ui.bezier.BezierActivity;
+import com.yxc.barchart.ui.hrm.HrmActivity;
 import com.yxc.barchart.ui.line.LineActivity;
 import com.yxc.barchart.ui.rainbow.RainbowActivity;
 import com.yxc.barchart.ui.sleep.SleepActivity;
@@ -77,8 +78,8 @@ public class MainActivity extends AppCompatActivity {
         toolbar = findViewById(R.id.toolBar);
         toolbar.setTitle(TimeDateUtil.getDateStr(TimeDateUtil.localDateToTimestamp(LocalDate.now()), "M月dd日"));
         toolbar.setNavigationIcon(R.drawable.ic_navigation_left_black_45dp);
-
         setSupportActionBar(toolbar);
+        clickHrm();
     }
 
     @Override
@@ -123,6 +124,15 @@ public class MainActivity extends AppCompatActivity {
     }
 
     public void clickMapboxRecord(View view) {intentToRecord(false); }
+
+    public void clickHrm(){
+        findViewById(R.id.hrm_chart_btn).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                startActivity(new Intent(MainActivity.this, HrmActivity.class));
+            }
+        });
+    }
 
     private void intentToRecord(boolean useGaoDe) {
         Intent intent = new Intent(this, RecordListActivity.class);

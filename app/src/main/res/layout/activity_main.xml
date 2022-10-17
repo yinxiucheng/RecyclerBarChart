@@ -154,7 +154,7 @@
                 android:layout_height="50dp"
                 android:layout_gravity="center_horizontal"
                 android:layout_marginTop="30dp"
-                android:onClick="clickRainbow"
+                android:onClick="clickHrm"
                 android:text="心电图" />
 
         </androidx.appcompat.widget.LinearLayoutCompat>
