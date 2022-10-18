@@ -10,15 +10,8 @@ import androidx.appcompat.widget.Toolbar;
 import androidx.fragment.app.FragmentTransaction;
 
 import com.yxc.barchart.R;
-import com.yxc.barchart.tab.OnTabSelectListener;
-import com.yxc.barchart.tab.TopTabLayout;
 import com.yxc.barchart.ui.base.BaseChartFragment;
-import com.yxc.barchart.ui.line.MonthLineFragment;
-import com.yxc.barchart.ui.line.WeekLineFragment;
-import com.yxc.barchart.ui.line.YearLineFragment;
-import com.yxc.commonlib.util.ColorUtil;
 import com.yxc.commonlib.util.TimeDateUtil;
-
 import org.joda.time.LocalDate;
 
 
