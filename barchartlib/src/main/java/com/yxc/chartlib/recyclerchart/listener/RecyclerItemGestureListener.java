@@ -89,6 +89,7 @@ public class RecyclerItemGestureListener implements RecyclerView.OnItemTouchList
 
                 isLongPressing = true;
                 if (null != layoutManager) {
+                    Log.d("GestureListener", "set RatioSpeed 0 ");
                     layoutManager.setRatioSpeed(0);
                 }
                 if (child != null && mListener != null) {

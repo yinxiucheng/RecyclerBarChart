@@ -2,6 +2,7 @@ package com.yxc.chartlib.recyclerchart.barchart;
 
 import android.content.Context;
 import android.util.AttributeSet;
+import android.util.Log;
 
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
@@ -39,6 +40,7 @@ public class SpeedRatioLayoutManager extends LinearLayoutManager {
         //屏蔽之后无滑动效果，证明滑动的效果就是由这个函数实现
         int a = super.scrollHorizontallyBy((int) (ratioSpeed * dx), recycler, state);
         if (a == (int) (ratioSpeed * dx)) {
+            Log.d("GestureListener", "set RatioSpeed dx: " + a);
             return dx;
         }
         return a;

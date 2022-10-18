@@ -103,8 +103,8 @@ final public class HrmLineChartRender extends LineChartRender {
             RectF rectF = ChartComputeUtil.getBarChartRectF(child, parent, mYAxis, mLineChartAttrs, barEntry);
             PointF pointF2 = new PointF((rectF.left + rectF.right) / 2, rectF.top);
             //pointF2 即为当前for 循环到的点，从左往右一共涉及到4个点 pointF0, pointF1, pointF2, pointF3; 其中 pointF1、pointF2为显示的。
-            if (i < childCount - 1) {
-                View pointF1Child = parent.getChildAt(i + 1);
+            if (i < childCount - 1 && i > 0) {
+                View pointF1Child = parent.getChildAt(i - 1);
                 T barEntryLeft = (T) pointF1Child.getTag();
                 RectF rectFLeft = ChartComputeUtil.getBarChartRectF(pointF1Child, parent, mYAxis, mLineChartAttrs, barEntryLeft);
                 PointF pointF1 = new PointF((rectFLeft.left + rectFLeft.right) / 2, rectFLeft.top);
@@ -112,10 +112,10 @@ final public class HrmLineChartRender extends LineChartRender {
                 if (pointF1.x >= parentLeft && pointF2.x <= parentRightBoard) {
                     float[] pointsOut = new float[]{pointF1.x, pointF1.y, pointF2.x, pointF2.y};
                     drawChartLine(canvas, pointsOut);
-                    if (pointF1Child.getLeft() < parentLeft) {//左边界，处理pointF1值显示出来了的情况。
-                        if (adapterPosition + 2 < entryList.size()) {
+                    if (pointF1Child.getLeft() < parentLeft && adapterPosition > 2) {//左边界，处理pointF1值显示出来了的情况。
+                        if (adapterPosition - 2 < entryList.size()) {
                             float x = pointF1.x - pointF1Child.getWidth();
-                            T barEntry0 = entryList.get(adapterPosition + 2);
+                            T barEntry0 = entryList.get(adapterPosition - 2);
                             float y = ChartComputeUtil.getYPosition(barEntry0, parent, mYAxis, mLineChartAttrs);
                             PointF pointF0 = new PointF(x, y);
                             PointF pointFIntercept = ChartComputeUtil.getInterceptPointF(pointF0, pointF1, parentLeft);
@@ -124,8 +124,8 @@ final public class HrmLineChartRender extends LineChartRender {
                         }
                     } else if (child.getRight() < parentRightBoard && parentRightBoard - child.getRight() <= child.getWidth()) {
                         //右边界处理情况，pointF3显示出来跟没有显示出来。
-                        if (adapterPosition - 1 > 0) {
-                            T barEntryRight = entryList.get(adapterPosition - 1);
+                        if (adapterPosition + 1 < entryList.size()){
+                            T barEntryRight = entryList.get(adapterPosition + 1);
                             float x = pointF2.x + child.getWidth();
                             float y = ChartComputeUtil.getYPosition(barEntryRight, parent, mYAxis, mLineChartAttrs);
                             PointF pointF3 = new PointF(x, y);
@@ -135,9 +135,9 @@ final public class HrmLineChartRender extends LineChartRender {
                                 float[] points = new float[]{pointF2.x, pointF2.y, pointFIntercept.x, pointFIntercept.y};
                                 drawChartLine(canvas, points);
                             } else if (pointF3.x < parentRightBoard) {
-                                if (adapterPosition - 2 > 0) {
+                                if (adapterPosition + 2 < entryList.size()) {
                                     float xInner = pointF3.x + child.getWidth();
-                                    T barEntry4 = entryList.get(adapterPosition - 2);
+                                    T barEntry4 = entryList.get(adapterPosition + 2);
                                     float yInner = ChartComputeUtil.getYPosition(barEntry4, parent, mYAxis, mLineChartAttrs);
                                     PointF pointF4 = new PointF(xInner, yInner);
 

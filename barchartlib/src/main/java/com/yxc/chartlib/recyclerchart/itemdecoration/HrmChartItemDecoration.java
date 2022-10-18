@@ -68,7 +68,7 @@ public class HrmChartItemDecoration extends RecyclerView.ItemDecoration {
             xAxisRenderer.drawVerticalLine(canvas, parent, mXAxis);//画竖的网格线
             xAxisRenderer.drawXAxis(canvas, parent, mXAxis);//画x轴坐标的刻度
             mLineChartRender.drawLineChart(canvas, parent, mYAxis);//draw LineChart
-            mLineChartRender.drawHighLight(canvas, parent, mYAxis);//绘制选中高亮
+//            mLineChartRender.drawHighLight(canvas, parent, mYAxis);//绘制选中高亮
 
         } else if (mOrientation == VERTICAL_LIST) {//暂时不支持
             //竖向list 画横线
