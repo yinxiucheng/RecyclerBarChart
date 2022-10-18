@@ -10,13 +10,8 @@ import androidx.appcompat.widget.Toolbar;
 import androidx.fragment.app.FragmentTransaction;
 
 import com.yxc.barchart.R;
-import com.yxc.barchart.tab.OnTabSelectListener;
 import com.yxc.barchart.tab.TopTabLayout;
 import com.yxc.barchart.ui.base.BaseChartFragment;
-import com.yxc.barchart.ui.line.MonthLineFragment;
-import com.yxc.barchart.ui.line.WeekLineFragment;
-import com.yxc.barchart.ui.line.YearLineFragment;
-import com.yxc.commonlib.util.ColorUtil;
 import com.yxc.commonlib.util.TimeDateUtil;
 
 import org.joda.time.LocalDate;
@@ -25,7 +20,7 @@ import org.joda.time.LocalDate;
 /**
  * 心电图
  */
-public class HrmActivity extends AppCompatActivity {
+public class HrmLandScapeActivity extends AppCompatActivity {
 
     Toolbar toolbar;
     FrameLayout container;
@@ -59,6 +54,7 @@ public class HrmActivity extends AppCompatActivity {
         }
         return super.onOptionsItemSelected(item);
     }
+
 
     public void switchTab(Class clz, String tag) {
         FragmentTransaction ft = getSupportFragmentManager().beginTransaction();

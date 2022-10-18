@@ -53,6 +53,10 @@
         <activity android:name=".ui.sleep.SleepActivity" />
         <activity android:name=".ui.line.LineActivity" />
         <activity android:name=".ui.hrm.HrmActivity" />
+
+        <activity android:name=".ui.hrm.HrmLandScapeActivity"
+            android:screenOrientation="landscape"/>
+
         <activity android:name=".ui.waterdrop.WaterDropActivity" />
         <activity android:name=".ui.bezier.BezierActivity" />
         <activity android:name=".ui.rainbow.RainbowActivity"/>

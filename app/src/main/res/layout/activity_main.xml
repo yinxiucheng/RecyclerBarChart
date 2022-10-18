@@ -144,7 +144,6 @@
                 android:layout_width="100dp"
                 android:layout_height="50dp"
                 android:layout_gravity="center_horizontal"
-                android:layout_marginTop="30dp"
                 android:onClick="clickRainbow"
                 android:text="彩虹" />
 
@@ -153,9 +152,15 @@
                 android:layout_width="100dp"
                 android:layout_height="50dp"
                 android:layout_gravity="center_horizontal"
-                android:layout_marginTop="30dp"
                 android:onClick="clickHrm"
                 android:text="心电图" />
+
+            <Button
+                android:id="@+id/hrm_chart_landscape"
+                android:layout_width="100dp"
+                android:layout_height="50dp"
+                android:layout_gravity="center_horizontal"
+                android:text="心电图横向" />
 
         </androidx.appcompat.widget.LinearLayoutCompat>
     </androidx.appcompat.widget.LinearLayoutCompat>

@@ -32,29 +32,11 @@
         android:layout_height="1px"
         android:background="@color/black_40_transparent" />
 
-    <com.yxc.barchart.tab.TopTabLayout
-        android:id="@+id/topTabLayout"
-        android:layout_width="match_parent"
-        android:layout_height="30dp"
-        android:layout_centerVertical="true"
-        android:layout_gravity="center"
-        android:layout_marginLeft="20dp"
-        android:layout_marginTop="10dp"
-        android:layout_marginRight="20dp"
-        android:layout_marginBottom="4dp"
-        android:visibility="invisible"
-        app:tl_bar_color="#ffffff"
-        app:tl_textSelectColor="@color/white"
-        app:tl_textUnselectColor="@color/black_80_transparent"
-        app:tl_divider_color="@color/pink"
-        app:tl_indicator_corner_radius="5dp"
-        app:tl_tab_padding="45dp"
-        app:tl_textBold="0" />
-
     <FrameLayout
         android:id="@+id/container"
         android:layout_width="match_parent"
         android:layout_height="0dp"
-        android:layout_weight="1" />
+        android:layout_weight="1"
+        android:layout_marginTop="30dp"/>
 
 </LinearLayout>
