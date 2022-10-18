@@ -64,7 +64,6 @@ public class YAxisRender<T extends BaseYAxis, V extends BaseChartAttrs> {
             Path path = new Path();
             path.moveTo(left, gridLine);
             path.lineTo(right, gridLine);
-
             boolean enable = false;
             if (i == lineNums && mBarChartAttrs.enableYAxisZero) {
                 enable = true;

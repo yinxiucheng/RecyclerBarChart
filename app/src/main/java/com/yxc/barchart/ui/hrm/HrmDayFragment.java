@@ -6,7 +6,6 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.view.ViewTreeObserver;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
@@ -17,6 +16,7 @@ import com.yxc.barchart.R;
 import com.yxc.barchart.RateTestData;
 import com.yxc.barchart.TestData;
 import com.yxc.barchart.formatter.XAxisHrmFormatter;
+import com.yxc.barchart.ui.MainActivity;
 import com.yxc.barchart.ui.line.BaseLineFragment;
 import com.yxc.chartlib.recyclerchart.attrs.LineChartAttrs;
 import com.yxc.chartlib.recyclerchart.barchart.BarChartAdapter;
@@ -31,17 +31,15 @@ import com.yxc.chartlib.recyclerchart.listener.RecyclerItemGestureListener;
 import com.yxc.chartlib.recyclerchart.listener.SimpleItemGestureListener;
 import com.yxc.chartlib.recyclerchart.util.ChartComputeUtil;
 import com.yxc.chartlib.recyclerchart.util.DecimalUtil;
-import com.yxc.chartlib.recyclerchart.view.CustomAnimatedDecorator;
 import com.yxc.chartlib.recyclerchart.view.LineChartRecyclerView;
 import com.yxc.commonlib.util.TimeDateUtil;
 
 import org.joda.time.LocalDate;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
 
-public class HrmDayFragment extends BaseLineFragment implements ViewTreeObserver.OnGlobalLayoutListener {
+public class HrmDayFragment extends BaseLineFragment {
 
     LineChartRecyclerView recyclerView;
     TextView txtLeftLocalDate;
@@ -78,7 +76,6 @@ public class HrmDayFragment extends BaseLineFragment implements ViewTreeObserver
         View view = View.inflate(getActivity(), R.layout.fragment_day_hrm, null);
         initView(view);
         initData();
-        reSizeYAxis();
         setListener();
         return view;
     }
@@ -91,38 +88,47 @@ public class HrmDayFragment extends BaseLineFragment implements ViewTreeObserver
         mBarChartAttrs = recyclerView.mAttrs;
     }
 
+    private int computeDisplayNumber() {
+        float itemHeight = recyclerView.contentHeight() / 8.0f;
+        int displayNumber = (int) ((recyclerView.contentWidth() / itemHeight) * 5);
+        return displayNumber;
+    }
+
     private void initData() {
-        displayNumber = mBarChartAttrs.displayNumbers;
-        mType = TestData.VIEW_DAY;
-        valueFormatter = new XAxisHrmFormatter();
-        mEntries = new ArrayList<>();
+        recyclerView.post(new Runnable() {
+            @Override
+            public void run() {
+                displayNumber = computeDisplayNumber();
+                mType = TestData.VIEW_DAY;
+                valueFormatter = new XAxisHrmFormatter();
+                mEntries = new ArrayList<>();
 
-        SpeedRatioLayoutManager layoutManager = new SpeedRatioLayoutManager(getActivity(), mBarChartAttrs);
-        mYAxis = new YAxis(mBarChartAttrs);
-        mXAxis = new XAxis(mBarChartAttrs, displayNumber, valueFormatter);
+                SpeedRatioLayoutManager layoutManager = new SpeedRatioLayoutManager(getActivity(), mBarChartAttrs);
+                mYAxis = new YAxis(mBarChartAttrs);
+                mXAxis = new XAxis(mBarChartAttrs, displayNumber, valueFormatter);
 
-        mItemDecoration = new HrmChartItemDecoration(mYAxis, mXAxis, mBarChartAttrs);
-        recyclerView.addItemDecoration(mItemDecoration);
-        mBarChartAdapter = new BarChartAdapter(getActivity(), mEntries, recyclerView, mXAxis, mBarChartAttrs);
-        recyclerView.setAdapter(mBarChartAdapter);
-        recyclerView.setLayoutManager(layoutManager);
+                mItemDecoration = new HrmChartItemDecoration(mYAxis, mXAxis, mBarChartAttrs);
+                recyclerView.addItemDecoration(mItemDecoration);
+                mBarChartAdapter = new BarChartAdapter(getActivity(), mEntries, recyclerView, mXAxis, mBarChartAttrs);
+                recyclerView.setAdapter(mBarChartAdapter);
+                recyclerView.setLayoutManager(layoutManager);
 
-        currentTimestamp = TimeDateUtil.changZeroOfTheDay(LocalDate.now().plusDays(1));
+                currentTimestamp = TimeDateUtil.changZeroOfTheDay(LocalDate.now().plusDays(1));
 
-        List<BarEntry> preEntries = RateTestData.createHrmEntries(mBarChartAttrs,
-                currentTimestamp + preEntrySize * TimeDateUtil.TIME_HOUR, preEntrySize, mEntries.size());
-        List<BarEntry> barEntries = RateTestData.createHrmEntries(mBarChartAttrs, currentTimestamp,
-                10 * displayNumber, mEntries.size());
+                List<BarEntry> barEntries = RateTestData.createHrmEntries(mBarChartAttrs, currentTimestamp,
+                        10 * displayNumber, mEntries.size());
 
-        barEntries.addAll(0, preEntries);
-        bindBarChartList(barEntries);
-        currentTimestamp = currentTimestamp - TimeDateUtil.TIME_HOUR * displayNumber * 10;
-        setXAxis(displayNumber);
+                bindBarChartList(barEntries);
+                currentTimestamp = currentTimestamp - TimeDateUtil.TIME_HOUR * displayNumber * 10;
+                setXAxis(displayNumber);
+                reSizeYAxis();
+            }
+        });
     }
 
     private void reSizeYAxis() {
-        recyclerView.scrollToPosition(preEntrySize + 1);
-        List<BarEntry> visibleEntries = mEntries.subList(preEntrySize, preEntrySize + displayNumber + 1);
+        recyclerView.scrollToPosition(0);
+        List<BarEntry> visibleEntries = mEntries.subList(preEntrySize, displayNumber);
         YAxis yAxis = mYAxis.resetHrmYAxis(mYAxis, DecimalUtil.getTheMaxNumber(visibleEntries) + 20);
         mBarChartAdapter.notifyDataSetChanged();
         if (yAxis != null) {
@@ -142,7 +148,6 @@ public class HrmDayFragment extends BaseLineFragment implements ViewTreeObserver
                     @Override
                     public void onItemSelected(BarEntry barEntry, int position) {
                     }
-
                     @Override
                     public void onScrollStateChanged(RecyclerView recyclerView, int newState) {
                         // 当不滚动时
@@ -170,7 +175,6 @@ public class HrmDayFragment extends BaseLineFragment implements ViewTreeObserver
                     }
                 });
         recyclerView.addOnItemTouchListener(mItemGestureListener);
-        //recyclerView.getViewTreeObserver().addOnGlobalLayoutListener(this);
     }
 
     //重新设置Y坐标
@@ -199,29 +203,6 @@ public class HrmDayFragment extends BaseLineFragment implements ViewTreeObserver
     private void setXAxis(int displayNumber) {
         mXAxis = new XAxis(mBarChartAttrs, displayNumber);
         mBarChartAdapter.setXAxis(mXAxis);
-    }
-
-    @Override
-    public void onGlobalLayout() {
-        HashMap<Integer, CustomAnimatedDecorator> map = new HashMap<>();
-        for (int i = 0; i < recyclerView.getChildCount(); i++) {
-            View child = recyclerView.getChildAt(i);
-            int position = recyclerView.getChildAdapterPosition(child);
-            BarEntry barEntry = mEntries.get(position);
-            Log.d("DayFragment", " barEntry, localDate" + barEntry.localDate);
-            float realBottomPadding = recyclerView.getPaddingBottom() + mBarChartAttrs.contentPaddingBottom;
-            float realTopPadding = recyclerView.getPaddingTop() + mBarChartAttrs.contentPaddingTop;
-            float realContentHeight = recyclerView.getHeight() - realBottomPadding - realTopPadding;
-
-            float width = child.getWidth();
-            float barSpaceWidth = width * mBarChartAttrs.barSpace;
-            float barChartWidth = width - barSpaceWidth;//柱子的宽度
-            float height = barEntry.getY() / mYAxis.getAxisMaximum() * realContentHeight;
-
-            CustomAnimatedDecorator drawable = new CustomAnimatedDecorator(barChartWidth, realContentHeight,
-                    0, realContentHeight - height);
-            map.put(position, drawable);
-        }
     }
 
     @Override

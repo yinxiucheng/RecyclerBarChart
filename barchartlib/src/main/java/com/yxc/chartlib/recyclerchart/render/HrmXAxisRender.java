@@ -85,7 +85,7 @@ final public class HrmXAxisRender<T extends BaseChartAttrs> {
                 continue;
             }
             int type = parent.getAdapter().getItemViewType(adapterPosition);
-            final int x = child.getRight();
+            final int x = child.getLeft();
             if (x > parentRight || x < parentLeft) {//超出的时候就不要画了
                 continue;
             }

@@ -41,6 +41,8 @@ public class BaseChartRecyclerView extends RecyclerView {
     }
 
 
+
+
     public void setOnChartTouchListener(OnChartTouchListener onChartTouchListener) {
         this.onChartTouchListener = onChartTouchListener;
     }

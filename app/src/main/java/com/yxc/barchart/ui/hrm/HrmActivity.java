@@ -27,8 +27,6 @@ import org.joda.time.LocalDate;
  */
 public class HrmActivity extends AppCompatActivity {
 
-    private String[] mTitles = {"日", "周", "月", "年"};
-
     TopTabLayout mTabLayout;
     Toolbar toolbar;
     FrameLayout container;
@@ -40,7 +38,6 @@ public class HrmActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_hrm);
         initView();
-        initTableLayout();
     }
 
     private void initView() {
@@ -65,33 +62,6 @@ public class HrmActivity extends AppCompatActivity {
         return super.onOptionsItemSelected(item);
     }
 
-    private void initTableLayout() {
-        mTabLayout.setCurrentTab(0);
-        mTabLayout.setIndicatorColor(ColorUtil.getResourcesColor(this, R.color.red));
-        mTabLayout.setTextUnselectColor(ColorUtil.getResourcesColor(this, R.color.red));
-        mTabLayout.setDividerColor(ColorUtil.getResourcesColor(this, R.color.red));
-        mTabLayout.setTabData(mTitles);
-
-        mTabLayout.setOnTabSelectListener(new OnTabSelectListener() {
-            @Override
-            public void onTabSelect(int position) {
-                if (position == 0) {// 创建 月视图的数据
-                    switchTab(HrmDayFragment.class, "HrmDayFragment");
-                } else if (position == 1) {//创建Week视图的数据
-                    switchTab(WeekLineFragment.class, "WeekLineFragment");
-                } else if (position == 2) {//创建Month视图的数据
-                    switchTab(MonthLineFragment.class, "MonthLineFragment");
-                } else if (position == 3) {//创建Year视图的数据
-                    switchTab(YearLineFragment.class, "YearLineFragment");
-                }
-            }
-
-            @Override
-            public void onTabReselect(int position) {
-            }
-        });
-        mTabLayout.setCurrentTab(0);
-    }
 
     public void switchTab(Class clz, String tag) {
         FragmentTransaction ft = getSupportFragmentManager().beginTransaction();

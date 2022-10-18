@@ -42,6 +42,7 @@
         android:layout_marginTop="10dp"
         android:layout_marginRight="20dp"
         android:layout_marginBottom="4dp"
+        android:visibility="invisible"
         app:tl_bar_color="#ffffff"
         app:tl_textSelectColor="@color/white"
         app:tl_textUnselectColor="@color/black_80_transparent"
