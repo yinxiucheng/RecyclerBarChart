@@ -18,6 +18,7 @@ import com.yxc.chartlib.recyclerchart.formatter.ValueFormatter;
 import com.yxc.chartlib.recyclerchart.render.BarBoardRender;
 import com.yxc.chartlib.recyclerchart.render.HrmBarBoardRender;
 import com.yxc.chartlib.recyclerchart.render.HrmXAxisRender;
+import com.yxc.chartlib.recyclerchart.render.HrmYAxisRender;
 import com.yxc.chartlib.recyclerchart.render.LineChartRender;
 import com.yxc.chartlib.recyclerchart.render.XAxisRender;
 import com.yxc.chartlib.recyclerchart.render.YAxisRender;
@@ -34,7 +35,7 @@ public class HrmChartItemDecoration extends RecyclerView.ItemDecoration {
     private YAxis mYAxis;
     private XAxis mXAxis;
     private LineChartAttrs mBarChartAttrs;
-    private YAxisRender yAxisRenderer;
+    private HrmYAxisRender yAxisRenderer;
     private HrmXAxisRender xAxisRenderer;
     private HrmBarBoardRender mBarBoardRender;
     private LineChartRender mLineChartRender;
@@ -48,7 +49,7 @@ public class HrmChartItemDecoration extends RecyclerView.ItemDecoration {
         this.mYAxis = yAxis;
         this.mXAxis = xAxis;
         this.mBarChartAttrs = barChartAttrs;
-        this.yAxisRenderer = new YAxisRender(mBarChartAttrs);
+        this.yAxisRenderer = new HrmYAxisRender(mBarChartAttrs);
         this.xAxisRenderer = new HrmXAxisRender(mBarChartAttrs);
         this.mBarBoardRender = new HrmBarBoardRender(mBarChartAttrs);
         this.mHighLightValueFormatter = new DefaultHighLightMarkValueFormatter(0);

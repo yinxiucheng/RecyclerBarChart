@@ -99,7 +99,7 @@ public class ChartAttrsUtil {
         //XAxis
         attrs.xAxisFirstDividerColor = ta.getColor(R.styleable.BarChartRecyclerView_xAxisFirstDividerColor, ColorUtil.getResourcesColor(context, R.color.black));
         attrs.xAxisSecondDividerColor = ta.getColor(R.styleable.BarChartRecyclerView_xAxisSecondDividerColor, ColorUtil.getResourcesColor(context, R.color.black_80_transparent));
-        attrs.xAxisThirdDividerColor = ta.getColor(R.styleable.BarChartRecyclerView_xAxisThirdDividerColor, ColorUtil.getResourcesColor(context, R.color.black_30_transparent));
+        attrs.xAxisThirdDividerColor = ta.getColor(R.styleable.BarChartRecyclerView_xAxisThirdDividerColor, ColorUtil.getResourcesColor(context, R.color.black_20_transparent));
         attrs.xAxisTxtColor = ta.getColor(R.styleable.BarChartRecyclerView_xAxisTxtColor, ColorUtil.getResourcesColor(context, R.color.black));
         attrs.xAxisTxtSize = ta.getDimension(R.styleable.BarChartRecyclerView_xAxisTxtSize, DisplayUtil.sp2px(context, 12));
         attrs.xAxisLabelTxtPadding = ta.getDimension(R.styleable.BarChartRecyclerView_xAxisLabelTxtPadding, DisplayUtil.dip2px(2));
@@ -179,7 +179,7 @@ public class ChartAttrsUtil {
         //XAxis
         attrs.xAxisFirstDividerColor = ta.getColor(R.styleable.LineChartRecyclerView_xAxisFirstDividerColor, ColorUtil.getResourcesColor(context, R.color.black));
         attrs.xAxisSecondDividerColor = ta.getColor(R.styleable.LineChartRecyclerView_xAxisSecondDividerColor, ColorUtil.getResourcesColor(context, R.color.black_80_transparent));
-        attrs.xAxisThirdDividerColor = ta.getColor(R.styleable.LineChartRecyclerView_xAxisThirdDividerColor, ColorUtil.getResourcesColor(context, R.color.black_30_transparent));
+        attrs.xAxisThirdDividerColor = ta.getColor(R.styleable.LineChartRecyclerView_xAxisThirdDividerColor, ColorUtil.getResourcesColor(context, R.color.black_20_transparent));
         attrs.xAxisTxtColor = ta.getColor(R.styleable.LineChartRecyclerView_xAxisTxtColor, ColorUtil.getResourcesColor(context, R.color.black));
         attrs.xAxisTxtSize = ta.getDimension(R.styleable.LineChartRecyclerView_xAxisTxtSize, DisplayUtil.sp2px(context, 12));
         attrs.xAxisLabelTxtPadding = ta.getDimension(R.styleable.LineChartRecyclerView_xAxisLabelTxtPadding, DisplayUtil.dip2px(2));
@@ -263,7 +263,7 @@ public class ChartAttrsUtil {
         //XAxis
         attrs.xAxisFirstDividerColor = ta.getColor(R.styleable.BezierChartRecyclerView_xAxisFirstDividerColor, ColorUtil.getResourcesColor(context, R.color.black));
         attrs.xAxisSecondDividerColor = ta.getColor(R.styleable.BezierChartRecyclerView_xAxisSecondDividerColor, ColorUtil.getResourcesColor(context, R.color.black_80_transparent));
-        attrs.xAxisThirdDividerColor = ta.getColor(R.styleable.BezierChartRecyclerView_xAxisThirdDividerColor, ColorUtil.getResourcesColor(context, R.color.black_30_transparent));
+        attrs.xAxisThirdDividerColor = ta.getColor(R.styleable.BezierChartRecyclerView_xAxisThirdDividerColor, ColorUtil.getResourcesColor(context, R.color.black_20_transparent));
         attrs.xAxisTxtColor = ta.getColor(R.styleable.BezierChartRecyclerView_xAxisTxtColor, ColorUtil.getResourcesColor(context, R.color.black));
         attrs.xAxisTxtSize = ta.getDimension(R.styleable.BezierChartRecyclerView_xAxisTxtSize, DisplayUtil.sp2px(context, 12));
         attrs.xAxisLabelTxtPadding = ta.getDimension(R.styleable.BezierChartRecyclerView_xAxisLabelTxtPadding, DisplayUtil.dip2px(2));
