@@ -21,7 +21,7 @@
             app:layoutManagerReverseLayout="false"
             app:contentPaddingTop="0dp"
             app:displayNumbers="80"
-            app:linePointRadius="0.1dp"
+            app:enableXAxisLineCircle="false"
             app:enableLineFill="false"
             app:barBorderColor="@color/bar_chart_pink"
             app:xAxisFirstDividerColor="@color/bar_chart_pink"

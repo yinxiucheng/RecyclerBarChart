@@ -10,18 +10,14 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.yxc.chartlib.recyclerchart.attrs.LineChartAttrs;
-import com.yxc.chartlib.recyclerchart.component.HrmYAxis;
 import com.yxc.chartlib.recyclerchart.component.XAxis;
 import com.yxc.chartlib.recyclerchart.component.YAxis;
 import com.yxc.chartlib.recyclerchart.formatter.DefaultHighLightMarkValueFormatter;
 import com.yxc.chartlib.recyclerchart.formatter.ValueFormatter;
-import com.yxc.chartlib.recyclerchart.render.BarBoardRender;
 import com.yxc.chartlib.recyclerchart.render.HrmBarBoardRender;
+import com.yxc.chartlib.recyclerchart.render.HrmLineChartRender;
 import com.yxc.chartlib.recyclerchart.render.HrmXAxisRender;
 import com.yxc.chartlib.recyclerchart.render.HrmYAxisRender;
-import com.yxc.chartlib.recyclerchart.render.LineChartRender;
-import com.yxc.chartlib.recyclerchart.render.XAxisRender;
-import com.yxc.chartlib.recyclerchart.render.YAxisRender;
 
 /**
  * @author yxc
@@ -38,7 +34,7 @@ public class HrmChartItemDecoration extends RecyclerView.ItemDecoration {
     private HrmYAxisRender yAxisRenderer;
     private HrmXAxisRender xAxisRenderer;
     private HrmBarBoardRender mBarBoardRender;
-    private LineChartRender mLineChartRender;
+    private HrmLineChartRender mLineChartRender;
     private ValueFormatter mHighLightValueFormatter;
 
     public static final int HORIZONTAL_LIST = LinearLayoutManager.HORIZONTAL;
@@ -53,7 +49,7 @@ public class HrmChartItemDecoration extends RecyclerView.ItemDecoration {
         this.xAxisRenderer = new HrmXAxisRender(mBarChartAttrs);
         this.mBarBoardRender = new HrmBarBoardRender(mBarChartAttrs);
         this.mHighLightValueFormatter = new DefaultHighLightMarkValueFormatter(0);
-        this.mLineChartRender = new LineChartRender(mBarChartAttrs, mHighLightValueFormatter);
+        this.mLineChartRender = new HrmLineChartRender(mBarChartAttrs, mHighLightValueFormatter);
     }
 
     @Override

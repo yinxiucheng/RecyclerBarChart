@@ -160,10 +160,10 @@ public class HrmDayFragment extends BaseLineFragment {
                                 mBarChartAdapter.notifyDataSetChanged();
                             }
                             //回溯
-                            if (mBarChartAttrs.enableScrollToScale) {
-                                int scrollToByDx = ChartComputeUtil.computeScrollByXOffset(recyclerView, displayNumber, mType);
-                                recyclerView.scrollBy(scrollToByDx, 0);
-                            }
+//                            if (mBarChartAttrs.enableScrollToScale) {
+//                                int scrollToByDx = ChartComputeUtil.computeScrollByXOffset(recyclerView, displayNumber, mType);
+//                                recyclerView.scrollBy(scrollToByDx, 0);
+//                            }
                             //重绘Y轴
                             resetYAxis(recyclerView);
                         }

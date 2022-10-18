@@ -31,7 +31,7 @@ import java.util.List;
  * @author yxc
  * @since 2019/4/14
  */
-final public class LineChartRender {
+ public class LineChartRender {
     private LineChartAttrs mLineChartAttrs;
     private Paint mLineChartPaint;
     private Paint mTextPaint;
