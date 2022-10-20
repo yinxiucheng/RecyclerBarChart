@@ -131,10 +131,10 @@ public class SleepActivity extends AppCompatActivity implements DayCalendarView.
                 super.onPageSelected(position);
                 Log.d("SleepActivity", "onPageSelected position:" + position);
 
-                Fragment fragment = mPageAdapter.getItem(position);
-                if (fragment instanceof SleepFragment) {
-
-                }
+//                Fragment fragment = mPageAdapter.createFragment(position);
+//                if (fragment instanceof SleepFragment) {
+//
+//                }
 
                 LocalDate localDate = mLocalDate.minusDays(position);
                 mCalendarView.setSelectDateInvalidate(localDate);
@@ -205,9 +205,26 @@ public class SleepActivity extends AppCompatActivity implements DayCalendarView.
             return mDataList.size();
         }
 
+//        @NonNull
+//        @Override
+//        public Fragment getItem(int position) {
+//            LocalDate localDate = mLocalDate.minusDays(position);
+//            Class clz = SleepFragment.class;
+//            SleepFragment fragment = null;
+//            try {
+//                fragment = (SleepFragment) clz.newInstance();
+//            } catch (IllegalAccessException e) {
+//                e.printStackTrace();
+//            } catch (InstantiationException e) {
+//                e.printStackTrace();
+//            }
+//            fragment.setArguments(bindTimestamp(TimeDateUtil.localDateToTimestamp(localDate)));
+//            return fragment;
+//        }
+
         @NonNull
         @Override
-        public Fragment getItem(int position) {
+        public Fragment createFragment(int position) {
             LocalDate localDate = mLocalDate.minusDays(position);
             Class clz = SleepFragment.class;
             SleepFragment fragment = null;
@@ -221,7 +238,6 @@ public class SleepActivity extends AppCompatActivity implements DayCalendarView.
             fragment.setArguments(bindTimestamp(TimeDateUtil.localDateToTimestamp(localDate)));
             return fragment;
         }
-
     }
 
 

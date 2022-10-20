@@ -1,6 +1,5 @@
 package com.yxc.barchart.map.location;
 
-import android.app.Activity;
 import android.content.Intent;
 import android.icu.text.SimpleDateFormat;
 import android.os.Bundle;
@@ -9,6 +8,7 @@ import android.view.View;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
@@ -35,7 +35,7 @@ import java.util.Locale;
 /**
  * 所有轨迹list展示activity
  */
-public class RecordListActivity extends Activity implements RecordAdapter.OnRecordItemClickListener {
+public class RecordListActivity extends AppCompatActivity implements RecordAdapter.OnRecordItemClickListener {
 
     private RecordAdapter mAdapter;
     private RecyclerView mRecordRcyclerView;

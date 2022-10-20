@@ -18,6 +18,8 @@ import com.yxc.barchart.map.location.util.PowerManagerUtil;
 import com.yxc.barchart.map.location.util.Utils;
 import com.yxc.barchart.map.location.util.WifiAutoCloseDelegate;
 
+import java.util.logging.Logger;
+
 /**
  * 包名： com.amap.locationservicedemo
  * <p>
@@ -81,35 +83,41 @@ public class LocationService extends NotiService {
     void startLocation() {
         Log.d("LocationService", "start location!!");
         stopLocation();
+        try {
+            if (null == mLocationClient) {
+                mLocationClient = new AMapLocationClient(this.getApplicationContext());
+            }
 
-        if (null == mLocationClient) {
-            mLocationClient = new AMapLocationClient(this.getApplicationContext());
+            mLocationOption = new AMapLocationClientOption();
+            //设置定位模式为高精度
+            mLocationOption.setLocationMode(AMapLocationClientOption.AMapLocationMode.Hight_Accuracy);
+            //返回地址信息
+            mLocationOption.setNeedAddress(true);
+            //设置是否只定位一次,默认为false
+            mLocationOption.setOnceLocation(false);
+            //设置是否强制刷新WIFI，默认为强制刷新
+            mLocationOption.setWifiScan(true);
+            //设置是否允许模拟位置,默认为false，不允许模拟位置
+            mLocationOption.setMockEnable(false);
+            //关闭缓存
+            mLocationOption.setLocationCacheEnable(false);
+            // 每 DEFAULT_INTERVAL_TIME 秒定位一次
+            mLocationOption.setInterval(LocationConstants.DEFAULT_INTERVAL_TIME);
+            //设置setOnceLocationLatest(boolean b)接口为true，启动定位时SDK会返回最近3s内精度最高的一次定位结果
+            mLocationOption.setOnceLocationLatest(true);
+            //开启传感器定位（速度、海拔、角度）
+            mLocationOption.setSensorEnable(true);
+            mLocationOption.setGpsFirst(true);
+            mLocationOption.setGpsFirstTimeout(6 * 300000);
+            mLocationClient.setLocationOption(mLocationOption);
+            mLocationClient.setLocationListener(locationListener);
+            mLocationClient.startLocation();
+        } catch (Exception e) {
+            Log.d("LocationService", "AMapLocationClient  init failed!!!");
+            e.printStackTrace();
         }
 
-        mLocationOption = new AMapLocationClientOption();
-        //设置定位模式为高精度
-        mLocationOption.setLocationMode(AMapLocationClientOption.AMapLocationMode.Hight_Accuracy);
-        //返回地址信息
-        mLocationOption.setNeedAddress(true);
-        //设置是否只定位一次,默认为false
-        mLocationOption.setOnceLocation(false);
-        //设置是否强制刷新WIFI，默认为强制刷新
-        mLocationOption.setWifiScan(true);
-        //设置是否允许模拟位置,默认为false，不允许模拟位置
-        mLocationOption.setMockEnable(false);
-        //关闭缓存
-        mLocationOption.setLocationCacheEnable(false);
-        // 每 DEFAULT_INTERVAL_TIME 秒定位一次
-        mLocationOption.setInterval(LocationConstants.DEFAULT_INTERVAL_TIME);
-        //设置setOnceLocationLatest(boolean b)接口为true，启动定位时SDK会返回最近3s内精度最高的一次定位结果
-        mLocationOption.setOnceLocationLatest(true);
-        //开启传感器定位（速度、海拔、角度）
-        mLocationOption.setSensorEnable(true);
-        mLocationOption.setGpsFirst(true);
-        mLocationOption.setGpsFirstTimeout(6 * 300000);
-        mLocationClient.setLocationOption(mLocationOption);
-        mLocationClient.setLocationListener(locationListener);
-        mLocationClient.startLocation();
+
     }
 
     /**

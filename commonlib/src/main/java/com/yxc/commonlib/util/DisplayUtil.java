@@ -1,6 +1,5 @@
 package com.yxc.commonlib.util;
 
-import android.app.Activity;
 import android.content.Context;
 import android.content.res.Resources;
 import android.graphics.Point;
@@ -8,6 +7,8 @@ import android.graphics.drawable.Drawable;
 import android.util.DisplayMetrics;
 import android.view.Display;
 import android.view.WindowManager;
+
+import androidx.appcompat.app.AppCompatActivity;
 
 /**
  * @author yxc
@@ -67,7 +68,7 @@ public class DisplayUtil {
      *
      * @param activity
      */
-    public static void keepScreenLongLight(Activity activity, boolean isOpenLight) {
+    public static void keepScreenLongLight(AppCompatActivity activity, boolean isOpenLight) {
         activity.getWindow().addFlags(isOpenLight ? WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON : WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
     }
 
@@ -79,7 +80,7 @@ public class DisplayUtil {
      * @date 2018/6/5
      * @description 获取屏幕显示高度
      */
-    public static int getScreenHeight(Activity context) {
+    public static int getScreenHeight(AppCompatActivity context) {
         Display display = context.getWindowManager().getDefaultDisplay();
         Point size = new Point();
         display.getSize(size);

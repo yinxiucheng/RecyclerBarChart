@@ -1,20 +1,18 @@
 package com.yxc.barchart.map.location;
 
 import android.annotation.SuppressLint;
-import android.app.Activity;
 import android.content.Intent;
 import android.graphics.Color;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
 import android.view.View;
-import android.widget.ImageView;
 import android.widget.RelativeLayout;
-import android.widget.ToggleButton;
+
+import androidx.appcompat.app.AppCompatActivity;
 
 import com.amap.api.location.AMapLocation;
 import com.amap.api.location.AMapLocationClient;
-import com.amap.api.location.AMapLocationClientOption;
 import com.amap.api.maps.AMap;
 import com.amap.api.maps.AMap.OnMapLoadedListener;
 import com.amap.api.maps.CameraUpdateFactory;
@@ -47,7 +45,7 @@ import java.util.concurrent.Executors;
  * 实现轨迹回放、纠偏后轨迹回放
  * 
  */
-public class RecordCorrectShowActivity extends Activity implements OnMapLoadedListener {
+public class RecordCorrectShowActivity extends AppCompatActivity implements OnMapLoadedListener {
 	private final static int AMAP_LOADED = 2;
 
 	private MapView mMapView;

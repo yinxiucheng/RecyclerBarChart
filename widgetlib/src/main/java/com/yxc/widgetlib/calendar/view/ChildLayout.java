@@ -88,7 +88,7 @@ public class ChildLayout extends FrameLayout implements ValueAnimator.AnimatorUp
 
 
     public boolean canScrollVertically(int direction) {
-        return ViewCompat.canScrollVertically(targetView, direction);
+        return targetView.canScrollVertically(direction);
     }
 
     @Override

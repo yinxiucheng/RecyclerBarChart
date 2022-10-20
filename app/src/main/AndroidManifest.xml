@@ -41,7 +41,8 @@
             android:label="@string/app_name"
             android:screenOrientation="portrait"
             android:theme="@style/AppTheme.NoActionBar"
-            android:windowSoftInputMode="stateVisible|adjustPan">
+            android:windowSoftInputMode="stateVisible|adjustPan"
+            android:exported="true">
 
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
@@ -61,8 +62,6 @@
         <activity android:name=".ui.bezier.BezierActivity" />
         <activity android:name=".ui.rainbow.RainbowActivity"/>
 
-        <!-- 定位需要的服务 使用2.0的定位需要加上这个 -->
-        <service android:name="com.amap.api.location.APSService"/>
 
         <activity android:name=".map.location.LocationActivity" android:screenOrientation="portrait"
             android:theme="@style/AppTheme"/>
@@ -97,7 +96,8 @@
 
         <service
             android:name=".map.location.service.LocalLocationService"
-            android:enabled="true">
+            android:enabled="true"
+            android:exported="true">
             <intent-filter android:priority="1000">
                 <action android:name="com.yxc.barchart.map.location.service.LocalLocationService"></action>
             </intent-filter>

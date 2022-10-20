@@ -1,7 +1,6 @@
 package com.yxc.barchart.map.location;
 
 import android.annotation.SuppressLint;
-import android.app.Activity;
 import android.content.Intent;
 import android.graphics.Color;
 import android.os.Bundle;
@@ -9,6 +8,8 @@ import android.os.Handler;
 import android.os.Message;
 import android.view.View;
 import android.widget.RelativeLayout;
+
+import androidx.appcompat.app.AppCompatActivity;
 
 import com.amap.api.location.AMapLocation;
 import com.amap.api.location.AMapLocationClient;
@@ -39,7 +40,7 @@ import java.util.List;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
-public class MapboxShowActivity extends Activity implements OnMapLoadedListener {
+public class MapboxShowActivity extends AppCompatActivity implements OnMapLoadedListener {
 	private final static int AMAP_LOADED = 2;
 
 	private MapView mMapView;

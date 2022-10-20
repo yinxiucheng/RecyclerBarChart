@@ -1,6 +1,5 @@
 package com.yxc.barchart.ui.sleep;
 
-import android.app.Activity;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -9,6 +8,7 @@ import android.view.ViewGroup;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.yxc.barchart.R;
@@ -40,7 +40,7 @@ public class SleepFragment extends BaseFragment {
     private SleepChartAdapter mAdapter;
     private SleepChartAttrs mAttrs;
     private SpeedRatioLayoutManager mLayoutManager;
-    private Activity mContext;
+    private AppCompatActivity mContext;
     private SleepChartItemDecoration mItemDecoration;
 
     //防止 Fragment重叠
@@ -56,7 +56,7 @@ public class SleepFragment extends BaseFragment {
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container,
                              @Nullable Bundle savedInstanceState) {
-        mContext = getActivity();
+        mContext = (AppCompatActivity) getActivity();
         View view = View.inflate(mContext, R.layout.fragment_sleep, null);
         initData();
         initView(view);

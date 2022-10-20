@@ -1,7 +1,6 @@
 package com.yxc.barchart.map.location;
 
 import android.Manifest;
-import android.app.Activity;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.graphics.Color;
@@ -13,6 +12,7 @@ import android.view.View.OnClickListener;
 import android.widget.LinearLayout;
 import android.widget.ToggleButton;
 
+import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityCompat;
 
 import com.amap.api.location.AMapLocation;
@@ -39,7 +39,7 @@ import org.greenrobot.eventbus.Subscribe;
 
 import java.util.List;
 
-public class LocationActivity extends Activity {
+public class LocationActivity extends AppCompatActivity {
     private MapView mMapView;
     private AMap mAMap;
     private PolylineOptions mPolyOptions, tracePolyOption;

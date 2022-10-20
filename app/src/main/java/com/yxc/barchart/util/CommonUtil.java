@@ -1,7 +1,6 @@
 package com.yxc.barchart.util;
 
 import android.annotation.SuppressLint;
-import android.app.Activity;
 import android.app.ActivityManager;
 import android.content.Context;
 import android.content.Intent;
@@ -18,6 +17,8 @@ import android.view.Window;
 import android.view.WindowManager;
 import android.widget.CompoundButton;
 
+import androidx.appcompat.app.AppCompatActivity;
+
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.text.DecimalFormat;
@@ -31,7 +32,7 @@ public class CommonUtil {
      * 获取状态栏高度
      *
      */
-    public static int getStatusBarHeight(Activity activity) {
+    public static int getStatusBarHeight(AppCompatActivity activity) {
         try {
             @SuppressLint("PrivateApi") Class<?> clazz = Class.forName("com.android.internal.R$dimen");
             Object object = clazz.newInstance();
@@ -122,7 +123,7 @@ public class CommonUtil {
      * 动态修改状态栏文字颜色
      *
      */
-    public static void setStatusBarFontColor(Activity activity, boolean isBlack) {
+    public static void setStatusBarFontColor(AppCompatActivity activity, boolean isBlack) {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
             if (isBlack) {
                 //实现状态栏图标和文字颜色为暗色
