@@ -6,6 +6,8 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
+import android.widget.ImageView;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
@@ -16,8 +18,9 @@ import com.yxc.barchart.R;
 import com.yxc.barchart.RateTestData;
 import com.yxc.barchart.TestData;
 import com.yxc.barchart.formatter.XAxisHrmFormatter;
-import com.yxc.barchart.ui.MainActivity;
 import com.yxc.barchart.ui.line.BaseLineFragment;
+import com.yxc.barchart.util.BaseFileUtil;
+import com.yxc.barchart.util.ScrollHorizontalCapture;
 import com.yxc.chartlib.recyclerchart.attrs.LineChartAttrs;
 import com.yxc.chartlib.recyclerchart.barchart.BarChartAdapter;
 import com.yxc.chartlib.recyclerchart.barchart.SpeedRatioLayoutManager;
@@ -36,6 +39,7 @@ import com.yxc.commonlib.util.TimeDateUtil;
 
 import org.joda.time.LocalDate;
 
+import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -44,6 +48,8 @@ public class HrmDayFragment extends BaseLineFragment {
     LineChartRecyclerView recyclerView;
     TextView txtLeftLocalDate;
     TextView txtRightLocalDate;
+    Button captureBtn;
+    ImageView imgCaptureView;
 
     BarChartAdapter mBarChartAdapter;
     List<BarEntry> mEntries;
@@ -85,11 +91,13 @@ public class HrmDayFragment extends BaseLineFragment {
         txtLeftLocalDate = view.findViewById(R.id.txt_left_local_date);
         txtRightLocalDate = view.findViewById(R.id.txt_right_local_date);
         recyclerView = view.findViewById(R.id.line_recycler);
+        captureBtn = view.findViewById(R.id.captureViewBtn);
+        imgCaptureView = view.findViewById(R.id.imgCaptureView);
         mBarChartAttrs = recyclerView.mAttrs;
     }
 
     private int computeDisplayNumber() {
-        float itemHeight = recyclerView.contentHeight() / 8.0f;
+        float itemHeight = recyclerView.contentHeight() / 6.0f;
         int displayNumber = (int) ((recyclerView.contentWidth() / itemHeight) * 5);
         return displayNumber;
     }
@@ -115,11 +123,10 @@ public class HrmDayFragment extends BaseLineFragment {
 
                 currentTimestamp = TimeDateUtil.changZeroOfTheDay(LocalDate.now().plusDays(1));
 
-                List<BarEntry> barEntries = RateTestData.createHrmEntries(mBarChartAttrs, currentTimestamp,
-                        10 * displayNumber, mEntries.size());
+                List<BarEntry> barEntries = RateTestData.createHrmEntries(mBarChartAttrs, currentTimestamp, 5 * displayNumber, mEntries.size());
 
                 bindBarChartList(barEntries);
-                currentTimestamp = currentTimestamp - TimeDateUtil.TIME_HOUR * displayNumber * 10;
+                currentTimestamp = currentTimestamp - TimeDateUtil.TIME_HOUR * displayNumber * 5;
                 setXAxis(displayNumber);
                 reSizeYAxis();
             }
@@ -151,22 +158,22 @@ public class HrmDayFragment extends BaseLineFragment {
                     @Override
                     public void onScrollStateChanged(RecyclerView recyclerView, int newState) {
                         // 当不滚动时
-                        if (newState == RecyclerView.SCROLL_STATE_IDLE) {
-                            //加载更多
-                            if (recyclerView.canScrollHorizontally(1) && isRightScroll) {
-                                List<BarEntry> entries = RateTestData.createHrmEntries(mBarChartAttrs, currentTimestamp, displayNumber, mEntries.size());
-                                currentTimestamp = currentTimestamp - displayNumber * TimeDateUtil.TIME_HOUR;
-                                mEntries.addAll(entries);
-                                mBarChartAdapter.notifyDataSetChanged();
-                            }
-                            //回溯
-//                            if (mBarChartAttrs.enableScrollToScale) {
-//                                int scrollToByDx = ChartComputeUtil.computeScrollByXOffset(recyclerView, displayNumber, mType);
-//                                recyclerView.scrollBy(scrollToByDx, 0);
+//                        if (newState == RecyclerView.SCROLL_STATE_IDLE) {
+//                            //加载更多
+//                            if (recyclerView.canScrollHorizontally(1) && isRightScroll) {
+//                                List<BarEntry> entries = RateTestData.createHrmEntries(mBarChartAttrs, currentTimestamp, displayNumber, mEntries.size());
+//                                currentTimestamp = currentTimestamp - displayNumber * TimeDateUtil.TIME_HOUR;
+//                                mEntries.addAll(entries);
+//                                mBarChartAdapter.notifyDataSetChanged();
 //                            }
-                            //重绘Y轴
-                            resetYAxis(recyclerView);
-                        }
+//                            //回溯
+////                            if (mBarChartAttrs.enableScrollToScale) {
+////                                int scrollToByDx = ChartComputeUtil.computeScrollByXOffset(recyclerView, displayNumber, mType);
+////                                recyclerView.scrollBy(scrollToByDx, 0);
+////                            }
+//                            //重绘Y轴
+//                            resetYAxis(recyclerView);
+//                        }
                     }
 
                     @Override
@@ -175,6 +182,16 @@ public class HrmDayFragment extends BaseLineFragment {
                     }
                 });
         recyclerView.addOnItemTouchListener(mItemGestureListener);
+
+        String sharePath = BaseFileUtil.getShareDirPath();
+        ScrollHorizontalCapture scrollCapture = new ScrollHorizontalCapture(recyclerView, sharePath + File.separator + System.currentTimeMillis() + ".jpg");
+        //开始或停止截屏
+        captureBtn.setOnClickListener(view -> {
+            scrollCapture.toggle();
+//           Bitmap captureBitmap = ShareUtil.createHorizontalRecyclerView(getActivity(), recyclerView);
+//           imgCaptureView.setImageBitmap(captureBitmap);
+        });
+
     }
 
     //重新设置Y坐标

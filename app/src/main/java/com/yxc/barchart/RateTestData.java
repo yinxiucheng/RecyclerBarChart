@@ -89,7 +89,7 @@ public class RateTestData {
             if (i > originEntrySize){
                 timestamp = timestamp - TimeDateUtil.TIME_HOUR;
             }
-            float mult = 120;
+            float mult = 70;
             float random = (float) (Math.random() * 10);
             int randomInt = (int)random;
             float value = random + mult;

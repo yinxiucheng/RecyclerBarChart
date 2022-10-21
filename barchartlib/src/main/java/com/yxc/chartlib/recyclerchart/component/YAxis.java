@@ -228,16 +228,19 @@ public class YAxis extends BaseYAxis {
 
     public static YAxis getHrmYAxis(BaseChartAttrs attrs, float max){
         YAxis axis = new YAxis(attrs);
-        axis.mAxisMaximum = 240;
-        axis.setLabelCount(8);
+        axis.mAxisMaximum = 142.7f;
+        axis.mAxisMinimum = 62.3f;
+        axis.setLabelCount(6);
         return axis;
     }
 
     public YAxis resetHrmYAxis(YAxis axis, float max) {
-        float axisMaximum = 240;
-        int layoutCount = 8;
+        float axisMaximum = 142.7f;
+        float axisMinimum = 62.3f;
+        int layoutCount = 6;
         if (axisMaximum != mAxisMaximum) {
             axis.setAxisMaximum(axisMaximum);
+            axis.setAxisMinimum(axisMinimum);
             axis.setLabelCount(layoutCount);
             return axis;
         }
