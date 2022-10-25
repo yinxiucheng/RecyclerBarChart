@@ -20,9 +20,9 @@ import java.util.List;
  * @author yxc
  * @since  2019/4/6
  */
-public class BarChartAdapter extends BaseBarChartAdapter<BarEntry, BaseYAxis>{
+public class BarChartAdapter<T extends BarEntry> extends BaseBarChartAdapter<T, BaseYAxis>{
 
-    public BarChartAdapter(Context context, List<BarEntry> entries,
+    public BarChartAdapter(Context context, List<T> entries,
                            RecyclerView recyclerView, XAxis xAxis, BaseChartAttrs attrs) {
         super(context, entries, recyclerView, xAxis, attrs);
     }

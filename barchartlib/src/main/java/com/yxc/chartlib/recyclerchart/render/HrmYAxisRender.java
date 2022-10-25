@@ -11,6 +11,9 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.yxc.chartlib.recyclerchart.attrs.BaseChartAttrs;
 import com.yxc.chartlib.recyclerchart.component.BaseYAxis;
 
+import java.util.HashMap;
+import java.util.Map;
+
 public class HrmYAxisRender<T extends BaseYAxis, V extends BaseChartAttrs> extends YAxisRender<T, V> {
 
     protected Paint mLinePaint;
@@ -96,6 +99,39 @@ public class HrmYAxisRender<T extends BaseYAxis, V extends BaseChartAttrs> exten
                     }
                 }
                 canvas.drawPath(path, mLinePaint);
+            }
+        }
+    }
+
+
+    //绘制右边的刻度
+    public void drawRightYAxisLabel(Canvas canvas, RecyclerView parent, T yAxis) {
+        if (mBarChartAttrs.enableRightYAxisLabel) {
+            int right = parent.getWidth();
+            int top = parent.getPaddingTop();
+            int bottom = parent.getHeight() - parent.getPaddingBottom();
+
+            mTextPaint.setTextSize(yAxis.getTextSize());
+            String longestStr = yAxis.getLongestLabel();
+            float yAxisWidth = mTextPaint.measureText(longestStr) + mBarChartAttrs.recyclerPaddingRight;
+
+            int paddingRight = computeYAxisWidth(parent.getPaddingRight(), yAxisWidth);
+            //设置 recyclerView的 BarChart 内容区域
+            parent.setPadding(parent.getPaddingLeft(), parent.getPaddingTop(), paddingRight, parent.getPaddingBottom());
+
+            float topLocation = top + mBarChartAttrs.contentPaddingTop;
+            float containerHeight = bottom - mBarChartAttrs.contentPaddingBottom - topLocation;
+            float itemHeight = containerHeight / yAxis.getLabelCount();
+            HashMap<Float, Float> yAxisScaleMap = yAxis.getYAxisScaleMap(topLocation, itemHeight, yAxis.getLabelCount());
+
+            float txtX = right - parent.getPaddingRight() + yAxis.labelHorizontalPadding;
+
+            for (Map.Entry<Float, Float> entry : yAxisScaleMap.entrySet()) {
+                float yAxisScaleLocation = entry.getKey();
+                float yAxisScaleValue = entry.getValue();
+                String labelStr = yAxis.getValueFormatter().getFormattedValue(yAxisScaleValue);
+                float txtY = yAxisScaleLocation + yAxis.labelVerticalPadding;
+                canvas.drawText(labelStr, txtX, txtY, mTextPaint);
             }
         }
     }

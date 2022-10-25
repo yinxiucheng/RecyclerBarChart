@@ -14,6 +14,7 @@ import com.yxc.chartlib.recyclerchart.component.XAxis;
 import com.yxc.chartlib.recyclerchart.component.YAxis;
 import com.yxc.chartlib.recyclerchart.formatter.DefaultHighLightMarkValueFormatter;
 import com.yxc.chartlib.recyclerchart.formatter.ValueFormatter;
+import com.yxc.chartlib.recyclerchart.render.EcgLineChartRender;
 import com.yxc.chartlib.recyclerchart.render.HrmBarBoardRender;
 import com.yxc.chartlib.recyclerchart.render.HrmLineChartRender;
 import com.yxc.chartlib.recyclerchart.render.HrmXAxisRender;
@@ -25,7 +26,7 @@ import com.yxc.chartlib.recyclerchart.render.HrmYAxisRender;
  * <p>
  * 这个ItemDecoration 是BarChartAdapter专用的，里面直接用到了BarChartAdapter
  */
-public class HrmChartItemDecoration extends RecyclerView.ItemDecoration {
+public class EcgChartItemDecoration extends RecyclerView.ItemDecoration {
 
     private int mOrientation;
     private YAxis mYAxis;
@@ -34,13 +35,13 @@ public class HrmChartItemDecoration extends RecyclerView.ItemDecoration {
     private HrmYAxisRender yAxisRenderer;
     private HrmXAxisRender xAxisRenderer;
     private HrmBarBoardRender mBarBoardRender;
-    private HrmLineChartRender mLineChartRender;
+    private EcgLineChartRender mLineChartRender;
     private ValueFormatter mHighLightValueFormatter;
 
     public static final int HORIZONTAL_LIST = LinearLayoutManager.HORIZONTAL;
     public static final int VERTICAL_LIST = LinearLayoutManager.VERTICAL;
 
-    public HrmChartItemDecoration(YAxis yAxis, XAxis xAxis, LineChartAttrs barChartAttrs) {
+    public EcgChartItemDecoration(YAxis yAxis, XAxis xAxis, LineChartAttrs barChartAttrs) {
         this.mOrientation = barChartAttrs.layoutManagerOrientation;
         this.mYAxis = yAxis;
         this.mXAxis = xAxis;
@@ -49,7 +50,7 @@ public class HrmChartItemDecoration extends RecyclerView.ItemDecoration {
         this.xAxisRenderer = new HrmXAxisRender(mBarChartAttrs);
         this.mBarBoardRender = new HrmBarBoardRender(mBarChartAttrs);
         this.mHighLightValueFormatter = new DefaultHighLightMarkValueFormatter(0);
-        this.mLineChartRender = new HrmLineChartRender(mBarChartAttrs, mHighLightValueFormatter);
+        this.mLineChartRender = new EcgLineChartRender(mBarChartAttrs, mHighLightValueFormatter);
     }
 
     @Override

@@ -21,6 +21,7 @@ import com.yxc.barchart.map.location.RecordListActivity;
 import com.yxc.barchart.map.location.database.RealmDbHelper;
 import com.yxc.barchart.map.location.util.LocationConstants;
 import com.yxc.barchart.ui.bezier.BezierActivity;
+import com.yxc.barchart.ui.hrm.EcgLandScapeActivity;
 import com.yxc.barchart.ui.hrm.HrmActivity;
 import com.yxc.barchart.ui.hrm.HrmLandScapeActivity;
 import com.yxc.barchart.ui.line.LineActivity;
@@ -137,7 +138,7 @@ public class MainActivity extends AppCompatActivity {
         findViewById(R.id.hrm_chart_landscape).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                startActivity(new Intent(MainActivity.this, HrmLandScapeActivity.class));
+                startActivity(new Intent(MainActivity.this, EcgLandScapeActivity.class));
             }
         });
 

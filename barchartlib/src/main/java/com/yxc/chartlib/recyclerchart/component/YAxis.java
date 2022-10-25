@@ -24,7 +24,7 @@ public class YAxis extends BaseYAxis {
     public void setLabelCount(int count) {
         super.setLabelCount(count);
         float label = mAxisMaximum;
-        float itemRange = mAxisMaximum / count;
+        float itemRange = (mAxisMaximum - mAxisMinimum)/ count;
 
         if (null == mEntries) {
             mEntries = new ArrayList<>();
@@ -226,18 +226,23 @@ public class YAxis extends BaseYAxis {
         return null;
     }
 
-    public static YAxis getHrmYAxis(BaseChartAttrs attrs, float max){
-        YAxis axis = new YAxis(attrs);
-        axis.mAxisMaximum = 142.7f;
-        axis.mAxisMinimum = 62.3f;
-        axis.setLabelCount(6);
-        return axis;
-    }
-
     public YAxis resetHrmYAxis(YAxis axis, float max) {
         float axisMaximum = 142.7f;
         float axisMinimum = 62.3f;
-        int layoutCount = 6;
+        int layoutCount = 8;
+        if (axisMaximum != mAxisMaximum) {
+            axis.setAxisMaximum(axisMaximum);
+            axis.setAxisMinimum(axisMinimum);
+            axis.setLabelCount(layoutCount);
+            return axis;
+        }
+        return null;
+    }
+
+    public YAxis resetEcgYAxis(YAxis axis) {
+        float axisMaximum = 4f;
+        float axisMinimum = 0f;
+        int layoutCount = 8;
         if (axisMaximum != mAxisMaximum) {
             axis.setAxisMaximum(axisMaximum);
             axis.setAxisMinimum(axisMinimum);

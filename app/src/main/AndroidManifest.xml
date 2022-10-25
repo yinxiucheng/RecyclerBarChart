@@ -58,6 +58,9 @@
         <activity android:name=".ui.hrm.HrmLandScapeActivity"
             android:screenOrientation="landscape"/>
 
+        <activity android:name=".ui.hrm.EcgLandScapeActivity"
+            android:screenOrientation="landscape"/>
+
         <activity android:name=".ui.waterdrop.WaterDropActivity" />
         <activity android:name=".ui.bezier.BezierActivity" />
         <activity android:name=".ui.rainbow.RainbowActivity"/>

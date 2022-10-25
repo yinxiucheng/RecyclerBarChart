@@ -312,6 +312,14 @@ public class ChartComputeUtil {
         return contentBottom - height;
     }
 
+    public static <T extends BarEntry> float getYPosition(Float yValue, RecyclerView parent, BaseYAxis mYAxis, BaseChartAttrs baseChartAttrs) {
+        float contentBottom = parent.getHeight() - baseChartAttrs.contentPaddingBottom - parent.getPaddingBottom();
+        float contentTop = baseChartAttrs.contentPaddingTop + parent.getPaddingTop();
+        float contentHeight = contentBottom - contentTop;
+        float height = yValue / mYAxis.getAxisMaximum() * contentHeight;
+        return contentBottom - height;
+    }
+
 
     public static Path createColorRectPath(PointF pointF1, PointF pointF2, float bottom) {
         Path path = new Path();

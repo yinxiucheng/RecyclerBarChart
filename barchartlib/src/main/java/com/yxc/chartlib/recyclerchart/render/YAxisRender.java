@@ -140,7 +140,7 @@ public class YAxisRender<T extends BaseYAxis, V extends BaseChartAttrs> {
         }
     }
 
-    private int computeYAxisWidth(int originPadding, float yAxisWidth) {
+    protected int computeYAxisWidth(int originPadding, float yAxisWidth) {
         float resultPadding;
         Log.d("YAxis1", "originPadding:" + originPadding + " yAxisWidth:" + yAxisWidth);
         if (originPadding > yAxisWidth) {
