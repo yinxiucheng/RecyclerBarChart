@@ -46,7 +46,7 @@ public class EcgChartItemDecoration extends RecyclerView.ItemDecoration {
         this.mYAxis = yAxis;
         this.mXAxis = xAxis;
         this.mBarChartAttrs = barChartAttrs;
-        this.yAxisRenderer = new HrmYAxisRender(mBarChartAttrs);
+        this.yAxisRenderer = new HrmYAxisRender<YAxis, LineChartAttrs>(mBarChartAttrs);
         this.xAxisRenderer = new HrmXAxisRender(mBarChartAttrs);
         this.mBarBoardRender = new HrmBarBoardRender(mBarChartAttrs);
         this.mHighLightValueFormatter = new DefaultHighLightMarkValueFormatter(0);

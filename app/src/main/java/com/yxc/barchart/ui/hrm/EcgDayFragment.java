@@ -38,6 +38,8 @@ import java.util.List;
 
 public class EcgDayFragment extends BaseLineFragment {
 
+    final String TAG = "EcgDayFragment";
+
     LineChartRecyclerView recyclerView;
 
     BarChartAdapter mBarChartAdapter;
@@ -108,7 +110,7 @@ public class EcgDayFragment extends BaseLineFragment {
 
                 currentTimestamp = TimeDateUtil.changZeroOfTheDay(LocalDate.now().plusDays(1));
 
-                List<EcgEntry> barEntries = EcgTestData.createEcgEntries(mBarChartAttrs, currentTimestamp,  displayNumber + 20, mEntries.size());
+                List<EcgEntry> barEntries = EcgTestData.createEcgEntries(currentTimestamp,  displayNumber + 20, mEntries.size(), EcgTestData.testDoubleArray);
                 bindBarChartList(barEntries);
                 currentTimestamp = currentTimestamp - TimeDateUtil.TIME_HOUR *  (displayNumber + 20);
                 setXAxis(displayNumber);
@@ -133,16 +135,34 @@ public class EcgDayFragment extends BaseLineFragment {
     private void setListener() {
         mItemGestureListener = new RecyclerItemGestureListener(getActivity(), recyclerView,
                 new SimpleItemGestureListener() {
+            boolean isRightScrollInner = false;
                     @Override
                     public void onItemSelected(BarEntry barEntry, int position) {
                     }
                     @Override
                     public void onScrollStateChanged(RecyclerView recyclerView, int newState) {
                         // 当不滚动时
+                        if (newState == RecyclerView.SCROLL_STATE_IDLE) {
+                            if (!recyclerView.canScrollHorizontally(-1) && isRightScrollInner) {
+                                Log.d(TAG, " can't Scroll left !" );
+                            } else if (!recyclerView.canScrollHorizontally(1)) {
+                                List<EcgEntry> barEntries = EcgTestData.createEcgEntries(
+                                        currentTimestamp,
+                                        displayNumber,
+                                        mEntries.size(),
+                                        EcgTestData.testDoubleArray
+                                );
+                                Log.d(TAG, " can't Scroll right ! entry size:" + mEntries.size() );
+                                mEntries.addAll(barEntries);
+                                mBarChartAdapter.notifyDataSetChanged();
+                                currentTimestamp -= TimeDateUtil.TIME_HOUR * (displayNumber);
+                            }
+                        }
                     }
 
                     @Override
                     public void onScrolled(RecyclerView recyclerView, int dx, int dy) {
+                        isRightScrollInner = dx < 0;
                     }
                 });
         recyclerView.addOnItemTouchListener(mItemGestureListener);
